@@ -11,7 +11,7 @@
     "repository": "GITHUBPUBLIC",
     "script": "main.nf",
     "uri": "nf-core/mag",
-    "version": "3.0.0"
+    "version": "3.3.1"
   },
   "paramDefaults": [],
   "computeDefaults": [
