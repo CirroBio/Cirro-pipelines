@@ -1,0 +1,64 @@
+{
+  "id": "process-kneaddata-1-0",
+  "parentProcessIds": [
+    "process-nf-core-fetchngs",
+    "paired_16S",
+    "paired_dnaseq",
+    "paired_rnaseq"
+  ],
+  "childProcessIds": [
+    "process-nf-core-ampliseq-2-4-0",
+    "process-nf-core-rnaseq-custom-3_14",
+    "process-nf-core-rnasplice-dev",
+    "process-nf-core-viralrecon-2_2",
+    "process-nf-core-sarek-custom-genome-3-5",
+    "process-hutch-metaphlan-paired-1-0",
+    "process-hutch-humann-1-0",
+    "hutch-gig-map-align-pangenome-1-0",
+    "hutch-gig-map-align-reads-1-0",
+    "hutch-sourmash-tax",
+    "process-nf-core-bacass-short-read-2-1-0",
+    "process-nf-core-bacass-hybrid-2-1-0",
+    "process-nf-core-mag-3_0"
+  ],
+  "dataType": "Decontaminated Metagenome (KneadData)",
+  "name": "Decontaminate Metagenome (KneadData)",
+  "desc": "Remove contaminating host sequences by alignment to a reference genome",
+  "executor": "NEXTFLOW",
+  "category": "Microbial Analysis",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-microbial-analysis#decontaminate-metagenome-kneaddata",
+  "code": {
+    "repository": "GITHUBPUBLIC",
+    "script": "main.nf",
+    "uri": "FredHutch/nf-kneaddata",
+    "version": "main"
+  },
+  "allowMultipleSources": true,
+  "paramDefaults": [],
+  "computeDefaults": [
+    {
+      "executor": "NEXTFLOW",
+      "json": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-compute.config",
+      "name": "Default"
+    }
+  ],
+  "paramMapJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json",
+  "formJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-form.json",
+  "preProcessScript": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/preprocess.py",
+  "fileJson": "",
+  "componentJson": "",
+  "infoJson": "",
+  "webOptimizationJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-output.json",
+  "fileMappingRules": [
+    {
+      "description": "Decontaminated Sequences",
+      "fileNamePatterns": [
+        {
+          "exampleName": "SampleName/SampleName_paired_[1/2].fastq.gz",
+          "description": "Sequences FASTQ",
+          "sampleMatchingPattern": "(?P<sampleName>\\S*)_paired_(?P<read>1|2).fastq.gz"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "samplesheet": "samplesheet.csv",
+  "db": "$.params.dataset.paramJson.reference.db",
+  "outdir": "$.params.dataset.s3|/data",
+  "sequencer_source": "$.params.dataset.paramJson.input_options.sequencer_source",
+  "decontaminate_pairs": "$.params.dataset.paramJson.processing_options.decontaminate_pairs"
+}

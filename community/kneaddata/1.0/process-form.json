@@ -1,0 +1,70 @@
+{
+  "form": {
+    "type": "object",
+    "name": "Metagenome Decontamination (KneadData)",
+    "properties": {
+      "reference": {
+        "title": "Reference Database",
+        "properties": {
+          "db": {
+            "title": "Decontamination Database",
+            "description": "Database of reference genome used for host decontamination",
+            "type": "string",
+            "default": "s3://pubweb-references/kneaddata/human_genome",
+            "enum": [
+              "s3://pubweb-references/kneaddata/human_genome/bowtie2/",
+              "s3://pubweb-references/kneaddata/human_transcriptome/bowtie2/",
+              "s3://pubweb-references/kneaddata/mouse_C57BL/bowtie2/",
+              "s3://pubweb-references/kneaddata/ribosomal_RNA/bowtie2/"
+            ],
+            "enumNames": [
+              "Human Genome",
+              "Human Transcriptome",
+              "Mouse Genome",
+              "Ribosomal RNA"
+            ]
+          }    
+        }
+      },
+      "input_options": {
+        "title": "Input Options",
+        "properties": {
+          "sequencer_source": {
+            "title": "Sequencer Source",
+            "type": "string",
+            "description": "Chemistry used for library preparation",
+            "default": "NexteraPE",
+            "enum": [
+              "NexteraPE",
+              "TruSeq2",
+              "TruSeq3",
+              "none"
+            ]
+          }
+        }
+      },
+      "processing_options": {
+        "title": "Processing Options",
+        "properties": {
+          "decontaminate_pairs": {
+            "type": "string",
+            "title": "Decontaminate Pairs",
+            "description": "Options for filtering of paired end reads",
+            "default": "strict",
+            "enum": [
+              "strict",
+              "lenient",
+              "unpaired"
+            ],
+            "enumNames": [
+              "remove both R1+R2 if either align",
+              "remove only if both R1+R2 align",
+              "ignore pairing and remove as single end"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "ui": {}
+}
