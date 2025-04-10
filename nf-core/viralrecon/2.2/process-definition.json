@@ -13,7 +13,7 @@
     "uri": "nf-core/viralrecon",
     "version": "2.2"
   },
-  "paramDefaults": [],
+  "usesSampleSheet": true,
   "computeDefaults": [
     {
       "executor": "NEXTFLOW",
@@ -23,8 +23,5 @@
   ],
   "paramMapJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json",
   "formJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-form.json",
-  "fileJson": "",
-  "componentJson": "",
-  "infoJson": "",
   "webOptimizationJson": "s3://<RESOURCES_BUCKET>/process/hutch/default-process-output.json"
 }

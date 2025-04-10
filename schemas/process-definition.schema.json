@@ -1,0 +1,266 @@
+{
+  "title": "Defines the process record in Cirro.",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "childProcessIds",
+    "name",
+    "desc",
+    "executor",
+    "documentationUrl",
+    "code",
+    "computeDefaults",
+    "paramMapJson",
+    "formJson",
+    "webOptimizationJson"
+  ],
+  "properties": {
+    "id": {
+      "description": "Unique ID for the process.",
+      "type": "string"
+    },
+    "childProcessIds": {
+      "description": "List of process IDs that can be ran from this process.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "parentProcessIds": {
+      "description": "List of process IDs that this process can be ran from (optional).",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "name": {
+      "description": "Name of the process.",
+      "type": "string"
+    },
+    "desc": {
+      "description": "Description of the process.",
+      "type": "string"
+    },
+    "dataType": {
+      "description": "Name of the data type this process produces (defaults to the process name if not provided)",
+      "type": "string"
+    },
+    "executor": {
+      "$ref": "#/definitions/executorType"
+    },
+    "documentationUrl": {
+      "description": "Web URL to documentation for the process (i.e. README file).",
+      "type": "string"
+    },
+    "code": {
+      "type": "object",
+      "required": ["repository"],
+      "properties": {
+        "repository": {
+          "$ref": "#/definitions/repositoryType"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "repository": {"const": "NA"}
+            }
+          },
+          "then": {
+            "properties": {
+              "uri": {
+                "type": "string",
+                "description": "Not used.",
+                "default": ""
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "repository": {"enum": ["GITHUBPUBLIC", "GITHUBPRIVATE"]}
+            }
+          },
+          "then": {
+            "required": ["uri", "script", "version"],
+            "properties": {
+              "uri": {
+                "description": "URI of the repository. The format is org-name/repo-name",
+                "type": "string"
+              },
+              "script": {
+                "description": "Location of the main script.",
+                "type": "string",
+                "default": "main.nf"
+              },
+              "version": {
+                "description": "This could be a branch name, tag name, release name, or a commit hash.",
+                "type": "string"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "repository": {"const": "AWS"}
+            }
+          },
+          "then": {
+            "required": ["uri"],
+            "properties": {
+              "uri": {
+                "description": "URI of the repository. This is the full S3 path to the workflow directory.",
+                "type": "string"
+              },
+              "script": {
+                "description": "Location of the main script.",
+                "type": "string",
+                "default": "main.nf"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "allowMultipleSources": {
+      "description": "Specifies if the process can accept multiple input datasets.",
+      "type": "boolean"
+    },
+    "usesSampleSheet": {
+      "description": "Specifies if the process can accept the Cirro-provided sample sheet.",
+      "type": "boolean"
+    },
+    "computeDefaults": {
+      "description": "Defines the compute config for the process. Currently, only one entry is used.",
+      "maxItems": 1,
+      "type": "array",
+      "items": {
+        "properties": {
+          "executor": {
+            "$ref": "#/definitions/executorType"
+          },
+          "json": {
+            "description": "S3 path to the process-compute.config file.",
+            "type": "string"
+          },
+          "name": {
+            "description": "Name of the compute setting.",
+            "type": "string",
+            "default": "Default"
+          }
+        }
+      }
+    },
+    "paramMapJson": {
+      "description": "S3 path to the process-input.json file.",
+      "type": "string"
+    },
+    "formJson": {
+      "description": "S3 path to the process-form.json file.",
+      "type": "string"
+    },
+    "preProcessScript": {
+      "description": "S3 path to the preprocess life cycle hook script.",
+      "type": "string"
+    },
+    "webOptimizationJson": {
+      "description": "S3 path for the process-output.json file.",
+      "type": "string"
+    },
+    "sampleSheetPath": {
+      "description": "Path to Sample Sheet metadata file (used for ingest processes, defaults to samplesheet.csv).",
+      "type": "string"
+    },
+    "fileRequirementsMessage": {
+      "description": "Message to show when uploading (used for ingest processes).",
+      "type": "string"
+    },
+    "fileMappingRules": {
+      "type": "array",
+      "description": "Describes the files that this dataset type expects (used for ingest processes).",
+      "items": {
+        "required": ["description", "fileNamePatterns"],
+        "properties": {
+          "description": {
+            "description": "Describes the group of possible files that meet a single file type criteria.",
+            "type": "string"
+          },
+          "min": {
+            "description": "Minimum number of files to expect for the file type group.",
+            "type": "number",
+            "default": "1"
+          },
+          "max": {
+            "description": "Maximum number of files to expect for the file type group.",
+            "type": "number",
+            "default": "2000"
+          },
+          "isSample": {
+            "description": "Specifies if the file type will be associated with a sample (defaults to true).",
+            "type": "boolean",
+            "default": true,
+            "additionalProperties": false
+          },
+          "fileNamePatterns": {
+            "type": "array",
+            "items": {
+              "required": ["exampleName", "description", "sampleMatchingPattern"],
+              "additionalProperties": false,
+              "properties": {
+                "exampleName": {
+                  "description": "User-readable name for the file type used for display.",
+                  "type": "string"
+                },
+                "description": {
+                  "description": "File description",
+                  "type": "string"
+                },
+                "sampleMatchingPattern": {
+                  "description": "File name pattern to extract sample name and other metadata.",
+                  "type": "string"
+                } 
+              }
+            }
+          }
+        }
+      }
+    },
+    "pipelineTypeOverride": {
+      "description": "Specifies the pipeline type to use for the process (defaults to Community).",
+      "anyOf": [
+        {
+          "enum": ["nf-core", "GATK", "Community", "10X"]
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "category": {
+      "description": "Category of the process.",
+      "type": "string",
+      "examples": [
+        "Microbial Analysis",
+        "Statistical Analysis",
+        "RNA Sequencing",
+        "DNA Sequencing"
+      ]
+    }
+  },
+  "definitions": {
+    "executorType": {
+      "description": "How the workflow is executed",
+      "enum": ["NEXTFLOW", "CROMWELL", "INGEST", "OMICS_READY2RUN"]
+    },
+    "repositoryType": {
+      "type": "string",
+      "description": "Location of the source code for the process.",
+      "enum": ["NA", "GITHUBPUBLIC", "GITHUBPRIVATE", "AWS"]
+    }
+  }
+}
