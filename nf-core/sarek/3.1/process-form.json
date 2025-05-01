@@ -41,7 +41,7 @@
       },
       "analysis_type": {
         "title": "Experiment Design",
-        "description": "Indiciate the analysis type (germline/somatic) and select high level parameters for the workflow.",
+        "description": "Indicate the analysis type (germline/somatic) and select high level parameters for the workflow.",
         "type": "object",
         "required": ["genome", "analysis_type", "tools", "wes"],
         "properties": {
@@ -71,7 +71,7 @@
           },
           "germline_resource": {
             "title": "Germline resource",
-            "description": "The germline resource VCF file (bgzipped) needed by GATK4 Mutect2 is a collection of calls that are likely present in the sample, with allele frequencies.",
+            "description": "The germline resource VCF file (bgzipped and tabixed) needed by GATK4 Mutect2 is a collection of calls that are likely present in the sample, with allele frequencies.",
             "type": "string",
             "pathType": "references",
             "file": "**/germline_resource/**/germline_resource.vcf.gz"

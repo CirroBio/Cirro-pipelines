@@ -205,6 +205,12 @@ if __name__ == "__main__":
 
     ds.remove_param('analysis_type')
 
+    # add index for germline_resource if present
+    germline_resource = ds.params.get('germline_resource')
+    if germline_resource:
+        germline_resource_tbi = germline_resource + '.tbi'
+        ds.add_param('germline_resource_tbi', germline_resource_tbi, overwrite=True)
+
     # Dynamic Resource Usage
 
     # `compute_multiplier` == 2 for WGS and 1 for WES
