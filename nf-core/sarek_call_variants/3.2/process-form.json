@@ -36,7 +36,7 @@
       },
       "analysis_type": {
         "title": "Experiment Design",
-        "description": "Indiciate the analysis type (germline/somatic) and select high level parameters for the workflow.",
+        "description": "Indicate the analysis type (germline/somatic) and select high level parameters for the workflow.",
         "type": "object",
         "required": ["genome", "analysis_type", "tools", "wes"],
         "properties": {
