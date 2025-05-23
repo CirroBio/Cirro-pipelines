@@ -1,0 +1,198 @@
+{
+  "form": {
+    "type": "object",
+    "name": "MIDAS3: Identify SNVs and Gene Copy Number Variants from Metagenomes",
+    "properties": {
+      "db": {
+        "type": "object",
+        "title": "Reference Genomes",
+        "properties": {
+          "db": {
+            "type": "string",
+            "title": "Pre-Built Database",
+            "default": "s3://pubweb-references/midas/2024-08-08-midas-uhgg-refdb.tar.gz",
+            "enum": ["s3://pubweb-references/midas/2024-08-08-midas-uhgg-refdb.tar.gz"],
+            "enumNames": ["Unified Human Gastrointestinal Genome (UHGG)"]
+          }
+        }
+      },
+      "analysis": {
+        "type": "object",
+        "title": "Analysis Options",
+        "properties": {
+          "analysis_mode": {
+            "type": "string",
+            "title": "Analysis Mode",
+            "default": "species",
+            "enum": [
+              "species",
+              "genes",
+              "snps"
+            ],
+            "enumNames": [
+              "Species",
+              "Gene Copy Number",
+              "SNPs / SNVs"
+            ]
+          }
+        },
+        "dependencies": {
+          "analysis_mode": {
+            "oneOf": [
+              {
+                "properties": {
+                  "analysis_mode": {"enum": ["species"]},
+                  "word_size": {
+                    "type": "integer",
+                    "title": "Word Size",
+                    "description": "Word size for BLAST search. Use word sizes > 16 for greatest efficiency.",
+                    "default": 28
+                  },
+                  "aln_cov": {
+                    "type": "number",
+                    "title": "Alignment Coverage",
+                    "description": "Discard reads with alignment coverage < ALN_COV. Values between 0-1 accepted.",
+                    "default": 0.75
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "analysis_mode": {"enum": ["genes"]},
+                  "aln_speed": {
+                    "type": "string",
+                    "title": "Alignment speed/sensitivity",
+                    "description": "Option passed to bowtie2. ",
+                    "default": "very-sensitive",
+                    "enum": [
+                      "very-sensitive",
+                      "very-fast",
+                      "fast",
+                      "sensitive"
+                    ]
+                  },
+                  "aln_mode": {
+                    "type": "string",
+                    "title": "Alignment mode",
+                    "description": "Option passed to bowtie2. ",
+                    "default": "local",
+                    "enum": [
+                      "local",
+                      "global"
+                    ]
+                  },
+                  "aln_mapid": {
+                    "type": "number",
+                    "title": "Alignment Map ID",
+                    "description": "Discard reads with alignment map ID < ALN_MAPID. Values between 100-0 accepted.",
+                    "default": 94
+                  },
+                  "aln_mapq": {
+                    "type": "number",
+                    "title": "Alignment Map Quality",
+                    "description": "Discard reads with alignment map quality < ALN_MAPQ.",
+                    "default": 0
+                  },
+                  "aln_readq": {
+                    "type": "number",
+                    "title": "Alignment Read Quality",
+                    "description": "Discard reads with alignment read quality < ALN_READQ.",
+                    "default": 20
+                  },
+                  "aln_cov": {
+                    "type": "number",
+                    "title": "Alignment Coverage",
+                    "description": "Discard reads with alignment coverage < ALN_COV. Values between 0-1 accepted.",
+                    "default": 0.75
+                  },
+                  "total_depth": {
+                    "type": "number",
+                    "title": "Total Depth",
+                    "description": "Discard genes with total depth < TOTAL_DEPTH.",
+                    "default": 1
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "analysis_mode": {"enum": ["snps"]},
+                  "aln_speed": {
+                    "type": "string",
+                    "title": "Alignment speed/sensitivity",
+                    "description": "Option passed to bowtie2. ",
+                    "default": "very-sensitive",
+                    "enum": [
+                      "very-sensitive",
+                      "very-fast",
+                      "fast",
+                      "sensitive"
+                    ]
+                  },
+                  "aln_mode": {
+                    "type": "string",
+                    "title": "Alignment mode",
+                    "description": "Option passed to bowtie2. ",
+                    "default": "local",
+                    "enum": [
+                      "local",
+                      "global"
+                    ]
+                  },
+                  "aln_mapid": {
+                    "type": "number",
+                    "title": "Alignment Map ID",
+                    "description": "Discard reads with alignment map ID < ALN_MAPID. Values between 100-0 accepted.",
+                    "default": 94
+                  },
+                  "aln_mapq": {
+                    "type": "number",
+                    "title": "Alignment Map Quality",
+                    "description": "Discard reads with alignment map quality < ALN_MAPQ.",
+                    "default": 0
+                  },
+                  "aln_readq": {
+                    "type": "number",
+                    "title": "Alignment Read Quality",
+                    "description": "Discard reads with alignment read quality < ALN_READQ.",
+                    "default": 20
+                  },
+                  "aln_cov": {
+                    "type": "number",
+                    "title": "Alignment Coverage",
+                    "description": "Discard reads with alignment coverage < ALN_COV. Values between 0-1 accepted.",
+                    "default": 0.75
+                  },
+                  "aln_baseq": {
+                    "type": "number",
+                    "title": "Alignment Base Quality",
+                    "description": "Discard reads with alignment base quality < ALN_BASEQ.",
+                    "default": 30
+                  },
+                  "aln_trim": {
+                    "type": "number",
+                    "title": "Alignment Trim",
+                    "description": "Trim ALN_TRIM base-pairs from 3'right end of read.",
+                    "default": 0
+                  },
+                  "site_depth": {
+                    "type": "number",
+                    "title": "Site Depth",
+                    "description": "Only perform pileup for genomic site covered by post-filtered reads.",
+                    "default": 2
+                  },
+                  "snp_maf": {
+                    "type": "number",
+                    "title": "SNP Minor Allele Frequency",
+                    "description": "Discard SNPs with minor allele frequency < SNP_MAF.",
+                    "default": 0.1
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "ui": {}
+}
