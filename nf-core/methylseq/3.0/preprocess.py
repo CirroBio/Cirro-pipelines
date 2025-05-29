@@ -16,4 +16,8 @@ manifest = ds.wide_samplesheet(
 ds.logger.info(manifest)
 assert manifest.shape[0] > 0, "No files detected -- there may be an error with data ingest"
 
+# Cast comprehensive from int 0/1 to boolean
+comprehensive = bool(ds.params.get('comprehensive'))
+ds.add_param('comprehensive', comprehensive, overwrite=True)
+
 manifest.to_csv("samplesheet.csv", index=None)
