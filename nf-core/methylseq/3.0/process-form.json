@@ -326,16 +326,16 @@
                 "properties": {
                     "save_reference": {
                         "type": "boolean",
-                        "description": "Save reference(s) to results directory",
+                        "description": "Save reference(s) to results directory"
                     },
                     "save_align_intermeds": {
                         "type": "boolean",
-                        "description": "Save aligned intermediates to results directory",
+                        "description": "Save aligned intermediates to results directory"
                     },
                     "unmapped": {
                         "type": "boolean",
                         "description": "Bismark only - Save unmapped reads to FastQ files",
-                        "help_text": "Use the `--unmapped` flag to set the `--unmapped` flag with Bismark align and save the unmapped reads to FastQ files.",
+                        "help_text": "Use the `--unmapped` flag to set the `--unmapped` flag with Bismark align and save the unmapped reads to FastQ files."
                     },
                     "save_trimmed": {
                         "type": "boolean",
