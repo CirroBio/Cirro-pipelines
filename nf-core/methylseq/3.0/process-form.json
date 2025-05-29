@@ -105,10 +105,11 @@
             },
             "comprehensive": {
                 "title": "Comprehensive",
-                "type": "integer",
-                "default": 0,
+                "type": "boolean",
+                "default": false,
                 "enum": [
-                    0, 1
+                    false,
+                    true
                 ],
                 "enumNames": [
                     "Cytosine methylation in CpG context only",
