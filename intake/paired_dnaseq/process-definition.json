@@ -8,7 +8,7 @@
     "process-nf-core-bacass-short-read-2-1-0",
     "process-nf-core-bacass-hybrid-2-1-0",
     "process-hutch-filter-paired-dnaseq-1-0",
-    "process-nf-core-methylseq-1-6-1",
+    "process-nf-core-methylseq-3-0",
     "process-hutch-fastqc-1_0",
     "process-nf-core-fastquorum-1",
     "process-hutch-scrub-human-1-0",
