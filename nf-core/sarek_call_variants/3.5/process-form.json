@@ -1,0 +1,237 @@
+{
+  "ui": {
+    "analysis_type": {
+      "tools": {
+        "ui:widget": "checkboxes"
+      }
+    },
+    "annotation": {
+      "annotation_tool": {
+        "ui:widget": "checkboxes"
+      }
+    }
+  },
+  "form": {
+    "title": "Variant Calling (nf-core/sarek)",
+    "description": "Perform variant calling on aligned sequence reads",
+    "type": "object",
+    "properties": {
+      "analysis_type": {
+        "title": "Experiment Design",
+        "description": "Indicate the analysis type (germline/somatic) and select high level parameters for the workflow.",
+        "type": "object",
+        "required": ["genome", "analysis_type", "tools", "wes"],
+        "properties": {
+          "genome": {
+            "title": "Reference Genome",
+            "type": "string",
+            "default": "GATK.GRCh38",
+            "enum": ["GATK.GRCh38", "GATK.GRCh37", "GRCm38"],
+            "enumNames": [
+              "Homo sapiens (GATK.GRCh38)",
+              "Homo sapiens (GATK.GRCh37)",
+              "Mus musculus (GRCm38)"
+            ]
+          },
+          "wes": {
+            "title": "Whole Exome/Targeted Gene Panel Assay",
+            "description": "Please indicate if your data was generated using a capture kit.",
+            "type": "boolean",
+            "default": false
+          },
+          "intervals": {
+            "title": "Genomic intervals",
+            "description": "Target bed file in case of whole exome or targeted sequencing or intervals file for parallelization.",
+            "type": "string",
+            "pathType": "references",
+            "file": "**/genome_bed/**/regions.bed"
+          },
+          "germline_resource": {
+            "title": "Germline resource",
+            "description": "The germline resource VCF file (bgzipped and tabixed) needed by GATK4 Mutect2 is a collection of calls that are likely present in the sample, with allele frequencies.",
+            "type": "string",
+            "pathType": "references",
+            "file": "**/germline_resource/**/germline_resource.vcf.gz"
+          },
+          "analysis_type": {
+            "title": "Variant Calling Type",
+            "default": "Germline Variant Calling",
+            "enum": ["Germline Variant Calling", "Somatic Variant Calling"]
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "analysis_type": {
+                  "const": "Germline Variant Calling"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "tools": {
+                  "title": "Germline variant calling tool(s)",
+                  "description": "Please select one or more variant callers for your analysis.",
+                  "type": "array",
+                  "pattern": "^((cnvkit|deepvariant|freebayes|haplotypecaller|manta|mpileup|strelka|tiddit)*,?)*$",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "cnvkit",
+                      "deepvariant",
+                      "freebayes",
+                      "haplotypecaller",
+                      "manta",
+                      "mpileup",
+                      "strelka",
+                      "tiddit"
+                    ],
+                    "enumNames": [
+                      "CNVkit",
+                      "DeepVariant",
+                      "FreeBayes",
+                      "HaplotypeCaller",
+                      "Manta",
+                      "mpileup",
+                      "Strelka",
+                      "TIDDIT"
+                    ]
+                  },
+                  "uniqueItems": true
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "analysis_type": {
+                  "const": "Somatic Variant Calling"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "tools": {
+                  "title": "Somatic variant calling tool(s)",
+                  "description": "Please select one or more variant callers for your analysis.",
+                  "type": "array",
+                  "pattern": "^((ascat|controlfreec|cnvkit|freebayes|manta|msisensorpro|mutect2|strelka|tiddit)*,?)*$",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "ascat",
+                      "controlfreec",
+                      "cnvkit",
+                      "freebayes",
+                      "manta",
+                      "msisensorpro",
+                      "mutect2",
+                      "strelka",
+                      "tiddit"
+                    ],
+                    "enumNames": [
+                      "ASCAT",
+                      "Control-FREEC",
+                      "CNVkit",
+                      "FreeBayes",
+                      "Manta",
+                      "MSIsensorpro",
+                      "Mutect2",
+                      "Strelka",
+                      "TIDDIT"
+                    ]
+                  },
+                  "uniqueItems": true
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "required": [
+                "tools"
+              ],
+              "properties": {
+                "tools": {
+                  "contains": {
+                    "type": "string",
+                    "const": "mutect2"
+                  }
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "joint_mutect2": {
+                  "type": "boolean",
+                  "title": "Joint calling with Mutect2",
+                  "description": "Runs Mutect2 in joint (multi-sample) mode for better concordance among variant calls of tumor samples from the same patient.",
+                  "default": false
+                }
+              }
+            }
+          }
+        ]
+      },
+      "annotation": {
+        "title": "Variant Annotation",
+        "description": "Select variant annotation tools and VEP plugins.",
+        "type": "object",
+        "properties": {
+          "annotation_tool": {
+            "title": "Annotation tool(s)",
+            "description": "Please select one or both variant annotation tools.",
+            "type": "array",
+            "pattern": "^((vep|snpeff)*,?)*$",
+            "items": {
+              "type": "string",
+              "enum": ["vep", "snpeff"],
+              "enumNames": ["Variant Effect Predictor (VEP)", "snpEff"]
+            },
+            "uniqueItems": true
+          }
+        },
+        "if": {
+          "properties": {
+            "annotation_tool": {
+              "contains": {
+                "type": "string",
+                "const": "vep"
+              }
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "vep_dbnsfp": {
+              "type": "boolean",
+              "title": "dbNSFP plugin",
+              "description": "Enable the use of the VEP dbNSFP plugin that retrieves data for missense variants.",
+              "default": false
+            },
+            "vep_loftee": {
+              "type": "boolean",
+              "title": "LOFTEE plugin",
+              "description": "Enable the use of the VEP LOFTEE plugin to identify LoF (loss-of-function) variation.",
+              "default": false
+            },
+            "vep_spliceai": {
+              "type": "boolean",
+              "title": "SpliceAI plugin",
+              "description": "Enable the use of the VEP SpliceAI plugin to annotate variants predicted effect on splicing.",
+              "default": false
+            },
+            "vep_spliceregion": {
+              "type": "boolean",
+              "title": "SpliceRegion plugin",
+              "description": "Enable the use of the VEP SpliceRegion plugin to provide granular predictions of splicing effects.",
+              "default": false
+            }
+          }
+        }
+      }
+    }
+  }
+}
