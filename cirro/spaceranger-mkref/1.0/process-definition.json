@@ -1,5 +1,5 @@
 {
-  "id": "process-hutch-spaceranger-mkref-1-0",
+  "id": "process-spaceranger-mkref-1-0",
   "childProcessIds": [],
   "dataType": "SpaceRanger Reference",
   "name": "Build SpaceRanger Reference",
@@ -9,8 +9,8 @@
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-single-cell/#visium-custom-probes",
   "code": {
     "repository": "GITHUBPUBLIC",
-    "uri": "FredHutch/nf-cellranger-tools",
-    "version": "spaceranger_dev",
+    "uri": "CirroBio/nf-cellranger-tools",
+    "version": "main",
     "script": "spaceranger_mkref.nf"
   },
   "computeDefaults": [

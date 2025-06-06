@@ -1,5 +1,5 @@
 {
-  "id": "process-hutch-cellranger-vdj-1-0",
+  "id": "process-cellranger-vdj-1-0",
   "childProcessIds": [],
   "dataType": "Single-Cell Data (vdj)",
   "name": "CellRanger V(D)J",
@@ -10,7 +10,7 @@
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-single-cell/#cellranger-vdj",
   "code": {
     "repository": "GITHUBPUBLIC",
-    "uri": "FredHutch/nf-cellranger-tools",
+    "uri": "CirroBio/nf-cellranger-tools",
     "version": "main",
     "script": "vdj.nf"
   },

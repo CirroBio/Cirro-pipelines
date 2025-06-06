@@ -1,5 +1,5 @@
 {
-  "id": "process-hutch-cellranger-arc-count-1-0",
+  "id": "process-cellranger-arc-count-1-0",
   "childProcessIds": [],
   "dataType": "Single-Cell Multiome (ATAC + GEX)",
   "name": "CellRanger Multiome (ATAC + GEX)",
@@ -10,7 +10,7 @@
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-single-cell/#cellranger-multiome-atac-gex",
   "code": {
     "repository": "GITHUBPUBLIC",
-    "uri": "FredHutch/nf-cellranger-tools",
+    "uri": "CirroBio/nf-cellranger-tools",
     "version": "main",
     "script": "arc_count.nf"
   },

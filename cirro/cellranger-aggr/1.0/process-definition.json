@@ -1,5 +1,5 @@
 {
-  "id": "process-hutch-cellranger-aggr-1-0",
+  "id": "process-cellranger-aggr-1-0",
   "childProcessIds": [
     "hutch-azimuth-1-0",
     "hutch-scanpy-qc-1_0"
@@ -13,7 +13,7 @@
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-single-cell/#aggregate-cellranger-outputs",
   "code": {
     "repository": "GITHUBPUBLIC",
-    "uri": "FredHutch/nf-cellranger-tools",
+    "uri": "CirroBio/nf-cellranger-tools",
     "version": "main",
     "script": "aggr.nf"
   },

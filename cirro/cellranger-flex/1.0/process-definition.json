@@ -1,5 +1,5 @@
 {
-  "id": "process-hutch-cellranger-flex-1-0",
+  "id": "process-cellranger-flex-1-0",
   "childProcessIds": [],
   "dataType": "Single-Cell Data (Fixed RNA)",
   "name": "CellRanger Fixed RNA (Flex)",
@@ -10,7 +10,7 @@
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-single-cell/#cellranger-flex",
   "code": {
     "repository": "GITHUBPUBLIC",
-    "uri": "FredHutch/nf-cellranger-tools",
+    "uri": "CirroBio/nf-cellranger-tools",
     "version": "main",
     "script": "flex.nf"
   },

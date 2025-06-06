@@ -1,8 +1,8 @@
 {
-  "ref": "$.params.dataset.paramJson.ref|/data/custom_SpaceRanger_reference",
-  "probes": "$.params.dataset.paramJson.ref|/data/probes.csv",
-  "images": "$.params.dataset.paramJson.images|/data",
-  "image_type": "$.params.dataset.paramJson.image_type",
-  "spaceranger_version": "$.params.dataset.paramJson.spaceranger_version",
-  "output": "$.params.dataset.s3|/data"
+  "ref": "$.dataset.params.ref|/data/custom_SpaceRanger_reference",
+  "probes": "$.dataset.params.ref|/data/probes.csv",
+  "images": "$.dataset.params.images|/data",
+  "image_type": "$.dataset.params.image_type",
+  "spaceranger_version": "$.dataset.params.spaceranger_version",
+  "output": "$.dataset.dataPath"
 }

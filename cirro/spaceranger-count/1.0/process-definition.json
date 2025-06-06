@@ -1,5 +1,5 @@
 {
-  "id": "process-hutch-spaceranger-count-1-0",
+  "id": "process-spaceranger-count-1-0",
   "childProcessIds": [],
   "dataType": "Visium Spatial Transcriptomics",
   "name": "Analyze Visium Spatial Transcriptomics",
@@ -9,8 +9,8 @@
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-single-cell/#visium-spatial-transcriptomics",
   "code": {
     "repository": "GITHUBPUBLIC",
-    "uri": "FredHutch/nf-cellranger-tools",
-    "version": "spaceranger_dev",
+    "uri": "CirroBio/nf-cellranger-tools",
+    "version": "main",
     "script": "spaceranger_count.nf"
   },
   "usesSampleSheet": true,

@@ -1,6 +1,6 @@
 {
-  "fastq_dir": "$.params.inputs[0].s3|/data",
-  "vdj_dir": "$.params.dataset.paramJson.vdj_dir",
-  "cellranger_version": "$.params.dataset.paramJson.cellranger_version",
-  "output": "$.params.dataset.s3|/data"
+  "fastq_dir": "$.inputs[0].dataPath",
+  "vdj_dir": "$.dataset.params.vdj_dir",
+  "cellranger_version": "$.dataset.params.cellranger_version",
+  "output": "$.dataset.dataPath"
 }

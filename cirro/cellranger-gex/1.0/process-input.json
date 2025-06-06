@@ -1,6 +1,6 @@
 {
-  "transcriptome_dir": "$.params.dataset.paramJson.transcriptome_dir",
-  "include_introns": "$.params.dataset.paramJson.include_introns",
-  "cellranger_version": "$.params.dataset.paramJson.cellranger_version",
-  "output": "$.params.dataset.s3|/data"
+  "transcriptome_dir": "$.dataset.params.transcriptome_dir",
+  "include_introns": "$.dataset.params.include_introns",
+  "cellranger_version": "$.dataset.params.cellranger_version",
+  "output": "$.dataset.dataPath"
 }

@@ -66,6 +66,14 @@
         "type": "string",
         "pathType": "references",
         "file": "**/cellranger_feature_reference/**/feature_reference.csv"
+      },
+      "cellranger_version": {
+        "title": "CellRanger Version",
+        "type": "string",
+        "default": "7.2.0",
+        "enum": [
+          "7.2.0"
+        ]
       }
     }
   },
