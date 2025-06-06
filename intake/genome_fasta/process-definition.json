@@ -1,7 +1,7 @@
 {
   "id": "genome_fasta",
   "childProcessIds": [
-    "process-hutch-spaceranger-mkref-1-0"
+    "process-spaceranger-mkref-1-0"
   ],
   "name": "Nucleotide Sequences (FASTA)",
   "desc": "Genomic sequence(s) in nucleotide FASTA format",
