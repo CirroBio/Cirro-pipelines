@@ -1,0 +1,28 @@
+{
+  "commands": [
+    {
+      "command": "hot.AnnDataZarr",
+      "params": {
+        "url": "https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/what-is-cell-ranger",
+        "source": "$data_directory/[sampleName]/**filtered_feature_bc_matrix.h5",
+        "target": "{sampleName}.filtered_feature_bc_matrix.zarr",
+        "name": "{sampleName} - Gene Expression",
+        "desc": "Summary of gene expressed in single cells for {sampleName}",
+        "filetype": "h5-10x",
+        "sourceDirectories": [
+          "",
+          "outs/"
+        ],
+        "cellranger_args": {
+          "tsne": "analysis/dimensionality_reduction/gex/tsne_projection.csv",
+          "clustering": "analysis/clustering/gex/graphclust/clusters.csv",
+          "diffexp": "analysis/clustering/gex/graphclust/differential_expression.csv"
+        }
+      }
+    },
+    {
+      "command": "hot.Manifest",
+      "params": {}
+    }
+  ]
+}

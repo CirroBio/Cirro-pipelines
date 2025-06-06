@@ -1,0 +1,32 @@
+{
+  "form": {
+    "type": "object",
+    "properties": {
+      "reference_dir": {
+        "title": "Genome",
+        "description": "Reference genome used for alignment of RNAseq and ATACseq data",
+        "type": "string",
+        "default": "s3://pubweb-references/cellranger/refdata-cellranger-arc-GRCh38-2020-A-2.0.0",
+        "enum": [
+          "s3://pubweb-references/cellranger/refdata-cellranger-arc-GRCh38-2020-A-2.0.0",
+          "s3://pubweb-references/cellranger/refdata-cellranger-arc-mm10-2020-A-2.0.0"
+        ],
+        "enumNames": [
+          "Homo sapiens (GRCh38)",
+          "Mus musculus (mm10)"
+        ]
+      },
+      "cellranger_version": {
+        "title": "CellRanger ARC Version",
+        "type": "string",
+        "default": "2.0.2",
+        "enum": [
+          "2.0.2",
+          "2.0.1",
+          "2.0.0"
+        ]
+      }
+    }
+  },
+  "ui": {}
+}

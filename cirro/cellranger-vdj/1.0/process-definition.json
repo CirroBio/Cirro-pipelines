@@ -1,0 +1,27 @@
+{
+  "id": "process-hutch-cellranger-vdj-1-0",
+  "childProcessIds": [],
+  "dataType": "Single-Cell Data (vdj)",
+  "name": "CellRanger V(D)J",
+  "desc": "Analysis of 10X single-cell sequencing of V(D)J",
+  "executor": "NEXTFLOW",
+  "pipelineTypeOverride": "10X",
+  "category": "Single-Cell Analysis",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-single-cell/#cellranger-vdj",
+  "code": {
+    "repository": "GITHUBPUBLIC",
+    "uri": "FredHutch/nf-cellranger-tools",
+    "version": "main",
+    "script": "vdj.nf"
+  },
+  "computeDefaults": [
+    {
+      "executor": "NEXTFLOW",
+      "json": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-compute.config",
+      "name": "Default"
+    }
+  ],
+  "paramMapJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json",
+  "formJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-form.json",
+  "webOptimizationJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-output.json"
+}

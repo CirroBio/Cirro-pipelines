@@ -1,0 +1,6 @@
+{
+  "input": "$.params.inputs[0].s3|/data",
+  "aggr_name": "$.params.dataset.paramJson.aggr_name",
+  "cellranger_version": "$.params.dataset.paramJson.cellranger_version",
+  "output": "$.params.dataset.s3|/data"
+}

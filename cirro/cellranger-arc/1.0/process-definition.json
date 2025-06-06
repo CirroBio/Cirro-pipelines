@@ -1,0 +1,29 @@
+{
+  "id": "process-hutch-cellranger-arc-count-1-0",
+  "childProcessIds": [],
+  "dataType": "Single-Cell Multiome (ATAC + GEX)",
+  "name": "CellRanger Multiome (ATAC + GEX)",
+  "desc": "Analysis of 10X Chromium Single Cell Multiome ATAC + Gene Expression",
+  "executor": "NEXTFLOW",
+  "pipelineTypeOverride": "10X",
+  "category": "Single-Cell Analysis",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-single-cell/#cellranger-multiome-atac-gex",
+  "code": {
+    "repository": "GITHUBPUBLIC",
+    "uri": "FredHutch/nf-cellranger-tools",
+    "version": "main",
+    "script": "arc_count.nf"
+  },
+  "usesSampleSheet": true,
+  "computeDefaults": [
+    {
+      "executor": "NEXTFLOW",
+      "json": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-compute.config",
+      "name": "Default"
+    }
+  ],
+  "paramMapJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json",
+  "formJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-form.json",
+  "preProcessScript": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/preprocess.py",
+  "webOptimizationJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-output.json"
+}

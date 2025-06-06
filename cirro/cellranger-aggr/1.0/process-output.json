@@ -1,0 +1,23 @@
+{
+  "commands": [
+    {
+      "command": "hot.AnnDataZarr",
+      "params": {
+        "url": "https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/what-is-cell-ranger",
+        "source": "$data_directory/[sampleName]/count/**filtered_feature_bc_matrix.h5",
+        "target": "{sampleName}.filtered_feature_bc_matrix.zarr",
+        "name": "Aggregated Gene Expression",
+        "desc": "Summary of gene expressed in across all samples",
+        "filetype": "h5-10x",
+        "sourceDirectories": [
+          "",
+          "outs/"
+        ]
+      }
+    },
+    {
+      "command": "hot.Manifest",
+      "params": {}
+    }
+  ]
+}

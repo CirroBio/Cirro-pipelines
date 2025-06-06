@@ -1,0 +1,5 @@
+{
+  "reference_dir": "$.params.dataset.paramJson.reference_dir",
+  "cellranger_version": "$.params.dataset.paramJson.cellranger_version",
+  "output": "$.params.dataset.s3|/data"
+}

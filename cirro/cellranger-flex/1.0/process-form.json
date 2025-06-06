@@ -1,0 +1,66 @@
+{
+  "form": {
+    "type": "object",
+    "properties": {
+      "reference": {
+        "title": "Reference Genome",
+        "description": "Reference genome used for alignment of RNAseq data",
+        "type": "string",
+        "default": "Homo sapiens (GRCh38-2024)",
+        "enum": [
+          "Homo sapiens (GRCh38-2024)",
+          "Homo sapiens (GRCh38-2020)",
+          "Mus musculus (mm10-2024)",
+          "Mus musculus (mm10-2020)"
+        ]
+      },
+      "probe_set": {
+        "title": "(optional) Custom Probe Set",
+        "description": "The Chromium Probe Set v1.0.1 will be used by default",
+        "file": "**/cellranger_probe_set/**/cellranger_probe_set.csv",
+        "pathType": "references",
+        "default": ""
+      },
+      "samples": {
+        "type": "object",
+        "title": "Samples",
+        "description": "List the samples used for each barcode",
+        "properties": {
+          "bc001": {"type": "string", "title": "BC001"},
+          "bc002": {"type": "string", "title": "BC002"},
+          "bc003": {"type": "string", "title": "BC003"},
+          "bc004": {"type": "string", "title": "BC004"},
+          "bc005": {"type": "string", "title": "BC005"},
+          "bc006": {"type": "string", "title": "BC006"},
+          "bc007": {"type": "string", "title": "BC007"},
+          "bc008": {"type": "string", "title": "BC008"},
+          "bc009": {"type": "string", "title": "BC009"},
+          "bc010": {"type": "string", "title": "BC010"},
+          "bc011": {"type": "string", "title": "BC011"},
+          "bc012": {"type": "string", "title": "BC012"}
+        }
+      },
+      "params": {
+        "type": "object",
+        "title": "Analysis Parameters",
+        "properties": {
+          "cellranger_version": {
+            "title": "CellRanger Version",
+            "type": "string",
+            "default": "9.0.1",
+            "enum": [
+              "9.0.1",
+              "9.0.0",
+              "8.0.0",
+              "7.2.0",
+              "7.1.0",
+              "7.0.1",
+              "7.0.0"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "ui": {}
+}

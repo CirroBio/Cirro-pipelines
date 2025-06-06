@@ -1,0 +1,55 @@
+{
+  "form": {
+    "type": "object",
+    "description": "Custom probe sequences will be combined with the human or mouse reference genome",
+    "required": ["ref"],
+    "properties": {
+      "ref": {
+        "title": "Reference Transcriptome",
+        "description": "Custom probe set combined with reference genome",
+        "pathType": "dataset",
+        "process": "process-hutch-spaceranger-mkref-1-0",
+        "type": "string"
+      },
+      "images": {
+        "title": "Image File(s)",
+        "description": "Images captured for each spatial dataset",
+        "pathType": "dataset",
+        "process": "images",
+        "type": "string"
+      },
+      "image_type": {
+        "title": "Image Type",
+        "description": "Type of image(s) provided",
+        "type": "string",
+        "default": "cytaimage",
+        "enum": [
+          "cytaimage",
+          "colorizedimage",
+          "darkimage",
+          "image"
+        ],
+        "enumNames": [
+          "CytAssist brightfield image",
+          "Colorized image (TIFF or JPEG)",
+          "Multi-channel, dark-background fluorescence image (TIFF)",
+          "Single H&E brightfield image in either TIFF or JPG format"
+        ]
+      },
+      "spaceranger_version": {
+        "title": "SpaceRanger Version",
+        "type": "string",
+        "default": "3.1.2",
+        "enum": [
+          "3.1.2",
+          "3.0.1",
+          "3.0.0",
+          "2.1.1",
+          "2.0.1",
+          "2.0.0"
+        ]
+      }
+    }
+  },
+  "ui": {}
+}

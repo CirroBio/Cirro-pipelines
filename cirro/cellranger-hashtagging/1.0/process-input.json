@@ -1,0 +1,11 @@
+{
+  "fastq_dir": "$.params.inputs[0].s3|/data",
+  "transcriptome_dir": "$.params.dataset.paramJson.transcriptome_dir",
+  "include_introns": "$.params.dataset.paramJson.include_introns",
+  "hashtag_csv": "$.params.dataset.paramJson.hashtag_csv",
+  "feature_csv": "$.params.dataset.paramJson.feature_csv",
+  "multiplexing": "$.params.dataset.paramJson.multiplexing",
+  "vdj_dir": "$.params.dataset.paramJson.vdj_dir",
+  "cellranger_version": "7.2.0",
+  "output": "$.params.dataset.s3|/data"
+}

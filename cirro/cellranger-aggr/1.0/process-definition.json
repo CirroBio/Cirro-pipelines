@@ -1,0 +1,43 @@
+{
+  "id": "process-hutch-cellranger-aggr-1-0",
+  "childProcessIds": [
+    "hutch-azimuth-1-0",
+    "hutch-scanpy-qc-1_0"
+  ],
+  "dataType": "Single-Cell Data (Aggregated)",
+  "name": "CellRanger Aggregate",
+  "desc": "Combine multiple samples processed with 10X single-cell sequencing for gene expression",
+  "executor": "NEXTFLOW",
+  "pipelineTypeOverride": "10X",
+  "category": "Single-Cell Analysis",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-single-cell/#aggregate-cellranger-outputs",
+  "code": {
+    "repository": "GITHUBPUBLIC",
+    "uri": "FredHutch/nf-cellranger-tools",
+    "version": "main",
+    "script": "aggr.nf"
+  },
+  "computeDefaults": [
+    {
+      "executor": "NEXTFLOW",
+      "json": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-compute.config",
+      "name": "Default"
+    }
+  ],
+  "paramMapJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json",
+  "formJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-form.json",
+  "webOptimizationJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-output.json",
+  "fileMappingRules": [
+    {
+      "description": "Filtered Feature Matrix",
+      "min": 1,
+      "fileNamePatterns": [
+        {
+          "exampleName": "sampleName/outs/filtered_feature_bc_matrix.h5",
+          "description": "Matrix H5",
+          "sampleMatchingPattern": "(?P<sampleName>[\\S ]*)/outs/filtered_feature_bc_matrix\\.h5"
+        }
+      ]
+    }
+  ]
+}

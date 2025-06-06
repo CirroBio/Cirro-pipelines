@@ -1,0 +1,49 @@
+{
+  "form": {
+    "type": "object",
+    "properties": {
+      "vdj_dir": {
+        "title": "Genome",
+        "description": "Reference genome used for alignment of V(D)J data",
+        "type": "string",
+        "default": "s3://pubweb-references/cellranger/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.1.0",
+        "enum": [
+          "s3://pubweb-references/cellranger/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.1.0",
+          "s3://pubweb-references/cellranger/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.0.0",
+          "s3://pubweb-references/cellranger/refdata-cellranger-vdj-GRCm38-alts-ensembl-7.0.0"
+        ],
+        "enumNames": [
+          "Homo sapiens (7.1.0)",
+          "Homo sapiens (7.0.0)",
+          "Mus musculus (7.0.0)"
+        ]
+      },
+      "cellranger_version": {
+        "title": "CellRanger Version",
+        "type": "string",
+        "default": "9.0.1",
+        "enum": [
+          "9.0.1",
+          "9.0.0",
+          "8.0.0",
+          "7.2.0",
+          "7.1.0",
+          "7.0.1",
+          "7.0.0",
+          "6.1.2",
+          "6.1.1",
+          "6.0.2",
+          "6.0.1",
+          "6.0.0",
+          "5.0.1",
+          "5.0.0",
+          "4.0.0",
+          "3.1.0",
+          "3.0.2",
+          "2.2.0"
+        ]
+      }
+    }
+  },
+  "ui": {}
+}

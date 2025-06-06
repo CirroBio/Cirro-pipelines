@@ -1,0 +1,10 @@
+{
+  "transcriptome_dir": "$.params.dataset.paramJson.refs.transcriptome_dir",
+  "vdj_dir": "$.params.dataset.paramJson.refs.vdj_dir",
+  "feature_csv": "$.params.dataset.paramJson.refs.feature_csv",
+  "is_frp": "$.params.dataset.paramJson.frp.enabled",
+  "frp_samples": "$.params.dataset.paramJson.frp.samples_table",
+  "include_introns": "$.params.dataset.paramJson.cellranger.include_introns",
+  "cellranger_version": "$.params.dataset.paramJson.cellranger.version",
+  "output": "$.params.dataset.s3|/data"
+}

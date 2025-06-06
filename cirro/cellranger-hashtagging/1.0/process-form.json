@@ -1,0 +1,73 @@
+{
+  "form": {
+    "type": "object",
+    "properties": {
+      "transcriptome_dir": {
+        "title": "Transcriptome",
+        "description": "Reference genome used for alignment of RNAseq data",
+        "type": "string",
+        "default": "s3://pubweb-references/cellranger/refdata-gex-GRCh38-2024-A",
+        "enum": [
+          "s3://pubweb-references/cellranger/refdata-gex-GRCh38-2024-A",
+          "s3://pubweb-references/cellranger/refdata-gex-GRCh38-2020-A",
+          "s3://pubweb-references/cellranger/refdata-gex-GRCh38-and-mm10-2024-A",
+          "s3://pubweb-references/cellranger/refdata-gex-GRCh38-and-mm10-2020-A",
+          "s3://pubweb-references/cellranger/refdata-gex-mm10-2024-A",
+          "s3://pubweb-references/cellranger/refdata-gex-mm10-2020-A"
+        ],
+        "enumNames": [
+          "Homo sapiens (GRCh38-2024)",
+          "Homo sapiens (GRCh38-2020)",
+          "Homo sapiens (GRCh38-2024) and Mus musculus (mm10-2024)",
+          "Homo sapiens (GRCh38-2020) and Mus musculus (mm10-2020)",
+          "Mus musculus (mm10-2024)",
+          "Mus musculus (mm10-2020)"
+        ]
+      },
+      "vdj_dir": {
+        "title": "V(D)J Reference",
+        "description": "Reference genome used for alignment of V(D)J data",
+        "type": "string",
+        "default": "s3://pubweb-references/cellranger/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.1.0",
+        "enum": [
+          "s3://pubweb-references/cellranger/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.1.0",
+          "s3://pubweb-references/cellranger/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.0.0",
+          "s3://pubweb-references/cellranger/refdata-cellranger-vdj-GRCm38-alts-ensembl-7.0.0"
+        ],
+        "enumNames": [
+          "Homo sapiens (7.1.0)",
+          "Homo sapiens (7.0.0)",
+          "Mus musculus (7.0.0)"
+        ]
+      },
+      "include_introns": {
+        "title": "Include Introns",
+        "description": "Include reads which align to intronic regions",
+        "type": "boolean",
+        "default": true
+      },
+      "hashtag_csv": {
+        "title": "Hashtagging Reference",
+        "description": "Reference file defining the sequences used for hashtag multiplexing",
+        "type": "string",
+        "pathType": "references",
+        "file": "**/cellranger_feature_reference/**/feature_reference.csv"
+      },
+      "feature_csv": {
+        "title": "Feature Barcode Reference",
+        "description": "Reference file defining the sequences used for feature barcoding",
+        "type": "string",
+        "pathType": "references",
+        "file": "**/cellranger_feature_reference/**/feature_reference.csv"
+      },
+      "multiplexing": {
+        "title": "Sample Hashtag Table",
+        "description": "Table listing the samples assigned to each hashtag",
+        "type": "string",
+        "pathType": "references",
+        "file": "**/cellranger_feature_reference/**/feature_reference.csv"
+      }
+    }
+  },
+  "ui": {}
+}

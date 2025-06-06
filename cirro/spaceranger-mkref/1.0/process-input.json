@@ -1,0 +1,9 @@
+{
+  "custom": "$.params.inputs[0].s3|/data/**",
+  "genome_name": "custom_SpaceRanger_reference",
+  "probes": "$.params.dataset.paramJson.probes",
+  "fasta": "$.params.dataset.paramJson.genome_dir|/fasta/genome.fa",
+  "genes": "$.params.dataset.paramJson.genome_dir|/genes/genes.gtf",
+  "spaceranger_version": "$.params.dataset.paramJson.spaceranger_version",
+  "output": "$.params.dataset.s3|/data"
+}
