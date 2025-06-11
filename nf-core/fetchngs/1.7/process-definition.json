@@ -6,7 +6,7 @@
     "process-nf-core-rnaseq-custom-3_14",
     "process-nf-core-rnasplice-dev",
     "process-nf-core-viralrecon-2_2",
-    "process-cellranger-gex-fetchngs-1-0",
+    "process-hutch-cellranger-gex-fetchngs-1-0",
     "process-hutch-immune-clonotypes-1_0",
     "process-nf-core-cutandrun-2-0",
     "process-nf-core-sarek-3-1",

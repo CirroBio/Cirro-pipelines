@@ -1,5 +1,5 @@
 {
-  "id": "process-cellranger-vdj-1-0",
+  "id": "process-hutch-cellranger-vdj-1-0",
   "childProcessIds": [],
   "dataType": "Single-Cell Data (vdj)",
   "name": "CellRanger V(D)J",

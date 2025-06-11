@@ -8,7 +8,7 @@
         "title": "Reference Transcriptome",
         "description": "Custom probe set combined with reference genome",
         "pathType": "dataset",
-        "process": "process-spaceranger-mkref-1-0",
+        "process": "process-hutch-spaceranger-mkref-1-0",
         "type": "string"
       },
       "images": {

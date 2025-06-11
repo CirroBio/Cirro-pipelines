@@ -1,8 +1,8 @@
 {
-  "id": "process-cellranger-gex-fetchngs-1-0",
+  "id": "process-hutch-cellranger-gex-fetchngs-1-0",
   "childProcessIds": [
     "hutch-azimuth-1-0",
-    "process-cellranger-aggr-1-0",
+    "process-hutch-cellranger-aggr-1-0",
     "hutch-scanpy-qc-1_0"
   ],
   "dataType": "Single-Cell Data (GEX)",

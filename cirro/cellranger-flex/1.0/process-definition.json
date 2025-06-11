@@ -1,5 +1,5 @@
 {
-  "id": "process-cellranger-flex-1-0",
+  "id": "process-hutch-cellranger-flex-1-0",
   "childProcessIds": [],
   "dataType": "Single-Cell Data (Fixed RNA)",
   "name": "CellRanger Fixed RNA (Flex)",
