@@ -36,6 +36,12 @@
           "Single H&E brightfield image in either TIFF or JPG format"
         ]
       },
+      "create_bam": {
+        "title": "Create BAM File",
+        "description": "Enable or disable BAM file generation. Disabling this will speed up the pipeline.",
+        "type": "boolean",
+        "default": true
+      },
       "spaceranger_version": {
         "title": "SpaceRanger Version",
         "type": "string",

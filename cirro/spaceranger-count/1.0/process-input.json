@@ -4,5 +4,6 @@
   "images": "$.dataset.params.images|/data",
   "image_type": "$.dataset.params.image_type",
   "spaceranger_version": "$.dataset.params.spaceranger_version",
+  "create_bam": "$.dataset.params.create_bam",
   "output": "$.dataset.dataPath"
 }
