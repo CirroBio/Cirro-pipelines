@@ -9,7 +9,7 @@
     "differential-abundance-sourmash"
   ],
   "code": {
-    "repository": "GITHUBPRIVATE",
+    "repository": "GITHUBPUBLIC",
     "script": "tax_metagenome.nf",
     "uri": "CirroBio/nf-sourmash",
     "version": "main"

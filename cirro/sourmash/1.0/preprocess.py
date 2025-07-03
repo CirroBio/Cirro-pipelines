@@ -11,19 +11,32 @@ ds.files.to_csv("samplesheet.csv", index=None)
 ds.add_param("samplesheet", "samplesheet.csv")
 
 # Set up the database based on the size and k selected by the user
-prefix = "s3://pubweb-references/sourmash/"
-if ds.params["db_size"] == "85k: GTDB R08-RS214 genomic representatives":
-    ds.add_param(
-        "db",
-        f"{prefix}gtdb-rs214-reps.k{ds.params['ksize']}.zip"
-    )
+prefix = "s3://pubweb-references/"
+
+db_size = ds.params["db_size"]
+
+db_map = {
+    "2M: NCBI GenBank (2022) - bacteria, viruses, archaea, protozoa, and fungi": "genbank/genbank-2022.03-*-k",
+    "1.1M: NCBI GenBank (2022) - bacteria": "genbank/genbank-2022.03-bacteria-k",
+    "48k: NCBI GenBank (2022) - viruses": "genbank/genbank-2022.03-viral-k",
+    "9k: NCBI GenBank (2022) - archaea": "genbank/genbank-2022.03-archaea-k",
+    "1k: NCBI GenBank (2022) - protozoa": "genbank/genbank-2022.03-protozoa-k",
+    "10k: NCBI GenBank (2022) - fungi": "genbank/genbank-2022.03-fungi-k",
+    "85k: GTDB R08-RS214 bacterial genomic representatives": "sourmash/gtdb-rs214-reps.k",
+    "403k: GTDB R08-RS214 all bacterial genomes": "sourmash/gtdb-rs214-k",
+}
+if db_size not in db_map:
+    raise ValueError(f"Unrecognized option: {db_size}")
+
+if "GTDB R08-RS214" in db_size:
+    ds.add_param("tax_db", "s3://pubweb-references/sourmash/gtdb-rs214.tax.db")
 else:
-    msg = f"Unrecognized option: {ds.params['db_size']}"
-    assert ds.params["db_size"] == "403k: GTDB R08-RS214 all genomes", msg
-    ds.add_param(
-        "db",
-        f"{prefix}gtdb-rs214-k{ds.params['ksize']}.zip"
-    )
+    ds.add_param("tax_db", "s3://pubweb-references/genbank/genbank-2022.03-tax.db")
+
+ds.add_param(
+    "db",
+    f"{prefix}{db_map[db_size]}{ds.params['ksize']}.zip"
+)
 
 # Make sure that the user does not select a negative threshold value
 msg = f"Minimum threshold cannot be negative ({ds.params['threshold_bp']})"

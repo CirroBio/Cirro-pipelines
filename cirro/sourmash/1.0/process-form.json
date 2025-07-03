@@ -2,13 +2,19 @@
     "form": {
         "properties": {
             "db_size": {
-                "default": "85k: GTDB R08-RS214 genomic representatives",
+                "default": "85k: GTDB R08-RS214 bacterial genomic representatives",
                 "description": "Number of genomes contained in the reference database used to search against",
                 "title": "Database Size",
                 "type": "string",
                 "enum": [
-                    "85k: GTDB R08-RS214 genomic representatives",
-                    "403k: GTDB R08-RS214 all genomes"
+                    "85k: GTDB R08-RS214 bacterial genomic representatives",
+                    "403k: GTDB R08-RS214 all bacterial genomes",
+                    "2M: NCBI GenBank (2022) - bacteria, viruses, archaea, protozoa, and fungi",
+                    "1.1M: NCBI GenBank (2022) - bacteria",
+                    "48k: NCBI GenBank (2022) - viruses",
+                    "9k: NCBI GenBank (2022) - archaea",
+                    "1k: NCBI GenBank (2022) - protozoa",
+                    "10k: NCBI GenBank (2022) - fungi"
                 ]
             },
             "k": {
