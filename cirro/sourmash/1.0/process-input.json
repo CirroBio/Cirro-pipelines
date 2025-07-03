@@ -1,0 +1,7 @@
+{
+    "db_size": "$.params.dataset.paramJson.db_size",
+    "ksize": "$.params.dataset.paramJson.k",
+    "threshold_bp": "$.params.dataset.paramJson.threshold_bp",
+    "output": "$.params.dataset.s3|/data/",
+    "tax_db": "s3://pubweb-references/sourmash/gtdb-rs214.tax.db"
+}

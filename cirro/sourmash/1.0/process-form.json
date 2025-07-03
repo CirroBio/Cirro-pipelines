@@ -1,0 +1,30 @@
+{
+    "form": {
+        "properties": {
+            "db_size": {
+                "default": "85k: GTDB R08-RS214 genomic representatives",
+                "description": "Number of genomes contained in the reference database used to search against",
+                "title": "Database Size",
+                "type": "string",
+                "enum": [
+                    "85k: GTDB R08-RS214 genomic representatives",
+                    "403k: GTDB R08-RS214 all genomes"
+                ]
+            },
+            "k": {
+                "default": "21",
+                "description": "Length (k) of strings used for exact-match search against the reference database",
+                "title": "K-mer Length",
+                "type": "string",
+                "enum": ["21", "31", "51"]
+            },
+            "threshold_bp": {
+                "default": 50000,
+                "description": "Minimum number of basepairs which must be found uniquely for a genome to be retained",
+                "title": "Minimum Match Threshold",
+                "type": "integer"
+            }
+        }
+    },
+    "ui": {}
+}
