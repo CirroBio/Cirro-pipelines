@@ -1,6 +1,11 @@
 {
-    "db_size": "$.dataset.params.db_size",
+    "bact_db": "$.dataset.params.bact_db",
+    "viral_db": "$.dataset.params.viral_db",
+    "archaea_db": "$.dataset.params.archaea_db",
+    "protozoa_db": "$.dataset.params.protozoa_db",
+    "fungi_db": "$.dataset.params.fungi_db",
     "ksize": "$.dataset.params.k",
     "threshold_bp": "$.dataset.params.threshold_bp",
-    "output": "$.dataset.dataPath"
+    "output": "$.dataset.dataPath",
+    "tax_db": "s3://pubweb-references/genbank/genbank-2022.03-gtdb-rs214-tax.db"
 }

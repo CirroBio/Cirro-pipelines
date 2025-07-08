@@ -10,13 +10,8 @@ ds.logger.info(ds.files.to_csv(index=None))
 ds.files.to_csv("samplesheet.csv", index=None)
 ds.add_param("samplesheet", "samplesheet.csv")
 
-# Set up the database based on the size and k selected by the user
-prefix = "s3://pubweb-references/"
-
-db_size = ds.params["db_size"]
-
+# Map the user-selected databases to their corresponding paths
 db_map = {
-    "2M: NCBI GenBank (2022) - bacteria, viruses, archaea, protozoa, and fungi": "genbank/genbank-2022.03-*-k",
     "1.1M: NCBI GenBank (2022) - bacteria": "genbank/genbank-2022.03-bacteria-k",
     "48k: NCBI GenBank (2022) - viruses": "genbank/genbank-2022.03-viral-k",
     "9k: NCBI GenBank (2022) - archaea": "genbank/genbank-2022.03-archaea-k",
@@ -25,17 +20,31 @@ db_map = {
     "85k: GTDB R08-RS214 bacterial genomic representatives": "sourmash/gtdb-rs214-reps.k",
     "403k: GTDB R08-RS214 all bacterial genomes": "sourmash/gtdb-rs214-k",
 }
-if db_size not in db_map:
-    raise ValueError(f"Unrecognized option: {db_size}")
 
-if "GTDB R08-RS214" in db_size:
-    ds.add_param("tax_db", "s3://pubweb-references/sourmash/gtdb-rs214.tax.db")
-else:
-    ds.add_param("tax_db", "s3://pubweb-references/genbank/genbank-2022.03-tax.db")
+
+def format_db(
+    bact_db: str,
+    viral_db: str,
+    archaea_db: str,
+    protozoa_db: str,
+    fungi_db: str,
+    ksize: int,
+    prefix: str = "s3://pubweb-references/",
+    suffix: str = ".zip",
+    **kwargs
+) -> str:
+    """Format the database path based on the selected database and ksize."""
+    dbs = [
+        db_map[db] + str(ksize)
+        for db in [bact_db, viral_db, archaea_db, protozoa_db, fungi_db]
+        if db in db_map
+    ]
+    return prefix + "{" + ",".join(dbs) + "}" + suffix
+
 
 ds.add_param(
     "db",
-    f"{prefix}{db_map[db_size]}{ds.params['ksize']}.zip"
+    format_db(**ds.params)
 )
 
 # Make sure that the user does not select a negative threshold value

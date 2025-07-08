@@ -1,20 +1,56 @@
 {
     "form": {
         "properties": {
-            "db_size": {
-                "default": "85k: GTDB R08-RS214 bacterial genomic representatives",
+            "bact_db": {
+                "default": "85k: GTDB R08-RS214 bacterial representatives",
                 "description": "Number of genomes contained in the reference database used to search against",
-                "title": "Database Size",
+                "title": "Bacterial Database",
                 "type": "string",
                 "enum": [
-                    "85k: GTDB R08-RS214 bacterial genomic representatives",
-                    "403k: GTDB R08-RS214 all bacterial genomes",
-                    "2M: NCBI GenBank (2022) - bacteria, viruses, archaea, protozoa, and fungi",
-                    "1.1M: NCBI GenBank (2022) - bacteria",
+                    "85k: GTDB R08-RS214 bacterial representatives",
+                    "403k: GTDB R08-RS214 all bacteria",
+                    "1.1M: NCBI GenBank (2022) all bacteria",
+                    "None"
+                ]
+            },
+            "viral_db": {
+                "default": "48k: NCBI GenBank (2022) - viruses",
+                "description": "Number of genomes contained in the reference database used to search against",
+                "title": "Viral Database",
+                "type": "string",
+                "enum": [
                     "48k: NCBI GenBank (2022) - viruses",
+                    "None"
+                ]
+            },
+            "archaea_db": {
+                "default": "9k: NCBI GenBank (2022) - archaea",
+                "description": "Number of genomes contained in the reference database used to search against",
+                "title": "Archaea Database",
+                "type": "string",
+                "enum": [
                     "9k: NCBI GenBank (2022) - archaea",
+                    "None"
+                ]
+            },
+            "protozoa_db": {
+                "default": "1k: NCBI GenBank (2022) - protozoa",
+                "description": "Number of genomes contained in the reference database used to search against",
+                "title": "Protozoa Database",
+                "type": "string",
+                "enum": [
                     "1k: NCBI GenBank (2022) - protozoa",
-                    "10k: NCBI GenBank (2022) - fungi"
+                    "None"
+                ]
+            },
+            "fungi_db": {
+                "default": "10k: NCBI GenBank (2022) - fungi",
+                "description": "Number of genomes contained in the reference database used to search against",
+                "title": "Fungi Database",
+                "type": "string",
+                "enum": [
+                    "10k: NCBI GenBank (2022) - fungi",
+                    "None"
                 ]
             },
             "k": {
