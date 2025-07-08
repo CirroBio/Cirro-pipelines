@@ -12,13 +12,13 @@ ds.add_param("samplesheet", "samplesheet.csv")
 
 # Map the user-selected databases to their corresponding paths
 db_map = {
-    "1.1M: NCBI GenBank (2022) - bacteria": "genbank/genbank-2022.03-bacteria-k",
+    "1.1M: NCBI GenBank (2022) all bacteria": "genbank/genbank-2022.03-bacteria-k",
     "48k: NCBI GenBank (2022) - viruses": "genbank/genbank-2022.03-viral-k",
     "9k: NCBI GenBank (2022) - archaea": "genbank/genbank-2022.03-archaea-k",
     "1k: NCBI GenBank (2022) - protozoa": "genbank/genbank-2022.03-protozoa-k",
     "10k: NCBI GenBank (2022) - fungi": "genbank/genbank-2022.03-fungi-k",
-    "85k: GTDB R08-RS214 bacterial genomic representatives": "sourmash/gtdb-rs214-reps.k",
-    "403k: GTDB R08-RS214 all bacterial genomes": "sourmash/gtdb-rs214-k",
+    "85k: GTDB R08-RS214 bacterial representatives": "sourmash/gtdb-rs214-reps.k",
+    "403k: GTDB R08-RS214 all bacteria": "sourmash/gtdb-rs214-k",
 }
 
 
