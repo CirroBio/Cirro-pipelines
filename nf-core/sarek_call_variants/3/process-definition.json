@@ -22,12 +22,12 @@
         {
           "exampleName": "sampleName.mutect2.filtered.vcf.gz",
           "description": "VCF",
-          "sampleMatchingPattern": "(?<sampleName>[^/]+)\\.mutect2\\.filtered\\.vcf\\.gz$"
+          "sampleMatchingPattern": "(?<sampleName>[\\S ]+)\\.mutect2\\.filtered\\.vcf\\.gz$"
         },
         {
           "exampleName": "sampleName.mutect2.filtered.vcf.gz.tbi",
           "description": "VCF index",
-          "sampleMatchingPattern": "(?<sampleName>[^/]+)\\.mutect2\\.filtered\\.vcf\\.gz\\.tbi$"
+          "sampleMatchingPattern": "(?<sampleName>[\\S ]+)\\.mutect2\\.filtered\\.vcf\\.gz\\.tbi$"
         }
       ]
     }
