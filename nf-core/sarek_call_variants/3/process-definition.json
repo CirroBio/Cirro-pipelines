@@ -32,7 +32,7 @@
       ]
     }
   ],
-    "computeDefaults": [
+  "computeDefaults": [
     {
       "executor": "NEXTFLOW",
       "json": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-compute.config",
