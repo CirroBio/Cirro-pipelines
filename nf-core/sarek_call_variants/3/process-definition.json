@@ -14,7 +14,25 @@
     "version": "User Defined"
   },
   "usesSampleSheet": true,
-  "computeDefaults": [
+  "fileMappingRules": [
+    {
+      "description": "Mutect filtered VCF",
+      "min": 0,
+      "fileNamePatterns": [
+        {
+          "exampleName": "sampleName.mutect2.filtered.vcf.gz",
+          "description": "VCF",
+          "sampleMatchingPattern": "(?<sampleName>[^/]+)\\.mutect2\\.filtered\\.vcf\\.gz$"
+        },
+        {
+          "exampleName": "sampleName.mutect2.filtered.vcf.gz.tbi",
+          "description": "VCF index",
+          "sampleMatchingPattern": "(?<sampleName>[^/]+)\\.mutect2\\.filtered\\.vcf\\.gz\\.tbi$"
+        }
+      ]
+    }
+  ],
+    "computeDefaults": [
     {
       "executor": "NEXTFLOW",
       "json": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-compute.config",
