@@ -5,6 +5,23 @@
     "type": "object",
     "required": [],
     "properties": {
+      "workflow_version": {
+        "type": "string",
+        "title": "Workflow Version",
+        "description": "Select the specific version of nf-core/rnaseq to use",
+        "default": "3.14.0",
+        "enum": [
+          "3.14.0",
+          "3.15.0",
+          "3.15.1",
+          "3.16.0",
+          "3.16.1",
+          "3.17.0",
+          "3.18.0",
+          "3.19.0",
+          "3.20.0"
+        ]
+      },
       "inputs": {
         "type": "object",
         "title": "Inputs",
@@ -20,47 +37,96 @@
           }    
         }
       },
-      "custom_genome": {
+      "igenomes": {
         "type": "object",
-        "title": "Reference Genome (Custom)",
-        "description": "Optionally select a custom reference genome (will override the iGenomes selection)",
+        "title": "Reference Genome (iGenomes)",
+        "description": "Select a curated reference genome from the iGenomes collection",
         "properties": {
-          "fasta": {
+          "genome": {
             "type": "string",
-            "title": "Select Reference Genome (FASTA)",
-            "description": "Reference genomes can be added from the Pipelines menu with '+ Add Reference'",
-            "file": "**/genome_fasta/**/genome.fasta",
-            "pathType": "references"
-          },
-          "gtf": {
-            "type": "string",
-            "title": "Select Reference Genome Features (GTF)",
-            "description": "Reference genome features can be added from the Pipelines menu with '+ Add Reference'",
-            "file": "**/genome_gtf/**/genome.gtf",
-            "pathType": "references"
-          },
-          "gencode": {
-            "type": "boolean",
-            "title": "Enabled",
-            "description": "GENCODE format - GTF annotation",
-            "default": false
-          }
-        }
-      },
-      "compiled_custom_genome": {
-        "type": "object",
-        "title": "Reference Genome (Pre-Built)",
-        "description": "Optionally select a dataset which used a custom genome. This avoids having to recompute the genome index (and will override both options above).",
-        "properties": {
-          "dataset": {
-            "title": "Previous Analysis",
-            "pathType": "dataset",
-            "description": "Dataset for Gene Expression analysis which used a custom genome reference",
-            "process": [
-              "process-nf-core-rnaseq-custom-3_8",
-              "process-nf-core-rnaseq-custom-3_14",
-              "process-nf-core-rnaseq-3"
-            ]
+            "title": "Select A Reference Genome",
+            "description": "The following iGenomes are currently available for analysis",
+            "enum": [
+              "TAIR10",
+              "EB2",
+              "UMD3.1",
+              "bosTau8",
+              "WBcel235",
+              "ce10",
+              "CanFam3.1",
+              "canFam3",
+              "GRCz10",
+              "danRer10",
+              "BDGP6",
+              "dm6",
+              "EquCab2",
+              "equCab2",
+              "EB1",
+              "Galgal4",
+              "Gm01",
+              "GRCh37",
+              "GRCh38",
+              "hg18",
+              "hg19",
+              "hg38",
+              "Mmul 1",
+              "GRCm38",
+              "mm10",
+              "IRGSP-1.0",
+              "CHIMP2.1.4",
+              "panTro4",
+              "Rnor 5.0",
+              "Rnor 6.0",
+              "rn6",
+              "R64-1-1",
+              "sacCer3",
+              "EF2",
+              "Sbi1",
+              "Sscrofa10.2",
+              "susScr3",
+              "AGPv3"
+            ],
+            "enumNames": [
+              "Arabidopsis thaliana (TAIR10)",
+              "Bacillus subtilis 168 (EB2)",
+              "Bos taurus (UMD3.1)",
+              "Bos taurus (bosTau8)",
+              "Caenorhabditis elegans (WBcel235)",
+              "Caenorhabditis elegans (ce10)",
+              "Canis familiaris (CanFam3.1)",
+              "Canis familiaris (canFam3)",
+              "Danio rerio (GRCz10)",
+              "Danio rerio (danRer10)",
+              "Drosophila melanogaster (BDGP6)",
+              "Drosophila melanogaster (dm6)",
+              "Equus caballus (EquCab2)",
+              "Equus caballus (equCab2)",
+              "Escherichia coli K 12 DH10B (EB1)",
+              "Gallus gallus (Galgal4)",
+              "Glycine max (Gm01)",
+              "Homo sapiens (GRCh37)",
+              "Homo sapiens (GRCh38)",
+              "Homo sapiens (hg18)",
+              "Homo sapiens (hg19)",
+              "Homo sapiens (hg38)",
+              "Macaca mulatta (Mmul 1)",
+              "Mus musculus (GRCm38)",
+              "Mus musculus (mm10)",
+              "Oryza sativa japonica (IRGSP-1.0)",
+              "Pan troglodytes (CHIMP2.1.4)",
+              "Pan troglodytes (panTro4)",
+              "Rattus norvegicus (Rnor 5.0)",
+              "Rattus norvegicus (Rnor 6.0)",
+              "Rattus norvegicus (rn6)",
+              "Saccharomyces cerevisiae (R64-1-1)",
+              "Saccharomyces cerevisiae (sacCer3)",
+              "Schizosaccharomyces pombe (EF2)",
+              "Sorghum bicolor (Sbi1)",
+              "Sus scrofa (Sscrofa10.2)",
+              "Sus scrofa (susScr3)",
+              "Zea mays (AGPv3)"
+            ],
+            "default": "GRCh38"
           }
         }
       },

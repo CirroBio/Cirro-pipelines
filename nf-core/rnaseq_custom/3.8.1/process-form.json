@@ -58,7 +58,8 @@
             "description": "Dataset for Gene Expression analysis which used a custom genome reference",
             "process": [
               "process-nf-core-rnaseq-3_8",
-              "process-nf-core-rnaseq-3_14"
+              "process-nf-core-rnaseq-3_14",
+              "process-nf-core-rnaseq-3"
             ]
           }
         }

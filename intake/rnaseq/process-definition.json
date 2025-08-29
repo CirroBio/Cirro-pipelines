@@ -2,7 +2,7 @@
   "id": "rnaseq",
   "childProcessIds": [
     "process-hutch-filter-paired-rnaseq-1-0",
-    "process-nf-core-rnaseq-3_14",
+    "process-nf-core-rnaseq-3",
     "process-nf-core-rnaseq-custom-3_14",
     "process-nf-core-rnasplice-dev",
     "process-hutch-immune-clonotypes-1_0",
