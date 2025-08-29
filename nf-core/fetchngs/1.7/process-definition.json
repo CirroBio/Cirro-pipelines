@@ -3,7 +3,7 @@
   "childProcessIds": [
     "process-hutch-fastqc-1_0",
     "process-nf-core-rnaseq-3",
-    "process-nf-core-rnaseq-custom-3_14",
+    "process-nf-core-rnaseq-custom-3",
     "process-nf-core-rnasplice-dev",
     "process-nf-core-viralrecon-2_2",
     "process-hutch-cellranger-gex-fetchngs-1-0",

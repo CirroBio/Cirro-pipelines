@@ -8,7 +8,7 @@
   ],
   "childProcessIds": [
     "process-nf-core-ampliseq-2-4-0",
-    "process-nf-core-rnaseq-custom-3_14",
+    "process-nf-core-rnaseq-custom-3",
     "process-nf-core-rnasplice-dev",
     "process-nf-core-viralrecon-2_2",
     "process-nf-core-sarek-custom-genome-3-5",

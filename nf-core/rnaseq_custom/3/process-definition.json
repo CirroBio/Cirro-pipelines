@@ -1,5 +1,5 @@
 {
-  "id": "process-nf-core-rnaseq-custom-3_14",
+  "id": "process-nf-core-rnaseq-custom-3",
   "childProcessIds": [
     "process-hutch-bulk-rna-lymphocyctes-1_0",
     "process-hutch-differential-expression-1_0",
@@ -23,7 +23,7 @@
   "computeDefaults": [
     {
       "executor": "NEXTFLOW",
-      "json": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-compute.config",
+      "json": "s3://<RESOURCES_BUCKET>/public/shared/process-compute.config",
       "name": "Default"
     }
   ],
