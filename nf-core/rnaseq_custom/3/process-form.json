@@ -176,8 +176,7 @@
           "seq_center": {
             "type": "string",
             "title": "Seq Center",
-            "description": "Sequencing center information to be added to read group of BAM files.",
-            "default": "Fred Hutch Shared Resources"
+            "description": "Sequencing center information to be added to read group of BAM files."
           },
           "save_unaligned": {
             "type": "boolean",
