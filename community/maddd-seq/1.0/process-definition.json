@@ -1,0 +1,25 @@
+{
+  "id": "process-hutch-maddd-seq-1_0",
+  "childProcessIds": [],
+  "name": "Duplex Sequencing Analysis (MADDD-seq)",
+  "desc": "Mutation and DNA Damage Detection by massively-parallel sequencing (MADDD-seq)",
+  "executor": "NEXTFLOW",
+  "category": "DNA Sequencing",
+  "documentationUrl": "https://github.com/FredHutch/maddd-seq",
+  "code": {
+    "repository": "GITHUBPUBLIC",
+    "uri": "FredHutch/maddd-seq",
+    "version": "v1.4.1",
+    "script": "main.nf"
+  },
+  "computeDefaults": [
+    {
+      "executor": "NEXTFLOW",
+      "json": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-compute.config",
+      "name": "Default"
+    }
+  ],
+  "paramMapJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json",
+  "formJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-form.json",
+  "webOptimizationJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-output.json"
+}

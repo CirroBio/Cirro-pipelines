@@ -1,0 +1,22 @@
+{
+    "yeast_s_cerevisiae": {
+        "genome": "s3://pubweb-references/maddd-seq/bielas/yeast_s_cerevisiae/2022-01-20-01/sacCer3.fa.gz*",
+        "target_regions_bed": "s3://pubweb-references/maddd-seq/bielas/yeast_s_cerevisiae/2022-01-20-01/yeast.bed.gz"
+    },
+    "human_exome": {
+        "genome": "s3://pubweb-references/maddd-seq/bielas/human_hg38/2022-01-20-01/hg38.fa.gz*",
+        "target_regions_bed": "s3://pubweb-references/maddd-seq/bielas/human_hg38/2022-01-20-01/human-exome.bed.gz"
+    },
+    "human_mito": {
+        "genome": "s3://pubweb-references/maddd-seq/bielas/human_hg38/2022-01-20-01/hg38.fa.gz*",
+        "target_regions_bed": "s3://pubweb-references/maddd-seq/bielas/human_hg38/2022-01-20-01/human-mito.bed.gz"
+    },
+    "human_tp53": {
+        "genome": "s3://pubweb-references/maddd-seq/bielas/human_hg38/2022-01-20-01/hg38.fa.gz*",
+        "target_regions_bed": "s3://pubweb-references/maddd-seq/bielas/human_hg38/2022-01-20-01/human-tp53.bed.gz"
+    },
+    "human_rdna": {
+        "genome": "s3://pubweb-references/maddd-seq/bielas/human_hg38/2022-01-20-01/hg38.fa.gz*",
+        "target_regions_bed": "s3://pubweb-references/maddd-seq/bielas/human_hg38/2022-01-20-01/human-rdna.bed.gz"
+    }
+}

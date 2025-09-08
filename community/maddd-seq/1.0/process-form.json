@@ -1,0 +1,110 @@
+{
+  "form": {
+    "type": "object",
+    "required": ["reference"],
+    "properties": {
+      "reference": {
+        "type": "object",
+        "title": "Reference Genome",
+        "required": [
+          "genome"
+        ],
+        "properties": {
+          "genome": {
+            "title": "Genome",
+            "description": "Biological source of DNA specimen analyzed by MADDD-seq",
+            "type": "string",
+            "pathType": "references",
+            "file": "**/bwa_genome/**/genome.fa.gz"
+          }
+        }
+      },
+      "parameters": {
+        "type": "object",
+        "title": "Optional Parameters",
+        "required": [
+          "min_reads",
+          "trim_length",
+          "min_base_prop",
+          "min_qvalue",
+          "min_align_score",
+          "barcodes"
+        ],
+        "properties": {
+          "min_reads": {
+            "type": "integer",
+            "default": 3,
+            "title": "Minimum Number of Reads",
+            "description": "The minimum number of sequence reads required for each individual DNA strand."
+          },
+          "trim_length": {
+            "type": "integer",
+            "default": 5,
+            "title": "5' Trim Length",
+            "description": "The number of bases to trim from the 5' end of each read."
+          },
+          "min_base_prop": {
+            "type": "number",
+            "default": 0.66,
+            "title": "Minimum Consensus Threshold",
+            "description": "The proportion of reads required to call a consensus base at each position of the SSC."
+          },
+          "min_qvalue": {
+            "type": "integer",
+            "default": 30,
+            "title": "Minimum Quality Score",
+            "description": "Any bases below this minimum quality score will be trimmed from the 3' end of each read."
+          },
+          "min_align_score": {
+            "type": "integer",
+            "default": 40,
+            "title": "Minimum Alignment Score",
+            "description": "The minimum number of bases required for a sequence read to align to the reference genome."
+          },
+          "filter_on": {
+            "title": "Fragment Filtering Logic",
+            "description": "When filtering fragments by the maximum number of variants, optionally include adducts.",
+            "type": "string",
+            "enum": [
+              "total_variants",
+              "total_variants_and_adducts"
+            ],
+            "enumNames": [
+              "Total Variants",
+              "Total Variants + Adducts"
+            ],
+            "default": "total_variants"
+          },
+          "barcodes": {
+            "title": "Barcodes",
+            "type": "string",
+            "pathType": "references",
+            "default": "218_NRUMI",
+            "file": "**/barcodes/**/barcode.txt"
+          },
+          "RD1_ADAPTER_3P": {
+            "title": "Read 1 Adapter",
+            "type": "string",
+            "enum": [
+              "AGATCGGAAGAGCACACGTCTGAACTCCAGTC",
+              "GATCGGAAGAGCACACGTCTGAACTCCAGTC"
+            ],
+            "default": "AGATCGGAAGAGCACACGTCTGAACTCCAGTC",
+            "description": "Adapter sequence used for trimming read 1"
+          },
+          "RD2_ADAPTER_3P": {
+            "title": "Read 2 Adapter",
+            "type": "string",
+            "enum": [
+              "AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT",
+              "GATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT"
+            ],
+            "default": "AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT",
+            "description": "Adapter sequence used for trimming read 2"
+          }
+        }
+      }
+    }
+  },
+  "ui": {}
+}

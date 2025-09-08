@@ -1,0 +1,14 @@
+{
+  "fastq_folder": "$.inputs[0].dataPath",
+  "output": "$.dataset.dataPath",
+  "genome": "$.dataset.params.reference.genome",
+  "min_reads": "$.dataset.params.parameters.min_reads",
+  "filter_on": "$.dataset.params.parameters.filter_on",
+  "trim_length": "$.dataset.params.parameters.trim_length",
+  "min_base_prop": "$.dataset.params.parameters.min_base_prop",
+  "min_qvalue": "$.dataset.params.parameters.min_qvalue",
+  "min_align_score": "$.dataset.params.parameters.min_align_score",
+  "barcodes": "$.dataset.params.parameters.barcodes",
+  "RD1_ADAPTER_3P": "$.dataset.params.parameters.RD1_ADAPTER_3P",
+  "RD2_ADAPTER_3P": "$.dataset.params.parameters.RD2_ADAPTER_3P"
+}

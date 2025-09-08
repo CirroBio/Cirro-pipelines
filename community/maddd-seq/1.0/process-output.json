@@ -1,0 +1,233 @@
+{
+  "commands": [
+    {
+      "command": "hot.Dsv",
+      "params": {
+        "url": "https://github.com/FredHutch/maddd-seq",
+        "source": "$data_directory/6_filtered_ssc/*/*/*.by_chr.csv",
+        "sep": ",",
+        "header": true,
+        "name": "Chromosome Summary",
+        "desc": "Summary of the number of families, bases, adducts, and variants per chromosome",
+        "cols": [
+          {
+            "col": "",
+            "name": "Chromosome",
+            "desc": "Chromosome"
+          },
+          {
+            "col": "families",
+            "name": "Families",
+            "desc": "Number of families sequenced per chromosome"
+          },
+          {
+            "col": "bases",
+            "name": "Bases",
+            "desc": "Number of bases sequenced per chromosome"
+          },
+          {
+            "col": "adducts",
+            "name": "adducts",
+            "desc": "Number of adducts sequenced per chromosome"
+          },
+          {
+            "col": "variants",
+            "name": "variants",
+            "desc": "Number of variants sequenced per chromosome"
+          }
+        ]
+      }
+    },
+    {
+      "command": "hot.Dsv",
+      "params": {
+        "url": "https://github.com/FredHutch/maddd-seq",
+        "source": "$data_directory/6_filtered_ssc/*/*/*.by_read_position.csv",
+        "sep": ",",
+        "header": true,
+        "name": "Read Position Summary",
+        "desc": "Summary of the number of reads, adducts, and variants at each position in the sequence read",
+        "cols": [
+          {
+            "col": "pos",
+            "name": "Position",
+            "desc": "Read position"
+          },
+          {
+            "col": "nreads",
+            "name": "Number of Reads",
+            "desc": "Number of reads which extend to this position after quality trimming"
+          },
+          {
+            "col": "adducts",
+            "name": "adducts",
+            "desc": "Number of adducts sequenced at each position in the sequence read"
+          },
+          {
+            "col": "variants",
+            "name": "variants",
+            "desc": "Number of variants sequenced at each position in the sequence read"
+          }
+        ]
+      }
+    },
+    {
+      "command": "hot.Dsv",
+      "params": {
+        "url": "https://github.com/FredHutch/maddd-seq",
+        "source": "$data_directory/6_filtered_ssc/*/*/*.adduct.gtf",
+        "sep": "\t",
+        "header": true,
+        "name": "Adducts",
+        "desc": "Complete list of adducts detected by position",
+        "cols": [
+          {
+            "col": "seqname",
+            "name": "Chromosome",
+            "desc": "Chromosome"
+          },
+          {
+            "col": "source",
+            "name": "Sample",
+            "desc": "Sample"
+          },
+          {
+            "col": "start",
+            "name": "Position",
+            "desc": "Position"
+          },
+          {
+            "col": "strand",
+            "name": "Strand",
+            "desc": "Strand"
+          },
+          {
+            "col": "attribute",
+            "name": "Type",
+            "desc": "Type of adduct, indicating the reference position and the base read by single-strand sequencing"
+          }
+        ]
+      }
+    },
+    {
+      "command": "hot.Dsv",
+      "params": {
+        "url": "https://github.com/FredHutch/maddd-seq",
+        "source": "$data_directory/6_filtered_ssc/*/*/*.DSC.tsv.gz",
+        "sep": "\t",
+        "header": true,
+        "name": "DSC Summary",
+        "desc": "Summary of the depth of sequencing and variants detected by position",
+        "cols": [
+          {
+            "col": "chrom",
+            "name": "Chromosome",
+            "desc": "Chromosome"
+          },
+          {
+            "col": "pos",
+            "name": "Position",
+            "desc": "Position"
+          },
+          {
+            "col": "depth",
+            "name": "Depth",
+            "desc": "Depth of sequencing"
+          },
+          {
+            "col": "mutation_count",
+            "name": "Total variants",
+            "desc": "Total number of variants detected"
+          },
+          {
+            "col": "T",
+            "name": "T variants",
+            "desc": "Number of T variants detected"
+          },
+          {
+            "col": "C",
+            "name": "C variants",
+            "desc": "Number of C variants detected"
+          },
+          {
+            "col": "G",
+            "name": "G variants",
+            "desc": "Number of G variants detected"
+          },
+          {
+            "col": "A",
+            "name": "A variants",
+            "desc": "Number of A variants detected"
+          },
+          {
+            "col": "ref",
+            "name": "Reference",
+            "desc": "Reference base"
+          }
+        ]
+      }
+    },
+    {
+      "command": "hot.Dsv",
+      "params": {
+        "url": "https://github.com/FredHutch/maddd-seq",
+        "source": "$data_directory/6_filtered_ssc/*/*/*.SSC.csv.gz",
+        "sep": ",",
+        "header": true,
+        "name": "Family Summary",
+        "desc": "Summary of the depth of sequencing and number of variants detected per DNA fragment",
+        "cols": [
+          {
+            "col": "barcode",
+            "name": "Barcode",
+            "desc": "Barcode sequence ligated to DNA fragment"
+          },
+          {
+            "col": "chr",
+            "name": "Chromosome",
+            "desc": "Chromosome"
+          },
+          {
+            "col": "start_pos",
+            "name": "Start position",
+            "desc": "Start position"
+          },
+          {
+            "col": "end_pos",
+            "name": "End position",
+            "desc": "End position"
+          },
+          {
+            "col": "nreads_pos",
+            "name": "Number of reads (positive strand)",
+            "desc": "Number of reads (positive strand)"
+          },
+          {
+            "col": "nreads_neg",
+            "name": "Number of reads (negative strand)",
+            "desc": "Number of reads (negative strand)"
+          },
+          {
+            "col": "merged_len",
+            "name": "Fragment length",
+            "desc": "Length of the sequenced DNA fragment"
+          },
+          {
+            "col": "n_adducts",
+            "name": "Number of adducts",
+            "desc": "Number of adducts"
+          },
+          {
+            "col": "n_variants",
+            "name": "Number of variants",
+            "desc": "Number of variants"
+          }
+        ]
+      }
+    },
+    {
+      "command": "hot.Manifest",
+      "params": {}
+    }
+  ]
+}
