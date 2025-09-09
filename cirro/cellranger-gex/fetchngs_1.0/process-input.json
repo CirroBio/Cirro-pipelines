@@ -1,5 +1,5 @@
 {
-  "input_dataset": "$.inputs[0].dataPath",
+  "input_dataset": "$.inputs[0].s3",
   "transcriptome_dir": "$.dataset.params.transcriptome_dir",
   "include_introns": "$.dataset.params.include_introns",
   "cellranger_version": "$.dataset.params.cellranger_version",
