@@ -12,7 +12,7 @@ ds.add_param(
     "s3://pubweb-references/cellranger/" + {
         "Homo sapiens (GRCh38-2024)": "refdata-gex-GRCh38-2024-A",
         "Homo sapiens (GRCh38-2020)": "refdata-gex-GRCh38-2020-A",
-        "Mus musculus (mm10-2024)": "refdata-gex-mm10-2024-A",
+        "Mus musculus (GRCm39-2024)": "refdata-gex-GRCm39-2024-A",
         "Mus musculus (mm10-2020)": "refdata-gex-mm10-2020-A"
     }[
         ds.params["reference"]

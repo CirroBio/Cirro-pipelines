@@ -10,17 +10,17 @@
         "enum": [
           "s3://pubweb-references/cellranger/refdata-gex-GRCh38-2024-A",
           "s3://pubweb-references/cellranger/refdata-gex-GRCh38-2020-A",
-          "s3://pubweb-references/cellranger/refdata-gex-GRCh38-and-mm10-2024-A",
+          "s3://pubweb-references/cellranger/refdata-gex-GRCh38-and-GRCm39-2024-A",
           "s3://pubweb-references/cellranger/refdata-gex-GRCh38-and-mm10-2020-A",
-          "s3://pubweb-references/cellranger/refdata-gex-mm10-2024-A",
+          "s3://pubweb-references/cellranger/refdata-gex-GRCm39-2024-A",
           "s3://pubweb-references/cellranger/refdata-gex-mm10-2020-A"
         ],
         "enumNames": [
           "Homo sapiens (GRCh38-2024)",
           "Homo sapiens (GRCh38-2020)",
-          "Homo sapiens (GRCh38-2024) and Mus musculus (mm10-2024)",
+          "Homo sapiens (GRCh38-2024) and Mus musculus (GRCm39-2024)",
           "Homo sapiens (GRCh38-2020) and Mus musculus (mm10-2020)",
-          "Mus musculus (mm10-2024)",
+          "Mus musculus (GRCm39-2024)",
           "Mus musculus (mm10-2020)"
         ]
       },

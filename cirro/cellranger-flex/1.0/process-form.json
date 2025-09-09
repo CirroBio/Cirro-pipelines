@@ -10,7 +10,7 @@
         "enum": [
           "Homo sapiens (GRCh38-2024)",
           "Homo sapiens (GRCh38-2020)",
-          "Mus musculus (mm10-2024)",
+          "Mus musculus (GRCm39-2024)",
           "Mus musculus (mm10-2020)"
         ]
       },
