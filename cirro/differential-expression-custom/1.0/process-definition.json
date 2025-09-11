@@ -12,17 +12,11 @@
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-statistical-analysis/#differential-expression-analysis",
   "code": {
     "repository": "GITHUBPUBLIC",
-    "uri": "FredHutch/pw-differential-expression",
+    "uri": "CirroBio/nf-differential-expression",
     "version": "main",
     "script": "main.nf"
   },
-  "computeDefaults": [
-    {
-      "executor": "NEXTFLOW",
-      "json": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-compute.config",
-      "name": "Default"
-    }
-  ],
+  "computeDefaults": [],
   "paramMapJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json",
   "formJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-form.json",
   "webOptimizationJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-output.json"

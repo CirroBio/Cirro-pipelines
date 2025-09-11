@@ -1,11 +1,11 @@
 {
-  "counts": "$.params.dataset.paramJson.counts",
-  "manifest": "$.params.dataset.paramJson.manifest",
-  "algorithm": "$.params.dataset.paramJson.algorithm",
-  "comp_col": "$.params.dataset.paramJson.comp_col",
-  "comp_ref": "$.params.dataset.paramJson.comp_ref",
-  "group_cols": "$.params.dataset.paramJson.group_cols",
-  "filter": "$.params.dataset.paramJson.filter",
-  "output_folder": "$.params.dataset.s3|/data",
+  "counts": "$.dataset.params.counts",
+  "manifest": "$.dataset.params.manifest",
+  "algorithm": "$.dataset.params.algorithm",
+  "comp_col": "$.dataset.params.comp_col",
+  "comp_ref": "$.dataset.params.comp_ref",
+  "group_cols": "$.dataset.params.group_cols",
+  "filter": "$.dataset.params.filter",
+  "output_folder": "$.params.dataset.dataPath",
   "web_folder": "$.params.dataset.s3|/web"
 }
