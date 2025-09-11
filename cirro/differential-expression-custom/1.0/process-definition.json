@@ -1,0 +1,29 @@
+{
+  "id": "process-hutch-differential-expression-custom-1_0",
+  "childProcessIds": [
+    "process-hutch-gene-set-enrichment-1_0"
+  ],
+  "name": "Identify Differentially Expressed Genes",
+  "dataType": "Differential Expression Analysis",
+  "desc": "Identification of differentially expressed genes (Tabular Input)",
+  "executor": "NEXTFLOW",
+  "pipelineTypeOverride": "Community",
+  "category": "Statistical Analysis",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-statistical-analysis/#differential-expression-analysis",
+  "code": {
+    "repository": "GITHUBPUBLIC",
+    "uri": "FredHutch/pw-differential-expression",
+    "version": "main",
+    "script": "main.nf"
+  },
+  "computeDefaults": [
+    {
+      "executor": "NEXTFLOW",
+      "json": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-compute.config",
+      "name": "Default"
+    }
+  ],
+  "paramMapJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json",
+  "formJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-form.json",
+  "webOptimizationJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-output.json"
+}

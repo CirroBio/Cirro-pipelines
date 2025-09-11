@@ -1,0 +1,57 @@
+{
+  "form": {
+    "type": "object",
+    "properties": {
+      "counts": {
+        "title": "Gene Counts",
+        "description": "Table of read counts per gene across all samples.",
+        "type": "string",
+        "pathType": "dataset",
+        "mm": { "matchBase": true },
+        "file": "*.tsv",
+        "default": "data/star_salmon/salmon.merged.gene_counts.tsv"
+      },
+      "algorithm": {
+        "title": "Algorithm",
+        "description": "Statistical method used to calculate differential expression metrics.",
+        "type": "string",
+        "enum": [
+          "deseq2",
+          "edgeR",
+          "limma_voom"
+        ],
+        "enumNames": [
+          "deseq2",
+          "edgeR",
+          "limma_voom"
+        ],
+        "default": "deseq2"
+      },
+      "comp_col": {
+        "title": "Comparison Value",
+        "description": "Name of the column in the Metadata Table used to identify the groups of samples which will be compared in the differential expression analysis.",
+        "type": "string",
+        "default": ""
+      },
+      "comp_ref": {
+        "title": "Comparison Reference",
+        "description": "(optional) If the values in the comparison column are categorical (and not numeric), please provide the value which should be used as a reference against which all other values are compared.",
+        "type": "string",
+        "default": ""
+      },
+      "group_cols": {
+        "title": "Batch Correction (optional)",
+        "description": "To control for any batch effects, optionally list the column(s) in the Metadata Table which indicate those sample groups. Multiple columns may be specified using a comma (e.g. 'colA,colB').",
+        "type": "string",
+        "default": ""
+      },
+      "filter": {
+        "title": "Filtering (optional)",
+        "description": "To filter out any samples used in the comparison, optionally provide a filtering expression. This filter should be expressed as a boolean expression referencing values in the Metadata Table by their column name. For example, 'colA < 2' will exclude any samples which do not contain a value less than 2 in the column labeled 'colA'. When comparing strings, use single quotes. For example, colA == 'Value'.",
+        "type": "string",
+        "default": ""
+      }
+    }
+  },
+  "ui": {}
+}

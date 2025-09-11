@@ -1,0 +1,181 @@
+{
+  "commands": [
+    {
+      "command": "hot.Parquet",
+      "params": {
+        "url": "https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8",
+        "source": "$data_directory/DE_results.csv",
+        "target": "DE_results.parquet",
+        "name": "Differential Expression Results",
+        "desc": "Analysis of the differential expression of genes between experimental groups",
+        "read_csv": {
+          "parse": {
+            "delimiter": ","
+          }
+        },
+        "cols": [
+          {
+            "col": "gene_id",
+            "name": "Gene ID",
+            "desc": "Unique gene identifier"
+          },
+          {
+            "col": "baseMean",
+            "name": "Base Mean",
+            "desc": "The average expression level of this gene across all samples"
+          },
+          {
+            "col": "logFC",
+            "name": "Log2 Fold Change",
+            "desc": "The log2 fold change between conditions"
+          },
+          {
+            "col": "lfcSE",
+            "name": "Log Fold Change Standard Error",
+            "desc": "The standard error of the log fold change between conditions"
+          },
+          {
+            "col": "stat",
+            "name": "Statistical Metric",
+            "desc": "Quantitative measure of gene expression differences"
+          },
+          {
+            "col": "pvalue",
+            "name": "P-value",
+            "desc": "Probability value for statistical significance."
+          },
+          {
+            "col": "padj",
+            "name": "Adjusted p-value",
+            "desc": "The p-value adjusted for multiple hypothesis testing"
+          },
+          {
+            "col": "qvalue",
+            "name": "q-value",
+            "desc": "The adjusted p-value controlling false discovery rate (FDR)"
+          },
+          {
+            "col": "neg_log10_pvalue",
+            "name": "q-value (-log10)",
+            "desc": "The log-transformed adjusted p-value controlling false discovery rate (FDR)"
+          },
+          {
+            "col": "method",
+            "name": "Method",
+            "desc": "Statistical method used for differential expression analysis"
+          },
+          {
+            "col": "variable",
+            "name": "Variable",
+            "desc": "Experimental metadata which was used to differentiate experimental groups in the differential expression analysis"
+          }
+        ]
+      }
+    },
+    {
+      "command": "hot.Parquet",
+      "params": {
+        "url": "",
+        "source": "$data_directory/samples.pca.csv",
+        "target": "samples.pca.parquet",
+        "name": "PCA Coordinates",
+        "desc": "Ordination of samples based on gene expression profiles",
+        "read_csv": {
+          "parse": {
+            "delimiter": ","
+          }
+        },
+        "cols": [
+          {
+            "col": "sample",
+            "name": "Sample",
+            "desc": "Unique sample identifier"
+          },
+          {
+            "col": "PC1",
+            "name": "PC1",
+            "desc": "Principal Coordinate 1"
+          },
+          {
+            "col": "PC2",
+            "name": "PC2",
+            "desc": "Principal Coordinate 2"
+          },
+          {
+            "col": "PC3",
+            "name": "PC3",
+            "desc": "Principal Coordinate 3"
+          }
+        ]
+      }
+    },
+    {
+      "command": "hot.Parquet",
+      "params": {
+        "url": "",
+        "source": "$data_directory/samples.umap.csv",
+        "target": "samples.umap.parquet",
+        "name": "UMAP Coordinates",
+        "desc": "Ordination of samples based on gene expression profiles",
+        "read_csv": {
+          "parse": {
+            "delimiter": ","
+          }
+        },
+        "cols": [
+          {
+            "col": "sample",
+            "name": "Sample",
+            "desc": "Unique sample identifier"
+          },
+          {
+            "col": "UMAP1",
+            "name": "UMAP1",
+            "desc": "UMAP Coordinate 1"
+          },
+          {
+            "col": "UMAP2",
+            "name": "UMAP2",
+            "desc": "UMAP Coordinate 2"
+          }
+        ]
+      }
+    },
+    {
+      "command": "hot.Parquet",
+      "params": {
+        "name": "Manifest",
+        "desc": "Sample metadata",
+        "source": "$data_directory/manifest/manifest.csv",
+        "target": "manifest.parquet",
+        "cols": [
+          {
+            "col": "sample",
+            "desc": "",
+            "name": "sample"
+          }
+        ],
+        "read_csv": {
+          "parse": {
+            "delimiter": ","
+          }
+        },
+        "melt": {
+          "key": {
+              "desc": "Metadata attribute variable",
+              "name": "Variable"
+          },
+          "value": {
+              "desc": "Metadata attribute value",
+              "name": "Value"
+          }
+        },
+        "url": ""
+      }
+    },    
+    {
+      "command": "hot.Manifest",
+      "params": {}
+    }
+  ]
+}
