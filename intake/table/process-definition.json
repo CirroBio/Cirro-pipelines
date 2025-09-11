@@ -1,8 +1,6 @@
 {
   "id": "table_csv_tsv",
-  "childProcessIds": [
-    "process-hutch-differential-expression-custom-1_0"
-  ],
+  "childProcessIds": [],
   "name": "Tables (TSV/CSV)",
   "desc": "Tabular data in TSV or CSV format",
   "executor": "INGEST",

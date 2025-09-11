@@ -1,8 +1,10 @@
 {
-  "id": "process-hutch-differential-expression-1_0",
-  "childProcessIds": [
-    "process-hutch-gene-set-enrichment-1_0"
+  "id": "process-differential-expression-1_0",
+  "parentProcessIds": [
+      "process-nf-core-rnaseq-3",
+      "process-nf-core-rnaseq-custom-3"
   ],
+  "childProcessIds": [],
   "name": "Identify Differentially Expressed Genes",
   "dataType": "Differential Expression Analysis",
   "desc": "Identification of differentially expressed genes (RNAseq Input)",

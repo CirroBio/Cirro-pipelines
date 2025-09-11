@@ -1,8 +1,9 @@
 {
-  "id": "process-hutch-differential-expression-custom-1_0",
-  "childProcessIds": [
-    "process-hutch-gene-set-enrichment-1_0"
+  "id": "process-differential-expression-custom-1_0",
+  "parentProcessIds": [
+    "table_csv_tsv"
   ],
+  "childProcessIds": [],
   "name": "Identify Differentially Expressed Genes",
   "dataType": "Differential Expression Analysis",
   "desc": "Identification of differentially expressed genes (Tabular Input)",
