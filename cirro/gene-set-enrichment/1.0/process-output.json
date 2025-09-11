@@ -1,0 +1,65 @@
+{
+  "commands": [
+    {
+      "command": "hot.Parquet",
+      "params": {
+        "url": "https://www.biorxiv.org/content/10.1101/060012v3.full",
+        "source": "$data_directory/gsea/gsea.csv",
+        "target": "gsea.parquet",
+        "name": "Gene Set Enrichment Analysis",
+        "desc": "Analysis of the statistical enrichment of functional gene groups within differential expression analysis results",
+        "read_csv": {
+          "parse": {
+            "delimiter": ","
+          }
+        },
+        "cols": [
+          {
+            "col": "pathway",
+            "name": "Enriched Pathway",
+            "desc": "Name or identifier of the enriched biological pathway or gene set"
+          },
+          {
+            "col": "pval",
+            "name": "p-value",
+            "desc": "The p-value indicating statistical significance of gene set enrichment"
+          },
+          {
+            "col": "padj",
+            "name": "Adjusted p-value",
+            "desc": "The p-value adjusted for multiple hypothesis testing"
+          },
+          {
+            "col": "log2err",
+            "name": "Log2 Fold Change Error",
+            "desc": "The error associated with the log2 fold change estimation"
+          },
+          {
+            "col": "ES",
+            "name": "Enrichment Score",
+            "desc": "Magnitude of gene set enrichment"
+          },
+          {
+            "col": "NES",
+            "name": "Normalized Enrichment Score",
+            "desc": "The enrichment score normalized for gene set size and distribution"
+          },
+          {
+            "col": "size",
+            "name": "Gene Set Size",
+            "desc": "Number of genes in the analyzed gene set"
+          },
+          {
+            "col": "leadingEdge",
+            "name": "Leading Edge Genes",
+            "desc": "The subset of genes contributing most to the enrichment signal"
+          }
+        ]
+      }
+    },
+    {
+      "command": "hot.Manifest",
+      "params": {}
+    }
+  ]
+}

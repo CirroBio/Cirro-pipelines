@@ -1,0 +1,8 @@
+{
+  "genesets_file": "s3://pubweb-references/gmt/msigdb.v7.4.symbols.gmt",
+  "input_csv": "$.params.dataset.paramJson.input_csv",
+  "gene_column": "$.params.dataset.paramJson.gene_column",
+  "score_column": "$.params.dataset.paramJson.score_column",
+  "pval_column": "$.params.dataset.paramJson.pval_column",
+  "output_dir": "$.params.dataset.s3|/data"
+}
