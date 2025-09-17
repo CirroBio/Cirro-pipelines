@@ -1,0 +1,52 @@
+{
+    "form": {
+        "properties": {
+            "input": {
+                "title": "Input Dataset",
+                "description": "Select one of .h5, .h5ad, .h5seurad, or .rds",
+                "file": "**/*.{h5,rds}*",
+                "pathType": "dataset",
+                "type": "string"
+            },
+            "reference": {
+                "default": "human-pbmc",
+                "description": "Single-cell. reference dataset space used for Azimuth projection",
+                "title": "Azimuth Reference",
+                "type": "string",
+                "enum": [
+                    "human-adipose",
+                    "human-bonemarrow",
+                    "human-cortex",
+                    "human-fetus",
+                    "human-heart",
+                    "human-kidney",
+                    "human-liver",
+                    "human-lung",
+                    "human-lung-v2",
+                    "human-pancreas",
+                    "human-pbmc",
+                    "human-tonsil",
+                    "human-tonsil-v2",
+                    "mouse-cortex"
+                ],
+                "enumNames": [
+                    "Human - Adipose",
+                    "Human - Bone Marrow",
+                    "Human - Motor Cortex",
+                    "Human - Fetal Development",
+                    "Human - Heart",
+                    "Human - Kidney",
+                    "Human - Liver",
+                    "Human - Lung",
+                    "Human - Lung v2 (HLCA)",
+                    "Human - Pancreas",
+                    "Human - PBMC",
+                    "Human - Tonsil",
+                    "Human - Tonsil v2",
+                    "Mouse - Motor Cortex"
+                ]
+            }
+        }
+    },
+    "ui": {}
+}

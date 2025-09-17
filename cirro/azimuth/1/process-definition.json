@@ -1,0 +1,20 @@
+{
+  "id": "azimuth",
+  "childProcessIds": [],
+  "dataType": "Annotated Single-Cell Data (Azimuth)",
+  "name": "Single-Cell Azimuth Projection",
+  "desc": "Project single-cell data into annotated reference space using Azimuth",
+  "executor": "NEXTFLOW",
+  "category": "Single-Cell Analysis",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-single-cell/#single-cell-azimuth-projection",
+  "code": {
+    "repository": "GITHUBPUBLIC",
+    "script": "main.nf",
+    "uri": "CirroBio/nf-azimuth",
+    "version": "main"
+  },
+  "computeDefaults": [],
+  "paramMapJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json",
+  "formJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-form.json",
+  "webOptimizationJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-output.json"
+}
