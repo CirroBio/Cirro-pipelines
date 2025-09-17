@@ -1,7 +1,7 @@
 {
   "id": "single-cell-h5",
   "childProcessIds": [
-    "hutch-azimuth-1-0"
+    "azimuth-1"
   ],
   "name": "Single-Cell Dataset (Loom, Anndata, or Seurat)",
   "desc": "Single-cell datasets saved in Loom (.loom), Anndata (.h5ad), or Seurat (.h5seurat) formats",

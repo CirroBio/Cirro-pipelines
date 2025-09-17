@@ -1,7 +1,7 @@
 {
   "id": "process-hutch-cellranger-hashtagging-1-0",
   "childProcessIds": [
-    "hutch-azimuth-1-0",
+    "azimuth-1",
     "process-hutch-cellranger-aggr-1-0",
     "hutch-scanpy-qc-1_0"
   ],
