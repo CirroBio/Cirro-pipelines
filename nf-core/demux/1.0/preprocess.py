@@ -14,7 +14,16 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
     flowcell_id = ds.params.get('flowcell_id') or ds.metadata['dataset']['name']
     lane = ds.params.get('lane')
     samplesheet_path = ds.params.get('samplesheet')
-    run_dir = ds.metadata['inputs']['dataPath']
+
+    # Try to find the correct run directory dataset
+    # Since Samplesheet can be provided in a secondary dataset
+    run_dir = next((
+        dataset['dataPath'] for dataset in ds.metadata['inputs']
+        if dataset['processId'] != 'files'
+    ), None)
+    
+    if not run_dir:
+        raise ValueError("Please provide at least one dataset with the sequencing run type")
 
     # TODO: support multiple lanes
 

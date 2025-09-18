@@ -1,5 +1,10 @@
 {
   "id": "process-nf-core-demux-1",
+  "parentProcessIds": [
+    "sequencing-run",
+    "element-run",
+    "files"
+  ],
   "childProcessIds": [],
   "dataType": "FASTQs",
   "name": "Demultiplex (nf-core/demux)",
@@ -15,6 +20,7 @@
     "version": "1.6.1"
   },
   "usesSampleSheet": false,
+  "allowMultipleSources": true,
   "computeDefaults": [
     {
       "executor": "NEXTFLOW",
