@@ -6,13 +6,13 @@
     "files"
   ],
   "childProcessIds": [],
-  "dataType": "FASTQs",
+  "dataType": "Demultiplexed FASTQs",
   "name": "Demultiplex (nf-core/demultiplex)",
   "desc": "Demultiplexing pipeline for sequencing data",
   "executor": "NEXTFLOW",
   "pipelineTypeOverride": "nf-core",
-  "category": "",
-  "documentationUrl": "",
+  "category": "DNA Sequencing",
+  "documentationUrl": "https://nf-co.re/demultiplex/1.6.1",
   "code": {
     "repository": "GITHUBPUBLIC",
     "script": "main.nf",
