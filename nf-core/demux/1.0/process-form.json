@@ -16,8 +16,9 @@
       },
       "lane": {
         "title": "Lane",
-        "description": "Optional lane number. When a lane number is provided, only the given lane will be demultiplexed",
-        "type": "integer"
+        "description": "Comma-separated lane numbers to demux. When provided, only the given lane(s) will be demultiplexed",
+        "type": "string",
+        "pattern": "^\\d+(,\\d+)*$"
       },
       "demultiplexer": {
         "type": "string",
