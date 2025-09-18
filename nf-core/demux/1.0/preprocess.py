@@ -18,7 +18,7 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
     a separate analysis job / dataset as well.
     """
 
-    flowcell_id = ds.params.get('flowcell_id') or ds.metadata['dataset']['name']
+    flowcell_id = ds.params.get('flowcell_id') or ds.metadata['dataset']['name'].replace(" ", "")
     lanes = (ds.params.get('lane') or '').split(',')
     samplesheet_path = ds.params.get('samplesheet')
 

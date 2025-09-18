@@ -11,8 +11,9 @@
       },
       "flowcell_id": {
         "title": "Flow Cell ID",
-        "description": "If not provided, uses dataset name",
-        "type": "string"
+        "description": "If not provided, uses dataset name. Should not contain spaces.",
+        "type": "string",
+        "pattern": "^\\S+$"
       },
       "lane": {
         "title": "Lane",
