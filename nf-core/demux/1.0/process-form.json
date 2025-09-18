@@ -61,7 +61,6 @@
             "description": "List of tools to skip",
             "title": "Skip Tools",
             "uniqueItems": true,
-            "_join": ",",
             "items": {
               "type": "string",
               "enum": [
