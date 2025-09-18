@@ -28,6 +28,13 @@
           "sgdemux",
           "mkfastq"
         ],
+        "enumNames": [
+          "bases2fastq (Element Biosciences)",
+          "bcl2fastq (Illumina)",
+          "bclconvert (Illumina)",
+          "sgdemux (Singular Genomics)",
+          "mkfastq (10X Genomics)"
+        ],
         "description": "",
         "fa_icon": "fas fa-microscope",
         "default": "bclconvert",
