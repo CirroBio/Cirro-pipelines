@@ -9,6 +9,13 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
     id,samplesheet,lane,flowcell
     DDMMYY_SERIAL_NUMBER_FC,/path/to/SampleSheet.csv,1,/path/to/sequencer/output
     DDMMYY_SERIAL_NUMBER_FC,/path/to/SampleSheet.csv,2,/path/to/sequencer/output
+
+    The demux pipeline can accept multiple run directories, but for the purposes of
+    Cirro, we will limit it to one run directory / flow cell.
+
+    Same thing with the flow cell sample sheet. Generally the FC samplesheet is used
+    to separate and route dataset, we assume that it will just be
+    a separate analysis job / dataset as well.
     """
 
     flowcell_id = ds.params.get('flowcell_id') or ds.metadata['dataset']['name']
@@ -21,7 +28,7 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
         dataset['dataPath'] for dataset in ds.metadata['inputs']
         if dataset['processId'] != 'files'
     ), None)
-    
+
     if not run_dir:
         raise ValueError("Please provide at least one dataset with the sequencing run type")
 
@@ -36,16 +43,6 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
         }
     ])
     return manifest
-
-
-# def check_samplesheet(ds: PreprocessDataset):
-#     samplesheet_path = ds.params.get('samplesheet')
-
-#     # Read samplesheet file from path
-
-#     # Extract samples from samplesheet
-
-#     # Validate barcodes are not duplicated
 
 
 if __name__ == '__main__':
