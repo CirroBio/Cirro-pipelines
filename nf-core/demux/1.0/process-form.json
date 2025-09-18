@@ -48,17 +48,33 @@
         "title": "Workflow options",
         "description": "",
         "properties": {
-          "trim_fastq": {
-            "type": "boolean",
-            "default": true,
-            "description": "",
-            "title": "Skip fastq trimming?"
-          },
           "skip_tools": {
-            "type": "string",
-            "pattern": "^((fastp|fastqc|kraken|multiqc|checkqc|falco|md5sum|samshee)?,?)*(?<!,)$",
-            "description": "Comma-separated list of tools to skip (fastp,fastqc,kraken,multiqc,checkqc,falco,md5sum,samshee)",
-            "title": "Skip Tools"
+            "type": "array",
+            "description": "List of tools to skip",
+            "title": "Skip Tools",
+            "uniqueItems": true,
+            "_join": ",",
+            "items": {
+              "type": "string",
+              "enum": [
+                "fastp",
+                "kraken",
+                "checkqc",
+                "falco",
+                "md5sum",
+                "samshee",
+                "multiqc"
+              ],
+              "enumNames": [
+                "fastp - Adapter and quality trimming",
+                "kraken - Taxonomic sequence classification",
+                "checkqc - Check quality criteria (only for bcl2fastq)",
+                "falco - Raw read QC",
+                "md5sum - Creates an MD5 checksum of every fastq",
+                "samshee - Validates Illumina v2 samplesheet",
+                "multiqc - Aggregate report"
+              ]
+            }
           },
           "sample_size": {
             "type": "integer",
