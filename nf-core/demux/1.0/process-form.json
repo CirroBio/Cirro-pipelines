@@ -6,7 +6,6 @@
         "title": "Samplesheet",
         "description": "File containing the sample information and indexes",
         "type": "string",
-        "multiple": false,
         "pathType": "dataset",
         "file": "**/*.csv"
       },
@@ -33,6 +32,16 @@
         "fa_icon": "fas fa-microscope",
         "default": "bclconvert",
         "title": "Demultiplexer to use"
+      },
+      "workflow_version": {
+        "title": "Workflow Version",
+        "description": "Select the specific version of nf-core/demux to use",
+        "type": "string",
+        "enum": [
+          "1.6.1",
+          "1.6.0"
+        ],
+        "default": "1.6.1"
       },
       "workflow_options": {
         "type": "object",
