@@ -48,4 +48,5 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
 if __name__ == '__main__':
     ds = PreprocessDataset.from_running()
     samplesheet = make_manifest(ds)
+    ds.logger.info(samplesheet.head())
     samplesheet.to_csv('manifest.csv', index=False)
