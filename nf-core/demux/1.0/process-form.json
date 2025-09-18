@@ -68,8 +68,8 @@
           },
           "v1_schema": {
             "type": "boolean",
-            "description": "",
-            "title": "Illumina V1 Schema?"
+            "description": "Is this using the Illumina V1 sample sheet?",
+            "title": "Illumina V1 Schema"
           }
         },
         "required": []

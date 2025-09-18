@@ -7,7 +7,7 @@
   ],
   "childProcessIds": [],
   "dataType": "FASTQs",
-  "name": "Demultiplex (nf-core/demux)",
+  "name": "Demultiplex (nf-core/demultiplex)",
   "desc": "Demultiplexing pipeline for sequencing data",
   "executor": "NEXTFLOW",
   "pipelineTypeOverride": "nf-core",
@@ -16,7 +16,7 @@
   "code": {
     "repository": "GITHUBPUBLIC",
     "script": "main.nf",
-    "uri": "nf-core/demux",
+    "uri": "nf-core/demultiplex",
     "version": "1.6.1"
   },
   "usesSampleSheet": false,
