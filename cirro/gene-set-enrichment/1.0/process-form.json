@@ -1,0 +1,38 @@
+{
+  "form": {
+    "type": "object",
+    "properties": {
+      "input_csv": {
+        "title": "Gene Ranking Table",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "*.csv",
+        "mm": { "matchBase": true },
+        "default": "data/DE_results.csv",
+        "description": "Table of gene enrichment (typically from differential expression analysis) containing association scores and p-values."
+      },
+      "gene_column": {
+        "title": "Gene ID Column Name",
+        "description": "Header of the column containing gene IDs.",
+        "help_text": "This value should not need to be modified when processing outputs of the Differential Expression analysis tool.",
+        "type": "string",
+        "default": "gene_id"
+      },
+      "score_column": {
+        "title": "Gene Score Column Name",
+        "description": "Header of the column containing gene scores (e.g., log fold change for differential expression).",
+        "help_text": "This value should not need to be modified when processing outputs of the Differential Expression analysis tool.",
+        "type": "string",
+        "default": "logFC"
+      },
+      "pval_column": {
+        "title": "P-value Column Name",
+        "description": "Header of the column containing gene p-values.",
+        "help_text": "This value should not need to be modified when processing outputs of the Differential Expression analysis tool.",
+        "type": "string",
+        "default": "pvalue"
+      }
+    }
+  },
+  "ui": {}
+}

@@ -1,8 +1,6 @@
 {
   "id": "differential-expression-table",
-  "childProcessIds": [
-    "process-hutch-gene-set-enrichment-1_0"
-  ],
+  "childProcessIds": [],
   "name": "Differential Expression Results (CSV)",
   "desc": "Tabular data summarizing differential expression analysis results",
   "executor": "INGEST",

@@ -2,7 +2,6 @@
   "id": "process-nf-core-rnaseq-3",
   "childProcessIds": [
     "process-hutch-bulk-rna-lymphocyctes-1_0",
-    "process-hutch-differential-expression-1_0",
     "hutch-arcashla-1-0",
     "process-nf-core-differentialabundance-1_5"
   ],

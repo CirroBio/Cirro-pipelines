@@ -1,7 +1,7 @@
 {
   "id": "process-hutch-cellranger-multi-1-0",
   "childProcessIds": [
-    "hutch-azimuth-1-0"
+    "azimuth-1"
   ],
   "dataType": "Single-Cell Data (multi)",
   "name": "CellRanger Multi Analysis",

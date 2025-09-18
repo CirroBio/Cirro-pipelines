@@ -1,0 +1,11 @@
+{
+  "manifest": "samplesheet.csv",
+  "counts": "$.dataset.params.counts",
+  "algorithm": "$.dataset.params.algorithm",
+  "comp_col": "$.dataset.params.comp_col",
+  "comp_ref": "$.dataset.params.comp_ref",
+  "group_cols": "$.dataset.params.group_cols",
+  "filter": "$.dataset.params.filter",
+  "output_folder": "$.params.dataset.dataPath",
+  "web_folder": "$.params.dataset.s3|/web"
+}
