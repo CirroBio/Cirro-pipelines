@@ -19,7 +19,7 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
     """
 
     flowcell_id = ds.params.get('flowcell_id') or ds.metadata['dataset']['name']
-    lanes = ds.params.get('lane').split(',')
+    lanes = (ds.params.get('lane') or '').split(',')
     samplesheet_path = ds.params.get('samplesheet')
 
     # Try to find the correct run directory dataset
@@ -31,8 +31,6 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
 
     if not run_dir:
         raise ValueError("Please provide at least one dataset with the sequencing run type")
-
-    # TODO: support multiple lanes
 
     manifest = pd.DataFrame.from_records([
         {
