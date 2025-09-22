@@ -89,14 +89,38 @@
             "default": 100000,
             "description": "Number of reads to subsample for contamination detection.",
             "title": "Sample Size"
-          },
-          "v1_schema": {
-            "type": "boolean",
-            "description": "Is this using the Illumina V1 sample sheet?",
-            "title": "Illumina V1 Schema"
           }
         },
         "required": []
+      }
+    },
+    "if": {
+      "properties": {
+        "demultiplexer": {
+          "enum": ["bclconvert", "bcl2fastq"]
+        }
+      }
+    },
+    "then": {
+      "properties": {
+        "workflow_options": {
+          "properties": {
+            "v1_schema": {
+              "type": "boolean",
+              "description": "Is this using the Illumina V1 sample sheet?",
+              "title": "Illumina V1 Schema"
+            }
+          }
+        }
+      }
+    },
+    "else": {
+      "properties": {
+        "workflow_options": {
+          "properties": {
+            "v1_schema": false
+          }
+        }
       }
     },
     "required": [
