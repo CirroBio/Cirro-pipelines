@@ -3,7 +3,7 @@
   "parentProcessIds": [
     "sequencing-run",
     "element-run",
-    "files"
+    "custom_dataset"
   ],
   "childProcessIds": [],
   "dataType": "Demultiplexed FASTQs",
