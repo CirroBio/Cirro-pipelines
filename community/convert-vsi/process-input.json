@@ -1,3 +1,4 @@
 {
+  "input_folder": "$.inputs[0].dataPath",
   "output": "$.dataset.dataPath"
 }
