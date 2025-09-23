@@ -1,0 +1,48 @@
+{
+  "id": "process-convert-vsi-1-0",
+  "parentProcessIds": [
+    "images"
+  ],
+  "childProcessIds": [
+    "hutch-qupath-1_0",
+    "process-hutch-qupath-stardist-1_0",
+    "process-hutch-cellpose-1_0",
+    "hutch-sage-artist-1-0"
+  ],
+  "dataType": "Image (OME-TIFF)",
+  "name": "Convert VSI to OME-TIFF",
+  "desc": "Convert each series contained in each VSI file to a separate OME-TIFF image file.",
+  "executor": "NEXTFLOW",
+  "category": "Image Analysis",
+  "code": {
+    "repository": "GITHUBPUBLIC",
+    "script": "main.nf",
+    "uri": "mfitzgib/vsi2tiff",
+    "version": "main"
+  },
+  "allowMultipleSources": false,
+  "usesSampleSheet": false,
+  "computeDefaults": [
+    {
+      "executor": "NEXTFLOW",
+      "json": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-compute.config",
+      "name": "Default"
+    }
+  ],
+  "paramMapJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json",
+  "formJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-form.json",
+  "preProcessScript": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/preprocess.py",
+  "webOptimizationJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-output.json",
+  "fileMappingRules": [
+    {
+      "description": "Decontaminated Sequences",
+      "fileNamePatterns": [
+        {
+          "exampleName": "SampleName/SampleName_paired_[1/2].fastq.gz",
+          "description": "Sequences FASTQ",
+          "sampleMatchingPattern": "(?P<sampleName>\\S*)_paired_(?P<read>1|2).fastq.gz"
+        }
+      ]
+    }
+  ]
+}
