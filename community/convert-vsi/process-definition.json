@@ -34,12 +34,12 @@
   "webOptimizationJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-output.json",
   "fileMappingRules": [
     {
-      "description": "Decontaminated Sequences",
+      "description": "Images (OME-TIFF)",
       "fileNamePatterns": [
         {
-          "exampleName": "SampleName/SampleName_paired_[1/2].fastq.gz",
-          "description": "Sequences FASTQ",
-          "sampleMatchingPattern": "(?P<sampleName>\\S*)_paired_(?P<read>1|2).fastq.gz"
+          "exampleName": "ImageName.ome.tif",
+          "description": "Images (OME-TIFF)",
+          "sampleMatchingPattern": "(?P<sampleName>\\S*).ome.tif"
         }
       ]
     }
