@@ -13,7 +13,7 @@ schemas = {}
 
 
 def load_schemas():
-    for file in list(Path('process/public/schemas').glob('*.schema.json')):
+    for file in list(Path('schemas').glob('*.schema.json')):
         with file.open() as f:
             schema_name = file.name.replace('.schema.json', '')
             schemas[schema_name] = json.load(f)
