@@ -14,6 +14,7 @@
   "desc": "Convert each series contained in each VSI file to a separate OME-TIFF image file.",
   "executor": "NEXTFLOW",
   "category": "Image Analysis",
+  "documentationUrl": "https://github.com/mfitzgib/vsi2tiff",
   "code": {
     "repository": "GITHUBPUBLIC",
     "script": "main.nf",
