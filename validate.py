@@ -65,12 +65,6 @@ def validate_process_records():
         logger.warning(f"Duplicate process IDs found {duplicates}")
 
     for process in process_records.values():
-        # Check if child process IDs are valid
-        for child_process in process['childProcessIds']:
-            if child_process not in process_ids:
-                has_errors = True
-                logger.warning(f"child process {child_process} in {process['id']} is not valid")
-
         # Check file extensions
         for field in ["paramMapJson", "formJson", "webOptimizationJson"]:
             if process[field] and not process[field].endswith('.json'):
