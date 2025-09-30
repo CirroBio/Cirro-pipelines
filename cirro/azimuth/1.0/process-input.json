@@ -1,0 +1,7 @@
+{
+    "input": "$.dataset.params.input",
+    "reference": "s3://pubweb-references/azimuth/|$.dataset.params.reference",
+    "output": "$.dataset.dataPath",
+    "web_output": "$.dataset.s3|/web/",
+    "name": "$.dataset.name"
+}
