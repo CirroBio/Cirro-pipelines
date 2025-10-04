@@ -30,21 +30,6 @@
             "description": "Target for contrasts"
           }
         }
-      },
-      "shiny_app_settings": {
-        "title": "Build Shiny App",
-        "type": "object",
-        "description": "",
-        "default": "",
-        "properties": {
-          "shinyngs_build_app": {
-            "type": "boolean",
-            "title": "Enabled",
-            "default": true,
-            "description": "Should a Shiny app be built?",
-            "help_text": "Trigger generation of files you can quickly use to spin up a shiny app locally."
-          }
-        }
       }
     }
   }
