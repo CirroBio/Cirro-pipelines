@@ -1,0 +1,13 @@
+{
+  "outdir": "$.dataset.dataPath",
+  "input": "samplesheet.csv",
+  "igenomes_base": "s3://pubweb-references/igenomes",
+  "protocol": "$.dataset.params.protocol",
+  "cellranger_index": "$.dataset.params.cellranger_index",
+  "genome": "$.dataset.params.reference_genome_options.genome",
+  "fasta": "$.dataset.params.reference_genome_options.fasta",
+  "gtf": "$.dataset.params.reference_genome_options.gtf",
+  "skip_fastqc": "$.dataset.params.skip_tools.skip_fastqc",
+  "skip_cellbender": "$.dataset.params.skip_tools.skip_cellbender",
+  "skip_cellranger_renaming": "$.dataset.params.skip_tools.skip_cellranger_renaming"
+}
