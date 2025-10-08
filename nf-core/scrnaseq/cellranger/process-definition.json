@@ -1,12 +1,12 @@
 {
     "id": "process-nf-core-scrna-cellranger",
     "childProcessIds": [],
-    "name": "10X single cell analysis (nf-core/scrnaseq)",
-    "desc": "DNA alignment and variant calling based on GATK4 best practices (v3.5.0) using a custom FASTA reference",
+    "name": "FASTQ to Gene Counts via CellRanger (nf-core/scrnaseq)",
+    "desc": "Analysis of 10X single-cell sequencing of gene expression",
     "executor": "NEXTFLOW",
     "pipelineTypeOverride": "nf-core",
     "category": "Single-Cell Analysis",
-    "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-dna-sequencing/#dna-variant-calling-nf-coresarek",
+    "documentationUrl": "https://nf-co.re/scrnaseq/4.0.0/",
     "code": {
       "repository": "GITHUBPUBLIC",
       "script": "main.nf",
@@ -14,6 +14,7 @@
       "version": "4.0.0"
     },
     "usesSampleSheet": true,
+    "allowMultipleSources": true,
     "computeDefaults": [
       {
         "executor": "NEXTFLOW",
