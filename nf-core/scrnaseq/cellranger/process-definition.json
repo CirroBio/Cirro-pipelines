@@ -1,5 +1,8 @@
 {
     "id": "process-nf-core-scrna-cellranger",
+    "parentProcessIds": [
+      "single-cell-10X"
+    ],
     "childProcessIds": [],
     "name": "FASTQ to Gene Counts via CellRanger (nf-core/scrnaseq)",
     "desc": "Analysis of 10X single-cell sequencing of gene expression",
