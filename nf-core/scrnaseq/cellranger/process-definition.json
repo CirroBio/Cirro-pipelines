@@ -13,7 +13,7 @@
     "code": {
       "repository": "GITHUBPUBLIC",
       "script": "main.nf",
-      "uri": "nf-core/scrna",
+      "uri": "nf-core/scrnaseq",
       "version": "4.0.0"
     },
     "usesSampleSheet": true,

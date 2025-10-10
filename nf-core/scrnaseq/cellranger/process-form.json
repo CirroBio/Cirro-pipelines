@@ -35,20 +35,19 @@
       "skip_tools": {
         "type": "object",
         "title": "Skip Tools",
-        "description": "This section can be used to  disable certain tools in the pipeline",
+        "description": "This section can be used to disable certain tools in the pipeline",
         "properties": {
           "skip_fastqc": {
             "type": "boolean",
-            "title": "Skip FastQC"
+            "title": "Skip FastQC?"
           },
           "skip_cellbender": {
             "type": "boolean",
-            "title": "Skip Cell Bender empty drops filter"
+            "title": "Skip Cell Bender empty drops filter?"
           },
           "skip_cellranger_renaming": {
             "type": "boolean",
-            "title": "Skip CellRanger renaming?",
-            "description": ""
+            "title": "Skip CellRanger fastq renaming?"
           }
         },
         "required": []
