@@ -1,6 +1,7 @@
 {
   "outdir": "$.dataset.dataPath",
   "input": "samplesheet.csv",
+  "aligner": "cellranger",
   "igenomes_base": "s3://pubweb-references/igenomes",
   "protocol": "$.dataset.params.protocol",
   "cellranger_index": "$.dataset.params.cellranger_index",
