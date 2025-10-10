@@ -10,5 +10,6 @@
   "gtf": "$.dataset.params.reference_genome_options.gtf",
   "skip_fastqc": "$.dataset.params.skip_tools.skip_fastqc",
   "skip_cellbender": "$.dataset.params.skip_tools.skip_cellbender",
-  "skip_cellranger_renaming": "$.dataset.params.skip_tools.skip_cellranger_renaming"
+  "skip_cellranger_renaming": "$.dataset.params.skip_tools.skip_cellranger_renaming",
+  "monochrome_logs": true
 }
