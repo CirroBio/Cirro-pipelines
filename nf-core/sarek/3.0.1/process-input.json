@@ -18,5 +18,6 @@
   "intervals": "$.params.dataset.paramJson.analysis_type.intervals",
   "outdir": "$.params.dataset.s3|/data/",
   "input": "manifest.csv",
-  "igenomes_base": "s3://pubweb-references/igenomes"
+  "igenomes_base": "s3://pubweb-references/igenomes",
+  "use_annotation_cache_keys": true
 }
