@@ -11,7 +11,7 @@
     "repository": "GITHUBPUBLIC",
     "script": "main.nf",
     "uri": "nf-core/chipseq",
-    "version": "2.0.0"
+    "version": "2.1.0"
   },
   "usesSampleSheet": true,
   "computeDefaults": [
