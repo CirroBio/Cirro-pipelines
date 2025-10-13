@@ -5,28 +5,24 @@ import pandas as pd
 
 
 def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
+    if 'readType' in ds.samplesheet.columns:
+        file_filter = 'readType == "R"'
+    else:
+        file_filter = None
 
-    # Filter out any index files that may have been uploaded
-    ds.files = ds.files.loc[
-        ds.files.apply(
-            lambda r: r.get('readType', 'R') == 'R',
-            axis=1
-        )
-    ]
-
-    # Make a wide manifest
-    manifest = ds.wide_samplesheet(
-        index=["sampleIndex", "sample", "lane"],
-        columns="read",
-        values="file",
-        column_prefix="fastq_"
-    ).sort_values(
-        by="sample"
+    manifest = ds.pivot_samplesheet(
+        pivot_columns=['read'],
+        column_prefix='fastq_',
+        metadata_columns=['group', 'antibody', 'replicate', 'control'],
+        file_filter_predicate=file_filter
     )
+    assert manifest.shape[0] > 0, "No files detected -- there may be an error with data ingest"
+
+    manifest = manifest.sort_values(by="sample")
 
     # The user must have specified the experimental design with group, replicate, and control
     # The antibody sample annotation is optional
-    msg = f"Samples must be annotated by group, replicate, and control"
+    msg = "Samples must be annotated by group, replicate, and control"
     for cname in ['group', 'replicate', 'control']:
         assert cname in ds.samplesheet.columns.values, msg
 
@@ -38,47 +34,24 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
     for control in all_controls:
         assert control in all_groups, f"Control '{control}' not found in group column"
 
-    # Add those values to the manifest
-    manifest = manifest.assign(**{
-        cname: manifest["sample"].apply(cvals.get).fillna('')
-        for cname, cvals in ds.samplesheet.set_index(
-            "sample"
-        ).reindex(
-            columns=[
-                "group",
-                "replicate",
-                "antibody",
-                "control"
-            ]
-        ).items()
-    })
-    ds.logger.info(manifest.to_csv(index=None))
-    assert manifest.shape[0] > 0, "No files detected -- there may be an error with data ingest"
-
     # All replicates must be integers
     ds.logger.info("Making sure that all replicate values are integers")
-    manifest = manifest.assign(
-        replicate = manifest["replicate"].apply(
-            lambda v: int(float(v))
-        )
-    )
-    ds.logger.info(manifest.to_csv(index=None))
+    manifest['replicate'] = manifest['replicate'].apply(lambda v: int(float(v)))
+    ds.logger.debug(manifest.to_csv(index=False))
 
-    # Only keep the expected columns, combining group + replicate -> sample
     ds.logger.info("Rearranging the columns")
-    manifest = manifest.assign(
-        sample=lambda d: d.apply(
-            lambda r: f"{r['group']}_REP{r['replicate']}",
-            axis=1
-        ),
-        control=lambda d: d.apply(
-            lambda r: "" if pd.isnull(r['control']) or r['control'] == "" else f"{r['control']}_REP{r['replicate']}",
-            axis=1
-        )
-    ).reindex(
-        columns=["sample", "fastq_1", "fastq_2", "antibody", "control"]
+    # Change group column into sample
+    manifest['sample'] = manifest['group']
+    # Control replicate should not be defined if it is a control row, and should default to 1 if not defined
+    manifest['control_replicate'] = manifest.apply(
+        lambda row: None if not row.get('control') else (row.get('control_replicate') or 1),
+        axis=1
     )
-    ds.logger.info(manifest.to_csv(index=None))
+    # Drop other columns
+    manifest = manifest.reindex(
+        columns=["sample", "fastq_1", "fastq_2", "replicate", "antibody", "control", "control_replicate"]
+    )
+    ds.logger.info(manifest.to_csv(index=False))
 
     return manifest
 
