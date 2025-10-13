@@ -2,7 +2,7 @@
   "id": "process-nf-core-chipseq-2-0",
   "childProcessIds": [],
   "name": "ChIP-seq (nf-core/chipseq)",
-  "desc": "ChIP-seq: peak-calling, QC, and differential analysis (v2.0)",
+  "desc": "ChIP-seq: peak-calling, QC, and differential analysis (v2.1.0)",
   "executor": "NEXTFLOW",
   "pipelineTypeOverride": "nf-core",
   "category": "DNA Sequencing",
