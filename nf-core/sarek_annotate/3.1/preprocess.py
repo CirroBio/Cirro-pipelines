@@ -105,6 +105,7 @@ def preprocess(ds):
     tools = ','.join(map(str, annotation_tool))
 
     ds.add_param('tools', tools, overwrite=True)
+    genome = ds.params.get('genome')
 
     # if user does not select VEP/snpEff then annotation tool param does not exist.
     # script sets it as empty list, use this to toggle deleting the param to avoid error.

@@ -159,6 +159,8 @@ if __name__ == "__main__":
     # If an intervals file was not selected, use --no_intervals
     if not ds.params.get("intervals"):
         ds.add_param("no_intervals", True)
+        
+    genome = ds.params.get('genome')
 
     # if user does not select VEP/snpEff then annotation tool param does not exist.
     # script sets it as empty list, use this to toggle deleting the param to avoid error.

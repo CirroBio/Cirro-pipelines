@@ -84,6 +84,8 @@ tools = ','.join(map(str, tools + annotation_tool))
 
 ds.add_param('tools', tools, overwrite=True)
 
+genome = params.get('genome')
+
 # if user does not select VEP/snpEff then annotation tool param does not exist.
 # script sets it as empty list, use this to toggle deleting the param to avoid error.
 if len(annotation_tool) != 0:
