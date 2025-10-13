@@ -62,7 +62,7 @@ if __name__ == "__main__":
     manifest = make_manifest(ds)
 
     # Save the manifest
-    manifest.to_csv("design.csv", index=None)
+    manifest.to_csv("design.csv", index=False)
 
     # Add the param for the manifest
     ds.add_param("input", "design.csv")
