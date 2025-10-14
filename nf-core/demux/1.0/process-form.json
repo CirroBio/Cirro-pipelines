@@ -44,7 +44,7 @@
       },
       "workflow_version": {
         "title": "Workflow Version",
-        "description": "Select the specific version of nf-core/demux to use",
+        "description": "Select the specific version of nf-core/demultiplex to use",
         "type": "string",
         "enum": [
           "1.6.1",
