@@ -2,7 +2,7 @@
   "id": "process-nf-core-rnafusion-3_0",
   "childProcessIds": [],
   "name": "RNA Fusion (nf-core/rnafusion)",
-  "desc": "Detect gene fusion events from RNAseq data (v3.0.2)",
+  "desc": "Detect gene fusion events from RNAseq data",
   "executor": "NEXTFLOW",
   "pipelineTypeOverride": "nf-core",
   "category": "RNA Sequencing",
