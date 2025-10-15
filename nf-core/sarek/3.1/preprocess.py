@@ -211,17 +211,6 @@ if __name__ == "__main__":
 
     ds.remove_param('wes')
 
-    # Make a stub within the custom_config_base/ folder which is used to import the config
-    os.makedirs("custom_config_base/pipeline/")
-    with open("custom_config_base/pipeline/sarek.config", "wt") as handle:
-        handle.write("""
-    profiles {
-        standard { includeConfig "%s" }
-    }""" % f"{os.getcwd()}/nextflow-override.config")
-    ds.add_param("custom_config_base", f"{os.getcwd()}/custom_config_base")
-    assert os.path.exists("custom_config_base/pipeline/sarek.config")
-    print("Added handle for compute config to custom_config_base/pipeline/sarek.config")
-
     # If an intervals file was not selected, use --no_intervals
     if not ds.params.get("intervals"):
         ds.add_param("no_intervals", True)
