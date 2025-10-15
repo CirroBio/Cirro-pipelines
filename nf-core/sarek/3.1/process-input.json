@@ -1,5 +1,4 @@
 {
-  "workflow_version": "$.params.dataset.paramJson.workflow_version",
   "tools": "$.params.dataset.paramJson.analysis_type.tools",
   "wes": "$.params.dataset.paramJson.analysis_type.wes",
   "annotation_tool": "$.params.dataset.paramJson.annotation.annotation_tool",
@@ -22,7 +21,6 @@
   "input": "manifest.csv",
   "germline_resource": "$.params.dataset.paramJson.analysis_type.germline_resource",
   "igenomes_base": "s3://pubweb-references/igenomes",
-  "use_annotation_cache_keys": true,
   "vep_cache": "s3://pubweb-references/vep_cache",
   "snpeff_cache": "s3://pubweb-references/snpeff_cache",
   "monochrome_logs": true

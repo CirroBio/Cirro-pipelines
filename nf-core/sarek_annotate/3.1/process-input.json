@@ -9,7 +9,6 @@
   "outdir": "$.params.dataset.s3|/data/",
   "input": "manifest.csv",
   "igenomes_base": "s3://pubweb-references/igenomes",
-  "use_annotation_cache_keys": true,
   "vep_cache": "s3://pubweb-references/vep_cache",
   "snpeff_cache": "s3://pubweb-references/snpeff_cache",
   "monochrome_logs": true
