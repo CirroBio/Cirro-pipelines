@@ -16,5 +16,8 @@
   "igenomes_base": "s3://pubweb-references/igenomes",
   "germline_resource": "$.params.dataset.paramJson.analysis_type.germline_resource",
   "joint_mutect2": "$.params.dataset.paramJson.analysis_type.joint_mutect2",
-  "use_annotation_cache_keys": true
+  "use_annotation_cache_keys": true,
+  "vep_cache": "s3://pubweb-references/vep_cache",
+  "snpeff_cache": "s3://pubweb-references/snpeff_cache",
+  "monochrome_logs": true
 }

@@ -13,5 +13,8 @@
   "optical_duplicate_pixel_distance": "$.params.dataset.paramJson.advanced_options.optical_duplicate_pixel_distance",
   "outdir": "$.params.dataset.s3|/data/",
   "input": "manifest.csv",
-  "igenomes_base": "s3://pubweb-references/igenomes"
+  "igenomes_base": "s3://pubweb-references/igenomes",
+  "vep_cache": "s3://pubweb-references/vep_cache",
+  "snpeff_cache": "s3://pubweb-references/snpeff_cache",
+  "monochrome_logs": true
 }

@@ -16,5 +16,8 @@
     "outdir": "$.params.dataset.s3|/data/",
     "input": "manifest.csv",
     "igenomes_ignore": true,
-    "skip_tools": "baserecalibrator"
+    "skip_tools": "baserecalibrator",
+    "vep_cache": "s3://pubweb-references/vep_cache",
+    "snpeff_cache": "s3://pubweb-references/snpeff_cache",
+    "monochrome_logs": true
 }
