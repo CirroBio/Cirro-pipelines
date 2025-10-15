@@ -107,10 +107,9 @@
                     "description": "Instructs Trim Galore to remove bp from the 3' end of read 2 AFTER adapter/quality trimming has been performed."
                   },
                   "trim_nextseq": {
-                    "type": "integer",
+                    "type": "boolean",
                     "title": "Trim NextSeq",
-                    "description": "Instructs Trim Galore to apply the --nextseq=X option, to trim based on quality after removing poly-G tails.",
-                    "help_text": "This enables the option Cutadapt `--nextseq-trim=3'CUTOFF` option via Trim Galore, which will set a quality cutoff (that is normally given with -q instead), but qualities of G bases are ignored. This trimming is in common for the NextSeq- and NovaSeq-platforms, where basecalls without any signal are called as high-quality G bases."
+                    "description": "DetectS polyG in read tails and trim them. Corresponds to the FastP flag `--trim_poly_g.`"
                   },
                   "save_trimmed": {
                     "type": "boolean",
