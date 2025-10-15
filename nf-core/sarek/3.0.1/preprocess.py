@@ -118,10 +118,6 @@ if spliceai:
     ds.add_param('spliceai_indel', spliceai_indel, overwrite=True)
     ds.add_param('spliceai_indel_tbi', spliceai_indel_tbi, overwrite=True)
 
-# workflow is failing due to 'Unknown config attribute `params.vep_version` -- check config file: /root/.nextflow/assets/nf-core/sarek/nextflow.config'
-# test by hard-coding here
-ds.add_param('vep_version', '106.1', overwrite=True)
-
 # PON handling
 
 if params.get('analysis_type') == 'Somatic Variant Calling':
