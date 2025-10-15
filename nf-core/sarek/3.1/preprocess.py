@@ -102,24 +102,10 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
     return manifest
 
 
-def set_workflow_version(ds: PreprocessDataset):
-
-    workflow_version = ds.params.get("workflow_version")
-    assert workflow_version is not None, "Could not find workflow version"
-
-    ds.logger.info(f'Using workflow version: {workflow_version}')
-
-    os.environ["PW_WORKFLOW_VERSION"] = workflow_version
-    ds.remove_param("workflow_version")
-
-
 if __name__ == "__main__":
 
     # Load the information for this dataset
     ds = PreprocessDataset.from_running()
-
-    # Set the workflow version
-    set_workflow_version(ds)
 
     # Make the samplesheet
     manifest = make_manifest(ds)
