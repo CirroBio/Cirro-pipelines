@@ -29,20 +29,20 @@
             "title": "Target Value",
             "description": "Target for contrasts"
           }
-        },
-        "shiny_app_settings": {
-          "title": "Build Shiny App",
-          "type": "object",
-          "description": "Trigger generation of files you can quickly use to spin up a shiny app locally. Note: the generated app is not deployed to Cirro. To use it you need to download the Shiny app files and have an appropriate local R environment to run it.",
-          "default": "",
-          "properties": {
-            "shinyngs_build_app": {
-              "type": "boolean",
-              "title": "Enabled",
-              "default": false,
-              "description": "Should a Shiny app be built?",
-              "help_text": ""
-            }
+        }
+      },
+      "shiny_app_settings": {
+        "title": "Build Shiny App",
+        "type": "object",
+        "description": "Trigger generation of files you can quickly use to spin up a shiny app locally. Note: the generated app is not deployed to Cirro. To use it you need to download the Shiny app files and have an appropriate local R environment to run it.",
+        "default": "",
+        "properties": {
+          "shinyngs_build_app": {
+            "type": "boolean",
+            "title": "Enabled",
+            "default": false,
+            "description": "Should a Shiny app be built?",
+            "help_text": ""
           }
         }
       }
