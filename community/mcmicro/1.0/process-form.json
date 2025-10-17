@@ -1,0 +1,79 @@
+{
+  "ui": {},
+  "form": {
+    "type": "object",
+    "properties": {
+      "image_type": {
+        "type": "string",
+        "title": "Image Type",
+        "enum": [
+          "Whole-Slide Image",
+          "Tissue Microarray"
+        ],
+        "default": "Whole-Slide Image"
+      },
+      "segmentation": {
+        "type": "object",
+        "title": "Segmentation Tools",
+        "description": "Select one or more",
+        "properties": {
+          "unmicst": {
+            "type": "boolean",
+            "title": "unmicst",
+            "default": true,
+            "description": "UnMICST: Deep learning with real augmentation for robust segmentation of highly multiplexed images of human tissues"
+          },
+          "ilastik": {
+            "type": "boolean",
+            "title": "ilastik",
+            "default": false,
+            "description": "ilastik: interactive machine learning for (bio)image analysis"
+          },
+          "cypository": {
+            "type": "boolean",
+            "title": "cypository",
+            "default": false,
+            "description": "Cypository: PyTorch Mask-RCNN for Cell Segmentation"
+          }
+        }
+      },
+      "downstream": {
+        "type": "object",
+        "title": "Downstream Modules",
+        "description": "Select one or more",
+        "properties": {
+          "scimap": {
+            "type": "boolean",
+            "title": "scimap",
+            "default": true,
+            "description": "Scimap is a scalable toolkit for analyzing spatial molecular data"
+          },
+          "naivestates": {
+            "type": "boolean",
+            "title": "naivestates",
+            "default": false,
+            "description": "Inference of cell states using Naive Bayes"
+          },
+          "fastpg": {
+            "type": "boolean",
+            "title": "fastpg",
+            "default": false,
+            "description": "Fast phenograph-like clustering of millions of items with scores of features"
+          },
+          "scanpy": {
+            "type": "boolean",
+            "title": "scanpy",
+            "default": false,
+            "description": "Scanpy is a scalable toolkit for analyzing single-cell gene expression data"
+          },
+          "flowsom": {
+            "type": "boolean",
+            "title": "flowsom",
+            "default": false,
+            "description": "FlowSOM uses self-organizing maps to cluster cells based on marker expression"
+          }
+        }
+      }
+    }
+  }
+}

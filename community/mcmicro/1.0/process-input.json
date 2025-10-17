@@ -1,0 +1,14 @@
+{
+    "channel_names": "$.inputs[0].dataPath|/channelNames.txt",
+    "parent_dataset": "$.inputs[0].dataPath",
+    "in": "$.dataset.dataPath",
+    "image_type": "$.dataset.params.image_type",
+    "unmicst": "$.dataset.params.segmentation.unmicst",
+    "ilastik": "$.dataset.params.segmentation.ilastik",
+    "cypository": "$.dataset.params.segmentation.cypository",
+    "scimap": "$.dataset.params.downstream.scimap",
+    "naivestates": "$.dataset.params.downstream.naivestates",
+    "fastpg": "$.dataset.params.downstream.fastpg",
+    "scanpy": "$.dataset.params.downstream.scanpy",
+    "flowsom": "$.dataset.params.downstream.flowsom"
+}

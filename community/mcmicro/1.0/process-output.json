@@ -1,0 +1,92 @@
+{
+  "commands": [
+      {
+          "command": "hot.Parquet",
+          "params": {
+              "melt": {
+                  "key": {
+                      "desc": "Image channel quantified for each cell",
+                      "name": "Channel"
+                  },
+                  "value": {
+                      "desc": "Aggregated image channel intensity for each cell",
+                      "name": "Intensity"
+                  }
+              },
+              "cols": [
+                  {
+                      "col": "CellID",
+                      "desc": "Unique identifier per cell",
+                      "name": "Cell ID"
+                  },
+                  {
+                      "col": "X_centroid",
+                      "desc": "Horizontal coordinate (x) of cell centroid",
+                      "name": "Centroid (X)"
+                  },
+                  {
+                      "col": "Y_centroid",
+                      "desc": "Vertical coordinate (y) of cell centroid",
+                      "name": "Centroid (Y)"
+                  },
+                  {
+                      "col": "Area",
+                      "desc": "Area of 2D mask defining cell outline",
+                      "name": "Area"
+                  },
+                  {
+                      "col": "MajorAxisLength",
+                      "desc": "Maximum distance along the major axis of the cell",
+                      "name": "Length (major axis)"
+                  },
+                  {
+                      "col": "MinorAxisLength",
+                      "desc": "Maximum distance along the minor axis of the cell",
+                      "name": "Length (minor axis)"
+                  },
+                  {
+                      "col": "Eccentricity",
+                      "desc": "Cell shape summary - eccentricity",
+                      "name": "Eccentricity"
+                  },
+                  {
+                      "col": "Solidity",
+                      "desc": "Cell shape summary - solidity",
+                      "name": "Solidity"
+                  },
+                  {
+                      "col": "Extent",
+                      "desc": "Cell shape summary - Extent",
+                      "name": "Extent"
+                  },
+                  {
+                      "col": "Orientation",
+                      "desc": "Orientation of the cell in space",
+                      "name": "Orientation"
+                  }
+              ],
+              "desc": "Data derived from quantification of cell images",
+              "name": "Quantification Data",
+              "read_csv": {
+                  "parse": {
+                      "delimiter": ","
+                  }
+              },
+              "source": "$data_directory/quantification/data--[method]_cell.csv",
+              "target": "quantification_data.parquet",
+              "url": "",
+              "concat": [
+                  {
+                      "token": "method",
+                      "name": "Method",
+                      "desc": "Segmentation method used to identify cells"
+                  }
+              ]
+          }
+      },
+      {
+          "command": "hot.Manifest",
+          "params": {}
+      }
+  ]
+}
