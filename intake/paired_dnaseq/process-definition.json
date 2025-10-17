@@ -14,7 +14,7 @@
     "process-hutch-scrub-human-1-0",
     "process-hutch-ngscheckmate-1-0",
     "process-hutch-metaphlan-paired-1-0",
-    "process-hutch-humann-1-0",
+    "process-cirro-humann-1-0",
     "process-hutch-somatic-wgs-dragen-1-0",
     "process-hutch-germline-wgs-dragen-1-0",
     "process-hutch-dragen-wgs-align-dna-1-0",

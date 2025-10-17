@@ -1,8 +1,6 @@
 {
   "id": "codex_raw",
-  "childProcessIds": [
-    "hutch-qupath-1_0"
-  ],
+  "childProcessIds": [],
   "name": "CODEX Images (raw)",
   "desc": "Unprocessed image data produced by the CODEX platform (TIFF)",
   "executor": "INGEST",

@@ -4,9 +4,7 @@
     "codex_processed",
     "images"
   ],
-  "childProcessIds": [
-    "hutch-qupath-1_0"
-  ],
+  "childProcessIds": [],
   "name": "MCMICRO: Multiple-choice microscopy pipeline",
   "desc": "End-to-end processing pipeline for multiplexed whole slide imaging and tissue microarrays",
   "executor": "NEXTFLOW",

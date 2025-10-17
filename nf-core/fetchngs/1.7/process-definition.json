@@ -18,7 +18,7 @@
     "process-hutch-filter-paired-rnaseq-1-0",
     "process-hutch-scrub-human-1-0",
     "process-hutch-metaphlan-paired-1-0",
-    "process-hutch-humann-1-0",
+    "process-cirro-humann-1-0",
     "hutch-gig-map-align-pangenome-1-0",
     "hutch-gig-map-align-reads-1-0",
     "hutch-sourmash-tax",

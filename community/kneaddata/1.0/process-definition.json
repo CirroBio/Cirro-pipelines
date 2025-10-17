@@ -13,7 +13,7 @@
     "process-nf-core-viralrecon-2_2",
     "process-nf-core-sarek-custom-genome-3-5",
     "process-hutch-metaphlan-paired-1-0",
-    "process-hutch-humann-1-0",
+    "process-cirro-humann-1-0",
     "hutch-gig-map-align-pangenome-1-0",
     "hutch-gig-map-align-reads-1-0",
     "hutch-sourmash-tax",

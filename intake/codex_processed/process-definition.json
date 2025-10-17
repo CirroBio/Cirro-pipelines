@@ -1,8 +1,6 @@
 {
   "id": "codex_processed",
-  "childProcessIds": [
-    "hutch-qupath-1_0"
-  ],
+  "childProcessIds": [],
   "name": "CODEX Images (Processed)",
   "desc": "Processed image data produced by the CODEX platform (qpTIFF)",
   "executor": "INGEST",

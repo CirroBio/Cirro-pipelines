@@ -1,7 +1,10 @@
 {
     "id": "process-cirro-qupath-1_0",
     "parentProcessIds": [
-        "images"
+        "images",
+        "codex_raw",
+        "codex_processed",
+        "process-hutch-mcmicro-1-0"
     ],
     "childProcessIds": [],
     "name": "QuPath Image Analysis",
