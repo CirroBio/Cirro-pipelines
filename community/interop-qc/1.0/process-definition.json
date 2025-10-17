@@ -1,0 +1,25 @@
+{
+  "id": "process-hutch-interop-qc-1_0",
+  "childProcessIds": [],
+  "name": "InterOp QC",
+  "desc": "InterOp QC Reporting - Generate QC metrics from Illumina Sequencing run",
+  "executor": "NEXTFLOW",
+  "category": "Quality Control",
+  "documentationUrl": "https://github.com/FredHutch/interop-nf",
+  "code": {
+    "repository": "GITHUBPUBLIC",
+    "script": "main.nf",
+    "uri": "FredHutch/interop-nf",
+    "version": "1.0"
+  },
+  "computeDefaults": [
+    {
+      "executor": "NEXTFLOW",
+      "json": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-compute.config",
+      "name": "Default"
+    }
+  ],
+  "paramMapJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json",
+  "formJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-form.json",
+  "webOptimizationJson": "s3://<RESOURCES_BUCKET>/process/hutch/default-process-output.json"
+}
