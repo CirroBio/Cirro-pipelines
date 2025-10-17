@@ -1,7 +1,6 @@
 {
   "id": "ingest_cellranger",
   "childProcessIds": [
-    "azimuth-1",
     "hutch-scanpy-qc-1_0"
   ],
   "name": "CellRanger Analysis Output",

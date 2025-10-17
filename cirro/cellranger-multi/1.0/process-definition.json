@@ -1,8 +1,6 @@
 {
   "id": "process-hutch-cellranger-multi-1-0",
-  "childProcessIds": [
-    "azimuth-1"
-  ],
+  "childProcessIds": [],
   "dataType": "Single-Cell Data (multi)",
   "name": "CellRanger Multi Analysis",
   "desc": "Analysis of 10X single-cell sequencing of gene expression paired with V(D)J, antibody capture, or CRISPR guides",

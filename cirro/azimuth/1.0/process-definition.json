@@ -1,5 +1,15 @@
 {
-  "id": "azimuth-1",
+  "id": "process-cirro-azimuth-1",
+  "parentProcessIds": [
+    "process-bbi-sci",
+    "single-cell-h5",
+    "ingest_cellranger",
+    "process-hutch-cellranger-hashtagging-1-0",
+    "process-hutch-cellranger-aggr-1-0",
+    "process-hutch-cellranger-gex-fetchngs-1-0",
+    "process-hutch-cellranger-gex-1-0",
+    "process-hutch-cellranger-multi-1-0"
+  ],
   "childProcessIds": [],
   "dataType": "Annotated Single-Cell Data (Azimuth)",
   "name": "Single-Cell Azimuth Projection",

@@ -1,7 +1,6 @@
 {
   "id": "process-hutch-cellranger-aggr-1-0",
   "childProcessIds": [
-    "azimuth-1",
     "hutch-scanpy-qc-1_0"
   ],
   "dataType": "Single-Cell Data (Aggregated)",
