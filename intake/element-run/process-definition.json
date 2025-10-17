@@ -1,10 +1,6 @@
 {
   "id": "element-run",
-  "childProcessIds": [
-    "omics-bases2fastq-2x75-1-0",
-    "omics-bases2fastq-2x150-1-0",
-    "omics-bases2fastq-2x300-1-0"
-  ],
+  "childProcessIds": [],
   "name": "Element Sequencing Run",
   "desc": "Element AVITI sequencing run output",
   "executor": "INGEST",
