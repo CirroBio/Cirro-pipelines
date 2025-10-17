@@ -7,6 +7,6 @@
     "matrix": "$.params.inputs[0].s3|/data/salmon/salmon.merged.gene_counts.tsv",
     "transcript_length_matrix": "$.params.inputs[0].s3|/data/salmon/salmon.merged.gene_lengths.tsv",
     "contrasts": "contrasts.csv",
-    "shinyngs_build_app": false,
+    "shinyngs_build_app": "$.params.dataset.paramJson.shiny_app_settings.shinyngs_build_app",
     "igenomes_base": "s3://pubweb-references/igenomes"
 }
