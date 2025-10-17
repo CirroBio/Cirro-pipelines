@@ -1,0 +1,27 @@
+{
+  "id": "process-hutch-virscan-1_1",
+  "childProcessIds": [],
+  "name": "VirScan (PhIP-Flow v1.12)",
+  "desc": "Analysis of antibody binding to viral epitopes in the VirScan library, using the PhIP-Flow analysis workflow.\nNegative controls should be annotated with control_status = 'beads_only'",
+  "executor": "NEXTFLOW",
+  "category": "Targeted Sequencing",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-targeted-sequencing/#virscan",
+  "code": {
+    "repository": "GITHUBPUBLIC",
+    "script": "main.nf",
+    "uri": "matsengrp/phip-flow",
+    "version": "V1.12"
+  },
+  "usesSampleSheet": true,
+  "computeDefaults": [
+    {
+      "executor": "NEXTFLOW",
+      "json": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-compute.config",
+      "name": "Default"
+    }
+  ],
+  "paramMapJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json",
+  "formJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-form.json",
+  "preProcessScript": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/preprocess.py",
+  "webOptimizationJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-output.json"
+}

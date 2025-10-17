@@ -1,0 +1,55 @@
+{
+  "form": {
+    "type": "object",
+    "properties": {
+      "peptide_table": {
+        "title": "Peptide Library",
+        "type": "string",
+        "pathType": "references",
+        "file": "**/virscan_libraries/**/library.csv"
+      },
+      "read_length": {
+        "title": "Read Length",
+        "description": "Read length used for alignment",
+        "type": "integer",
+        "default": 50
+      },
+      "peptide_tile_length": {
+        "title": "Peptide Length",
+        "description": "Peptide length used for alignment",
+        "type": "integer",
+        "default": 50
+      },
+      "n_mismatches": {
+        "title": "Num. Mismatches",
+        "description": "Number of mismatches allowed",
+        "type": "integer",
+        "default": 2
+      },
+      "zscore_threshold": {
+        "title": "Z-score threshold",
+        "description": "Minimum z-score used to determine if an epitope is detected",
+        "type": "string",
+        "default": "2.5"
+      },
+      "max_overlap": {
+        "title": "Maximum Peptide Overlap",
+        "description": "Maximum allowed overlap between detected peptides when summarizing results per-organism",
+        "type": "integer",
+        "default": 7
+      },
+      "run_cpm_enr_workflow": {
+        "title": "Run CPM Enrichment Analysis",
+        "type": "boolean",
+        "default": true
+      },
+      "run_neg_binom_fit_predict": {
+        "title": "Run Negative Binomial Modeling",
+        "description": "Note: models may not converge with small numbers of samples",
+        "type": "boolean",
+        "default": false
+      }
+    }
+  },
+  "ui": {}
+}

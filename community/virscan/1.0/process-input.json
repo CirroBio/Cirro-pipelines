@@ -1,0 +1,12 @@
+{
+  "results": "$.dataset.dataPath",
+  "reads_prefix": "$.inputs[0].dataPath",
+  "peptide_table": "$.dataset.params.peptide_table",
+  "read_length": "$.dataset.params.read_length",
+  "peptide_tile_length": "$.dataset.params.peptide_tile_length",
+  "n_mismatches": "$.dataset.params.n_mismatches",
+  "zscore_threshold": "$.dataset.params.zscore_threshold",
+  "max_overlap": "$.dataset.params.max_overlap",
+  "run_cpm_enr_workflow": "$.dataset.params.run_cpm_enr_workflow",
+  "run_neg_binom_fit_predict": "$.dataset.params.run_neg_binom_fit_predict"
+}
