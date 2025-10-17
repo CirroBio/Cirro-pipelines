@@ -1,0 +1,25 @@
+{
+  "id": "process-hutch-magic_count-1_0",
+  "childProcessIds": [],
+  "name": "MAGeCK Count",
+  "desc": "Quantify sequencing coverage of sgRNA CRISPR guides with the MAGeCK Count analysis software.",
+  "executor": "NEXTFLOW",
+  "category": "Targeted Sequencing",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-targeted-sequencing/#crispr-screen-analysis",
+  "code": {
+    "repository": "GITHUBPUBLIC",
+    "script": "count.nf",
+    "uri": "FredHutch/crispr-screen-nf",
+    "version": "main"
+  },
+  "computeDefaults": [
+    {
+      "executor": "NEXTFLOW",
+      "json": "s3://<RESOURCES_BUCKET>/process/hutch/default-process-compute.config",
+      "name": "Default"
+    }
+  ],
+  "paramMapJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json",
+  "formJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-form.json",
+  "webOptimizationJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-output.json"
+}

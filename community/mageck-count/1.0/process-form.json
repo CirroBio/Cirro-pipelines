@@ -1,0 +1,36 @@
+{
+  "form": {
+    "type": "object",
+    "required": [
+      "library"
+    ],
+    "properties": {
+      "fastq": {
+        "type": "string",
+        "title": "FASTQ",
+        "multiple": true,
+        "file": "**/**.fastq.gz",
+        "pathType": "dataset"
+      },
+      "library": {
+        "title": "Library",
+        "type": "string",
+        "pathType": "references",
+        "file": "**/crispr_libraries/**/library.csv"
+      },
+      "adapter": {
+        "title": "5' Adapter",
+        "description": "Adapter sequence to be trimmed from the 5' end of each read",
+        "type": "string",
+        "default": "CTTGTGGAAAGGACGAAACACCG"
+      },
+      "insert_length": {
+        "title": "Insert Length",
+        "description": "Length of the sgRNA sequences contained in each read",
+        "type": "integer",
+        "default": 20
+      }
+    }
+  },
+  "ui": {}
+}

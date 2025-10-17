@@ -1,0 +1,236 @@
+{
+  "commands": [
+    {
+      "command": "hot.Parquet",
+      "params": {
+        "source": "$data_directory/mageck/count/combined/counts.txt",
+        "target": "combined_counts.parquet",
+        "name": "Combined Counts",
+        "desc": "Combined counts",
+        "read_csv": {
+          "parse": {
+            "delimiter": "\t"
+          }
+        },
+        "cols": [
+          {
+            "col": "sgRNA",
+            "name": "sgRNA",
+            "desc": "Guide RNA ID"
+          },
+          {
+            "col": "Gene",
+            "name": "Gene",
+            "desc": "Gene ID"
+          }
+        ],
+        "melt": {
+          "key": {
+            "name": "Sample",
+            "desc": "Unique identifier or label for analyzed biological sample"
+          },
+          "value": {
+            "name": "Counts",
+            "desc": "Counts"
+          }
+        }
+      }
+    },
+    {
+      "command": "hot.Parquet",
+      "params": {
+        "source": "$data_directory/mageck/count/combined/summary.txt",
+        "target": "combined_summary.parquet",
+        "name": "Combined Summary",
+        "desc": "Combined summary",
+        "read_csv": {
+          "parse": {
+            "delimiter": "\t"
+          }
+        },
+        "cols": [
+          {
+            "col": "sample",
+            "name": "Sample",
+            "desc": "Sample identifier."
+          },
+          {
+            "col": "n_guides",
+            "name": "Total Guides",
+            "desc": "Total number of guides in the analysis"
+          },
+          {
+            "col": "n_detected",
+            "name": "Guides Detected",
+            "desc": "Number of guides that were successfully detected in the sample"
+          },
+          {
+            "col": "n_undetected",
+            "name": "Guides Undetected",
+            "desc": "Number of guides that were not detected in the sample"
+          },
+          {
+            "col": "n_reads",
+            "name": "Total Reads",
+            "desc": "Total number of sequencing reads in the sample"
+          },
+          {
+            "col": "mean_depth",
+            "name": "Mean Depth",
+            "desc": "Average number of reads detected per guide"
+          },
+          {
+            "col": "median_depth",
+            "name": "Median Depth",
+            "desc": "Median number of reads detected per guide"
+          },
+          {
+            "col": "n_ten_reads",
+            "name": "Guides with >=10 Reads",
+            "desc": "Number of guides with 10 or more reads detected"
+          },
+          {
+            "col": "n_hundred_reads",
+            "name": "Guides with >=100 Reads",
+            "desc": "Number of guides with 100 or more reads detected"
+          }
+        ]
+      }
+    },
+    {
+      "command": "hot.Parquet",
+      "params": {
+        "source": "$data_directory/mageck/count/[sample].count_normalized.txt",
+        "target": "count_normalized.parquet",
+        "name": "Normalized Counts",
+        "desc": "Normalized counts",
+        "read_csv": {
+          "parse": {
+            "delimiter": "\t"
+          }
+        },
+        "cols": [
+          {
+            "col": "sgRNA",
+            "name": "sgRNA",
+            "desc": "Guide RNA ID"
+          },
+          {
+            "col": "Gene",
+            "name": "Gene",
+            "desc": "Gene ID"
+          }
+        ],
+        "melt": {
+          "key": {
+            "name": "Sample",
+            "desc": "Unique identifier or label for analyzed biological sample"
+          },
+          "value": {
+            "name": "Counts",
+            "desc": "Gene-level length-scaled counts"
+          }
+        },
+        "concat": [
+          {
+            "token": "sample",
+            "name": "Sample",
+            "desc": "Unique identifier or label for analyzed biological sample"
+          }
+        ]
+      }
+    },
+    {
+      "command": "hot.Parquet",
+      "params": {
+        "source": "$data_directory/mageck/count/[sample].countsummary.txt",
+        "target": "countsummary.parquet",
+        "name": "Count Summary",
+        "desc": "Count summary",
+        "read_csv": {
+          "parse": {
+            "delimiter": "\t"
+          }
+        },
+        "cols": [
+          {
+            "col": "File",
+            "name": "File",
+            "desc": "Input file name"
+          },
+          {
+            "col": "Label",
+            "name": "Sample",
+            "desc": "Unique identifier or label for analyzed biological sample"
+          },
+          {
+            "col": "Reads",
+            "name": "Total Reads",
+            "desc": "Number of input reads"
+          },
+          {
+            "col": "Mapped",
+            "name": "Mapped Reads",
+            "desc": "Number of mapped reads"
+          },
+          {
+            "col": "Percentage",
+            "name": "Percentage Mapped",
+            "desc": "Percentage of total reads which are mapped"
+          },
+          {
+            "col": "TotalsgRNAs",
+            "name": "Total sgRNAs",
+            "desc": "Total number of guides or sequences detected in the dataset"
+          },
+          {
+            "col": "Zerocounts",
+            "name": "Zero counts",
+            "desc": "Number of guides with zero reads detected"
+          },
+          {
+            "col": "GiniIndex",
+            "name": "Gini Index",
+            "desc": "Gini index of the number of reads detected across all guides"
+          },
+          {
+            "col": "NegSelQC",
+            "name": "Negative Selection QC",
+            "desc": "Negative Selection QC"
+          },
+          {
+            "col": "NegSelQCPval",
+            "name": "Negative Selection QCPval",
+            "desc": "Negative Selection QCPval"
+          },
+          {
+            "col": "NegSelQCPvalPermutation",
+            "name": "Negative Selection QCPvalPermutation",
+            "desc": "Negative Selection QCPvalPermutation"
+          },
+          {
+            "col": "NegSelQCPvalPermutationFDR",
+            "name": "Negative Selection QCPvalPermutationFDR",
+            "desc": "Negative Selection QCPvalPermutationFDR"
+          },
+          {
+            "col": "NegSelQCGene",
+            "name": "Negative Selection QCGene",
+            "desc": "Negative Selection QCGene"
+          }
+        ],
+        "concat": [
+          {
+            "token": "sample",
+            "name": "Sample",
+            "desc": "Unique identifier or label for analyzed biological sample"
+          }
+        ]
+      }
+    },
+    {
+      "command": "hot.Manifest",
+      "params": {}
+    }
+  ]
+}
