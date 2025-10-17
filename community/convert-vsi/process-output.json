@@ -1,0 +1,20 @@
+{
+    "commands": [
+      {
+        "command": "hot.Image",
+        "params": {
+          "url": "<DOCS_SITE>",
+          "source": "$data_directory/[baseName]",
+          "target": "{baseName}.ome.tiff",
+          "name": "{baseName}",
+          "desc": "Image",
+          "filetype": "bioformats",
+          "suffixes": [".ome.tif"]
+        }
+      },
+      {
+        "command": "hot.Manifest",
+        "params": {}
+      }
+    ]
+  }

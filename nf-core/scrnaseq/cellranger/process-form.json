@@ -1,0 +1,58 @@
+{
+  "form": {
+    "type": "object",
+    "properties": {
+      "protocol": {
+        "type": "string",
+        "description": "The protocol that was used to generate the single cell data, e.g. 10x Genomics v2 Chemistry.\n\n Can be 'auto' (cellranger only), '10XV1', '10XV2', '10XV3', '10XV4', or any other protocol string that will get directly passed the respective aligner.",
+        "default": "auto",
+        "title": "Protocol",
+        "fa_icon": "fas fa-cogs"
+      },
+      "cellranger_index": {
+        "type": "string",
+        "title": "CellRanger Index",
+        "description": "Reference genome index used for alignment",
+        "default": "s3://pubweb-references/cellranger/refdata-gex-GRCh38-2024-A",
+        "enum": [
+          "s3://pubweb-references/cellranger/refdata-gex-GRCh38-2024-A",
+          "s3://pubweb-references/cellranger/refdata-gex-GRCh38-2020-A",
+          "s3://pubweb-references/cellranger/refdata-gex-GRCh38-and-GRCm39-2024-A",
+          "s3://pubweb-references/cellranger/refdata-gex-GRCh38-and-mm10-2020-A",
+          "s3://pubweb-references/cellranger/refdata-gex-GRCm39-2024-A",
+          "s3://pubweb-references/cellranger/refdata-gex-mm10-2020-A"
+        ],
+        "enumNames": [
+          "Homo sapiens (GRCh38-2024)",
+          "Homo sapiens (GRCh38-2020)",
+          "Homo sapiens (GRCh38-2024) and Mus musculus (GRCm39-2024)",
+          "Homo sapiens (GRCh38-2020) and Mus musculus (mm10-2020)",
+          "Mus musculus (GRCm39-2024)",
+          "Mus musculus (mm10-2020)"
+        ]
+      },
+      "skip_tools": {
+        "type": "object",
+        "title": "Skip Tools",
+        "description": "This section can be used to disable certain tools in the pipeline",
+        "properties": {
+          "skip_fastqc": {
+            "type": "boolean",
+            "title": "Skip FastQC?"
+          },
+          "skip_cellbender": {
+            "type": "boolean",
+            "title": "Skip Cell Bender empty drops filter?"
+          },
+          "skip_cellranger_renaming": {
+            "type": "boolean",
+            "title": "Skip CellRanger fastq renaming?"
+          }
+        },
+        "required": []
+      }
+    },
+    "required": []
+  },
+  "ui": {}
+}

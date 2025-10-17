@@ -13,6 +13,7 @@
     "process-nf-core-sarek-align-3-2",
     "process-nf-core-sarek-custom-genome-3-5",
     "process-nf-core-rnafusion-3_0",
+    "process-nf-core-chipseq-2-0",
     "process-hutch-ngscheckmate-1-0",
     "process-hutch-filter-paired-rnaseq-1-0",
     "process-hutch-scrub-human-1-0",

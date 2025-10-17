@@ -1,0 +1,8 @@
+{
+  "form": {
+    "type": "object",
+    "name": "Convert VSI to OME-TIFF",
+    "properties": {}
+  },
+  "ui": {}
+}

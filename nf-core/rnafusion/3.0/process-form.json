@@ -19,6 +19,16 @@
     "description": "A workflow for detecting and visualizing gene fusion events in RNA sequencing datasets.",
     "type": "object",
     "properties": {
+      "workflow_version": {
+        "title": "Workflow Version",
+        "description": "Select the specific version of nf-core/rnafusion to use",
+        "type": "string",
+        "enum": [
+            "3.0.2",
+            "4.0.0"
+        ],
+        "default": "3.0.2"
+      },
       "ref_genome": {
         "title": "Reference Genome",
         "description": "The workflow is currently configured to work with GRCh38 (ENSEMBL v102).",

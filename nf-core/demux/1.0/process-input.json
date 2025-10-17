@@ -1,0 +1,11 @@
+{
+  "outdir": "$.dataset.dataPath",
+  "input": "manifest.csv",
+  "samplesheet": "$.dataset.params.samplesheet",
+  "flowcell_id": "$.dataset.params.flowcell_id",
+  "lane": "$.dataset.params.lane",
+  "demultiplexer": "$.dataset.params.demultiplexer",
+  "skip_tools": "$.dataset.params.workflow_options.skip_tools[*]",
+  "sample_size": "$.dataset.params.workflow_options.sample_size",
+  "v1_schema": "$.dataset.params.workflow_options.v1_schema"
+}

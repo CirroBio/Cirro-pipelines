@@ -33,5 +33,6 @@
     "skip_plot_fingerprint": "$.params.dataset.paramJson.process_skipping_options.skip_plot_fingerprint",
     "skip_spp": "$.params.dataset.paramJson.process_skipping_options.skip_spp",
     "skip_igv": "$.params.dataset.paramJson.process_skipping_options.skip_igv",
-    "skip_multiqc": "$.params.dataset.paramJson.process_skipping_options.skip_multiqc"
+    "skip_multiqc": "$.params.dataset.paramJson.process_skipping_options.skip_multiqc",
+    "monochrome_logs": true
   }

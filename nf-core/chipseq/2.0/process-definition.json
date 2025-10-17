@@ -2,7 +2,7 @@
   "id": "process-nf-core-chipseq-2-0",
   "childProcessIds": [],
   "name": "ChIP-seq (nf-core/chipseq)",
-  "desc": "ChIP-seq: peak-calling, QC, and differential analysis (v2.0)",
+  "desc": "ChIP-seq: peak-calling, QC, and differential analysis",
   "executor": "NEXTFLOW",
   "pipelineTypeOverride": "nf-core",
   "category": "DNA Sequencing",
@@ -11,7 +11,7 @@
     "repository": "GITHUBPUBLIC",
     "script": "main.nf",
     "uri": "nf-core/chipseq",
-    "version": "2.0.0"
+    "version": "2.1.0"
   },
   "usesSampleSheet": true,
   "computeDefaults": [

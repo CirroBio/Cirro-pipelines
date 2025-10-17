@@ -21,5 +21,6 @@
   "outdir": "$.params.dataset.s3|/data/",
   "input": "manifest.csv",
   "germline_resource": "$.params.dataset.paramJson.analysis_type.germline_resource",
-  "igenomes_base": "s3://pubweb-references/igenomes"
+  "igenomes_base": "s3://pubweb-references/igenomes",
+  "use_annotation_cache_keys": true
 }

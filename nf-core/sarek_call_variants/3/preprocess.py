@@ -159,14 +159,8 @@ if __name__ == "__main__":
     # If an intervals file was not selected, use --no_intervals
     if not ds.params.get("intervals"):
         ds.add_param("no_intervals", True)
-
-    # vep_cache_version (attempt to resolve 'expected numeric, got string' bug).
-    # this gets updated regularly - keep an eye on it / need to think
-    # how to automatically update this. 
+        
     genome = ds.params.get('genome')
-    cache_key = {'GATK.GRCh37': 106, 'GATK.GRCh38': 106, 'GRCm38': 102}
-    vep_cache_version = cache_key[genome]
-    ds.add_param('vep_cache_version', vep_cache_version, overwrite=True)
 
     # if user does not select VEP/snpEff then annotation tool param does not exist.
     # script sets it as empty list, use this to toggle deleting the param to avoid error.

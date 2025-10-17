@@ -1,0 +1,132 @@
+{
+  "form": {
+    "type": "object",
+    "properties": {
+      "samplesheet": {
+        "title": "Samplesheet",
+        "description": "File containing the sample information and indexes",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.csv"
+      },
+      "flowcell_id": {
+        "title": "Flow Cell ID",
+        "description": "If not provided, uses dataset name. Should not contain spaces.",
+        "type": "string",
+        "pattern": "^\\S+$"
+      },
+      "lane": {
+        "title": "Lane",
+        "description": "Comma-separated lane numbers to demux. When provided, only the given lane(s) will be demultiplexed",
+        "type": "string",
+        "pattern": "^\\d+(,\\d+)*$"
+      },
+      "demultiplexer": {
+        "type": "string",
+        "enum": [
+          "bases2fastq",
+          "bcl2fastq",
+          "bclconvert",
+          "sgdemux",
+          "mkfastq"
+        ],
+        "enumNames": [
+          "bases2fastq (Element Biosciences)",
+          "bcl2fastq (Illumina)",
+          "bclconvert (Illumina)",
+          "sgdemux (Singular Genomics)",
+          "mkfastq (10X Genomics)"
+        ],
+        "description": "",
+        "fa_icon": "fas fa-microscope",
+        "default": "bclconvert",
+        "title": "Demultiplexer to use"
+      },
+      "workflow_version": {
+        "title": "Workflow Version",
+        "description": "Select the specific version of nf-core/demultiplex to use",
+        "type": "string",
+        "enum": [
+          "1.6.1",
+          "1.6.0"
+        ],
+        "default": "1.6.1"
+      },
+      "workflow_options": {
+        "type": "object",
+        "title": "Workflow options",
+        "description": "",
+        "properties": {
+          "skip_tools": {
+            "type": "array",
+            "description": "List of tools to skip",
+            "title": "Skip Tools",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "enum": [
+                "fastp",
+                "kraken",
+                "checkqc",
+                "falco",
+                "md5sum",
+                "samshee",
+                "multiqc"
+              ],
+              "enumNames": [
+                "fastp - Adapter and quality trimming",
+                "kraken - Taxonomic sequence classification",
+                "checkqc - Check quality criteria (only for bcl2fastq)",
+                "falco - Raw read QC",
+                "md5sum - Creates an MD5 checksum of every fastq",
+                "samshee - Validates Illumina v2 samplesheet",
+                "multiqc - Aggregate report"
+              ]
+            }
+          },
+          "sample_size": {
+            "type": "integer",
+            "default": 100000,
+            "description": "Number of reads to subsample for contamination detection.",
+            "title": "Sample Size"
+          }
+        },
+        "required": []
+      }
+    },
+    "if": {
+      "properties": {
+        "demultiplexer": {
+          "enum": ["bclconvert", "bcl2fastq"]
+        }
+      }
+    },
+    "then": {
+      "properties": {
+        "workflow_options": {
+          "properties": {
+            "v1_schema": {
+              "type": "boolean",
+              "description": "Is this using the Illumina V1 sample sheet?",
+              "title": "Illumina V1 Schema"
+            }
+          }
+        }
+      }
+    },
+    "else": {
+      "properties": {
+        "workflow_options": {
+          "properties": {
+            "v1_schema": false
+          }
+        }
+      }
+    },
+    "required": [
+      "samplesheet",
+      "demultiplexer"
+    ]
+  },
+  "ui": {}
+}

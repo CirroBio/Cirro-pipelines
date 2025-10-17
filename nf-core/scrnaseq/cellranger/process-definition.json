@@ -1,19 +1,24 @@
 {
-  "id": "process-nf-core-rnafusion-3_0",
+  "id": "process-nf-core-scrna-cellranger",
+  "parentProcessIds": [
+    "single-cell-10X"
+  ],
   "childProcessIds": [],
-  "name": "RNA Fusion (nf-core/rnafusion)",
-  "desc": "Detect gene fusion events from RNAseq data",
+  "dataType": "Single-Cell Data (GEX)",
+  "name": "FASTQ to Gene Counts via CellRanger (nf-core/scrnaseq)",
+  "desc": "Analysis of 10X single-cell sequencing of gene expression",
   "executor": "NEXTFLOW",
   "pipelineTypeOverride": "nf-core",
-  "category": "RNA Sequencing",
-  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-rna-sequencing/#rna-fusion-nf-corernafusion",
+  "category": "Single-Cell Analysis",
+  "documentationUrl": "https://nf-co.re/scrnaseq/4.0.0/",
   "code": {
     "repository": "GITHUBPUBLIC",
     "script": "main.nf",
-    "uri": "nf-core/rnafusion",
-    "version": "3.0.2"
+    "uri": "nf-core/scrnaseq",
+    "version": "4.0.0"
   },
   "usesSampleSheet": true,
+  "allowMultipleSources": true,
   "computeDefaults": [
     {
       "executor": "NEXTFLOW",
