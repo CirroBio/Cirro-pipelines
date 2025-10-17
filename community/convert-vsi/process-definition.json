@@ -7,7 +7,7 @@
     "hutch-qupath-1_0",
     "process-hutch-qupath-stardist-1_0",
     "process-hutch-cellpose-1_0",
-    "hutch-sage-artist-1-0"
+    "process-sage-artist-1-0"
   ],
   "dataType": "Image (OME-TIFF)",
   "name": "Convert VSI to OME-TIFF",

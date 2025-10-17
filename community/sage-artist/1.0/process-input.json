@@ -1,0 +1,11 @@
+{
+    "images": "$.dataset.params.images",
+    "he_images": "$.dataset.params.he_images",
+    "remove_bg": "$.dataset.params.remove_bg",
+    "level": "$.dataset.params.level",
+    "dimred": "$.dataset.params.dimred",
+    "colormap": "$.dataset.params.colormap",
+    "n_components": "$.dataset.params.n_components",
+    "outdir": "$.dataset.dataPath",
+    "input": "input.csv"
+}

@@ -1,0 +1,28 @@
+{
+  "id": "process-sage-artist-1-0",
+  "childProcessIds": [],
+  "dataType": "Multiplexed Tissue Image",
+  "name": "Multiplexed Tissue Image Analysis (Sage Bionetworks)",
+  "desc": "Generate visualizations of multiplexed tissue imaging datasets. Initially developed for the HTAN Data Portal.",
+  "executor": "NEXTFLOW",
+  "category": "Image Analysis",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-image-analysis/#multiplexed-tissue-image-analysis-sage-bionetworks",
+  "code": {
+    "repository": "GITHUBPUBLIC",
+    "script": "main.nf",
+    "uri": "Sage-Bionetworks-Workflows/nf-artist",
+    "version": "main"
+  },
+  "usesSampleSheet": false,
+  "computeDefaults": [
+    {
+      "executor": "NEXTFLOW",
+      "json": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-compute.config",
+      "name": "Default"
+    }
+  ],
+  "paramMapJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json",
+  "formJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-form.json",
+  "preProcessScript": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/preprocess.py",
+  "webOptimizationJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-output.json"
+}

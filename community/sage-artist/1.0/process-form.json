@@ -1,0 +1,85 @@
+{
+    "form": {
+        "properties": {
+            "images": {
+                "type": "string",
+                "title": "Non-H&E Image(s)",
+                "file": "**/*",
+                "pathType": "dataset",
+                "description": "Select any images to process (not H&E)",
+                "multiple": true
+            },
+            "he_images": {
+                "type": "string",
+                "title": "H&E Image(s)",
+                "file": "**/*",
+                "pathType": "dataset",
+                "description": "Select any H&E images to process",
+                "multiple": true
+            },
+            "remove_bg": {
+                "title": "Remove Background",
+                "description": "Setting this to true will remove the non-tissue background",
+                "type": "boolean",
+                "default": true
+            },
+            "level": {
+                "title": "Pyramid Level",
+                "description": "Specifies the pyramid level used in thumbnails (-1 is the smallest)",
+                "type": "integer",
+                "default": -1
+            },
+            "dimred": {
+                "title": "Dimensionality Reduction",
+                "description": "Specifies the dimensionality reduction method to use",
+                "type": "string",
+                "enum": [
+                    "umap", "pca", "tsne"
+                ],
+                "default": "umap"
+            },
+            "n_components": {
+                "title": "Number of Components",
+                "description": "Specifies the number of components to use in dimensionality reduction (2 or 3)",
+                "type": "string",
+                "default": "2",
+                "enum": ["2", "3"]
+            }
+        },
+        "dependencies": {
+            "n_components": {
+                "oneOf": [
+                    {
+                        "properties": {
+                            "n_components": {
+                                "enum": ["2"]
+                            },
+                            "colormap": {
+                                "title": "Color Map (2D)",
+                                "description": "Specifies the color map to use",
+                                "type": "string",
+                                "enum": ["BREMM", "SCHUMANN", "STEIGER", "TEULING2", "ZIEGLER", "CUBEDIAGONAL"],
+                                "default": "BREMM"
+                            }                
+                        }
+                    },
+                    {
+                        "properties": {
+                            "n_components": {
+                                "enum": ["3"]
+                            },
+                            "colormap": {
+                                "title": "Color Map (3D)",
+                                "description": "Specifies the color map to use",
+                                "type": "string",
+                                "enum": ["UCIE", "LAB", "RGB"],
+                                "default": "UCIE"
+                            }                
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "ui": {}
+}

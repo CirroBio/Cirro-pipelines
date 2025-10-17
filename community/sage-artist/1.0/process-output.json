@@ -1,0 +1,12 @@
+{
+    "commands": [
+        {
+            "command": "hot.Minerva",
+            "params": {
+              "source": "$data_directory/[imageName]/minerva/exhibit.json",
+              "target": "{imageName}.minerva.json"
+            }
+          }
+      
+    ]
+}
