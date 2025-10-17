@@ -1,0 +1,8 @@
+{
+    "script": "$.dataset.params.script",
+    "args": "$.dataset.params.args",
+    "memory": "$.dataset.params.memory",
+    "time": "$.dataset.params.time",
+    "input_folder": "$.inputs[0].dataPath",
+    "output_folder": "$.dataset.dataPath"
+}

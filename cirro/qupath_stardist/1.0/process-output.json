@@ -1,0 +1,11 @@
+{
+  "commands": [
+    {
+      "command": "hot.Vitessce",
+      "params": {
+        "source": "$data_directory/dashboard/[prefix].vt.json",
+        "target": "{prefix}.vt.json"
+      }
+    }
+  ]
+}

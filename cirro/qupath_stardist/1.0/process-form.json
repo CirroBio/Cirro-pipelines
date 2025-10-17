@@ -1,0 +1,113 @@
+{
+  "form": {
+    "type": "object",
+    "properties": {
+      "input_tiff": {
+        "title": "Select Image",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*",
+        "description": "Image in TIFF format used as input for StarDist segmentation."
+      },
+      "stardist_options": {
+        "type": "object",
+        "title": "StarDist Options",
+        "properties": {
+          "minPercentileNormalization": {
+            "title": "Minimum percentile for normalization",
+            "description": "Pixels falling below this intensity threshold will be ignored during normalization prior to segmentation (0-100)",
+            "type": "number",
+            "default": 1
+          },
+          "maxPercentileNormalization": {
+            "title": "Maximum percentile for normalization",
+            "description": "Pixels falling above this intensity threshold will be ignored during normalization prior to segmentation (0-100)",
+            "type": "number",
+            "default": 99
+          },
+          "threshold": {
+            "title": "Probability (detection) threshold",
+            "description": "Lower values (ranging from 0-1) will result in more cells being detected",
+            "type": "number",
+            "default": 0.5
+          },
+          "channels": {
+            "title": "Detection Channel",
+            "description": "Color channel containing information used to detect cells",
+            "type": "integer",
+            "default": 0
+          },
+          "cellExpansion": {
+            "title": "Approximate cells based upon nucleus expansion",
+            "type": "number",
+            "default": 5.0
+          },
+          "cellConstrainScale": {
+            "title": "Constrain cell expansion using nucleus size",
+            "type": "number",
+            "default": 1.5
+          }    
+        }
+      },
+      "dashboard_options": {
+        "type": "object",
+        "title": "Dashboard Options",
+        "properties": {
+          "build_dashboard": {
+            "type": "boolean",
+            "title": "Build Dashboard",
+            "default": true
+          }
+        },
+        "dependencies": {
+          "build_dashboard": {
+            "properties": {
+              "cluster_by": {
+                "type": "string",
+                "title": "Cluster By",
+                "description": "Select the measurement used to cluster cells",
+                "default": "Cell.Mean",
+                "enum": [
+                  "Cell.Mean",
+                  "Cell.Median",
+                  "Nucleus.Mean",
+                  "Nucleus.Median",
+                  "Cytoplasm.Mean",
+                  "Cytoplasm.Median",
+                  "Membrane.Mean",
+                  "Membrane.Median"
+                ]
+              },
+              "cluster_resolution": {
+                "type": "number",
+                "title": "Cluster Resolution",
+                "description": "Resolution for clustering cells",
+                "default": 1.0
+              },
+              "scaling": {
+                "type": "string",
+                "title": "Scaling Method",
+                "description": "Transformation method for scaling data (robust: median +/- interquartile range, zscore: mean +/- standard deviation, minmax: min-max normalization, none: no scaling)",
+                "default": "robust",
+                "enum": ["robust", "zscore", "minmax", "none"]
+              },
+              "clip_lower": {
+                "type": "number",
+                "title": "Clip Lower",
+                "description": "Lower bound for clipping data",
+                "default": -2.0
+              },
+              "clip_upper": {
+                "type": "number",
+                "title": "Clip Upper",
+                "description": "Upper bound for clipping data",
+                "default": 2.0
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "ui": {}
+}

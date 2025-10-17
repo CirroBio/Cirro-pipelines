@@ -1,0 +1,17 @@
+{
+  "container_stardist": "public.ecr.aws/cirrobio/qupath:6d8b79f",
+  "model": "s3://pubweb-references/stardist/2024-10-23-model/stardist_cell_seg_model.pb",
+  "input_tiff": "$.dataset.params.input_tiff",
+  "minPercentileNormalization": "$.dataset.params.stardist_options.minPercentileNormalization",
+  "maxPercentileNormalization": "$.dataset.params.stardist_options.maxPercentileNormalization",
+  "threshold": "$.dataset.params.stardist_options.threshold",
+  "channels": "$.dataset.params.stardist_options.channels",
+  "cellExpansion": "$.dataset.params.stardist_options.cellExpansion",
+  "cellConstrainScale": "$.dataset.params.stardist_options.cellConstrainScale",
+  "build_dashboard": "$.dataset.params.dashboard_options.build_dashboard",
+  "cluster_resolution": "$.dataset.params.dashboard_options.cluster_resolution",
+  "scaling": "$.dataset.params.dashboard_options.scaling",
+  "clip_lower": "$.dataset.params.dashboard_options.clip_lower",
+  "clip_upper": "$.dataset.params.dashboard_options.clip_upper",
+  "output_folder": "$.dataset.dataPath"
+}

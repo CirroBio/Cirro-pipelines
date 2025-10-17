@@ -1,0 +1,50 @@
+{
+    "form": {
+        "required": ["script"],
+        "properties": {
+            "script": {
+                "type": "string",
+                "title": "QuPath Script",
+                "file": "**/qupath_script/**/script.groovy",
+                "pathType": "references",
+                "description": "QuPath script file (.groovy) can be uploaded in Pipelines / References"
+            },
+            "args": {
+                "type": "string",
+                "title": "Optional Arguments",
+                "description": "If provided, arguments will be provided as 'QuPath script --args {}'"
+            },
+            "memory": {
+                "type": "string",
+                "title": "Memory (RAM)",
+                "description": "Amount of memory provided for analysis",
+                "default": "32.GB",
+                "enum": [
+                    "4.GB",
+                    "8.GB",
+                    "16.GB",
+                    "32.GB",
+                    "64.GB",
+                    "128.GB",
+                    "256.GB"
+                ]
+            },
+            "time": {
+                "type": "string",
+                "title": "Maximum Runtime (hours)",
+                "description": "Analysis will be automatically stopped after running for this long",
+                "default": "4h",
+                "enum": [
+                    "1h",
+                    "2h",
+                    "4h",
+                    "8h",
+                    "24h",
+                    "48h",
+                    "168h"
+                ]
+            }
+        }
+    },
+    "ui": {}
+}
