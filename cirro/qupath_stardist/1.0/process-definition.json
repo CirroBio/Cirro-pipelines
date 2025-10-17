@@ -1,5 +1,8 @@
 {
   "id": "process-cirro-qupath-stardist-1_0",
+  "parentProcessIds": [
+    "images"
+  ],
   "childProcessIds": [],
   "dataType": "Cell Detection Summary (StarDist)",
   "name": "Segment Cells (StarDist)",

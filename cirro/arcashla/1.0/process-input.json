@@ -1,0 +1,9 @@
+{
+    "genomeDir": "s3://pubweb-references/arcashla/2023-08-31-chr6/indexes/chr6",
+    "genes": "$.dataset.params.genes",
+    "population": "$.dataset.params.population",
+    "zygosity_threshold": "$.dataset.params.zygosity_threshold",
+    "database": "$.dataset.params.database",
+    "min_count": "$.dataset.params.min_count",
+    "outdir": "$.dataset.dataDir"
+}

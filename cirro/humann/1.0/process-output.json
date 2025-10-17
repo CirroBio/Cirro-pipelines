@@ -1,0 +1,71 @@
+{
+  "commands": [
+    {
+        "command": "hot.Parquet",
+        "params": {
+            "melt": {
+                "key": {
+                    "desc": "Identifier of specimen analyzed",
+                    "name": "Sample"
+                },
+                "value": {
+                    "desc": "Normalized abundance of gene family per sample",
+                    "name": "Abundance (RPK)"
+                }
+            },
+            "cols": [
+                {
+                    "col": "Gene Family",
+                    "desc": "Name of gene family",
+                    "name": "Gene Family"
+                }
+            ],
+            "desc": "Quantification of gene families from metagenomic data",
+            "name": "HUMAnN Gene Families",
+            "read_csv": {
+                "parse": {
+                    "delimiter": "\t"
+                }
+            },
+            "source": "$data_directory/humann_genefamilies.tsv",
+            "target": "humann_genefamilies.parquet",
+            "url": ""
+        }
+      },      {
+        "command": "hot.Parquet",
+        "params": {
+            "melt": {
+                "key": {
+                    "desc": "Identifier of specimen analyzed",
+                    "name": "Sample"
+                },
+                "value": {
+                    "desc": "Normalized abundance of pathway per sample",
+                    "name": "Abundance (RPK)"
+                }
+            },
+            "cols": [
+                {
+                    "col": "Pathway",
+                    "desc": "Name or identifier of biological pathway",
+                    "name": "Metabolic Pathway"
+                }
+            ],
+            "desc": "Quantification of metabolic pathways from metagenomic data",
+            "name": "HUMAnN Metabolic Pathways",
+            "read_csv": {
+                "parse": {
+                    "delimiter": "\t"
+                }
+            },
+            "source": "$data_directory/humann_pathabundance.tsv",
+            "target": "humann_pathabundance.parquet",
+            "url": ""
+        }
+      },
+      {
+          "command": "hot.Manifest",
+          "params": {}
+      }
+  ]
+}

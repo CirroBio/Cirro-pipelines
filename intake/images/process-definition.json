@@ -1,11 +1,6 @@
 {
   "id": "images",
-  "childProcessIds": [
-    "hutch-qupath-1_0",
-    "process-hutch-qupath-stardist-1_0",
-    "process-hutch-cellpose-1_0",
-    "process-sage-artist-1-0"
-  ],
+  "childProcessIds": [],
   "name": "Images",
   "desc": "Any collection of image files",
   "executor": "INGEST",

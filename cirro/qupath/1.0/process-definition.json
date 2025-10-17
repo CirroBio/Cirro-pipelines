@@ -1,5 +1,8 @@
 {
     "id": "process-cirro-qupath-1_0",
+    "parentProcessIds": [
+        "images"
+    ],
     "childProcessIds": [],
     "name": "QuPath Image Analysis",
     "desc": "Run QuPath script on a collection of images",

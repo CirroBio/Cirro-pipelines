@@ -1,5 +1,9 @@
 {
   "id": "process-hutch-mcmicro-1-0",
+  "parentProcessIds": [
+    "codex_processed",
+    "images"
+  ],
   "childProcessIds": [
     "hutch-qupath-1_0"
   ],

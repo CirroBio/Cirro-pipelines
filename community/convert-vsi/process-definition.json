@@ -4,9 +4,9 @@
     "images"
   ],
   "childProcessIds": [
-    "hutch-qupath-1_0",
-    "process-hutch-qupath-stardist-1_0",
-    "process-hutch-cellpose-1_0",
+    "process-cirro-qupath-1_0",
+    "process-cirro-qupath-stardist-1_0",
+    "process-cirro-cellpose-1_0",
     "process-sage-artist-1-0"
   ],
   "dataType": "Image (OME-TIFF)",

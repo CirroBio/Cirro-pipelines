@@ -1,5 +1,8 @@
 {
   "id": "process-sage-artist-1-0",
+  "parentProcessIds": [
+    "images"
+  ],
   "childProcessIds": [],
   "dataType": "Multiplexed Tissue Image",
   "name": "Multiplexed Tissue Image Analysis (Sage Bionetworks)",

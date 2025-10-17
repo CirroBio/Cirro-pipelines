@@ -1,5 +1,8 @@
 {
   "id": "process-cirro-cellpose-1_0",
+  "parentProcessIds": [
+    "images"
+  ],
   "childProcessIds": [],
   "dataType": "Cell Detection Summary (Cellpose)",
   "name": "Segment Cells (Cellpose)",

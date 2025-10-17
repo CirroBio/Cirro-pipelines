@@ -1,0 +1,14 @@
+{
+  "output": "$.params.dataset.s3|/data",
+  "metaphlan_db": "s3://pubweb-references/metaphlan4/2023-12-20/mpa_vOct22_CHOCOPhlAnSGB_202212",
+  "chocophlan_db": "s3://pubweb-references/humann/chocophlan/full_chocophlan.v201901_v31.tar.gz",
+  "translated_search_db": "$.params.dataset.paramJson.translated_search_db",
+  "prescreen_threshold": "$.params.dataset.paramJson.prescreen_threshold",
+  "nucleotide_identity_threshold": "$.params.dataset.paramJson.nucleotide_identity_threshold",
+  "nucleotide_query_coverage_threshold": "$.params.dataset.paramJson.nucleotide_query_coverage_threshold",
+  "nucleotide_subject_coverage_threshold": "$.params.dataset.paramJson.nucleotide_subject_coverage_threshold",
+  "translated_identity_threshold": "$.params.dataset.paramJson.translated_identity_threshold",
+  "translated_query_coverage_threshold": "$.params.dataset.paramJson.translated_query_coverage_threshold",
+  "translated_subject_coverage_threshold": "$.params.dataset.paramJson.translated_subject_coverage_threshold",
+  "memory_gb": "$.params.dataset.paramJson.memory_gb"
+}

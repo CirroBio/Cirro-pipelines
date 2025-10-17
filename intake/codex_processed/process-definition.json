@@ -1,7 +1,6 @@
 {
   "id": "codex_processed",
   "childProcessIds": [
-    "process-hutch-mcmicro-1-0",
     "hutch-qupath-1_0"
   ],
   "name": "CODEX Images (Processed)",

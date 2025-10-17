@@ -1,0 +1,75 @@
+{
+  "form": {
+    "type": "object",
+    "name": "Metagenomic Pathways (HUMAnN v3)",
+    "properties": {
+      "translated_search_db": {
+        "title": "Protein Search Database",
+        "description": "Collection of reference proteins used for alignment",
+        "type": "string",
+        "default": "s3://pubweb-references/humann/uniref/uniref90_201901b_full.dmnd",
+        "enum": [
+          "s3://pubweb-references/humann/uniref/uniref90_201901b_full.dmnd",
+          "s3://pubweb-references/humann/uniref/uniref90_201901b_ec_filtered.dmnd",
+          "s3://pubweb-references/humann/uniref/uniref50_201901b_full.dmnd",
+          "s3://pubweb-references/humann/uniref/uniref50_201901b_ec_filtered.dmnd"
+        ],
+        "enumNames": [
+          "Full UniRef90 (20.7GB, recommended)",
+          "EC-filtered UniRef90 (0.9GB)",
+          "Full UniRef50 (6.9GB)",
+          "EC-filtered UniRef50 (0.3GB)"
+        ]
+      },
+      "prescreen_threshold": {
+        "title": "Prescreen Threshold",
+        "description": "Minimum estimated genome coverage for inclusion in pangenome search",
+        "type": "string",
+        "default": "0.5"
+      },
+      "nucleotide_identity_threshold": {
+        "title": "Nucleotide Identity Threshold",
+        "description": "Identity threshold for nucleotide alignments",
+        "type": "string",
+        "default": "50.0"
+      },
+      "nucleotide_query_coverage_threshold": {
+        "title": "Nucleotide Query Coverage Threshold",
+        "description": "Query coverage threshold for nucleotide alignments",
+        "type": "string",
+        "default": "90.0"
+      },
+      "nucleotide_subject_coverage_threshold": {
+        "title": "Nucleotide Subject Coverage Threshold",
+        "description": "Subject coverage threshold for nucleotide alignments",
+        "type": "string",
+        "default": "50.0"
+      },
+      "translated_identity_threshold": {
+        "title": "Translated Identity Threshold",
+        "description": "Identity threshold for translated alignments",
+        "type": "string",
+        "default": "50.0"
+      },
+      "translated_query_coverage_threshold": {
+        "title": "Translated Query Coverage Threshold",
+        "description": "Query coverage threshold for translated alignments",
+        "type": "string",
+        "default": "90.0"
+      },
+      "translated_subject_coverage_threshold": {
+        "title": "Translated Subject Coverage Threshold",
+        "description": "Subject coverage threshold for translated alignments",
+        "type": "string",
+        "default": "50.0"
+      },
+      "memory_gb": {
+        "title": "Memory (GB)",
+        "description": "Amount of memory to allocate per analysis in GB",
+        "type": "string",
+        "default": "128"
+      }
+    }
+  },
+  "ui": {}
+}

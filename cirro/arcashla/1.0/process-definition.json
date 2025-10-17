@@ -1,0 +1,33 @@
+{
+    "id": "process-cirro-arcashla-1-0",
+    "parentProcessIds": [
+        "process-nf-core-rnaseq-3",
+        "process-nf-core-rnaseq-custom-3"
+    ],
+    "childProcessIds": [],
+    "dataType": "Predicted HLA Types (arcasHLA)",
+    "name": "HLA Typing (arcasHLA)",
+    "desc": "Perform HLA typing from raw sequence reads using the arcasHLA utility",
+    "executor": "NEXTFLOW",
+    "category": "RNA Sequencing",
+    "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-rna-sequencing/#hla-typing-arcashla",
+    "code": {
+        "repository": "GITHUBPUBLIC",
+        "script": "main.nf",
+        "uri": "CirroBio/nf-arcashla",
+        "version": "main"
+    },
+    "allowMultipleSources": true,
+    "usesSampleSheet": true,
+    "computeDefaults": [
+        {
+            "executor": "NEXTFLOW",
+            "json": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-compute.config",
+            "name": "Default"
+        }
+    ],
+    "preProcessScript": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/preprocess.py",
+    "paramMapJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json",
+    "formJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-form.json",
+    "webOptimizationJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-output.json"
+}
