@@ -6,6 +6,6 @@
   "comp_ref": "$.dataset.params.comp_ref",
   "group_cols": "$.dataset.params.group_cols",
   "filter": "$.dataset.params.filter",
-  "output_folder": "$.params.dataset.dataPath",
-  "web_folder": "$.params.dataset.s3|/web"
+  "output_folder": "$.dataset.dataPath",
+  "web_folder": "$.dataset.s3|/web"
 }
