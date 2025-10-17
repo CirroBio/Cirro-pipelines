@@ -1,0 +1,20 @@
+{
+  "input_tiff": "$.dataset.params.input_tiff",
+  "pretrained_model": "$.dataset.params.cellpose_options.pretrained_model",
+  "channel_axis": "$.dataset.params.cellpose_options.channel_axis",
+  "segment_channel": "$.dataset.params.cellpose_options.segment_channel",
+  "nuclear_channel": "$.dataset.params.cellpose_options.nuclear_channel",
+  "diameter": "$.dataset.params.cellpose_options.diameter",
+  "flow_threshold": "$.dataset.params.cellpose_options.flow_threshold",
+  "cellprob_threshold": "$.dataset.params.cellpose_options.cellprob_threshold",
+  "no_resample": "$.dataset.params.cellpose_options.no_resample",
+  "exclude_on_edges": "$.dataset.params.cellpose_options.exclude_on_edges",
+  "z_axis": "$.dataset.params.cellpose_options.z_axis",
+  "anisotropy": "$.dataset.params.cellpose_options.anisotropy",
+  "build_dashboard": "$.dataset.params.dashboard_options.build_dashboard",
+  "cluster_resolution": "$.dataset.params.dashboard_options.cluster_resolution",
+  "scaling": "$.dataset.params.dashboard_options.scaling",
+  "clip_lower": "$.dataset.params.dashboard_options.clip_lower",
+  "clip_upper": "$.dataset.params.dashboard_options.clip_upper",
+  "output_folder": "$.dataset.dataPath"
+}
