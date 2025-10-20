@@ -17,6 +17,7 @@
   "genome": "$.params.dataset.paramJson.analysis_type.genome",
   "intervals": "$.params.dataset.paramJson.analysis_type.intervals",
   "optical_duplicate_pixel_distance": "$.params.dataset.paramJson.advanced_options.optical_duplicate_pixel_distance",
+  "umi_in_read_header": "$.params.dataset.paramJson.advanced_options.umi_in_read_header",
   "outdir": "$.params.dataset.s3|/data/",
   "input": "manifest.csv",
   "germline_resource": "$.params.dataset.paramJson.analysis_type.germline_resource",

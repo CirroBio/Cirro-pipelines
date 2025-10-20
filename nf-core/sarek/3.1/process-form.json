@@ -294,6 +294,12 @@
         "type": "object",
         "title": "Advanced Options",
         "properties": {
+          "umi_in_read_header": {
+            "type": "boolean",
+            "title": "UMI in Read Header?",
+            "description": "Set to true if UMIs are already present in the header of the read, for instance from using OverrideCycles in bclconvert or umi_tools/extract.",
+            "default": false
+          },
           "optical_duplicate_pixel_distance": {
             "type": "integer",
             "title": "MarkDuplicates - Optical Duplicate Pixel Distance",
