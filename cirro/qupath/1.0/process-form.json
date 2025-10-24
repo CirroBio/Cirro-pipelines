@@ -9,6 +9,17 @@
                 "pathType": "references",
                 "description": "QuPath script file (.groovy) can be uploaded in Pipelines / References"
             },
+            "version": {
+                "type": "string",
+                "title": "QuPath Version",
+                "description": "Version of QuPath to use for analysis",
+                "default": "0.6.0",
+                "enum": [
+                    "0.4.4",
+                    "0.5.1",
+                    "0.6.0"
+                ]
+            },
             "args": {
                 "type": "string",
                 "title": "Optional Arguments",

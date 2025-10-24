@@ -4,5 +4,6 @@
     "memory": "$.dataset.params.memory",
     "time": "$.dataset.params.time",
     "input_folder": "$.inputs[0].dataPath",
-    "output_folder": "$.dataset.dataPath"
+    "output_folder": "$.dataset.dataPath",
+    "container": "public.ecr.aws/cirrobio/qupath:v|$.dataset.params.version"
 }
