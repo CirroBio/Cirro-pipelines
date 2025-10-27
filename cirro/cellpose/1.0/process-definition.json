@@ -13,7 +13,7 @@
   "code": {
     "repository": "GITHUBPUBLIC",
     "uri": "CirroBio/nf-cell-segment",
-    "version": "main",
+    "version": "1.0.0",
     "script": "cellpose.nf"
   },
   "computeDefaults": [
