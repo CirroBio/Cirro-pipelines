@@ -23,7 +23,7 @@ def find_regions(ds: PreprocessDataset) -> pd.DataFrame:
     return pd.DataFrame([
         dict(
             id=input["name"],
-            uri=input["s3"] + "/data/region.json"
+            uri=input["dataPath"] + "/region.json"
         )
         for input in ds.metadata["inputs"]
     ])
