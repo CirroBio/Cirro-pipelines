@@ -2,28 +2,51 @@
   "form": {
     "description": "Select the set of spatial regions to be used as inputs for quantitative spatial analysis.",
     "properties": {
-      "n_neighborhoods": {
-        "default": 10,
-        "description": "When performing k-means clustering for neighborhood analysis, the number of neighborhoods to use.",
-        "title": "Number of Neighborhoods (k)",
-        "type": "integer"
+      "clustering": {
+        "type": "object",
+        "title": "Cell Type Clustering",
+        "description": "The first step of quantiative spatial analysis is unsupervised (leiden) clustering of cells to group by feature abundances",
+        "properties": {
+          "resolution": {
+             "default": 1.0,
+             "description": "Used as the resolution parameter for Leiden clustering. Higher values lead to more clusters.",
+             "title": "Cell Type Clustering Resolution",
+             "type": "number"
+           },
+           "filter_features": {
+             "type": "string",
+             "title": "Filter Features",
+             "description": "Select the set of feature measurements to be used for clustering cells (comma-delimited list)."
+           }
+        }
       },
-      "n_neighbors": {
-        "default": 15,
-        "description": "When performing neighborhood analysis, the number of closest neighbors to consider for each point.",
-        "title": "Number of Neighbors",
-        "type": "integer"
+      "neighborhood_analysis": {
+        "title": "Neighborhood Analysis",
+        "description": "The second step of quantitative spatial analysis is to identify 'neighborhoods' -- physically contiguous collections of cells which have similar distributions of cell types (using the clusters identified earlier).",
+        "properties": {
+          "n_neighbors": {
+            "default": 15,
+            "description": "When performing neighborhood analysis, the number of closest neighbors to consider for each point.",
+            "title": "Number of Neighbors",
+            "type": "integer"
+          },
+          "n_neighborhoods": {
+            "default": 10,
+            "description": "When performing k-means clustering for neighborhood analysis, the number of neighborhoods to find.",
+            "title": "Number of Neighborhoods (k)",
+            "type": "integer"
+          }
+        }
       },
-      "resolution": {
-        "default": 1.0,
-        "description": "Used as the resolution parameter for Leiden clustering. Higher values lead to more clusters.",
-        "title": "Cell Type Clustering Resolution",
-        "type": "number"
-      },
-      "filter_features": {
-        "type": "string",
-        "title": "Filter Features",
-        "description": "Select the set of feature measurements to be used for clustering cells (comma-delimited list)."
+      "visualization": {
+        "title": "Visualization Options",
+        "properties": {
+          "use_dashboards": {
+            "type": "boolean",
+            "title": "If the input data was generated with the dashboard option enabled, create interactive visualizations for inspection of each region. Note that this may be prohibitively resource intensive for very large datasets.",
+            "description": "Generate Dashboard Visualization"
+          }
+        }
       }
     }
   },
