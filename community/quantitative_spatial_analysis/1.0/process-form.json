@@ -1,0 +1,31 @@
+{
+  "form": {
+    "description": "Select the set of spatial regions to be used as inputs for quantitative spatial analysis.",
+    "properties": {
+      "n_neighborhoods": {
+        "default": 10,
+        "description": "When performing k-means clustering for neighborhood analysis, the number of neighborhoods to use.",
+        "title": "Number of Neighborhoods (k)",
+        "type": "integer"
+      },
+      "n_neighbors": {
+        "default": 15,
+        "description": "When performing neighborhood analysis, the number of closest neighbors to consider for each point.",
+        "title": "Number of Neighbors",
+        "type": "integer"
+      },
+      "resolution": {
+        "default": 1.0,
+        "description": "Used as the resolution parameter for Leiden clustering. Higher values lead to more clusters.",
+        "title": "Cell Type Clustering Resolution",
+        "type": "number"
+      },
+      "filter_features": {
+        "type": "string",
+        "title": "Filter Features",
+        "description": "Select the set of feature measurements to be used for clustering cells (comma-delimited list)."
+      }
+    }
+  },
+  "ui": {}
+}

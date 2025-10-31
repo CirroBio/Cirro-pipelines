@@ -1,0 +1,8 @@
+{
+  "n_neighborhoods": "$.dataset.params.n_neighborhoods",
+  "n_neighbors": "$.dataset.params.n_neighbors",
+  "outdir": "$.dataset.dataPath",
+  "resolution": "$.dataset.params.resolution",
+  "filter_features": "$.dataset.params.filter_features",
+  "regions": "regions.csv"
+}

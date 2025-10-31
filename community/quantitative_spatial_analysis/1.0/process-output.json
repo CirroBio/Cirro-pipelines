@@ -1,0 +1,11 @@
+{
+  "commands": [
+    {
+      "command": "hot.Vitessce",
+      "params": {
+        "source": "$data_directory/regions/[regionId]/[displayType].vt.json",
+        "target": "{regionId}/{displayType}.vt.json"
+      }
+    }
+  ]
+}
