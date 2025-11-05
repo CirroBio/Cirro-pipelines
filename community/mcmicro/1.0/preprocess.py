@@ -17,7 +17,7 @@ def parse_img_files(ds: PreprocessDataset):
     ds.logger.info(parent_manifest)
 
     file_list = [
-        ds.params["parent_dataset"] + "/" + file["path"]
+        ds.params["parent_dataset"] + "/" + file["file"]
         for file in parent_manifest["files"]
     ]
     ds.remove_param("parent_dataset")
