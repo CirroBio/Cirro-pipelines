@@ -11,13 +11,13 @@ def parse_img_files(ds: PreprocessDataset):
     """Parse the list of image files available in the workflow."""
 
     parent_manifest = read_json(
-        ds.params["parent_dataset"] + "/artifacts/manifest.json"
+        ds.params["parent_dataset"] + "/web/manifest.json"
     )
     ds.logger.info("Parent dataset manifest:")
     ds.logger.info(parent_manifest)
 
     file_list = [
-        ds.params["parent_dataset"] + "/data/" + file["name"]
+        ds.params["parent_dataset"] + "/" + file["path"]
         for file in parent_manifest["files"]
     ]
     ds.remove_param("parent_dataset")
