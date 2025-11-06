@@ -61,6 +61,13 @@
             "title": "Enabled",
             "description": "GENCODE format - GTF annotation",
             "default": false
+          },
+          "additional_fasta": {
+            "type": "string",
+            "title": "Select additional FASTA",
+            "description": "FASTA file to concatenate to reference genome FASTA. Can be added from the Pipelines menu with '+ Add Reference'",
+            "file": "**/genome_fasta/**/genome.fasta",
+            "pathType": "references"
           }
         }
       },
