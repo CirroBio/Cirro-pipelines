@@ -23,7 +23,6 @@
   "umi_location": "$.dataset.params.umi_options.umi_location",
   "umi_length": "$.dataset.params.umi_options.umi_length",
   "umi_base_skip": "$.dataset.params.umi_options.umi_base_skip",
-  "umi_tag": "$.dataset.params.umi_options.umi_tag",
   "outdir": "$.dataset.dataPath",
   "input": "manifest.csv",
   "germline_resource": "$.dataset.params.analysis_type.germline_resource",

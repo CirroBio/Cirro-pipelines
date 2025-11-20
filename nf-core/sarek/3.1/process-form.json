@@ -33,9 +33,10 @@
           "3.3.2",
           "3.4.4",
           "3.5.1",
-          "3.6.0"
+          "3.6.0",
+          "3.6.1"
         ],
-        "default": "3.6.0"
+        "default": "3.6.1"
       },
       "analysis_type": {
         "title": "Experiment Design",
@@ -295,45 +296,90 @@
         "title": "Unique Molecular Identifiers",
         "description": "Options for handling Unique Molecular Identifiers (UMIs) in the workflow.",
         "properties": {
-          "umi_read_structure": {
-            "type": "string",
-            "title": "UMI Read Structure",
-            "description": "Specify UMI read structure for fgbio UMI consensus read generation. One structure if UMI is present on one end (i.e. '+T 2M11S+T'), or two structures separated by a blank space if UMIs a present on both ends (i.e. '2M11S+T 2M11S+T'); please note, this does not handle duplex-UMIs."
-          },
-          "group_by_umi_strategy": {
-              "type": "string",
-              "title": "Group by UMI Strategy",
-            "default": "Adjacency",
-            "description": "Default strategy for fgbio UMI-based consensus read generation ",
-            "enum": ["Identity", "Edit", "Adjacency", "Paired"]
-          },
           "umi_in_read_header": {
             "type": "boolean",
             "title": "UMI in Read Header",
             "description": "Move UMIs from fastq read headers to a tag prior to deduplication. Set to true if UMIs are already present in the header of the read, for instance from using OverrideCycles in bclconvert or umi_tools/extract.",
             "default": false
           },
-          "umi_location": {
-            "type": "string",
-            "title": "UMI Location",
-            "description": "Location of the UMI(s) to be extracted with fastp. Use if UMIs are not present in the read header, but in a specific location within the reads/fastq header index. This will be used to extract UMIs from reads or index in the fastq header and store them in the RX tag.",
-            "default": "read1",
-            "enum": ["read1", "read2", "per_read", "index1", "index2", "per_index"]
+          "use_fgbio": {
+            "type": "boolean",
+            "title": "Use fgbio for UMI processing",
+            "description": "Enable UMI processing using fgbio tools for consensus read generation and deduplication.",
+            "default": false
           },
-          "umi_length": {
-            "type": "integer",
-            "title": "UMI Length",
-            "description": "Length of the UMI(s) in the read. If UMIs are being extracted using fastp, specify the length of the UMI here. This will be used to extract UMIs from reads and store them in the RX tag."
+          "use_fastp": {
+            "type": "boolean",
+            "title": "Use fastp for UMI extraction",
+            "description": "Enable UMI extraction from reads using fastp prior to alignment.",
+            "default": false
+          }
+        },
+        "dependencies": {
+          "use_fgbio": {
+            "oneOf": [
+              {
+                "properties": {
+                  "use_fgbio": {
+                    "enum": [true]
+                  },
+                  "umi_read_structure": {
+                    "type": "string",
+                    "title": "UMI Read Structure",
+                    "description": "Specify UMI read structure for fgbio UMI consensus read generation. One structure if UMI is present on one end (i.e. '+T 2M11S+T'), or two structures separated by a blank space if UMIs a present on both ends (i.e. '2M11S+T 2M11S+T'); please note, this does not handle duplex-UMIs."
+                  },
+                  "group_by_umi_strategy": {
+                    "type": "string",
+                    "title": "Group by UMI Strategy",
+                    "default": "Adjacency",
+                    "description": "Default strategy for fgbio UMI-based consensus read generation ",
+                    "enum": ["Identity", "Edit", "Adjacency", "Paired"]
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "use_fgbio": {
+                    "enum": [false]
+                  }
+                }
+              }
+            ]
           },
-          "umi_base_skip": {
-            "type": "integer",
-            "title": "UMI Base Skip",
-            "description": "Number of bases to skip after the UMI(s) in the read when extracting with fastp. If UMIs are being extracted using fastp, specify the number of bases to skip after the UMI here. This will trim some bases after the UMI."
-          },
-          "umi_tag": {
-            "type": "string",
-            "title": "UMI Tag",
-            "description": "Tag detailing where UMIs are present inside the bam/cram file (e.g. RX). If UMIs are already present in the cram/bam file, this details the tag which will be used in GATK MarkDuplicates and Sentieon dedup. This should be set to RX if restarting from bam files where the UMIs have been extracted by the umi_in_read_header or umi_length options. Note this is not compatible with MarkDuplicates Spark."
+          "use_fastp": {
+            "oneOf": [
+              {
+                "properties": {
+                  "use_fastp": {
+                    "enum": [true]
+                  },
+                  "umi_location": {
+                    "type": "string",
+                    "title": "UMI Location",
+                    "description": "Location of the UMI(s) to be extracted with fastp. Use if UMIs are not present in the read header, but in a specific location within the reads/fastq header index. This will be used to extract UMIs from reads or index in the fastq header and store them in the RX tag.",
+                    "default": "read1",
+                    "enum": ["read1", "read2", "per_read", "index1", "index2", "per_index"]
+                  },
+                  "umi_length": {
+                    "type": "integer",
+                    "title": "UMI Length",
+                    "description": "Length of the UMI(s) in the read. If UMIs are being extracted using fastp, specify the length of the UMI here. This will be used to extract UMIs from reads and store them in the RX tag."
+                  },
+                  "umi_base_skip": {
+                    "type": "integer",
+                    "title": "UMI Base Skip",
+                    "description": "Number of bases to skip after the UMI(s) in the read when extracting with fastp. If UMIs are being extracted using fastp, specify the number of bases to skip after the UMI here. This will trim some bases after the UMI."
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "use_fastp": {
+                    "enum": [false]
+                  }
+                }
+              }
+            ]
           }
       }
     },
