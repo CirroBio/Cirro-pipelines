@@ -1,7 +1,7 @@
 {
   "input": "$.params.dataset.s3|/|$.params.dataset.paramJson.input",
-  "nf_core_pipeline": "$.params.dataset.paramJson.pipeline",
-  "outdir": "$.params.dataset.s3|/data",
+  "nf_core_pipeline": "$.dataset.params.pipeline",
+  "outdir": "$.dataset.dataPath",
   "input_type": "sra",
   "hostnames": "test",
   "schema_ignore_params": "hostnames"
