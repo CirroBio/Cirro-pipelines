@@ -1,8 +1,9 @@
 {
-  "input": "$.params.dataset.s3|/|$.params.dataset.paramJson.input",
+  "input": "$.dataset.params.input",
+  "download_method": "$.dataset.params.download_method",
+  "dbgap_key": "$.dataset.params.dbgap_key",
   "nf_core_pipeline": "$.dataset.params.pipeline",
   "outdir": "$.dataset.dataPath",
-  "input_type": "sra",
   "hostnames": "test",
   "schema_ignore_params": "hostnames"
 }
