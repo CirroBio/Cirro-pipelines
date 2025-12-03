@@ -18,6 +18,7 @@
   "intervals": "$.dataset.params.analysis_type.intervals",
   "optical_duplicate_pixel_distance": "$.dataset.params.advanced_options.optical_duplicate_pixel_distance",
   "umi_tool": "$.dataset.params.umi_options.umi_tool",
+  "umi_in_read_header": "$.dataset.params.umi_options.umi_in_read_header",
   "umi_read_structure": "$.dataset.params.umi_options.umi_read_structure",
   "group_by_umi_strategy": "$.dataset.params.umi_options.group_by_umi_strategy",
   "umi_location": "$.dataset.params.umi_options.umi_location",

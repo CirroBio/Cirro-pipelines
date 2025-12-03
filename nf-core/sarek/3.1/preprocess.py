@@ -129,12 +129,6 @@ def fix_umi_form_dependencies(ds: PreprocessDataset):
         ds.logger.info("UMIs - user selected no UMI processing")
         delete_params(ds, fgbio_params + fastp_params)
 
-    # If the UMIs are in the read header
-    elif umi_tool == "umi_in_read_header":
-        ds.logger.info("UMIs - user selected UMIs in read header")
-        ds.add_param("umi_in_read_header", True)
-        delete_params(ds, fgbio_params + fastp_params)
-
     # Use fgbio for UMI processing
     elif umi_tool == "use_fgbio":
         ds.logger.info("UMIs - use fgbio")

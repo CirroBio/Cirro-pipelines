@@ -300,14 +300,19 @@
             "type": "string",
             "title": "UMI Processing",
             "default": "none",
-            "enum": ["none", "umi_in_read_header", "use_fgbio", "use_fastp"],
+            "enum": ["none", "use_fgbio", "use_fastp"],
             "enumNames": [
-              "No UMIs",
-              "UMI in read header",
-              "Use fgbio for UMI processing",
-              "Use fastp for UMI extraction"
+              "Skip UMI Processing",
+              "Process UMIS - fgbio",
+              "Process UMIS - fastp"
             ]
+          },
+          "umi_in_read_header": {
+            "type": "boolean",
+            "title": "UMI in Read Header",
+            "description": "Move UMIs from fastq read headers to a tag prior to deduplication. Use if UMIs are already present in the header of the read, for instance from using OverrideCycles in bclconvert or umi_tools/extract."
           }
+
         },
         "dependencies": {
           "umi_tool": {
@@ -315,17 +320,6 @@
               {
                 "properties": {
                   "umi_tool": {"enum": ["none"]}
-                }
-              },
-              {
-                "properties": {
-                  "umi_tool": {"enum": ["umi_in_read_header"]},
-                  "umi_in_read_header": {
-                    "type": "object",
-                    "title": "UMI in Read Header",
-                    "description": "Move UMIs from fastq read headers to a tag prior to deduplication. Use if UMIs are already present in the header of the read, for instance from using OverrideCycles in bclconvert or umi_tools/extract.",
-                    "properties": {}
-                  }
                 }
               },
               {
