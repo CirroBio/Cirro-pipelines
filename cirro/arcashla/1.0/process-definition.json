@@ -2,7 +2,9 @@
     "id": "process-cirro-arcashla-1-0",
     "parentProcessIds": [
         "process-nf-core-rnaseq-3",
-        "process-nf-core-rnaseq-custom-3"
+        "process-nf-core-rnaseq-custom-3",
+        "process-nf-core-rnaseq-custom-3_8",
+        "process-nf-core-rnaseq-custom-3_14"
     ],
     "childProcessIds": [],
     "dataType": "Predicted HLA Types (arcasHLA)",
