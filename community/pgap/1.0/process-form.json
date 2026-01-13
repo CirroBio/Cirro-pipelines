@@ -1,0 +1,145 @@
+{
+  "form": {
+    "type": "object",
+    "title": "",
+    "properties": {
+      "genome": {
+        "type": "object",
+        "title": "Genome Information",
+        "description": "Provide details on the organism which was sequenced",
+        "required": [
+          "fasta",
+          "genus_species"
+        ],
+        "properties": {
+          "fasta": {
+            "type": "string",
+            "title": "Genome",
+            "file": "**/*.f*",
+            "pathType": "dataset"
+          },
+          "genus_species": {
+            "type": "string",
+            "title": "Organism name",
+            "description": "Genus and species (e.g. 'Escherichia coli')"
+          },
+          "strain": {
+            "type": "string",
+            "title": "Strain",
+            "description": "(optional) Strain of the sequenced organism"
+          }
+        }
+      },
+      "contact": {
+        "type": "object",
+        "title": "Author / Contact Information",
+        "description": "PGAP requires contact information to prepare genome assemblies for submission to NCBI RefSeq",
+        "required": [
+          "last_name",
+          "first_name",
+          "email",
+          "organization",
+          "department",
+          "phone",
+          "street",
+          "city",
+          "state",
+          "postal_code",
+          "country"
+        ],
+        "properties": {
+          "last_name": {
+            "type": "string",
+            "title": "Last Name"
+          },
+          "first_name": {
+            "type": "string",
+            "title": "First Name"
+          },
+          "middle_initial": {
+            "type": "string",
+            "title": "Middle Initial(s)"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email Address"
+          },
+          "organization": {
+            "type": "string",
+            "title": "Organization"
+          },
+          "department": {
+            "type": "string",
+            "title": "Department"
+          },
+          "phone": {
+            "type": "string",
+            "title": "Phone"
+          },
+          "street": {
+            "type": "string",
+            "title": "Street Address"
+          },
+          "city": {
+            "type": "string",
+            "title": "City"
+          },
+          "state": {
+            "type": "string",
+            "title": "State"
+          },
+          "postal_code": {
+            "type": "string",
+            "title": "Postal Code"
+          },
+          "country": {
+            "type": "string",
+            "title": "Country"
+          }
+        }
+      },
+      "pgap": {
+        "type": "object",
+        "title": "PGAP Configuration",
+        "properties": {
+          "version": {
+            "type": "string",
+            "title": "PGAP Version",
+            "default": "2023-05-17.build6771",
+            "enum": [
+              "2023-05-17.build6771",
+              "2022-12-13.build6494",
+              "2022-10-03.build6384",
+              "2022-08-11.build6275",
+              "2022-04-14.build6021",
+              "2022-02-10.build5872",
+              "2021-11-29.build5742",
+              "2021-07-01.build5508",
+              "2021-06-25.build5499",
+              "2021-05-19.build5429",
+              "2021-01-11.build5132",
+              "2020-09-24.build4894",
+              "2020-07-09.build4716",
+              "2020-06-10.build4646",
+              "2020-03-30.build4489",
+              "2020-03-16.build4456",
+              "2020-02-06.build4373",
+              "2019-11-25.build4172",
+              "2019-11-08.build4137",
+              "2019-10-31.build4124",
+              "2019-08-22.build3958",
+              "2019-08-01.build3919",
+              "2019-05-13.build3740",
+              "2019-02-11.build3477",
+              "2018-11-07.build3190",
+              "2018-09-18.build3030",
+              "2018-09-10.build3008",
+              "2018-07-05.build2884"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "ui": {}
+}
