@@ -1,0 +1,27 @@
+{
+  "id": "process-hutch-pgap-1_0",
+  "childProcessIds": [],
+  "dataType": "Microbial Genome Annotation (PGAP)",
+  "name": "Annotate Microbial Genomes (PGAP)",
+  "desc": "Annotate bacterial and archaeal genomes (chromosomes and plasmids) using the NCBI Prokaryotic Genome Annotation Pipeline (PGAP)",
+  "executor": "NEXTFLOW",
+  "category": "Microbial Analysis",
+  "documentationUrl": "https://github.com/ncbi/pgap",
+  "code": {
+    "repository": "GITHUBPUBLIC",
+    "script": "main.nf",
+    "uri": "FredHutch/pgap-nf",
+    "version": "main"
+  },
+  "computeDefaults": [
+    {
+      "executor": "NEXTFLOW",
+      "json": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-compute.config",
+      "name": "Default"
+    }
+  ],
+  "paramMapJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json",
+  "formJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-form.json",
+  "webOptimizationJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-output.json",
+  "preProcessScript": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/preprocess.py"
+}

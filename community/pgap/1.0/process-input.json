@@ -1,0 +1,19 @@
+{
+  "genome": "$.dataset.params.genome.fasta",
+  "genus_species": "$.dataset.params.genome.genus_species",
+  "strain": "$.dataset.params.genome.strain",
+  "last_name": "$.dataset.params.contact.last_name",
+  "first_name": "$.dataset.params.contact.first_name",
+  "middle_initial": "$.dataset.params.contact.middle_initial",
+  "email": "$.dataset.params.contact.email",
+  "organization": "$.dataset.params.contact.organization",
+  "department": "$.dataset.params.contact.department",
+  "phone": "$.dataset.params.contact.phone",
+  "street": "$.dataset.params.contact.street",
+  "city": "$.dataset.params.contact.city",
+  "state": "$.dataset.params.contact.state",
+  "postal_code": "$.dataset.params.contact.postal_code",
+  "country": "$.dataset.params.contact.country",
+  "pgap_version": "$.dataset.params.pgap.version",
+  "output_folder": "$.params.dataset.dataPath"
+}
