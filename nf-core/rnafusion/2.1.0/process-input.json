@@ -1,9 +1,0 @@
-{
-  "tools": "$.params.dataset.paramJson.tool_selection.tools",
-  "report": "$.params.dataset.paramJson.tool_selection.reports",
-  "genome": "$.params.dataset.paramJson.ref_genome.genome",
-  "trim": "$.params.dataset.paramJson.trimming.bbmap",
-  "outdir": "$.params.dataset.s3|/data/",
-  "input": "manifest.csv",
-  "genomes_base": "s3://pubweb-references/rnafusion/1.2.0/2022-01-18/"
-}
