@@ -1,6 +1,6 @@
 {
-  "outdir": "$.params.dataset.s3|/data",
+  "outdir": "$.dataset.dataPath",
   "samplesheet": "samplesheet.csv",
-  "n_clusters": "$.params.dataset.paramJson.n_clusters",
-  "fcs_input": "$.params.dataset.paramJson.fcs_input"
+  "n_clusters": "$.dataset.params.n_clusters",
+  "fcs_input": "$.dataset.params.fcs_input"
 }
