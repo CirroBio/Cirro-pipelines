@@ -1,0 +1,6 @@
+{
+  "outdir": "$.dataset.dataPath",
+  "samplesheet": "samplesheet.csv",
+  "n_clusters": "$.dataset.params.n_clusters",
+  "fcs_input": "$.dataset.params.fcs_input"
+}
