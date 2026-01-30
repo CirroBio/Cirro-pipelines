@@ -1,0 +1,23 @@
+{
+  "form": {
+    "type": "object",
+    "name": "Flow Cytometry Quality Control",
+    "properties": {
+      "n_clusters": {
+        "title": "Number of Clusters",
+        "description": "Automatically group cells into a fixed number of clusters using FlowSOM",
+        "type": "integer",
+        "default": 10
+      },
+      "fcs_input": {
+        "type": "string",
+        "title": "(optional) Select FCS Files to Analyze",
+        "description": "(default: analyze all files)",
+        "multiple": true,
+        "file": "**/*.fcs",
+        "pathType": "dataset"
+      }
+    }
+  },
+  "ui": {}
+}
