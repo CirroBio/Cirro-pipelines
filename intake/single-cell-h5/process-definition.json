@@ -2,7 +2,7 @@
   "id": "single-cell-h5",
   "childProcessIds": [],
   "name": "Single-Cell Dataset (Loom, Anndata, or Seurat)",
-  "desc": "Single-cell datasets saved in Loom (.loom), Anndata (.h5ad), or Seurat (.h5seurat) formats",
+  "desc": "Single-cell datasets saved in Loom (.loom), Anndata (.h5ad), or Seurat (.h5seurat/.rds) formats",
   "executor": "INGEST",
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-single-cell/",
   "code": {
