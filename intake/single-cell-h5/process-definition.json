@@ -31,8 +31,13 @@
         },
         {
           "exampleName": "dataset.h5seurat",
-          "description": "Seurat",
+          "description": "Seurat (h5seurat)",
           "sampleMatchingPattern": "(?P<sampleName>[\\S ]*)\\.h5seurat"
+        },
+        {
+          "exampleName": "dataset.rds",
+          "description": "Seurat (rds)",
+          "sampleMatchingPattern": "(?P<sampleName>[\\S ]*)\\.rds"
         }
       ]
     }
