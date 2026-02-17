@@ -1,0 +1,153 @@
+{
+  "ui": {},
+  "form": {
+    "title": "RNA-Seq Analysis Pipeline",
+    "type": "object",
+    "required": [],
+    "properties": {
+      "igenomes": {
+        "type": "object",
+        "title": "Reference Genome (iGenomes)",
+        "description": "Select a curated reference genome from the iGenomes collection",
+        "properties": {
+          "genome": {
+            "type": "string",
+            "title": "Select A Reference Genome",
+            "description": "The following iGenomes are currently available for analysis",
+            "enum": [
+              "TAIR10",
+              "EB2",
+              "UMD3.1",
+              "bosTau8",
+              "WBcel235",
+              "ce10",
+              "CanFam3.1",
+              "canFam3",
+              "GRCz10",
+              "danRer10",
+              "BDGP6",
+              "dm6",
+              "EquCab2",
+              "equCab2",
+              "EB1",
+              "Galgal4",
+              "Gm01",
+              "GRCh37",
+              "GRCh38",
+              "hg18",
+              "hg19",
+              "hg38",
+              "Mmul 1",
+              "GRCm38",
+              "mm10",
+              "IRGSP-1.0",
+              "CHIMP2.1.4",
+              "panTro4",
+              "Rnor 5.0",
+              "Rnor 6.0",
+              "rn6",
+              "R64-1-1",
+              "sacCer3",
+              "EF2",
+              "Sbi1",
+              "Sscrofa10.2",
+              "susScr3",
+              "AGPv3"
+            ],
+            "enumNames": [
+              "Arabidopsis thaliana (TAIR10)",
+              "Bacillus subtilis 168 (EB2)",
+              "Bos taurus (UMD3.1)",
+              "Bos taurus (bosTau8)",
+              "Caenorhabditis elegans (WBcel235)",
+              "Caenorhabditis elegans (ce10)",
+              "Canis familiaris (CanFam3.1)",
+              "Canis familiaris (canFam3)",
+              "Danio rerio (GRCz10)",
+              "Danio rerio (danRer10)",
+              "Drosophila melanogaster (BDGP6)",
+              "Drosophila melanogaster (dm6)",
+              "Equus caballus (EquCab2)",
+              "Equus caballus (equCab2)",
+              "Escherichia coli K 12 DH10B (EB1)",
+              "Gallus gallus (Galgal4)",
+              "Glycine max (Gm01)",
+              "Homo sapiens (GRCh37)",
+              "Homo sapiens (GRCh38)",
+              "Homo sapiens (hg18)",
+              "Homo sapiens (hg19)",
+              "Homo sapiens (hg38)",
+              "Macaca mulatta (Mmul 1)",
+              "Mus musculus (GRCm38)",
+              "Mus musculus (mm10)",
+              "Oryza sativa japonica (IRGSP-1.0)",
+              "Pan troglodytes (CHIMP2.1.4)",
+              "Pan troglodytes (panTro4)",
+              "Rattus norvegicus (Rnor 5.0)",
+              "Rattus norvegicus (Rnor 6.0)",
+              "Rattus norvegicus (rn6)",
+              "Saccharomyces cerevisiae (R64-1-1)",
+              "Saccharomyces cerevisiae (sacCer3)",
+              "Schizosaccharomyces pombe (EF2)",
+              "Sorghum bicolor (Sbi1)",
+              "Sus scrofa (Sscrofa10.2)",
+              "Sus scrofa (susScr3)",
+              "Zea mays (AGPv3)"
+            ],
+            "default": "GRCh38"
+          }
+        }
+      },
+      "processing_options": {
+        "type": "object",
+        "title": "Processing Options",
+        "description": "Define how the pipeline should process the data",
+        "properties": {
+          "heatmap_id_column": {
+            "type": "string",
+            "title": "Heatmap ID Column",
+            "description": "The column used for heatmap generation, specifying the rows. The values in this column have to be unique. Any columns included in a samplesheet.csv uploaded alongside the RCC files may be specified.",
+            "default": "SAMPLE_ID"
+          }
+        }
+      },
+      "normalization_parameters": {
+        "type": "object",
+        "title": "Normalization Parameters",
+        "description": "Parameters that influence normalization outcome.",
+        "properties": {
+          "normalization_method": {
+            "type": "string",
+            "title": "Normalization Method",
+            "description": "The method to use for normalization of nCounter data.",
+            "default": "GEO",
+            "enum": ["GEO", "GLM"]
+          }
+        }
+      },
+      "gene_score_computation": {
+        "type": "object",
+        "title": "Gene Score Computation",
+        "description": "Configuration to define how to compute gene scores.",
+        "properties": {
+          "gene_score_method": {
+            "type": "string",
+            "title": "Gene Score Method",
+            "description": "This selects the algorithm for computing the respective gene scores.",
+            "default": "plage.dir",
+            "enum": [
+              "plage.dir",
+              "plage",
+              "gsva",
+              "singscore",
+              "ssgsea",
+              "median",
+              "mean",
+              "sams"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

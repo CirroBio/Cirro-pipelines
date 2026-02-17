@@ -1,0 +1,9 @@
+{
+    "input": "manifest.csv",
+    "genome": "$.params.dataset.paramJson.igenomes.genome",
+    "heatmap_id_column": "$.params.dataset.paramJson.processing_options.heatmap_id_column",
+    "normalization_method": "$.params.dataset.paramJson.normalization_parameters.normalization_method",
+    "gene_score_method": "$.params.dataset.paramJson.gene_score_computation.gene_score_method",
+    "igenomes_base": "s3://pubweb-references/igenomes",
+    "outdir": "$.params.dataset.s3|/data/"
+}

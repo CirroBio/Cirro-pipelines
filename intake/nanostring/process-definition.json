@@ -1,7 +1,7 @@
 {
   "id": "nanostring_ncounter",
   "childProcessIds": [
-    "process-nf-core-nanostring-1-2"
+    "process-nf-core-nanostring-1-3"
   ],
   "name": "Nanostring nCounter (RCC)",
   "desc": "Output files produced by the Nanostring nCounter platform",

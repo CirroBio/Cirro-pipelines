@@ -1,0 +1,31 @@
+{
+  "id": "process-nf-core-nanostring-1-3",
+  "childProcessIds": [],
+  "dataType": "Gene Expression Summary (nf-core/nanostring)",
+  "name": "Quantify Gene Expression (nf-core/nanostring)",
+  "desc": "An analysis pipeline for Nanostring nCounter expression data (v1.3.3)",
+  "executor": "NEXTFLOW",
+  "pipelineTypeOverride": "nf-core",
+  "category": "RNA Sequencing",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-rna-sequencing/#nanostring-ncounter-nf-corenanostring",
+  "code": {
+    "repository": "GITHUBPUBLIC",
+    "script": "main.nf",
+    "uri": "nf-core/nanostring",
+    "version": "1.3.3"
+  },
+  "allowMultipleSources": true,
+  "usesSampleSheet": true,
+  "computeDefaults": [
+    {
+      "executor": "NEXTFLOW",
+      "json": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-compute.config",
+      "name": "Default"
+    }
+  ],
+  "paramMapJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json",
+  "preProcessScript": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/preprocess.py",
+  "formJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-form.json",
+  "webOptimizationJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-output.json",
+  "fileMappingRules": []
+}
