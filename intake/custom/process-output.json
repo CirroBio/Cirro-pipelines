@@ -1,0 +1,18 @@
+{
+    "commands": [
+        {
+            "command": "hot.Ipynb",
+            "params": {
+                "url": "https://jupyter.org/",
+                "source": "$data_directory/**.ipynb",
+                "target": "{baseName}.html",
+                "name": "{baseName}",
+                "desc": "Jupyter Notebook"
+            }
+        },
+        {
+            "command": "hot.Manifest",
+            "params": {}
+        }
+    ]
+}
