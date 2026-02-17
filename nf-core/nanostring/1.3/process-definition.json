@@ -3,7 +3,7 @@
   "childProcessIds": [],
   "dataType": "Gene Expression Summary (nf-core/nanostring)",
   "name": "Quantify Gene Expression (nf-core/nanostring)",
-  "desc": "An analysis pipeline for Nanostring nCounter expression data (v1.3.3)",
+  "desc": "An analysis pipeline for Nanostring nCounter expression data (v1.3.2)",
   "executor": "NEXTFLOW",
   "pipelineTypeOverride": "nf-core",
   "category": "RNA Sequencing",
@@ -12,7 +12,7 @@
     "repository": "GITHUBPUBLIC",
     "script": "main.nf",
     "uri": "nf-core/nanostring",
-    "version": "1.3.3"
+    "version": "1.3.2"
   },
   "allowMultipleSources": true,
   "usesSampleSheet": true,
