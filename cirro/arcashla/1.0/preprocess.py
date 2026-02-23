@@ -11,6 +11,7 @@ def make_samplesheet(ds: PreprocessDataset):
     samplesheet = (
         ds.files
         .assign(ext=ds.files["file"].apply(lambda s: s.split(".")[-1]))
+        .pipe(lambda d: d.loc[d["ext"].isin(["bam", "bai"])])
         .pivot(
             index="sample",
             columns="ext",
