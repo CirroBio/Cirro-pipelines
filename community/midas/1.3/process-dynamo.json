@@ -1,0 +1,39 @@
+{
+  "id": "process-midas-1-3",
+  "parentProcessIds": [
+    "process-nf-core-fetchngs",
+    "paired_dnaseq",
+    "paired_rnaseq",
+    "process-kneaddata-1-0"
+  ],
+  "childProcessIds": [],
+  "dataType": "MIDAS3 Analysis Output",
+  "name": "MIDAS3: Metagenomic Intra-species Diversity Analysis System",
+  "desc": "Identify SNVs and gene copy number variants in microbial populations",
+  "executor": "NEXTFLOW",
+  "category": "Microbial Analysis",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-microbial-analysis#midas3-metagenomic-intra-species-diversity-analysis-system",
+  "code": {
+    "repository": "GITHUBPUBLIC",
+    "script": "main.nf",
+    "uri": "FredHutch/nf-midas",
+    "version": "main"
+  },
+  "allowMultipleSources": true,
+  "paramDefaults": [],
+  "computeDefaults": [
+    {
+      "executor": "NEXTFLOW",
+      "json": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-compute.config",
+      "name": "Default"
+    }
+  ],
+  "paramMapJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json",
+  "formJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-form.json",
+  "preProcessScript": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/preprocess.py",
+  "fileJson": "",
+  "componentJson": "",
+  "infoJson": "",
+  "webOptimizationJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-output.json",
+  "fileMappingRules": []
+}

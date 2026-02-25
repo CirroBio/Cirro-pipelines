@@ -1,0 +1,19 @@
+{
+    "samplesheet": "samplesheet.csv",
+    "db": "$.dataset.params.db.db",
+    "analysis_mode": "$.dataset.params.analysis.analysis_mode",
+    "word_size": "$.dataset.params.analysis.word_size",
+    "aln_cov": "$.dataset.params.analysis.aln_cov",
+    "aln_speed": "$.dataset.params.analysis.aln_speed",
+    "aln_mode": "$.dataset.params.analysis.aln_mode",
+    "aln_mapid": "$.dataset.params.analysis.aln_mapid",
+    "aln_mapq": "$.dataset.params.analysis.aln_mapq",
+    "aln_readq": "$.dataset.params.analysis.aln_readq",
+    "total_depth": "$.dataset.params.analysis.total_depth",
+    "fragment_length": "$.dataset.params.analysis.fragment_length",
+    "aln_baseq": "$.dataset.params.analysis.aln_baseq",
+    "aln_trim": "$.dataset.params.analysis.aln_trim",
+    "site_depth": "$.dataset.params.analysis.site_depth",
+    "snp_maf": "$.dataset.params.analysis.snp_maf",
+    "outdir": "$.dataset.dataPath"
+}
