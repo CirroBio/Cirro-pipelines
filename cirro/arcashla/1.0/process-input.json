@@ -5,5 +5,5 @@
     "zygosity_threshold": "$.dataset.params.zygosity_threshold",
     "database": "$.dataset.params.database",
     "min_count": "$.dataset.params.min_count",
-    "outdir": "$.dataset.dataDir"
+    "outdir": "$.dataset.dataPath"
 }
