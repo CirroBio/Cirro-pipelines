@@ -25,7 +25,7 @@ Use this skill when:
 
 Follow this checklist to create a new `process-definition.json` pointing at `nf-index-genome`.
 
-All nf-index-genome processes created with this skill must be saved under the `cirro/nf-core/index_genome` directory in this repository (for example, in a versioned subdirectory such as `cirro/nf-core/index_genome/1.0/`).
+All nf-index-genome processes created with this skill must be saved under the `nf-core/index_genomes` directory in this repository (for example, in a versioned subdirectory such as `nf-core/index_genomes/1.0/`).
 
 1. **Choose the index tool and entrypoint**
    - Select the appropriate `main_*.nf` file from `nf-index-genome`:
@@ -101,29 +101,88 @@ All nf-index-genome processes created with this skill must be saved under the `c
 
    - Place any process-specific compute tuning in `process-compute.config`.
 
-6. **Configuration artifacts (S3)**
-   - Assume the standard S3 layout under `<PROCESS_DIRECTORY>`:
+6. **Create local config files in the process directory**
+   - For each nf-index-genome process, create a versioned directory under `nf-core/index_genomes`, for example:
+     - `nf-core/index_genomes/1.0/`
+   - Inside that directory, you should have the same core files used by other processes in this repo:
+     - `process-definition.json` – the file described in steps 2–5.
+     - `process-input.json` – maps Cirro form fields (JSONPath from `dataset`) to Nextflow parameters.
+     - `process-form.json` – JSON schema for the UI form.
+     - `process-output.json` – HOT commands describing how to materialize and surface outputs.
+     - `process-compute.config` – default Nextflow `process { ... }` settings (cpus, memory, retries, etc.).
+     - Optional: `preprocess.py` – Python preprocessor for advanced parameter munging.
+   - These local files are what will be uploaded or mirrored to S3 at:
+     - `s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json`
+     - `s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-form.json`
+     - `s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-output.json`
+     - `s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-compute.config`
+     - `s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/preprocess.py` (if used)
+   - **Minimal examples for an nf-index-genome Bowtie2 process:**
+     - `process-input.json`:
+
+       ```json
+       {
+         "fasta": "$.dataset.params.fasta",
+         "outdir": "$.dataset.dataPath"
+       }
+       ```
+
+     - `process-form.json`:
+
+       ```json
+       {
+         "form": {
+           "type": "object",
+           "properties": {
+             "fasta": {
+               "title": "Reference FASTA",
+               "type": "string",
+               "pathType": "dataset",
+               "file": "**/*.fa*",
+               "description": "Reference genome FASTA used to build the Bowtie2 index."
+             }
+           }
+         },
+         "ui": {}
+       }
+       ```
+
+     - `process-output.json`:
+
+       ```json
+       {
+         "commands": [
+           {
+             "command": "hot.Manifest",
+             "params": {}
+           }
+         ]
+       }
+       ```
+
+     - `process-compute.config` (example):
+
+       ```groovy
+       process {
+         errorStrategy = 'retry'
+         maxRetries    = 3
+         cpus          = { 8 * task.attempt }
+         memory        = { 32.GB * task.attempt }
+       }
+       ```
+
+7. **Configuration artifacts (S3)**
+   - In `process-definition.json`, point to the S3 locations that correspond to the files created in step 6:
      - **`paramMapJson`**:
        - `s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json`
-       - This file should define mappings for:
-         - `--fasta` (required for all tools).
-         - `--gtf` (required for STAR/STAR2; optional for HISAT2).
-         - `--splicesites` (optional for HISAT2).
-         - `--outdir` (optional; default `./results`).
      - **`formJson`**:
        - `s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-form.json`
-       - UI fields corresponding to the parameters above:
-         - Reference FASTA upload / selection.
-         - Optional GTF / splice site inputs when needed.
-         - Optional outdir label or name.
      - **`webOptimizationJson`**:
        - `s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-output.json`
-       - Configure how index outputs are visualized or linked in Cirro.
-     - **`preProcessScript`** (optional):
+     - Optional **`preProcessScript`**:
        - `s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/preprocess.py`
-       - Use this when you need to transform form inputs into Nextflow parameters, validate paths, or normalize genome names.
 
-7. **Input behavior flags**
+8. **Input behavior flags**
    - For genome indexing, typical defaults are:
      - `"allowMultipleSources": false` (usually one reference per run).
      - `"usesSampleSheet": false` (indices are usually not driven by per-sample metadata).
