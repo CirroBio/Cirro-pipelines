@@ -25,7 +25,7 @@ Use this skill when:
 
 Follow this checklist to create a new `process-definition.json` pointing at `nf-index-genome`.
 
-All nf-index-genome processes created with this skill must be saved under the `nf-core/index_genomes` directory in this repository (for example, in a versioned subdirectory such as `nf-core/index_genomes/1.0/`).
+All nf-index-genome processes created with this skill must be saved under the `nf-core/index_genomes` directory in this repository, using a subfolder named for the tool and version, for example: `nf-core/index_genomes/bowtie2/1.0/`.
 
 1. **Choose the index tool and entrypoint**
    - Select the appropriate `main_*.nf` file from `nf-index-genome`:
@@ -60,13 +60,12 @@ All nf-index-genome processes created with this skill must be saved under the `n
    - **`documentationUrl`**:
      - Point at the internal docs page for this process (e.g. a “Reference data / genome index” section).
 
-3. **Set topology (optional but recommended)**
-   - **`parentProcessIds`**:
-     - If there is an upstream reference-genome curation or download step, add its process ID here.
-     - Otherwise, use an empty list `[]`.
-   - **`childProcessIds`**:
-     - Add downstream processes that consume these genome indices, if appropriate.
-     - For example, aligner or quantification pipelines that require a pre-built index.
+3. **Set topology: parentProcessIds (required)**
+   - **`parentProcessIds`** must include the dataset type(s) that provide the input files required by the workflow. This links the process to valid upstream data in the catalog.
+   - For the **`fasta`** input (required by all nf-index-genome entrypoints), the corresponding process is **`genome_fasta`**, defined in `intake/genome_fasta/` in this repo. Set:
+     - `"parentProcessIds": ["genome_fasta"]`
+   - If the entrypoint also requires other inputs (e.g. **`gtf`** for STAR/STAR2), add the process ID for the dataset type that provides those files, if defined in the catalog (e.g. an intake or upstream process). Example for STAR: `"parentProcessIds": ["genome_fasta", "<gtf_dataset_process_id>"]`.
+   - **`childProcessIds`** (optional): Add downstream process IDs that consume these genome indices (e.g. aligner or quantification pipelines that require a pre-built index).
 
 4. **Wire in code location (nf-index-genome)**
    - Use the following `code` block pattern:
@@ -102,8 +101,8 @@ All nf-index-genome processes created with this skill must be saved under the `n
    - Place any process-specific compute tuning in `process-compute.config`.
 
 6. **Create local config files in the process directory**
-   - For each nf-index-genome process, create a versioned directory under `nf-core/index_genomes`, for example:
-     - `nf-core/index_genomes/1.0/`
+   - For each nf-index-genome process, create a tool- and version-specific directory under `nf-core/index_genomes`, for example:
+     - `nf-core/index_genomes/bowtie2/1.0/`
    - Inside that directory, you should have the same core files used by other processes in this repo:
      - `process-definition.json` – the file described in steps 2–5.
      - `process-input.json` – maps Cirro form fields (JSONPath from `dataset`) to Nextflow parameters.
@@ -219,7 +218,7 @@ This is a minimal example for a Bowtie2 index process backed by `main_bowtie2.nf
 ```json
 {
   "id": "process-cirro-genome-index-bowtie2-1-0",
-  "parentProcessIds": [],
+  "parentProcessIds": ["genome_fasta"],
   "childProcessIds": [],
   "dataType": "Genome Index (Bowtie2)",
   "name": "Build Genome Index (Bowtie2)",
