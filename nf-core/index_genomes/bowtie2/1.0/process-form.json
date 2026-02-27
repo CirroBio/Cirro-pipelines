@@ -1,0 +1,16 @@
+{
+  "form": {
+    "type": "object",
+    "properties": {
+      "fasta": {
+        "title": "Reference FASTA",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.fa*",
+        "description": "Reference genome FASTA used to build the Bowtie2 index."
+      }
+    }
+  },
+  "ui": {}
+}
+
