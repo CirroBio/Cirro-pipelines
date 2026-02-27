@@ -1,0 +1,5 @@
+{
+  "fasta": "$.dataset.params.fasta",
+  "outdir": "$.dataset.dataPath"
+}
+
