@@ -1,5 +1,6 @@
 {
   "fasta": "$.dataset.params.fasta",
+  "bowtie2_version": "$.dataset.params.bowtie2_version",
   "outdir": "$.dataset.dataPath"
 }
 

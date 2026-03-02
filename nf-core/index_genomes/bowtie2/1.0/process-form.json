@@ -8,6 +8,12 @@
         "pathType": "dataset",
         "file": "**/*.fa*",
         "description": "Reference genome FASTA used to build the Bowtie2 index."
+      },
+      "bowtie2_version": {
+        "title": "Bowtie2 Version",
+        "description": "Select the specific version of Bowtie2 to use (see quay.io/biocontainers/bowtie2 for available versions)",
+        "type": "string",
+        "default": "2.5.5--ha27dd3b_0"
       }
     }
   },
