@@ -1,0 +1,5 @@
+{
+  "fasta": "$.dataset.params.fasta",
+  "bismark_version": "$.dataset.params.bismark_version",
+  "outdir": "$.dataset.dataPath"
+}

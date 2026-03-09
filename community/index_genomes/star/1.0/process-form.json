@@ -1,0 +1,28 @@
+{
+  "form": {
+    "type": "object",
+    "properties": {
+      "fasta": {
+        "title": "Reference FASTA",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.f*",
+        "description": "Reference genome FASTA used to build the STAR index."
+      },
+      "gtf": {
+        "title": "GTF Annotation",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.gtf*",
+        "description": "Gene annotation GTF for building a splice-aware STAR index."
+      },
+      "star_version": {
+        "title": "STAR Version",
+        "description": "Select the specific version of STAR to use (see quay.io/biocontainers/star for available versions)",
+        "type": "string",
+        "default": "2.7.11b--h43eeafb_1"
+      }
+    }
+  },
+  "ui": {}
+}

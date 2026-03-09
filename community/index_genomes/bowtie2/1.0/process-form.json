@@ -6,7 +6,7 @@
         "title": "Reference FASTA",
         "type": "string",
         "pathType": "dataset",
-        "file": "**/*.fa*",
+        "file": "**/*.f*",
         "description": "Reference genome FASTA used to build the Bowtie2 index."
       },
       "bowtie2_version": {

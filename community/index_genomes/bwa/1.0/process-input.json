@@ -1,0 +1,5 @@
+{
+  "fasta": "$.dataset.params.fasta",
+  "bwa_version": "$.dataset.params.bwa_version",
+  "outdir": "$.dataset.dataPath"
+}

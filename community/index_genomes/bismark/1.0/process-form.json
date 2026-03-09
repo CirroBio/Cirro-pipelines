@@ -1,0 +1,21 @@
+{
+  "form": {
+    "type": "object",
+    "properties": {
+      "fasta": {
+        "title": "Reference FASTA",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.f*",
+        "description": "Reference genome FASTA used to build the Bismark index."
+      },
+      "bismark_version": {
+        "title": "Bismark Version",
+        "description": "Select the specific version of Bismark to use (see quay.io/biocontainers/bismark for available versions)",
+        "type": "string",
+        "default": "0.25.1--hdfd78af_0"
+      }
+    }
+  },
+  "ui": {}
+}
