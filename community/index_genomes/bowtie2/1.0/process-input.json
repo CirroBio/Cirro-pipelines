@@ -1,6 +1,6 @@
 {
   "fasta": "$.dataset.params.fasta",
   "outdir": "$.dataset.dataPath",
-  "container": "public.ecr.aws/cirrobio/bowtie2:v|$.dataset.params.bowtie2_version"
+  "container": "quay.io/biocontainers/bowtie2:v|$.dataset.params.bowtie2_version"
 }
 

@@ -3,6 +3,6 @@
   "gtf": "$.dataset.params.gtf",
   "splicesites": "$.dataset.params.splicesites",
   "hisat2_build_memory": "$.dataset.params.hisat2_build_memory",
-  "container": "public.ecr.aws/cirrobio/hisat2:v|$.dataset.params.hisat2_version",
+  "container": "quay.io/biocontainers/hisat2:v|$.dataset.params.hisat2_version",
   "outdir": "$.dataset.dataPath"
 }
