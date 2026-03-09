@@ -1,6 +1,6 @@
 {
   "fasta": "$.dataset.params.fasta",
   "gtf": "$.dataset.params.gtf",
-  "container": "quay.io/biocontainers/star:v|$.dataset.params.star_version",
+  "container": "quay.io/biocontainers/star:|$.dataset.params.star_version",
   "outdir": "$.dataset.dataPath"
 }
