@@ -1,5 +1,5 @@
 {
   "fasta": "$.dataset.params.fasta",
-  "bwa_version": "$.dataset.params.bwa_version",
-  "outdir": "$.dataset.dataPath"
+  "outdir": "$.dataset.dataPath",
+  "container": "public.ecr.aws/cirrobio/bwa:v|$.dataset.params.bwa_version"
 }

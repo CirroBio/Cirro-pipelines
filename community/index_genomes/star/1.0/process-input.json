@@ -1,6 +1,6 @@
 {
   "fasta": "$.dataset.params.fasta",
   "gtf": "$.dataset.params.gtf",
-  "star_version": "$.dataset.params.star_version",
+  "container": "public.ecr.aws/cirrobio/star:v|$.dataset.params.star_version",
   "outdir": "$.dataset.dataPath"
 }

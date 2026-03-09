@@ -1,6 +1,6 @@
 {
   "fasta": "$.dataset.params.fasta",
-  "bowtie2_version": "$.dataset.params.bowtie2_version",
-  "outdir": "$.dataset.dataPath"
+  "outdir": "$.dataset.dataPath",
+  "container": "public.ecr.aws/cirrobio/bowtie2:v|$.dataset.params.bowtie2_version"
 }
 

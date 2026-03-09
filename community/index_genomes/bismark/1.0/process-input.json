@@ -1,5 +1,5 @@
 {
   "fasta": "$.dataset.params.fasta",
-  "bismark_version": "$.dataset.params.bismark_version",
-  "outdir": "$.dataset.dataPath"
+  "outdir": "$.dataset.dataPath",
+  "container": "public.ecr.aws/cirrobio/bismark:v|$.dataset.params.bismark_version"
 }
