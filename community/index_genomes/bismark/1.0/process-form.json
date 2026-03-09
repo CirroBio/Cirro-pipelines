@@ -15,7 +15,8 @@
         "type": "string",
         "default": "0.25.1--hdfd78af_0"
       }
-    }
+    },
+    "required": ["fasta", "bismark_version"]
   },
   "ui": {}
 }

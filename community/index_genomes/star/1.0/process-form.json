@@ -22,7 +22,8 @@
         "type": "string",
         "default": "2.7.11b--h43eeafb_1"
       }
-    }
+    },
+    "required": ["fasta", "gtf", "star_version"]
   },
   "ui": {}
 }

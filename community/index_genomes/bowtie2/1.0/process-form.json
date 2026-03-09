@@ -15,7 +15,8 @@
         "type": "string",
         "default": "2.5.5--ha27dd3b_0"
       }
-    }
+    },
+    "required": ["fasta", "bowtie2_version"]
   },
   "ui": {}
 }

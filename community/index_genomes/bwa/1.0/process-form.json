@@ -15,7 +15,8 @@
         "type": "string",
         "default": "0.7.18--he4a0461_0"
       }
-    }
+    },
+    "required": ["fasta", "bwa_version"]
   },
   "ui": {}
 }

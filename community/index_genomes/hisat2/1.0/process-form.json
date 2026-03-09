@@ -35,7 +35,8 @@
         "type": "string",
         "default": "2.2.1--hdbdd923_6"
       }
-    }
+    },
+    "required": ["fasta", "hisat2_version"]
   },
   "ui": {}
 }
