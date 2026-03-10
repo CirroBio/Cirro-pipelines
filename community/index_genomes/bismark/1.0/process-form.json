@@ -14,6 +14,25 @@
         "description": "Select the specific version of Bismark to use (see quay.io/biocontainers/bismark for available versions)",
         "type": "string",
         "default": "0.25.1--hdfd78af_0"
+      },
+      "aligner": {
+        "title": "Aligner",
+        "description": "Underlying aligner to use for bisulfite mapping.",
+        "type": "string",
+        "enum": ["bowtie2", "hisat2", "minimap2"],
+        "default": "bowtie2"
+      },
+      "single_fasta": {
+        "title": "Single FASTA",
+        "description": "Treat the genome as a single FASTA file rather than a directory of chromosomes.",
+        "type": "boolean",
+        "default": false
+      },
+      "large_index": {
+        "title": "Large Index",
+        "description": "Build a large index (required for genomes > 4 GB).",
+        "type": "boolean",
+        "default": true
       }
     },
     "required": ["fasta", "bismark_version"]
