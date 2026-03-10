@@ -1,6 +1,6 @@
 {
   "fasta": "$.dataset.params.fasta",
   "outdir": "$.dataset.dataPath",
-  "container": "quay.io/biocontainers/bowtie2:|$.dataset.params.bowtie2_version"
+  "container": "quay.io/biocontainers/bowtie2:|$.dataset.params.bowtie2_version",
+  "bowtie2_extra_args": "$.dataset.params.bowtie2_extra_args"
 }
-

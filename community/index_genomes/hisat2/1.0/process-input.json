@@ -4,5 +4,6 @@
   "splicesites": "$.dataset.params.splicesites",
   "hisat2_build_memory": "$.dataset.params.hisat2_build_memory",
   "container": "quay.io/biocontainers/hisat2:|$.dataset.params.hisat2_version",
+  "hisat2_extra_args": "$.dataset.params.hisat2_extra_args",
   "outdir": "$.dataset.dataPath"
 }

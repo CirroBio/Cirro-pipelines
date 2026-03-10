@@ -14,6 +14,12 @@
         "description": "Select the specific version of BWA to use (see quay.io/biocontainers/bwa for available versions)",
         "type": "string",
         "default": "0.7.18--he4a0461_0"
+      },
+      "bwa_extra_args": {
+        "title": "Extra Arguments",
+        "description": "Additional arguments to pass to bwa index.",
+        "type": "string",
+        "placeholder": "--large-index"
       }
     },
     "required": ["fasta", "bwa_version"]

@@ -22,17 +22,11 @@
         "enum": ["bowtie2", "hisat2", "minimap2"],
         "default": "bowtie2"
       },
-      "single_fasta": {
-        "title": "Single FASTA",
-        "description": "Treat the genome as a single FASTA file rather than a directory of chromosomes.",
-        "type": "boolean",
-        "default": false
-      },
-      "large_index": {
-        "title": "Large Index",
-        "description": "Build a large index (required for genomes > 4 GB).",
-        "type": "boolean",
-        "default": true
+      "bismark_extra_args": {
+        "title": "Extra Arguments",
+        "description": "Additional arguments to pass to bismark_genome_preparation.",
+        "type": "string",
+        "placeholder": "--large-index --single_fasta"
       }
     },
     "required": ["fasta", "bismark_version"]

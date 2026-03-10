@@ -21,6 +21,12 @@
         "description": "Select the specific version of STAR to use (see quay.io/biocontainers/star for available versions)",
         "type": "string",
         "default": "2.7.11b--h43eeafb_1"
+      },
+      "star_extra_args": {
+        "title": "Extra Arguments",
+        "description": "Additional arguments to pass to STAR index.",
+        "type": "string",
+        "placeholder": "--large-index"
       }
     },
     "required": ["fasta", "gtf", "star_version"]

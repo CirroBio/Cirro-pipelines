@@ -23,17 +23,17 @@
         "file": "**/*.txt",
         "description": "Pre-computed splice sites file for HISAT2 index (optional)."
       },
-      "hisat2_build_memory": {
-        "title": "HISAT2 Build Memory",
-        "description": "Minimum memory (GB) required to use GTF/splice sites during HISAT2 index building.",
-        "type": "string",
-        "default": "16 GB"
-      },
       "hisat2_version": {
         "title": "HISAT2 Version",
         "description": "Select the specific version of HISAT2 to use (see quay.io/biocontainers/hisat2 for available versions)",
         "type": "string",
         "default": "2.2.1--hdbdd923_6"
+      },
+      "hisat2_extra_args": {
+        "title": "Extra Arguments",
+        "description": "Additional arguments to pass to hisat2-build.",
+        "type": "string",
+        "placeholder": "--large-index"
       }
     },
     "required": ["fasta", "hisat2_version"]

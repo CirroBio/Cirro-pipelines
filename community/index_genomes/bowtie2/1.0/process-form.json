@@ -14,10 +14,15 @@
         "description": "Select the specific version of Bowtie2 to use (see quay.io/biocontainers/bowtie2 for available versions)",
         "type": "string",
         "default": "2.5.5--ha27dd3b_0"
+      },
+      "bowtie2_extra_args": {
+        "title": "Extra Arguments",
+        "description": "Additional arguments to pass to bowtie2-build.",
+        "type": "string",
+        "placeholder": "--large-index"
       }
     },
     "required": ["fasta", "bowtie2_version"]
   },
   "ui": {}
 }
-
