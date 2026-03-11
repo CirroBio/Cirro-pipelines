@@ -9,19 +9,40 @@
         "file": "**/*.f*",
         "description": "Reference genome FASTA used to build the HISAT2 index."
       },
-      "gtf": {
+      "hisat2_gtf": {
         "title": "GTF Annotation (optional)",
         "type": "string",
         "pathType": "dataset",
         "file": "**/*.gtf*",
-        "description": "Gene annotation GTF for building a splice-aware HISAT2 index (optional)."
+        "description": "Gene annotation GTF. Splice sites and exons will be extracted automatically. Cannot be used together with Splice Sites File or Exon File."
       },
-      "splicesites": {
+      "hisat2_ss": {
         "title": "Splice Sites File (optional)",
         "type": "string",
         "pathType": "dataset",
-        "file": "**/*.txt",
-        "description": "Pre-computed splice sites file for HISAT2 index (optional)."
+        "file": "**/*.ss",
+        "description": "Pre-computed splice sites file (.ss). Cannot be used together with GTF Annotation."
+      },
+      "hisat2_exon": {
+        "title": "Exon File (optional)",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.exon",
+        "description": "Pre-computed exon file (.exon). Cannot be used together with GTF Annotation."
+      },
+      "hisat2_snp": {
+        "title": "SNP File (optional)",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.snp",
+        "description": "SNP file for building a SNP-aware HISAT2 index."
+      },
+      "hisat2_haplotype": {
+        "title": "Haplotype File (optional)",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.haplotype",
+        "description": "Haplotype file for building a haplotype-aware HISAT2 index."
       },
       "hisat2_version": {
         "title": "HISAT2 Version",
