@@ -24,12 +24,15 @@
       },
       "star_extra_args": {
         "title": "Extra Arguments",
-        "description": "Additional arguments to pass to STAR index.",
-        "type": "string",
-        "placeholder": "--large-index"
+        "description": "Additional arguments to pass to STAR --runMode genomeGenerate.",
+        "type": "string"
       }
     },
     "required": ["fasta", "gtf", "star_version"]
   },
-  "ui": {}
+  "ui": {
+    "star_extra_args": {
+      "ui:placeholder": "--genomeSAindexNbases 11"
+    }
+  }
 }

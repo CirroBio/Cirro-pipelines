@@ -25,11 +25,14 @@
       "bismark_extra_args": {
         "title": "Extra Arguments",
         "description": "Additional arguments to pass to bismark_genome_preparation.",
-        "type": "string",
-        "placeholder": "--large-index --single_fasta"
+        "type": "string"
       }
     },
     "required": ["fasta", "bismark_version"]
   },
-  "ui": {}
+  "ui": {
+    "bismark_extra_args": {
+      "ui:placeholder": "--large-index --single_fasta"
+    }
+  }
 }

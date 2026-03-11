@@ -18,11 +18,14 @@
       "bwa_extra_args": {
         "title": "Extra Arguments",
         "description": "Additional arguments to pass to bwa index.",
-        "type": "string",
-        "placeholder": "--large-index"
+        "type": "string"
       }
     },
     "required": ["fasta", "bwa_version"]
   },
-  "ui": {}
+  "ui": {
+    "bwa_extra_args": {
+      "ui:placeholder": "-a bwtsw"
+    }
+  }
 }

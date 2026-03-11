@@ -18,11 +18,14 @@
       "bowtie2_extra_args": {
         "title": "Extra Arguments",
         "description": "Additional arguments to pass to bowtie2-build.",
-        "type": "string",
-        "placeholder": "--large-index"
+        "type": "string"
       }
     },
     "required": ["fasta", "bowtie2_version"]
   },
-  "ui": {}
+  "ui": {
+    "bowtie2_extra_args": {
+      "ui:placeholder": "--large-index"
+    }
+  }
 }
