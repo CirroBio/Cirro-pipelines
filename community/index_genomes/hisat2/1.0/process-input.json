@@ -1,0 +1,11 @@
+{
+  "fasta": "$.dataset.params.fasta",
+  "hisat2_gtf": "$.dataset.params.hisat2_gtf",
+  "hisat2_ss": "$.dataset.params.hisat2_ss",
+  "hisat2_exon": "$.dataset.params.hisat2_exon",
+  "hisat2_snp": "$.dataset.params.hisat2_snp",
+  "hisat2_haplotype": "$.dataset.params.hisat2_haplotype",
+  "container": "quay.io/biocontainers/hisat2:|$.dataset.params.hisat2_version",
+  "hisat2_extra_args": "$.dataset.params.hisat2_extra_args",
+  "outdir": "$.dataset.dataPath"
+}

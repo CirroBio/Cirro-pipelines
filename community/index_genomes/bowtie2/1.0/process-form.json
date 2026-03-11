@@ -1,0 +1,31 @@
+{
+  "form": {
+    "type": "object",
+    "properties": {
+      "fasta": {
+        "title": "Reference FASTA",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.f*",
+        "description": "Reference genome FASTA used to build the Bowtie2 index."
+      },
+      "bowtie2_version": {
+        "title": "Bowtie2 Version",
+        "description": "Select the specific version of Bowtie2 to use (see quay.io/biocontainers/bowtie2 for available versions)",
+        "type": "string",
+        "default": "2.5.5--ha27dd3b_0"
+      },
+      "bowtie2_extra_args": {
+        "title": "Extra Arguments",
+        "description": "Additional arguments to pass to bowtie2-build.",
+        "type": "string"
+      }
+    },
+    "required": ["fasta", "bowtie2_version"]
+  },
+  "ui": {
+    "bowtie2_extra_args": {
+      "ui:placeholder": "--large-index"
+    }
+  }
+}
