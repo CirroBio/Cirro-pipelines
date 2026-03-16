@@ -1,0 +1,6 @@
+{
+  "fasta": "$.dataset.params.fasta",
+  "container": "quay.io/biocontainers/salmon:|$.dataset.params.salmon_version",
+  "salmon_extra_args": "$.dataset.params.salmon_extra_args",
+  "outdir": "$.dataset.dataPath"
+}

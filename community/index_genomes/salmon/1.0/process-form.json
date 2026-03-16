@@ -1,0 +1,31 @@
+{
+  "form": {
+    "type": "object",
+    "properties": {
+      "fasta": {
+        "title": "Transcriptome FASTA",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.f*",
+        "description": "Reference transcriptome FASTA used to build the Salmon index."
+      },
+      "salmon_version": {
+        "title": "Salmon Version",
+        "description": "Select the specific version of Salmon to use (see quay.io/biocontainers/salmon for available versions)",
+        "type": "string",
+        "default": "1.11.4--h7f96273_0"
+      },
+      "salmon_extra_args": {
+        "title": "Extra Arguments",
+        "description": "Additional arguments to pass to salmon index.",
+        "type": "string"
+      }
+    },
+    "required": ["fasta", "salmon_version"]
+  },
+  "ui": {
+    "salmon_extra_args": {
+      "ui:placeholder": "--gencode"
+    }
+  }
+}
