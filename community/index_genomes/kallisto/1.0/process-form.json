@@ -1,0 +1,31 @@
+{
+  "form": {
+    "type": "object",
+    "properties": {
+      "fasta": {
+        "title": "Transcriptome FASTA",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.f*",
+        "description": "Reference transcriptome FASTA used to build the Kallisto index."
+      },
+      "kallisto_version": {
+        "title": "Kallisto Version",
+        "description": "Select the specific version of Kallisto to use (see quay.io/biocontainers/kallisto for available versions)",
+        "type": "string",
+        "default": "0.50.1--h7d875b9_2"
+      },
+      "kallisto_extra_args": {
+        "title": "Extra Arguments",
+        "description": "Additional arguments to pass to kallisto index.",
+        "type": "string"
+      }
+    },
+    "required": ["fasta", "kallisto_version"]
+  },
+  "ui": {
+    "kallisto_extra_args": {
+      "ui:placeholder": "--kmer-size 31"
+    }
+  }
+}

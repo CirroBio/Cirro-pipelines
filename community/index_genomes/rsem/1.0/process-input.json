@@ -1,0 +1,7 @@
+{
+  "fasta": "$.dataset.params.fasta",
+  "gtf": "$.dataset.params.gtf",
+  "container": "quay.io/biocontainers/rsem:|$.dataset.params.rsem_version",
+  "rsem_extra_args": "$.dataset.params.rsem_extra_args",
+  "outdir": "$.dataset.dataPath"
+}

@@ -1,0 +1,31 @@
+{
+  "id": "process-cirro-genome-index-rsem-1-0",
+  "parentProcessIds": [
+    "genome_fasta"
+  ],
+  "childProcessIds": [],
+  "dataType": "Genome Index (RSEM)",
+  "name": "Build Genome Index (RSEM)",
+  "desc": "Build an RSEM index from a reference genome FASTA and GTF annotation using the appropriate nf-core module.",
+  "executor": "NEXTFLOW",
+  "category": "Reference Data",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-reference/#genome-index-rsem",
+  "code": {
+    "repository": "GITHUBPUBLIC",
+    "uri": "CirroBio/nf-index-genome",
+    "version": "main",
+    "script": "main_rsem.nf"
+  },
+  "allowMultipleSources": false,
+  "usesSampleSheet": false,
+  "computeDefaults": [
+    {
+      "executor": "NEXTFLOW",
+      "json": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-compute.config",
+      "name": "Default"
+    }
+  ],
+  "paramMapJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json",
+  "formJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-form.json",
+  "webOptimizationJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-output.json"
+}

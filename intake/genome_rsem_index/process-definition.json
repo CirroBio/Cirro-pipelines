@@ -1,0 +1,17 @@
+{
+  "id": "genome_rsem_index",
+  "childProcessIds": [],
+  "name": "RSEM Aligner Index",
+  "desc": "Genome index built for alignment with RSEM",
+  "executor": "INGEST",
+  "documentationUrl": "",
+  "code": {
+    "repository": "NA",
+    "uri": ""
+  },
+  "computeDefaults": [],
+  "paramMapJson": "",
+  "formJson": "",
+  "webOptimizationJson": "",
+  "fileMappingRules": []
+}
