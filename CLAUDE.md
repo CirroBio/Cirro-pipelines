@@ -24,6 +24,7 @@ These appear on `string`-type properties to wire them up to file pickers.
 | `folder` | glob pattern | Like `file` but selects a directory |
 | `useS3Path` | `true` / `false` | Allow direct S3 path entry in addition to the picker UI |
 | `multiple` | `true` / `false` | Allow selection of multiple files |
+| `process` | array of process ID strings | Filter the dataset picker to only show datasets produced by the listed process IDs (pipeline process IDs or intake process IDs) |
 | `mm` | `{ "matchBase": true }` | Controls file matching behavior (matchBase ignores leading path) |
 | `schema` | file path string | Path to external JSON Schema for validating selected file contents |
 | `mimetype` | MIME type string (e.g. `"text/plain"`) | Restricts accepted file types |
