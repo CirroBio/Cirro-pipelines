@@ -1,10 +1,10 @@
 {
     "input": "manifest.csv",
     "subset": "$.params.dataset.paramJson.inputs.subset",
-    "genome": "$.params.dataset.paramJson.reference_genome_options.igenomes.genome",
+    "genome": "$.params.dataset.paramJson.reference_genome_options.genome_source_selector.igenomes.genome",
     "igenomes_base": "s3://pubweb-references/igenomes",
-    "genome_source": "$.params.dataset.paramJson.reference_genome_options.genome_source",
-    "genome_index": "$.params.dataset.paramJson.reference_genome_options.cirro_reference.genome_index",
+    "genome_source": "$.params.dataset.paramJson.reference_genome_options.genome_source_selector.genome_source",
+    "genome_index": "$.params.dataset.paramJson.reference_genome_options.genome_source_selector.cirro_reference.genome_index",
     "outdir": "$.params.dataset.s3|/data/",
     "gtf_extra_attributes": "$.params.dataset.paramJson.reference_genome_options.gtf_extra_attributes",
     "gtf_group_features": "$.params.dataset.paramJson.reference_genome_options.gtf_group_features",
