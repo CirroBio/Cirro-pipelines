@@ -5,6 +5,7 @@ import pandas as pd
 from cirro.api.models.s3_path import S3Path
 import boto3
 import json
+import urllib.request
 
 
 def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
@@ -133,6 +134,32 @@ def read_json(path):
     return json.loads(text)
 
 
+def filter_params_by_schema(ds: PreprocessDataset):
+    """Remove any params not present in the nf-core/rnaseq nextflow_schema.json."""
+
+    version = ds.params.get("workflow_version", "3.23.0")
+    url = f"https://raw.githubusercontent.com/nf-core/rnaseq/{version}/nextflow_schema.json"
+
+    ds.logger.info(f"Fetching nextflow_schema.json for nf-core/rnaseq {version}")
+    try:
+        with urllib.request.urlopen(url) as response:
+            schema = json.loads(response.read().decode())
+    except Exception as e:
+        ds.logger.warning(f"Could not fetch nextflow_schema.json: {e}")
+        return
+
+    allowed = set()
+    for section in schema.get("$defs", {}).values():
+        allowed.update(section.get("properties", {}).keys())
+
+    ds.logger.info(f"Schema defines {len(allowed):,} parameters")
+
+    for key in list(ds.params.keys()):
+        if key not in allowed:
+            ds.logger.info(f"Removing param not in schema: {key}")
+            ds.remove_param(key, force=True)
+
+
 if __name__ == "__main__":
 
     ds = PreprocessDataset.from_running()
@@ -142,3 +169,6 @@ if __name__ == "__main__":
     # Write out the manifest
     manifest.to_csv("manifest.csv", index=None)
     ds.logger.info(f"Wrote out {manifest.shape[0]:,} lines to manifest.csv")
+
+    # Remove any parameters not defined in the nf-core/rnaseq nextflow_schema.json
+    filter_params_by_schema(ds)
