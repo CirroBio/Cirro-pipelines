@@ -96,7 +96,11 @@
                                         "pathType": "dataset",
                                         "process": [
                                           "process-cirro-genome-index-star-1-0",
-                                          "genome_star_index"
+                                          "genome_star_index",
+                                          "process-cirro-genome-index-hisat2-1-0",
+                                          "genome_hisat2_index",
+                                          "process-cirro-genome-index-bowtie2-1-0",
+                                          "genome_bowtie2_index"
                                         ],
                                         "description": "Pre-built STAR genome index dataset"
                                       }
@@ -164,8 +168,12 @@
                                         "type": "string",
                                         "pathType": "dataset",
                                         "process": [
+                                          "process-cirro-genome-index-star-1-0",
+                                          "genome_star_index",
                                           "process-cirro-genome-index-hisat2-1-0",
-                                          "genome_hisat2_index"
+                                          "genome_hisat2_index",
+                                          "process-cirro-genome-index-bowtie2-1-0",
+                                          "genome_bowtie2_index"
                                         ],
                                         "description": "Pre-built HISAT2 genome index dataset"
                                       }
@@ -233,6 +241,10 @@
                                         "type": "string",
                                         "pathType": "dataset",
                                         "process": [
+                                          "process-cirro-genome-index-star-1-0",
+                                          "genome_star_index",
+                                          "process-cirro-genome-index-hisat2-1-0",
+                                          "genome_hisat2_index",
                                           "process-cirro-genome-index-bowtie2-1-0",
                                           "genome_bowtie2_index"
                                         ],
