@@ -85,7 +85,7 @@
                               {
                                 "properties": {
                                   "genome_source": { "enum": ["dataset"] },
-                                  "cirro_reference": {
+                                  "star_cirro_reference": {
                                     "type": "object",
                                     "title": "Cirro Genome Index (STAR)",
                                     "description": "Select a pre-built STAR genome index dataset from Cirro.",
@@ -96,11 +96,7 @@
                                         "pathType": "dataset",
                                         "process": [
                                           "process-cirro-genome-index-star-1-0",
-                                          "genome_star_index",
-                                          "process-cirro-genome-index-hisat2-1-0",
-                                          "genome_hisat2_index",
-                                          "process-cirro-genome-index-bowtie2-1-0",
-                                          "genome_bowtie2_index"
+                                          "genome_star_index"
                                         ],
                                         "description": "Pre-built STAR genome index dataset"
                                       }
@@ -158,7 +154,7 @@
                               {
                                 "properties": {
                                   "genome_source": { "enum": ["dataset"] },
-                                  "cirro_reference": {
+                                  "hisat2_cirro_reference": {
                                     "type": "object",
                                     "title": "Cirro Genome Index (HISAT2)",
                                     "description": "Select a pre-built HISAT2 genome index dataset from Cirro.",
@@ -168,12 +164,8 @@
                                         "type": "string",
                                         "pathType": "dataset",
                                         "process": [
-                                          "process-cirro-genome-index-star-1-0",
-                                          "genome_star_index",
                                           "process-cirro-genome-index-hisat2-1-0",
-                                          "genome_hisat2_index",
-                                          "process-cirro-genome-index-bowtie2-1-0",
-                                          "genome_bowtie2_index"
+                                          "genome_hisat2_index"
                                         ],
                                         "description": "Pre-built HISAT2 genome index dataset"
                                       }
@@ -231,7 +223,7 @@
                               {
                                 "properties": {
                                   "genome_source": { "enum": ["dataset"] },
-                                  "cirro_reference": {
+                                  "bowtie2_cirro_reference": {
                                     "type": "object",
                                     "title": "Cirro Genome Index (Bowtie2)",
                                     "description": "Select a pre-built Bowtie2 genome index dataset from Cirro.",
@@ -241,10 +233,6 @@
                                         "type": "string",
                                         "pathType": "dataset",
                                         "process": [
-                                          "process-cirro-genome-index-star-1-0",
-                                          "genome_star_index",
-                                          "process-cirro-genome-index-hisat2-1-0",
-                                          "genome_hisat2_index",
                                           "process-cirro-genome-index-bowtie2-1-0",
                                           "genome_bowtie2_index"
                                         ],
