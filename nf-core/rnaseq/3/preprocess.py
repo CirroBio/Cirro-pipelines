@@ -152,5 +152,29 @@ if __name__ == "__main__":
     manifest.to_csv("manifest.csv", index=None)
     ds.logger.info(f"Wrote out {manifest.shape[0]:,} lines to manifest.csv")
 
+    # If the user selected a Cirro dataset as the genome source, remove
+    # igenomes_base and genome and resolve fasta/gtf from the index dataset
+    if ds.params.get("genome_source") == "dataset":
+        ds.logger.info("genome_source=dataset: removing igenomes_base and genome params")
+        ds.remove_param("igenomes_base", force=True)
+        ds.remove_param("genome", force=True)
+
+        aligner = ds.params.get("aligner", "")
+        if aligner in ("star_salmon", "star_rsem"):
+            index_path = ds.params.get("star_index")
+        elif aligner == "hisat2":
+            index_path = ds.params.get("hisat2_index")
+        elif aligner == "bowtie2_salmon":
+            index_path = ds.params.get("bowtie2_index")
+        else:
+            index_path = None
+
+        if index_path:
+            index_path = index_path.rstrip("/")
+            ds.add_param("fasta", f"{index_path}/genome.fasta.gz")
+            ds.add_param("gtf", f"{index_path}/genome.gtf.gz")
+        else:
+            ds.logger.warning(f"genome_source=dataset but no index path found for aligner={aligner!r}")
+
     # Remove any parameters not defined in the nf-core/rnaseq nextflow_schema.json
     filter_params_by_schema(ds)
