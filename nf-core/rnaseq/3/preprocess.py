@@ -82,24 +82,6 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
 
     log_table(ds, "Manifest", manifest)
 
-    # If a subset of files have been selected
-    if len(ds.params.get("subset", [])) > 0:
-        ds.logger.info(f"A subset of {len(ds.params['subset']):,} files have been selected:")
-        for fn in ds.params["subset"]:
-            ds.logger.info(fn)
-        manifest = manifest.loc[
-            manifest.apply(
-                lambda r: (
-                    r['fastq_1'] in ds.params["subset"] or
-                    r['fastq_2'] in ds.params["subset"]
-                ),
-                axis=1
-            )
-        ]
-        log_table(ds, "Manifest (subset)", manifest)
-        assert manifest.shape[0] > 0, "No FASTQ pairs selected in subset"
-    ds.remove_param("subset", force=True)
-
     # Get the strandedness attribute for each sample (if any exists)
     strandedness = ds.samplesheet.reindex(
         columns=["sample", "strandedness"]
