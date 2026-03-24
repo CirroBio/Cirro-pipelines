@@ -1,6 +1,5 @@
 {
   "fasta": "$.dataset.params.fasta",
-  "gtf": "$.dataset.params.gtf",
   "hisat2_gtf": "$.dataset.params.hisat2_gtf",
   "hisat2_ss": "$.dataset.params.hisat2_ss",
   "hisat2_exon": "$.dataset.params.hisat2_exon",
