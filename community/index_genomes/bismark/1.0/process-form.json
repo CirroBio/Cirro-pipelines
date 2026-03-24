@@ -9,6 +9,13 @@
         "file": "**/*.f*",
         "description": "Reference genome FASTA used to build the Bismark index."
       },
+      "gtf": {
+        "title": "GTF Annotation (optional)",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.*",
+        "description": "Gene annotation GTF file (optional)."
+      },
       "bismark_version": {
         "title": "Bismark Version",
         "description": "Select the specific version of Bismark to use (see quay.io/biocontainers/bismark for available versions)",

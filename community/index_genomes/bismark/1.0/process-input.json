@@ -1,5 +1,6 @@
 {
   "fasta": "$.dataset.params.fasta",
+  "gtf": "$.dataset.params.gtf",
   "outdir": "$.dataset.dataPath",
   "container": "quay.io/biocontainers/bismark:|$.dataset.params.bismark_version",
   "aligner": "$.dataset.params.aligner",

@@ -1,5 +1,6 @@
 {
   "fasta": "$.dataset.params.fasta",
+  "gtf": "$.dataset.params.gtf",
   "outdir": "$.dataset.dataPath",
   "container": "quay.io/biocontainers/bwa:|$.dataset.params.bwa_version",
   "bwa_extra_args": "$.dataset.params.bwa_extra_args"

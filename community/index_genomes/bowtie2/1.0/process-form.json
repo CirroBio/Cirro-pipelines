@@ -9,6 +9,13 @@
         "file": "**/*.f*",
         "description": "Reference genome FASTA used to build the Bowtie2 index."
       },
+      "gtf": {
+        "title": "GTF Annotation (optional)",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.*",
+        "description": "Gene annotation GTF file (optional)."
+      },
       "bowtie2_version": {
         "title": "Bowtie2 Version",
         "description": "Select the specific version of Bowtie2 to use (see quay.io/biocontainers/bowtie2 for available versions)",

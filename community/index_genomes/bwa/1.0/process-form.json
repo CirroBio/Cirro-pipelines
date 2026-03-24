@@ -9,6 +9,13 @@
         "file": "**/*.f*",
         "description": "Reference genome FASTA used to build the BWA index."
       },
+      "gtf": {
+        "title": "GTF Annotation (optional)",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.*",
+        "description": "Gene annotation GTF file (optional)."
+      },
       "bwa_version": {
         "title": "BWA Version",
         "description": "Select the specific version of BWA to use (see quay.io/biocontainers/bwa for available versions)",

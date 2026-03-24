@@ -9,6 +9,13 @@
         "file": "**/*.f*",
         "description": "Reference transcriptome FASTA used to build the Salmon index."
       },
+      "gtf": {
+        "title": "GTF Annotation (optional)",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.*",
+        "description": "Gene annotation GTF file (optional)."
+      },
       "salmon_version": {
         "title": "Salmon Version",
         "description": "Select the specific version of Salmon to use (see quay.io/biocontainers/salmon for available versions)",

@@ -9,6 +9,13 @@
         "file": "**/*.f*",
         "description": "Reference genome FASTA used to build the HISAT2 index."
       },
+      "gtf": {
+        "title": "GTF Annotation (optional)",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.*",
+        "description": "Gene annotation GTF file (optional)."
+      },
       "hisat2_gtf": {
         "title": "GTF Annotation (optional)",
         "type": "string",
