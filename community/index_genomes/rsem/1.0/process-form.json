@@ -20,7 +20,7 @@
         "title": "RSEM Version",
         "description": "Select the specific version of RSEM to use (see quay.io/biocontainers/rsem for available versions)",
         "type": "string",
-        "default": "1.3.3--pl5321hdbdd923_5"
+        "default": "1.3.3--pl5321h077b44d_12"
       },
       "rsem_extra_args": {
         "title": "Extra Arguments",
