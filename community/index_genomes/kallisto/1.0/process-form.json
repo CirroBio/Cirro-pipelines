@@ -9,13 +9,6 @@
         "file": "**/*.f*",
         "description": "Reference transcriptome FASTA used to build the Kallisto index."
       },
-      "gtf": {
-        "title": "GTF Annotation (optional)",
-        "type": "string",
-        "pathType": "dataset",
-        "file": "**/*.*",
-        "description": "Gene annotation GTF file (optional)."
-      },
       "kallisto_version": {
         "title": "Kallisto Version",
         "description": "Select the specific version of Kallisto to use (see quay.io/biocontainers/kallisto for available versions)",
