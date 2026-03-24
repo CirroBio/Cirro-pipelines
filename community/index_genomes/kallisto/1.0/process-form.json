@@ -13,7 +13,7 @@
         "title": "Kallisto Version",
         "description": "Select the specific version of Kallisto to use (see quay.io/biocontainers/kallisto for available versions)",
         "type": "string",
-        "default": "0.50.1--h7d875b9_2"
+        "default": "0.52.0--h13ff97a_0"
       },
       "kallisto_extra_args": {
         "title": "Extra Arguments",
