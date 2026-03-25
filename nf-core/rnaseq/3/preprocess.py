@@ -170,7 +170,7 @@ if __name__ == "__main__":
             index_path = None
 
         if index_path:
-            index_path = index_path.rstrip("/")
+            index_path = index_path + "/data"
             ds.add_param("fasta", f"{index_path}/data/genome.fasta.gz")
             ds.add_param("gtf", f"{index_path}/data/genome.gtf.gz")
         else:
