@@ -160,8 +160,15 @@ if __name__ == "__main__":
         ds.remove_param("genome", force=True)
 
         aligner = ds.params.get("aligner", "")
-        if aligner in ("star_salmon", "star_rsem"):
+        if aligner == "star_salmon":
             index_path = ds.params.get("star_index")
+        elif aligner == "star_rsem":
+            index_path = ds.params.get("star_index")
+            rsem_index = ds.params.get("rsem_index")
+            if rsem_index:
+                ds.logger.info(f"star_rsem: rsem_index={rsem_index}")
+            else:
+                ds.logger.warning("star_rsem with genome_source=dataset but rsem_index not set")
         elif aligner == "hisat2":
             index_path = ds.params.get("hisat2_index")
         elif aligner == "bowtie2_salmon":
