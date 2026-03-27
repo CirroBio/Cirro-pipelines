@@ -46,7 +46,7 @@
                       "aligner": {
                         "enum": ["star_salmon"]
                       },
-                      "genome_selection": {
+                      "star_salmon_genome_selection": {
                         "title": "STAR Reference Genome",
                         "type": "object",
                         "properties": {
@@ -115,7 +115,7 @@
                       "aligner": {
                         "enum": ["star_rsem"]
                       },
-                      "genome_selection": {
+                      "star_rsem_genome_selection": {
                         "title": "STAR + RSEM Reference Genome",
                         "type": "object",
                         "properties": {
@@ -201,7 +201,7 @@
                       "aligner": {
                         "enum": ["hisat2"]
                       },
-                      "genome_selection": {
+                      "hisat2_genome_selection": {
                         "title": "HISAT2 Reference Genome",
                         "type": "object",
                         "properties": {
@@ -270,7 +270,7 @@
                       "aligner": {
                         "enum": ["bowtie2_salmon"]
                       },
-                      "genome_selection": {
+                      "bowtie2_salmon_genome_selection": {
                         "title": "Bowtie2 Reference Genome",
                         "type": "object",
                         "properties": {

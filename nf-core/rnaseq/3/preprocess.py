@@ -152,43 +152,47 @@ if __name__ == "__main__":
     manifest.to_csv("manifest.csv", index=None)
     ds.logger.info(f"Wrote out {manifest.shape[0]:,} lines to manifest.csv")
 
-    # Set up a pattern where the genome index datasets will be removed 
-    # if they have not been explicitly selected for use by the user.
-    # We need to do this because the form data may contain indexes that are
-    # not supported by the current aligner selection.
-    to_remove = ["rsem_index", "star_index", "bowtie2_index", "hisat2_index"]
-    # Implicitly, if iGenomes is selected as the genome source, all custom indexes will be removed.
+    # Per-aligner form params to clean up — these are never passed to the pipeline directly
+    aligner_specific_params = [
+        "star_salmon_genome_source", "star_salmon_genome", "star_salmon_index",
+        "star_rsem_genome_source", "star_rsem_genome", "star_rsem_star_index",
+        "hisat2_genome_source", "hisat2_genome",
+        "bowtie2_salmon_genome_source", "bowtie2_salmon_genome",
+    ]
+    # Pipeline index params — only the active aligner's is kept
+    index_params_to_remove = ["rsem_index", "hisat2_index", "bowtie2_index"]
+
+    aligner = ds.params.get("aligner", "")
+    genome_source = ds.params.get(f"{aligner}_genome_source")
 
     # If the user selected a Cirro dataset as the genome source, remove
-    # igenomes_base and genome and resolve fasta/gtf from the index dataset
-    if ds.params.get("genome_source") == "dataset":
-        ds.logger.info("genome_source=dataset: removing igenomes_base and genome params")
+    # igenomes_base and resolve fasta/gtf from the index dataset
+    if genome_source == "dataset":
+        ds.logger.info("genome_source=dataset: removing igenomes_base")
         ds.remove_param("igenomes_base", force=True)
-        ds.remove_param("genome", force=True)
 
-        aligner = ds.params.get("aligner", "")
         if aligner == "star_salmon":
-            index_path = ds.params.get("star_index")
-            to_remove.remove("star_index")
+            index_path = ds.params.get("star_salmon_index")
+            ds.add_param("star_index", index_path)
         elif aligner == "star_rsem":
-            index_path = ds.params.get("star_index")
+            index_path = ds.params.get("star_rsem_star_index")
+            ds.add_param("star_index", index_path)
             rsem_index = ds.params.get("rsem_index")
             if rsem_index:
                 ds.logger.info(f"star_rsem: rsem_index={rsem_index}")
+                index_params_to_remove.remove("rsem_index")
             else:
                 ds.logger.warning("star_rsem with genome_source=dataset but rsem_index not set")
-            to_remove.remove("star_index")
-            to_remove.remove("rsem_index")
         elif aligner == "hisat2":
             index_path = ds.params.get("hisat2_index")
-            to_remove.remove("hisat2_index")
+            index_params_to_remove.remove("hisat2_index")
         elif aligner == "bowtie2_salmon":
             index_path = ds.params.get("bowtie2_index")
-            to_remove.remove("bowtie2_index")
+            index_params_to_remove.remove("bowtie2_index")
         else:
             index_path = None
 
-        for param in to_remove:
+        for param in index_params_to_remove:
             ds.remove_param(param, force=True)
 
         if index_path:
@@ -196,6 +200,23 @@ if __name__ == "__main__":
             ds.add_param("gtf", f"{index_path}/genome.gtf")
         else:
             ds.logger.warning(f"genome_source=dataset but no index path found for aligner={aligner!r}")
+
+    else:
+        # iGenomes: promote the aligner-specific genome selection to the pipeline genome param
+        genome = ds.params.get(f"{aligner}_genome")
+        if genome:
+            ds.add_param("genome", genome)
+            ds.logger.info(f"genome_source=igenomes: genome={genome}")
+        else:
+            ds.logger.warning(f"genome_source=igenomes but no genome param found for aligner={aligner!r}")
+
+        # No pre-built indices needed for iGenomes
+        for param in index_params_to_remove:
+            ds.remove_param(param, force=True)
+
+    # Clean up all per-aligner form params before passing to the pipeline
+    for param in aligner_specific_params:
+        ds.remove_param(param, force=True)
 
     # Remove any parameters not defined in the nf-core/rnaseq nextflow_schema.json
     filter_params_by_schema(ds)
