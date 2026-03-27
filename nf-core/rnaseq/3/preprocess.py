@@ -152,6 +152,13 @@ if __name__ == "__main__":
     manifest.to_csv("manifest.csv", index=None)
     ds.logger.info(f"Wrote out {manifest.shape[0]:,} lines to manifest.csv")
 
+    # Set up a pattern where the genome index datasets will be removed 
+    # if they have not been explicitly selected for use by the user.
+    # We need to do this because the form data may contain indexes that are
+    # not supported by the current aligner selection.
+    to_remove = ["rsem_index", "star_index", "bowtie2_index", "hisat2_index"]
+    # Implicitly, if iGenomes is selected as the genome source, all custom indexes will be removed.
+
     # If the user selected a Cirro dataset as the genome source, remove
     # igenomes_base and genome and resolve fasta/gtf from the index dataset
     if ds.params.get("genome_source") == "dataset":
@@ -162,6 +169,7 @@ if __name__ == "__main__":
         aligner = ds.params.get("aligner", "")
         if aligner == "star_salmon":
             index_path = ds.params.get("star_index")
+            to_remove.remove("star_index")
         elif aligner == "star_rsem":
             index_path = ds.params.get("star_index")
             rsem_index = ds.params.get("rsem_index")
@@ -169,12 +177,19 @@ if __name__ == "__main__":
                 ds.logger.info(f"star_rsem: rsem_index={rsem_index}")
             else:
                 ds.logger.warning("star_rsem with genome_source=dataset but rsem_index not set")
+            to_remove.remove("star_index")
+            to_remove.remove("rsem_index")
         elif aligner == "hisat2":
             index_path = ds.params.get("hisat2_index")
+            to_remove.remove("hisat2_index")
         elif aligner == "bowtie2_salmon":
             index_path = ds.params.get("bowtie2_index")
+            to_remove.remove("bowtie2_index")
         else:
             index_path = None
+
+        for param in to_remove:
+            ds.remove_param(param, force=True)
 
         if index_path:
             ds.add_param("fasta", f"{index_path}/genome.fasta")
