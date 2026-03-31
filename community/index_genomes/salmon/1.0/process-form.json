@@ -3,11 +3,18 @@
     "type": "object",
     "properties": {
       "fasta": {
-        "title": "Transcriptome FASTA",
+        "title": "Genome FASTA",
         "type": "string",
         "pathType": "dataset",
         "file": "**/*.f*",
-        "description": "Reference transcriptome FASTA used to build the Salmon index."
+        "description": "Reference genome FASTA used to build the Salmon index."
+      },
+      "gtf": {
+        "title": "GTF Annotation",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.gtf*",
+        "description": "Gene annotation GTF for building a splice-aware Salmon index."
       },
       "salmon_version": {
         "title": "Salmon Version",
