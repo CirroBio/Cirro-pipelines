@@ -154,13 +154,13 @@ if __name__ == "__main__":
 
     # Per-aligner form params to clean up — these are never passed to the pipeline directly
     aligner_specific_params = [
-        "star_salmon_genome_source", "star_salmon_genome", "star_salmon_index",
+        "star_salmon_genome_source", "star_salmon_genome", "star_salmon_index", "star_salmon_salmon_index",
         "star_rsem_genome_source", "star_rsem_genome", "star_rsem_star_index",
         "hisat2_genome_source", "hisat2_genome",
-        "bowtie2_salmon_genome_source", "bowtie2_salmon_genome",
+        "bowtie2_salmon_genome_source", "bowtie2_salmon_genome", "bowtie2_salmon_salmon_index",
     ]
     # Pipeline index params — only the active aligner's is kept
-    index_params_to_remove = ["rsem_index", "hisat2_index", "bowtie2_index"]
+    index_params_to_remove = ["rsem_index", "hisat2_index", "bowtie2_index", "salmon_index"]
 
     aligner = ds.params.get("aligner", "")
     genome_source = ds.params.get(f"{aligner}_genome_source")
@@ -174,6 +174,12 @@ if __name__ == "__main__":
         if aligner == "star_salmon":
             index_path = ds.params.get("star_salmon_index")
             ds.add_param("star_index", index_path)
+            salmon_index = ds.params.get("star_salmon_salmon_index")
+            if salmon_index:
+                ds.add_param("salmon_index", salmon_index)
+                index_params_to_remove.remove("salmon_index")
+            else:
+                ds.logger.warning("star_salmon with genome_source=dataset but salmon_index not set")
         elif aligner == "star_rsem":
             index_path = ds.params.get("star_rsem_star_index")
             ds.add_param("star_index", index_path)
@@ -189,6 +195,12 @@ if __name__ == "__main__":
         elif aligner == "bowtie2_salmon":
             index_path = ds.params.get("bowtie2_index")
             index_params_to_remove.remove("bowtie2_index")
+            salmon_index = ds.params.get("bowtie2_salmon_salmon_index")
+            if salmon_index:
+                ds.add_param("salmon_index", salmon_index)
+                index_params_to_remove.remove("salmon_index")
+            else:
+                ds.logger.warning("bowtie2_salmon with genome_source=dataset but salmon_index not set")
         else:
             index_path = None
 

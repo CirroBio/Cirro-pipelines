@@ -101,6 +101,23 @@
                                         "description": "Pre-built STAR genome index dataset"
                                       }
                                     }
+                                  },
+                                  "salmon_cirro_reference": {
+                                    "type": "object",
+                                    "title": "Cirro Genome Index (Salmon)",
+                                    "description": "Select a pre-built Salmon genome index dataset from Cirro.",
+                                    "properties": {
+                                      "genome_index": {
+                                        "title": "Salmon Genome Index",
+                                        "type": "string",
+                                        "pathType": "dataset",
+                                        "process": [
+                                          "process-cirro-genome-index-salmon-1-0",
+                                          "genome_salmon_index"
+                                        ],
+                                        "description": "Pre-built Salmon genome index dataset"
+                                      }
+                                    }
                                   }
                                 }
                               }
@@ -323,6 +340,23 @@
                                           "genome_bowtie2_index"
                                         ],
                                         "description": "Pre-built Bowtie2 genome index dataset"
+                                      }
+                                    }
+                                  },
+                                  "salmon_cirro_reference": {
+                                    "type": "object",
+                                    "title": "Cirro Genome Index (Salmon)",
+                                    "description": "Select a pre-built Salmon genome index dataset from Cirro.",
+                                    "properties": {
+                                      "genome_index": {
+                                        "title": "Salmon Genome Index",
+                                        "type": "string",
+                                        "pathType": "dataset",
+                                        "process": [
+                                          "process-cirro-genome-index-salmon-1-0",
+                                          "genome_salmon_index"
+                                        ],
+                                        "description": "Pre-built Salmon genome index dataset"
                                       }
                                     }
                                   }
