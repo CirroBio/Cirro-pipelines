@@ -177,6 +177,7 @@ if __name__ == "__main__":
             salmon_index = ds.params.get("star_salmon_salmon_index")
             if salmon_index:
                 ds.add_param("salmon_index", salmon_index)
+                ds.add_param("transcript_fasta", f"{salmon_index}/transcriptome.fasta.gz")
                 index_params_to_remove.remove("salmon_index")
             else:
                 ds.logger.warning("star_salmon with genome_source=dataset but salmon_index not set")
@@ -198,6 +199,7 @@ if __name__ == "__main__":
             salmon_index = ds.params.get("bowtie2_salmon_salmon_index")
             if salmon_index:
                 ds.add_param("salmon_index", salmon_index)
+                ds.add_param("transcript_fasta", f"{salmon_index}/transcriptome.fasta.gz")
                 index_params_to_remove.remove("salmon_index")
             else:
                 ds.logger.warning("bowtie2_salmon with genome_source=dataset but salmon_index not set")
