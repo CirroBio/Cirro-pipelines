@@ -208,7 +208,7 @@ if __name__ == "__main__":
             ds.remove_param(param, force=True)
 
         if index_path:
-            ds.add_param("fasta", f"{index_path}/genome.fasta")
+            ds.add_param("fasta", f"{index_path}/genome.fasta.gz")
             ds.add_param("gtf", f"{index_path}/genome.gtf")
         else:
             ds.logger.warning(f"genome_source=dataset but no index path found for aligner={aligner!r}")
