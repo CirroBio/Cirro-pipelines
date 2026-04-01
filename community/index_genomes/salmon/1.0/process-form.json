@@ -9,6 +9,13 @@
         "file": "**/*.f*",
         "description": "Reference genome FASTA used to build the Salmon index."
       },
+      "extra_fasta": {
+        "title": "Additional FASTA",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.f*",
+        "description": "Additional decoy sequences to add to the Salmon index."
+      },
       "gtf": {
         "title": "GTF Annotation",
         "type": "string",
