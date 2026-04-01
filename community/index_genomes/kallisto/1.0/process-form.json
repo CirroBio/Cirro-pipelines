@@ -3,11 +3,18 @@
     "type": "object",
     "properties": {
       "fasta": {
-        "title": "Transcriptome FASTA",
+        "title": "Genome FASTA",
         "type": "string",
         "pathType": "dataset",
         "file": "**/*.f*",
-        "description": "Reference transcriptome FASTA used to build the Kallisto index."
+        "description": "Reference genome FASTA used to build the Kallisto index."
+      },
+      "gtf": {
+        "title": "GTF Annotation",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.gtf*",
+        "description": "Gene annotation GTF for building a splice-aware Kallisto index."
       },
       "kallisto_version": {
         "title": "Kallisto Version",
@@ -21,7 +28,7 @@
         "type": "string"
       }
     },
-    "required": ["fasta", "kallisto_version"]
+    "required": ["fasta", "gtf", "kallisto_version"]
   },
   "ui": {
     "kallisto_extra_args": {
