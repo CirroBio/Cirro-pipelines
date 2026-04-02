@@ -33,9 +33,9 @@
         "title": "Transcriptome Source (optional)",
         "description": "Tool used to generate the transcriptome FASTA from genome + GTF. Use gffread for prokaryotic genomes; use rsem for eukaryotic genomes.",
         "type": "string",
-        "enum": ["gffread", "rsem"],
-        "enumNames": ["gffread (prokaryotic)", "rsem (eukaryotic)"],
-        "default": "gffread"
+        "enum": ["rsem", "gffread"],
+        "enumNames": ["rsem (eukaryotic)", "gffread (prokaryotic)"],
+        "default": "rsem"
       },
       "salmon_extra_args": {
         "title": "Extra Arguments",
