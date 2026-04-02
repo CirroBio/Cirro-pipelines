@@ -10,11 +10,11 @@
         "description": "Reference genome FASTA used to build the RSEM index."
       },
       "gtf": {
-        "title": "GTF Annotation (optional)",
+        "title": "GTF Annotation",
         "type": "string",
         "pathType": "dataset",
         "file": "**/*.gtf*",
-        "description": "Gene annotation GTF file (optional). Published alongside the index but not passed to rsem-prepare-reference; pass via Extra Arguments if needed."
+        "description": "Gene annotation GTF file. Published alongside the index but not passed to rsem-prepare-reference; pass via Extra Arguments if needed."
       },
       "rsem_version": {
         "title": "RSEM Version",
@@ -28,7 +28,7 @@
         "type": "string"
       }
     },
-    "required": ["fasta", "rsem_version"]
+    "required": ["fasta", "gtf", "rsem_version"]
   },
   "ui": {
     "rsem_extra_args": {
