@@ -13,5 +13,18 @@
   "paramMapJson": "",
   "formJson": "",
   "webOptimizationJson": "",
-  "fileMappingRules": []
+  "fileMappingRules": [
+    {
+      "description": "Bismark Index",
+      "min": 1,
+      "isSample": false,
+      "fileNamePatterns": [
+        {
+          "exampleName": "genome/Bisulfite_Genome/CT_conversion/genome_mfa.CT_conversion.fa",
+          "description": "Bismark bisulfite-converted reference file",
+          "sampleMatchingPattern": "[\\S ]*.CT_conversion.fa"
+        }
+      ]
+    }
+  ]
 }

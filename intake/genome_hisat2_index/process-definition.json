@@ -13,5 +13,18 @@
   "paramMapJson": "",
   "formJson": "",
   "webOptimizationJson": "",
-  "fileMappingRules": []
+  "fileMappingRules": [
+    {
+      "description": "HT2",
+      "min": 1,
+      "isSample": false,
+      "fileNamePatterns": [
+        {
+          "exampleName": "genome.1.ht2",
+          "description": "HISAT2 index file",
+          "sampleMatchingPattern": "[\\S ]*.ht2"
+        }
+      ]
+    }
+  ]
 }

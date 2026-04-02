@@ -13,5 +13,18 @@
   "paramMapJson": "",
   "formJson": "",
   "webOptimizationJson": "",
-  "fileMappingRules": []
+  "fileMappingRules": [
+    {
+      "description": "RSEM Reference",
+      "min": 1,
+      "isSample": false,
+      "fileNamePatterns": [
+        {
+          "exampleName": "rsem_index/genome.grp",
+          "description": "RSEM reference group file",
+          "sampleMatchingPattern": "[\\S ]*.grp"
+        }
+      ]
+    }
+  ]
 }

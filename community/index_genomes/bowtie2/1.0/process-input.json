@@ -3,5 +3,6 @@
   "gtf": "$.dataset.params.gtf",
   "outdir": "$.dataset.dataPath",
   "container": "quay.io/biocontainers/bowtie2:|$.dataset.params.bowtie2_version",
-  "bowtie2_extra_args": "$.dataset.params.bowtie2_extra_args"
+  "bowtie2_extra_args": "$.dataset.params.bowtie2_extra_args",
+  "transcriptome_source": "$.dataset.params.transcriptome_source"
 }

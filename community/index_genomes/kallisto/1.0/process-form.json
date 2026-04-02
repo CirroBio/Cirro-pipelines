@@ -22,13 +22,21 @@
         "type": "string",
         "default": "0.52.0--h13ff97a_0"
       },
+      "transcriptome_source": {
+        "title": "Transcriptome Source (optional)",
+        "description": "Tool used to generate the transcriptome FASTA from genome + GTF (only applies when GTF is provided). Use gffread for prokaryotic genomes; use rsem for eukaryotic genomes.",
+        "type": "string",
+        "enum": ["gffread", "rsem"],
+        "enumNames": ["gffread (prokaryotic)", "rsem (eukaryotic)"],
+        "default": "gffread"
+      },
       "kallisto_extra_args": {
         "title": "Extra Arguments",
         "description": "Additional arguments to pass to kallisto index.",
         "type": "string"
       }
     },
-    "required": ["fasta", "gtf", "kallisto_version"]
+    "required": ["fasta", "kallisto_version"]
   },
   "ui": {
     "kallisto_extra_args": {

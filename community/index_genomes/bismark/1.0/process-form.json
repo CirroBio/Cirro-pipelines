@@ -26,7 +26,7 @@
         "title": "Aligner",
         "description": "Underlying aligner to use for bisulfite mapping.",
         "type": "string",
-        "enum": ["bowtie2", "hisat2", "minimap2"],
+        "enum": ["bowtie2", "hisat2"],
         "default": "bowtie2"
       },
       "bismark_extra_args": {

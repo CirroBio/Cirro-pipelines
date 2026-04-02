@@ -13,5 +13,18 @@
   "paramMapJson": "",
   "formJson": "",
   "webOptimizationJson": "",
-  "fileMappingRules": []
+  "fileMappingRules": [
+    {
+      "description": "Salmon Index",
+      "min": 1,
+      "isSample": false,
+      "fileNamePatterns": [
+        {
+          "exampleName": "salmon_index/seq.bin",
+          "description": "Salmon index binary file",
+          "sampleMatchingPattern": "[\\S ]*seq.bin"
+        }
+      ]
+    }
+  ]
 }
