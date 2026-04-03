@@ -23,4 +23,6 @@ def validate_extra_args(ds: PreprocessDataset, param: str):
 
 if __name__ == "__main__":
     ds = PreprocessDataset.from_running()
-    validate_extra_args(ds, "bowtie2_extra_args")
+    for param in ds.params:
+        if param.endswith("_extra_args"):
+            validate_extra_args(ds, param)
