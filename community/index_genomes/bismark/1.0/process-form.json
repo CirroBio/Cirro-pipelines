@@ -1,0 +1,45 @@
+{
+  "form": {
+    "type": "object",
+    "properties": {
+      "fasta": {
+        "title": "Reference FASTA",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.f*",
+        "description": "Reference genome FASTA used to build the Bismark index."
+      },
+      "gtf": {
+        "title": "GTF Annotation (optional)",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.*",
+        "description": "Gene annotation GTF file (optional)."
+      },
+      "bismark_version": {
+        "title": "Bismark Version",
+        "description": "Select the specific version of Bismark to use (see quay.io/biocontainers/bismark for available versions)",
+        "type": "string",
+        "default": "0.25.1--hdfd78af_0"
+      },
+      "aligner": {
+        "title": "Aligner",
+        "description": "Underlying aligner to use for bisulfite mapping.",
+        "type": "string",
+        "enum": ["bowtie2", "hisat2"],
+        "default": "bowtie2"
+      },
+      "bismark_extra_args": {
+        "title": "Extra Arguments",
+        "description": "Additional arguments to pass to bismark_genome_preparation.",
+        "type": "string"
+      }
+    },
+    "required": ["fasta", "bismark_version"]
+  },
+  "ui": {
+    "bismark_extra_args": {
+      "ui:placeholder": "--large-index --single_fasta"
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "form": {
+    "type": "object",
+    "properties": {
+      "fasta": {
+        "title": "Reference FASTA",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.f*",
+        "description": "Reference genome FASTA used to build the BWA index."
+      },
+      "gtf": {
+        "title": "GTF Annotation (optional)",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.*",
+        "description": "Gene annotation GTF file (optional)."
+      },
+      "bwa_version": {
+        "title": "BWA Version",
+        "description": "Select the specific version of BWA to use (see quay.io/biocontainers/bwa for available versions)",
+        "type": "string",
+        "default": "0.7.18--he4a0461_0"
+      },
+      "bwa_extra_args": {
+        "title": "Extra Arguments",
+        "description": "Additional arguments to pass to bwa index.",
+        "type": "string"
+      }
+    },
+    "required": ["fasta", "bwa_version"]
+  },
+  "ui": {
+    "bwa_extra_args": {
+      "ui:placeholder": "-a bwtsw"
+    }
+  }
+}

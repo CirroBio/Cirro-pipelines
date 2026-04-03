@@ -1,0 +1,66 @@
+{
+  "form": {
+    "type": "object",
+    "properties": {
+      "fasta": {
+        "title": "Reference FASTA",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.f*",
+        "description": "Reference genome FASTA used to build the HISAT2 index."
+      },
+      "hisat2_gtf": {
+        "title": "GTF Annotation (optional)",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.gtf*",
+        "description": "Gene annotation GTF. Splice sites and exons will be extracted automatically. Cannot be used together with Splice Sites File or Exon File."
+      },
+      "hisat2_ss": {
+        "title": "Splice Sites File (optional)",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.ss",
+        "description": "Pre-computed splice sites file (.ss). Cannot be used together with GTF Annotation."
+      },
+      "hisat2_exon": {
+        "title": "Exon File (optional)",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.exon",
+        "description": "Pre-computed exon file (.exon). Cannot be used together with GTF Annotation."
+      },
+      "hisat2_snp": {
+        "title": "SNP File (optional)",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.snp",
+        "description": "SNP file for building a SNP-aware HISAT2 index."
+      },
+      "hisat2_haplotype": {
+        "title": "Haplotype File (optional)",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.haplotype",
+        "description": "Haplotype file for building a haplotype-aware HISAT2 index."
+      },
+      "hisat2_version": {
+        "title": "HISAT2 Version",
+        "description": "Select the specific version of HISAT2 to use (see quay.io/biocontainers/hisat2 for available versions)",
+        "type": "string",
+        "default": "2.2.1--hdbdd923_6"
+      },
+      "hisat2_extra_args": {
+        "title": "Extra Arguments",
+        "description": "Additional arguments to pass to hisat2-build.",
+        "type": "string"
+      }
+    },
+    "required": ["fasta", "hisat2_version"]
+  },
+  "ui": {
+    "hisat2_extra_args": {
+      "ui:placeholder": "--large-index"
+    }
+  }
+}

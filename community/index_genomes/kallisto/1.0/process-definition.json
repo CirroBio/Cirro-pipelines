@@ -1,0 +1,32 @@
+{
+  "id": "process-cirro-genome-index-kallisto-1-0",
+  "parentProcessIds": [
+    "genome_fasta"
+  ],
+  "childProcessIds": [],
+  "dataType": "Genome Index (Kallisto)",
+  "name": "Build Genome Index (Kallisto)",
+  "desc": "Build a Kallisto index from a reference transcriptome FASTA using the appropriate nf-core module.",
+  "executor": "NEXTFLOW",
+  "category": "Reference Data",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-reference/#genome-index-kallisto",
+  "code": {
+    "repository": "GITHUBPUBLIC",
+    "uri": "CirroBio/nf-index-genome",
+    "version": "main",
+    "script": "main_kallisto.nf"
+  },
+  "allowMultipleSources": false,
+  "usesSampleSheet": false,
+  "computeDefaults": [
+    {
+      "executor": "NEXTFLOW",
+      "json": "s3://<RESOURCES_BUCKET>/community/index_genomes/process-compute.config",
+      "name": "Default"
+    }
+  ],
+  "preProcessScript": "s3://<RESOURCES_BUCKET>/community/index_genomes/preprocess.py",
+  "paramMapJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json",
+  "formJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-form.json",
+  "webOptimizationJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-output.json"
+}

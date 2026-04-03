@@ -1,0 +1,30 @@
+{
+  "id": "genome_hisat2_index",
+  "childProcessIds": [],
+  "name": "HISAT2 Aligner Index",
+  "desc": "Genome index built for alignment with the HISAT2 aligner",
+  "executor": "INGEST",
+  "documentationUrl": "",
+  "code": {
+    "repository": "NA",
+    "uri": ""
+  },
+  "computeDefaults": [],
+  "paramMapJson": "",
+  "formJson": "",
+  "webOptimizationJson": "",
+  "fileMappingRules": [
+    {
+      "description": "HT2",
+      "min": 1,
+      "isSample": false,
+      "fileNamePatterns": [
+        {
+          "exampleName": "genome.1.ht2",
+          "description": "HISAT2 index file",
+          "sampleMatchingPattern": "[\\S ]*.ht2"
+        }
+      ]
+    }
+  ]
+}

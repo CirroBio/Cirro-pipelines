@@ -1,0 +1,9 @@
+{
+  "fasta": "$.dataset.params.fasta",
+  "gtf": "$.dataset.params.gtf",
+  "extra_fasta": "$.dataset.params.extra_fasta",
+  "container": "quay.io/biocontainers/salmon:|$.dataset.params.salmon_version",
+  "salmon_extra_args": "$.dataset.params.salmon_extra_args",
+  "transcriptome_source": "$.dataset.params.transcriptome_source",
+  "outdir": "$.dataset.dataPath"
+}

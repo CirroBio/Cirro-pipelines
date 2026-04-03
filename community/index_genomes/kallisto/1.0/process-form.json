@@ -1,0 +1,46 @@
+{
+  "form": {
+    "type": "object",
+    "properties": {
+      "fasta": {
+        "title": "Genome FASTA",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.f*",
+        "description": "Reference genome FASTA used to build the Kallisto index."
+      },
+      "gtf": {
+        "title": "GTF Annotation",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.gtf*",
+        "description": "Gene annotation GTF for building a splice-aware Kallisto index."
+      },
+      "kallisto_version": {
+        "title": "Kallisto Version",
+        "description": "Select the specific version of Kallisto to use (see quay.io/biocontainers/kallisto for available versions)",
+        "type": "string",
+        "default": "0.52.0--h13ff97a_0"
+      },
+      "transcriptome_source": {
+        "title": "Transcriptome Source (optional)",
+        "description": "Tool used to generate the transcriptome FASTA from genome + GTF (only applies when GTF is provided). Use gffread for prokaryotic genomes; use rsem for eukaryotic genomes.",
+        "type": "string",
+        "enum": ["gffread", "rsem"],
+        "enumNames": ["gffread (prokaryotic)", "rsem (eukaryotic)"],
+        "default": "gffread"
+      },
+      "kallisto_extra_args": {
+        "title": "Extra Arguments",
+        "description": "Additional arguments to pass to kallisto index.",
+        "type": "string"
+      }
+    },
+    "required": ["fasta", "kallisto_version"]
+  },
+  "ui": {
+    "kallisto_extra_args": {
+      "ui:placeholder": "--kmer-size 31"
+    }
+  }
+}

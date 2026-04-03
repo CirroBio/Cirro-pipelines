@@ -1,0 +1,42 @@
+{
+  "id": "genome_star_index",
+  "childProcessIds": [],
+  "name": "STAR Aligner Index",
+  "desc": "Genome index built for alignment with the STAR aligner",
+  "executor": "INGEST",
+  "documentationUrl": "",
+  "code": {
+    "repository": "NA",
+    "uri": ""
+  },
+  "computeDefaults": [],
+  "paramMapJson": "",
+  "formJson": "",
+  "webOptimizationJson": "",
+  "fileMappingRules": [
+    {
+      "description": "SA",
+      "min": 1,
+      "isSample": false,
+      "fileNamePatterns": [
+        {
+          "exampleName": "SA",
+          "description": "STAR suffix array file",
+          "sampleMatchingPattern": "SA"
+        }
+      ]
+    },
+    {
+      "description": "SAindex",
+      "min": 1,
+      "isSample": false,
+      "fileNamePatterns": [
+        {
+          "exampleName": "SAindex",
+          "description": "STAR suffix array index file",
+          "sampleMatchingPattern": "SAindex"
+        }
+      ]
+    }
+  ]
+}

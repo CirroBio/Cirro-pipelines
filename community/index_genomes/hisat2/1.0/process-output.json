@@ -1,0 +1,9 @@
+{
+  "commands": [
+    {
+      "command": "hot.Manifest",
+      "params": {}
+    }
+  ]
+}
+

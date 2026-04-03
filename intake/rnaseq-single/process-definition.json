@@ -2,7 +2,6 @@
   "id": "rnaseq-single",
   "childProcessIds": [
     "process-nf-core-rnaseq-3",
-    "process-nf-core-rnaseq-custom-3",
     "process-hutch-fastqc-1_0",
     "hutch-gig-map-align-pangenome-1-0",
     "hutch-sourmash-tax"

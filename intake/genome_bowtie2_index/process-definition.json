@@ -1,0 +1,30 @@
+{
+  "id": "genome_bowtie2_index",
+  "childProcessIds": [],
+  "name": "Bowtie2 Aligner Index",
+  "desc": "Genome index built for alignment with the Bowtie2 aligner",
+  "executor": "INGEST",
+  "documentationUrl": "",
+  "code": {
+    "repository": "NA",
+    "uri": ""
+  },
+  "computeDefaults": [],
+  "paramMapJson": "",
+  "formJson": "",
+  "webOptimizationJson": "",
+  "fileMappingRules": [
+    {
+      "description": "BT2",
+      "min": 1,
+      "isSample": false,
+      "fileNamePatterns": [
+        {
+          "exampleName": "genome.1.bt2",
+          "description": "Bowtie2 index file",
+          "sampleMatchingPattern": "[\\S ]*.bt2"
+        }
+      ]
+    }
+  ]
+}

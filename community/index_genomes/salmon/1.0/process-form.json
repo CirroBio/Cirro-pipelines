@@ -1,0 +1,53 @@
+{
+  "form": {
+    "type": "object",
+    "properties": {
+      "fasta": {
+        "title": "Genome FASTA",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.f*",
+        "description": "Reference genome FASTA used to build the Salmon index."
+      },
+      "extra_fasta": {
+        "title": "Additional FASTA",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.f*",
+        "description": "Additional decoy sequences to add to the Salmon index."
+      },
+      "gtf": {
+        "title": "GTF Annotation",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.gtf*",
+        "description": "Gene annotation GTF for building a splice-aware Salmon index."
+      },
+      "salmon_version": {
+        "title": "Salmon Version",
+        "description": "Select the specific version of Salmon to use (see quay.io/biocontainers/salmon for available versions)",
+        "type": "string",
+        "default": "1.11.4--h7f96273_0"
+      },
+      "transcriptome_source": {
+        "title": "Transcriptome Source (optional)",
+        "description": "Tool used to generate the transcriptome FASTA from genome + GTF. Use gffread for prokaryotic genomes; use rsem for eukaryotic genomes.",
+        "type": "string",
+        "enum": ["rsem", "gffread"],
+        "enumNames": ["rsem (eukaryotic)", "gffread (prokaryotic)"],
+        "default": "rsem"
+      },
+      "salmon_extra_args": {
+        "title": "Extra Arguments",
+        "description": "Additional arguments to pass to salmon index.",
+        "type": "string"
+      }
+    },
+    "required": ["fasta", "gtf", "salmon_version"]
+  },
+  "ui": {
+    "salmon_extra_args": {
+      "ui:placeholder": "--gencode"
+    }
+  }
+}

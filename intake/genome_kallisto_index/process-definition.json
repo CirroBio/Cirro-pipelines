@@ -1,0 +1,30 @@
+{
+  "id": "genome_kallisto_index",
+  "childProcessIds": [],
+  "name": "Kallisto Aligner Index",
+  "desc": "Transcriptome index built for alignment with the Kallisto aligner",
+  "executor": "INGEST",
+  "documentationUrl": "",
+  "code": {
+    "repository": "NA",
+    "uri": ""
+  },
+  "computeDefaults": [],
+  "paramMapJson": "",
+  "formJson": "",
+  "webOptimizationJson": "",
+  "fileMappingRules": [
+    {
+      "description": "Kallisto Index",
+      "min": 1,
+      "isSample": false,
+      "fileNamePatterns": [
+        {
+          "exampleName": "genome.idx",
+          "description": "Kallisto index file",
+          "sampleMatchingPattern": "[\\S ]*.idx"
+        }
+      ]
+    }
+  ]
+}

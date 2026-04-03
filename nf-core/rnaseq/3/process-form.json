@@ -9,124 +9,399 @@
         "type": "string",
         "title": "Workflow Version",
         "description": "Select the specific version of nf-core/rnaseq to use",
-        "default": "3.20.0",
-        "enum": [
-          "3.14.0",
-          "3.15.0",
-          "3.15.1",
-          "3.16.0",
-          "3.16.1",
-          "3.17.0",
-          "3.18.0",
-          "3.19.0",
-          "3.20.0"
-        ]
+        "default": "3.23.0"
       },
-      "inputs": {
+      "aligner_and_reference_genome": {
+        "title": "Aligner & Reference Genome",
         "type": "object",
-        "title": "Inputs",
-        "description": "Optionally select a subset of samples to align",
         "properties": {
-          "subset": {
-            "type": "string",
-            "title": "(optional) Select Samples",
-            "file": "**/*.f*",
-            "multiple": true,
-            "pathType": "dataset",
-            "description": "If any files are selected, then only those samples will be analyzed. Leave blank to analyze all samples."
-          }    
+          "reference_genome": {
+            "title": "Reference Genome",
+            "type": "object",
+            "properties": {
+              "aligner": {
+                "type": "string",
+                "title": "Aligner",
+                "default": "star_salmon",
+                "description": "Specifies the alignment algorithm to use - available options are 'star_salmon', 'star_rsem', 'hisat2', and 'bowtie2_salmon'.",
+                "enum": [
+                  "star_salmon",
+                  "star_rsem",
+                  "hisat2",
+                  "bowtie2_salmon"
+                ],
+                "enumNames": [
+                  "STAR + Salmon",
+                  "STAR + RSEM",
+                  "HISAT2",
+                  "Bowtie2 + Salmon"
+                ]
+              }
+            },
+            "dependencies": {
+              "aligner": {
+                "oneOf": [
+                  {
+                    "properties": {
+                      "aligner": {
+                        "enum": ["star_salmon"]
+                      },
+                      "star_salmon_genome_selection": {
+                        "title": "STAR Reference Genome",
+                        "type": "object",
+                        "properties": {
+                          "genome_source": {
+                            "type": "string",
+                            "title": "Reference Genome Source",
+                            "description": "Select whether to use a curated iGenomes reference or a genome index dataset from Cirro",
+                            "enum": ["igenomes", "dataset"],
+                            "enumNames": ["iGenomes", "Cirro Dataset"],
+                            "default": "igenomes"
+                          }
+                        },
+                        "dependencies": {
+                          "genome_source": {
+                            "oneOf": [
+                              {
+                                "properties": {
+                                  "genome_source": { "enum": ["igenomes"] },
+                                  "igenomes": {
+                                    "type": "object",
+                                    "title": "Reference Genome (iGenomes)",
+                                    "description": "Select a curated reference genome from the iGenomes collection",
+                                    "properties": {
+                                      "genome": {
+                                        "type": "string",
+                                        "title": "Select A Reference Genome",
+                                        "description": "The following iGenomes are currently available for analysis",
+                                        "enum": ["TAIR10","EB2","UMD3.1","bosTau8","WBcel235","ce10","CanFam3.1","canFam3","GRCz10","danRer10","BDGP6","dm6","EquCab2","equCab2","EB1","Galgal4","Gm01","GRCh37","GRCh38","hg18","hg19","hg38","Mmul 1","GRCm38","mm10","IRGSP-1.0","CHIMP2.1.4","panTro4","Rnor 5.0","Rnor 6.0","rn6","R64-1-1","sacCer3","EF2","Sbi1","Sscrofa10.2","susScr3","AGPv3"],
+                                        "enumNames": ["Arabidopsis thaliana (TAIR10)","Bacillus subtilis 168 (EB2)","Bos taurus (UMD3.1)","Bos taurus (bosTau8)","Caenorhabditis elegans (WBcel235)","Caenorhabditis elegans (ce10)","Canis familiaris (CanFam3.1)","Canis familiaris (canFam3)","Danio rerio (GRCz10)","Danio rerio (danRer10)","Drosophila melanogaster (BDGP6)","Drosophila melanogaster (dm6)","Equus caballus (EquCab2)","Equus caballus (equCab2)","Escherichia coli K 12 DH10B (EB1)","Gallus gallus (Galgal4)","Glycine max (Gm01)","Homo sapiens (GRCh37)","Homo sapiens (GRCh38)","Homo sapiens (hg18)","Homo sapiens (hg19)","Homo sapiens (hg38)","Macaca mulatta (Mmul 1)","Mus musculus (GRCm38)","Mus musculus (mm10)","Oryza sativa japonica (IRGSP-1.0)","Pan troglodytes (CHIMP2.1.4)","Pan troglodytes (panTro4)","Rattus norvegicus (Rnor 5.0)","Rattus norvegicus (Rnor 6.0)","Rattus norvegicus (rn6)","Saccharomyces cerevisiae (R64-1-1)","Saccharomyces cerevisiae (sacCer3)","Schizosaccharomyces pombe (EF2)","Sorghum bicolor (Sbi1)","Sus scrofa (Sscrofa10.2)","Sus scrofa (susScr3)","Zea mays (AGPv3)"],
+                                        "default": "GRCh38"
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "properties": {
+                                  "genome_source": { "enum": ["dataset"] },
+                                  "star_cirro_reference": {
+                                    "type": "object",
+                                    "title": "Cirro Genome Index (STAR)",
+                                    "description": "Select a pre-built STAR genome index dataset from Cirro.",
+                                    "properties": {
+                                      "genome_index": {
+                                        "title": "STAR Genome Index",
+                                        "type": "string",
+                                        "pathType": "dataset",
+                                        "process": [
+                                          "process-cirro-genome-index-star-1-0",
+                                          "genome_star_index"
+                                        ],
+                                        "description": "Pre-built STAR genome index dataset"
+                                      }
+                                    }
+                                  },
+                                  "salmon_cirro_reference": {
+                                    "type": "object",
+                                    "title": "Cirro Genome Index (Salmon)",
+                                    "description": "Select a pre-built Salmon genome index dataset from Cirro.",
+                                    "properties": {
+                                      "genome_index": {
+                                        "title": "Salmon Genome Index",
+                                        "type": "string",
+                                        "pathType": "dataset",
+                                        "process": [
+                                          "process-cirro-genome-index-salmon-1-0",
+                                          "genome_salmon_index"
+                                        ],
+                                        "description": "Pre-built Salmon genome index dataset"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "aligner": {
+                        "enum": ["star_rsem"]
+                      },
+                      "star_rsem_genome_selection": {
+                        "title": "STAR + RSEM Reference Genome",
+                        "type": "object",
+                        "properties": {
+                          "genome_source": {
+                            "type": "string",
+                            "title": "Reference Genome Source",
+                            "description": "Select whether to use a curated iGenomes reference or a genome index dataset from Cirro",
+                            "enum": ["igenomes", "dataset"],
+                            "enumNames": ["iGenomes", "Cirro Dataset"],
+                            "default": "igenomes"
+                          }
+                        },
+                        "dependencies": {
+                          "genome_source": {
+                            "oneOf": [
+                              {
+                                "properties": {
+                                  "genome_source": { "enum": ["igenomes"] },
+                                  "igenomes": {
+                                    "type": "object",
+                                    "title": "Reference Genome (iGenomes)",
+                                    "description": "Select a curated reference genome from the iGenomes collection",
+                                    "properties": {
+                                      "genome": {
+                                        "type": "string",
+                                        "title": "Select A Reference Genome",
+                                        "description": "The following iGenomes are currently available for analysis",
+                                        "enum": ["TAIR10","EB2","UMD3.1","bosTau8","WBcel235","ce10","CanFam3.1","canFam3","GRCz10","danRer10","BDGP6","dm6","EquCab2","equCab2","EB1","Galgal4","Gm01","GRCh37","GRCh38","hg18","hg19","hg38","Mmul 1","GRCm38","mm10","IRGSP-1.0","CHIMP2.1.4","panTro4","Rnor 5.0","Rnor 6.0","rn6","R64-1-1","sacCer3","EF2","Sbi1","Sscrofa10.2","susScr3","AGPv3"],
+                                        "enumNames": ["Arabidopsis thaliana (TAIR10)","Bacillus subtilis 168 (EB2)","Bos taurus (UMD3.1)","Bos taurus (bosTau8)","Caenorhabditis elegans (WBcel235)","Caenorhabditis elegans (ce10)","Canis familiaris (CanFam3.1)","Canis familiaris (canFam3)","Danio rerio (GRCz10)","Danio rerio (danRer10)","Drosophila melanogaster (BDGP6)","Drosophila melanogaster (dm6)","Equus caballus (EquCab2)","Equus caballus (equCab2)","Escherichia coli K 12 DH10B (EB1)","Gallus gallus (Galgal4)","Glycine max (Gm01)","Homo sapiens (GRCh37)","Homo sapiens (GRCh38)","Homo sapiens (hg18)","Homo sapiens (hg19)","Homo sapiens (hg38)","Macaca mulatta (Mmul 1)","Mus musculus (GRCm38)","Mus musculus (mm10)","Oryza sativa japonica (IRGSP-1.0)","Pan troglodytes (CHIMP2.1.4)","Pan troglodytes (panTro4)","Rattus norvegicus (Rnor 5.0)","Rattus norvegicus (Rnor 6.0)","Rattus norvegicus (rn6)","Saccharomyces cerevisiae (R64-1-1)","Saccharomyces cerevisiae (sacCer3)","Schizosaccharomyces pombe (EF2)","Sorghum bicolor (Sbi1)","Sus scrofa (Sscrofa10.2)","Sus scrofa (susScr3)","Zea mays (AGPv3)"],
+                                        "default": "GRCh38"
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "properties": {
+                                  "genome_source": { "enum": ["dataset"] },
+                                  "star_cirro_reference": {
+                                    "type": "object",
+                                    "title": "Cirro Genome Index (STAR)",
+                                    "description": "Select a pre-built STAR genome index dataset from Cirro.",
+                                    "properties": {
+                                      "genome_index": {
+                                        "title": "STAR Genome Index",
+                                        "type": "string",
+                                        "pathType": "dataset",
+                                        "process": [
+                                          "process-cirro-genome-index-star-1-0",
+                                          "genome_star_index"
+                                        ],
+                                        "description": "Pre-built STAR genome index dataset"
+                                      }
+                                    }
+                                  },
+                                  "rsem_cirro_reference": {
+                                    "type": "object",
+                                    "title": "Cirro Genome Index (RSEM)",
+                                    "description": "Select a pre-built RSEM genome index dataset from Cirro.",
+                                    "properties": {
+                                      "genome_index": {
+                                        "title": "RSEM Genome Index",
+                                        "type": "string",
+                                        "pathType": "dataset",
+                                        "process": [
+                                          "process-cirro-genome-index-rsem-1-0",
+                                          "genome_rsem_index"
+                                        ],
+                                        "description": "Pre-built RSEM genome index dataset"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "aligner": {
+                        "enum": ["hisat2"]
+                      },
+                      "hisat2_genome_selection": {
+                        "title": "HISAT2 Reference Genome",
+                        "type": "object",
+                        "properties": {
+                          "genome_source": {
+                            "type": "string",
+                            "title": "Reference Genome Source",
+                            "description": "Select whether to use a curated iGenomes reference or a genome index dataset from Cirro",
+                            "enum": ["igenomes", "dataset"],
+                            "enumNames": ["iGenomes", "Cirro Dataset"],
+                            "default": "igenomes"
+                          }
+                        },
+                        "dependencies": {
+                          "genome_source": {
+                            "oneOf": [
+                              {
+                                "properties": {
+                                  "genome_source": { "enum": ["igenomes"] },
+                                  "igenomes": {
+                                    "type": "object",
+                                    "title": "Reference Genome (iGenomes)",
+                                    "description": "Select a curated reference genome from the iGenomes collection",
+                                    "properties": {
+                                      "genome": {
+                                        "type": "string",
+                                        "title": "Select A Reference Genome",
+                                        "description": "The following iGenomes are currently available for analysis",
+                                        "enum": ["TAIR10","EB2","UMD3.1","bosTau8","WBcel235","ce10","CanFam3.1","canFam3","GRCz10","danRer10","BDGP6","dm6","EquCab2","equCab2","EB1","Galgal4","Gm01","GRCh37","GRCh38","hg18","hg19","hg38","Mmul 1","GRCm38","mm10","IRGSP-1.0","CHIMP2.1.4","panTro4","Rnor 5.0","Rnor 6.0","rn6","R64-1-1","sacCer3","EF2","Sbi1","Sscrofa10.2","susScr3","AGPv3"],
+                                        "enumNames": ["Arabidopsis thaliana (TAIR10)","Bacillus subtilis 168 (EB2)","Bos taurus (UMD3.1)","Bos taurus (bosTau8)","Caenorhabditis elegans (WBcel235)","Caenorhabditis elegans (ce10)","Canis familiaris (CanFam3.1)","Canis familiaris (canFam3)","Danio rerio (GRCz10)","Danio rerio (danRer10)","Drosophila melanogaster (BDGP6)","Drosophila melanogaster (dm6)","Equus caballus (EquCab2)","Equus caballus (equCab2)","Escherichia coli K 12 DH10B (EB1)","Gallus gallus (Galgal4)","Glycine max (Gm01)","Homo sapiens (GRCh37)","Homo sapiens (GRCh38)","Homo sapiens (hg18)","Homo sapiens (hg19)","Homo sapiens (hg38)","Macaca mulatta (Mmul 1)","Mus musculus (GRCm38)","Mus musculus (mm10)","Oryza sativa japonica (IRGSP-1.0)","Pan troglodytes (CHIMP2.1.4)","Pan troglodytes (panTro4)","Rattus norvegicus (Rnor 5.0)","Rattus norvegicus (Rnor 6.0)","Rattus norvegicus (rn6)","Saccharomyces cerevisiae (R64-1-1)","Saccharomyces cerevisiae (sacCer3)","Schizosaccharomyces pombe (EF2)","Sorghum bicolor (Sbi1)","Sus scrofa (Sscrofa10.2)","Sus scrofa (susScr3)","Zea mays (AGPv3)"],
+                                        "default": "GRCh38"
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "properties": {
+                                  "genome_source": { "enum": ["dataset"] },
+                                  "hisat2_cirro_reference": {
+                                    "type": "object",
+                                    "title": "Cirro Genome Index (HISAT2)",
+                                    "description": "Select a pre-built HISAT2 genome index dataset from Cirro.",
+                                    "properties": {
+                                      "genome_index": {
+                                        "title": "HISAT2 Genome Index",
+                                        "type": "string",
+                                        "pathType": "dataset",
+                                        "process": [
+                                          "process-cirro-genome-index-hisat2-1-0",
+                                          "genome_hisat2_index"
+                                        ],
+                                        "description": "Pre-built HISAT2 genome index dataset"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "aligner": {
+                        "enum": ["bowtie2_salmon"]
+                      },
+                      "bowtie2_salmon_genome_selection": {
+                        "title": "Bowtie2 Reference Genome",
+                        "type": "object",
+                        "properties": {
+                          "genome_source": {
+                            "type": "string",
+                            "title": "Reference Genome Source",
+                            "description": "Select whether to use a curated iGenomes reference or a genome index dataset from Cirro",
+                            "enum": ["igenomes", "dataset"],
+                            "enumNames": ["iGenomes", "Cirro Dataset"],
+                            "default": "igenomes"
+                          }
+                        },
+                        "dependencies": {
+                          "genome_source": {
+                            "oneOf": [
+                              {
+                                "properties": {
+                                  "genome_source": { "enum": ["igenomes"] },
+                                  "igenomes": {
+                                    "type": "object",
+                                    "title": "Reference Genome (iGenomes)",
+                                    "description": "Select a curated reference genome from the iGenomes collection",
+                                    "properties": {
+                                      "genome": {
+                                        "type": "string",
+                                        "title": "Select A Reference Genome",
+                                        "description": "The following iGenomes are currently available for analysis",
+                                        "enum": ["TAIR10","EB2","UMD3.1","bosTau8","WBcel235","ce10","CanFam3.1","canFam3","GRCz10","danRer10","BDGP6","dm6","EquCab2","equCab2","EB1","Galgal4","Gm01","GRCh37","GRCh38","hg18","hg19","hg38","Mmul 1","GRCm38","mm10","IRGSP-1.0","CHIMP2.1.4","panTro4","Rnor 5.0","Rnor 6.0","rn6","R64-1-1","sacCer3","EF2","Sbi1","Sscrofa10.2","susScr3","AGPv3"],
+                                        "enumNames": ["Arabidopsis thaliana (TAIR10)","Bacillus subtilis 168 (EB2)","Bos taurus (UMD3.1)","Bos taurus (bosTau8)","Caenorhabditis elegans (WBcel235)","Caenorhabditis elegans (ce10)","Canis familiaris (CanFam3.1)","Canis familiaris (canFam3)","Danio rerio (GRCz10)","Danio rerio (danRer10)","Drosophila melanogaster (BDGP6)","Drosophila melanogaster (dm6)","Equus caballus (EquCab2)","Equus caballus (equCab2)","Escherichia coli K 12 DH10B (EB1)","Gallus gallus (Galgal4)","Glycine max (Gm01)","Homo sapiens (GRCh37)","Homo sapiens (GRCh38)","Homo sapiens (hg18)","Homo sapiens (hg19)","Homo sapiens (hg38)","Macaca mulatta (Mmul 1)","Mus musculus (GRCm38)","Mus musculus (mm10)","Oryza sativa japonica (IRGSP-1.0)","Pan troglodytes (CHIMP2.1.4)","Pan troglodytes (panTro4)","Rattus norvegicus (Rnor 5.0)","Rattus norvegicus (Rnor 6.0)","Rattus norvegicus (rn6)","Saccharomyces cerevisiae (R64-1-1)","Saccharomyces cerevisiae (sacCer3)","Schizosaccharomyces pombe (EF2)","Sorghum bicolor (Sbi1)","Sus scrofa (Sscrofa10.2)","Sus scrofa (susScr3)","Zea mays (AGPv3)"],
+                                        "default": "GRCh38"
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "properties": {
+                                  "genome_source": { "enum": ["dataset"] },
+                                  "bowtie2_cirro_reference": {
+                                    "type": "object",
+                                    "title": "Cirro Genome Index (Bowtie2)",
+                                    "description": "Select a pre-built Bowtie2 genome index dataset from Cirro.",
+                                    "properties": {
+                                      "genome_index": {
+                                        "title": "Bowtie2 Genome Index",
+                                        "type": "string",
+                                        "pathType": "dataset",
+                                        "process": [
+                                          "process-cirro-genome-index-bowtie2-1-0",
+                                          "genome_bowtie2_index"
+                                        ],
+                                        "description": "Pre-built Bowtie2 genome index dataset"
+                                      }
+                                    }
+                                  },
+                                  "salmon_cirro_reference": {
+                                    "type": "object",
+                                    "title": "Cirro Genome Index (Salmon)",
+                                    "description": "Select a pre-built Salmon genome index dataset from Cirro.",
+                                    "properties": {
+                                      "genome_index": {
+                                        "title": "Salmon Genome Index",
+                                        "type": "string",
+                                        "pathType": "dataset",
+                                        "process": [
+                                          "process-cirro-genome-index-salmon-1-0",
+                                          "genome_salmon_index"
+                                        ],
+                                        "description": "Pre-built Salmon genome index dataset"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
         }
       },
-      "igenomes": {
+      "reference_genome_options": {
+        "title": "Reference Genome Options",
         "type": "object",
-        "title": "Reference Genome (iGenomes)",
-        "description": "Select a curated reference genome from the iGenomes collection",
+        "description": "Options for GTF/annotation parsing and featureCounts.",
         "properties": {
-          "genome": {
+          "gtf_extra_attributes": {
             "type": "string",
-            "title": "Select A Reference Genome",
-            "description": "The following iGenomes are currently available for analysis",
-            "enum": [
-              "TAIR10",
-              "EB2",
-              "UMD3.1",
-              "bosTau8",
-              "WBcel235",
-              "ce10",
-              "CanFam3.1",
-              "canFam3",
-              "GRCz10",
-              "danRer10",
-              "BDGP6",
-              "dm6",
-              "EquCab2",
-              "equCab2",
-              "EB1",
-              "Galgal4",
-              "Gm01",
-              "GRCh37",
-              "GRCh38",
-              "hg18",
-              "hg19",
-              "hg38",
-              "Mmul 1",
-              "GRCm38",
-              "mm10",
-              "IRGSP-1.0",
-              "CHIMP2.1.4",
-              "panTro4",
-              "Rnor 5.0",
-              "Rnor 6.0",
-              "rn6",
-              "R64-1-1",
-              "sacCer3",
-              "EF2",
-              "Sbi1",
-              "Sscrofa10.2",
-              "susScr3",
-              "AGPv3"
-            ],
-            "enumNames": [
-              "Arabidopsis thaliana (TAIR10)",
-              "Bacillus subtilis 168 (EB2)",
-              "Bos taurus (UMD3.1)",
-              "Bos taurus (bosTau8)",
-              "Caenorhabditis elegans (WBcel235)",
-              "Caenorhabditis elegans (ce10)",
-              "Canis familiaris (CanFam3.1)",
-              "Canis familiaris (canFam3)",
-              "Danio rerio (GRCz10)",
-              "Danio rerio (danRer10)",
-              "Drosophila melanogaster (BDGP6)",
-              "Drosophila melanogaster (dm6)",
-              "Equus caballus (EquCab2)",
-              "Equus caballus (equCab2)",
-              "Escherichia coli K 12 DH10B (EB1)",
-              "Gallus gallus (Galgal4)",
-              "Glycine max (Gm01)",
-              "Homo sapiens (GRCh37)",
-              "Homo sapiens (GRCh38)",
-              "Homo sapiens (hg18)",
-              "Homo sapiens (hg19)",
-              "Homo sapiens (hg38)",
-              "Macaca mulatta (Mmul 1)",
-              "Mus musculus (GRCm38)",
-              "Mus musculus (mm10)",
-              "Oryza sativa japonica (IRGSP-1.0)",
-              "Pan troglodytes (CHIMP2.1.4)",
-              "Pan troglodytes (panTro4)",
-              "Rattus norvegicus (Rnor 5.0)",
-              "Rattus norvegicus (Rnor 6.0)",
-              "Rattus norvegicus (rn6)",
-              "Saccharomyces cerevisiae (R64-1-1)",
-              "Saccharomyces cerevisiae (sacCer3)",
-              "Schizosaccharomyces pombe (EF2)",
-              "Sorghum bicolor (Sbi1)",
-              "Sus scrofa (Sscrofa10.2)",
-              "Sus scrofa (susScr3)",
-              "Zea mays (AGPv3)"
-            ],
-            "default": "GRCh38"
+            "title": "GTF Extra Attributes",
+            "description": "By default, the pipeline uses the gene_name field to obtain additional gene identifiers from the input GTF file when running Salmon.",
+            "default": "gene_name"
+          },
+          "gtf_group_features": {
+            "type": "string",
+            "title": "GTF Group Features",
+            "description": "Define the attribute type used to group features in the GTF file when running Salmon.",
+            "default": "gene_id"
+          },
+          "featurecounts_group_type": {
+            "type": "string",
+            "title": "featureCounts Group Type",
+            "description": "The attribute type used to group feature types in the GTF file when running featureCounts.",
+            "default": "gene_biotype"
+          },
+          "featurecounts_feature_type": {
+            "type": "string",
+            "title": "featureCounts Feature Type",
+            "description": "By default, the pipeline assigns reads based on the 'exon' attribute within the GTF file.",
+            "default": "exon"
           }
         }
       },
@@ -134,6 +409,14 @@
         "title": "Read Trimming Options",
         "type": "object",
         "properties": {
+          "trimmer": {
+            "type": "string",
+            "title": "Trimmer",
+            "description": "Specifies the trimming tool to use - available options are 'trimgalore' and 'fastp'.",
+            "enum": ["trimgalore", "fastp"],
+            "enumNames": ["Trim Galore", "fastp"],
+            "default": "trimgalore"
+          },
           "skip_trimming": {
             "type": "boolean",
             "title": "Skip adapter trimming?",
@@ -182,6 +465,22 @@
                     "description": "Instructs Trim Galore to apply the --nextseq=X option, to trim based on quality after removing poly-G tails.",
                     "help_text": "This enables the option Cutadapt `--nextseq-trim=3'CUTOFF` option via Trim Galore, which will set a quality cutoff (that is normally given with -q instead), but qualities of G bases are ignored. This trimming is in common for the NextSeq- and NovaSeq-platforms, where basecalls without any signal are called as high-quality G bases."
                   },
+                  "extra_trimgalore_args": {
+                    "type": "string",
+                    "title": "Extra Trim Galore Arguments",
+                    "description": "Extra arguments to pass to Trim Galore. Only applies when trimmer is set to 'trimgalore'."
+                  },
+                  "extra_fastp_args": {
+                    "type": "string",
+                    "title": "Extra fastp Arguments",
+                    "description": "Extra arguments to pass to fastp. Only applies when trimmer is set to 'fastp'."
+                  },
+                  "min_trimmed_reads": {
+                    "type": "integer",
+                    "title": "Minimum Trimmed Reads",
+                    "description": "Minimum number of trimmed reads below which samples are removed from further processing.",
+                    "default": 10000
+                  },
                   "save_trimmed": {
                     "type": "boolean",
                     "title": "Save the trimmed FastQ files in the results directory?"
@@ -196,25 +495,24 @@
         "title": "Alignment Options",
         "type": "object",
         "properties": {
-          "aligner": {
-            "type": "string",
-            "title": "Aligner",
-            "default": "star_salmon",
-            "description": "Specifies the alignment algorithm to use - available options are 'star_salmon', 'star_rsem' and 'hisat2'.",
-            "enum": [
-              "star_salmon",
-              "star_rsem",
-              "hisat2"
-            ]
-          },
           "pseudo_aligner": {
             "type": "string",
             "title": "Pseudo Aligner",
-            "description": "Specifies the pseudo aligner to use - available options are 'salmon'. Runs in addition to '--aligner'.",
+            "description": "Specifies the pseudo aligner to use - available options are 'salmon' and 'kallisto'. Runs in addition to '--aligner'.",
             "enum": [
-              "salmon"
+              "salmon",
+              "kallisto"
             ],
-            "default": "salmon"
+            "enumNames": [
+              "Salmon",
+              "Kallisto"
+            ]
+          },
+          "pseudo_aligner_kmer_size": {
+            "type": "integer",
+            "title": "Pseudo Aligner k-mer Size",
+            "description": "k-mer size to use for building the index for the pseudo aligner.",
+            "default": 31
           },
           "salmon_quant_libtype": {
             "type": "string",
@@ -222,10 +520,71 @@
             "description": " Override Salmon library type inferred based on strandedness defined in meta object.",
             "help_text": "See [Salmon docs](https://salmon.readthedocs.io/en/latest/library_type.html)."
           },
+          "min_mapped_reads": {
+            "type": "number",
+            "title": "Minimum Mapped Reads (%)",
+            "description": "Minimum percentage of uniquely mapped reads below which samples are removed from further processing.",
+            "default": 5
+          },
           "seq_center": {
             "type": "string",
             "title": "Seq Center",
             "description": "Sequencing center information to be added to read group of BAM files."
+          },
+          "seq_platform": {
+            "type": "string",
+            "title": "Sequencing Platform",
+            "description": "Sequencing platform information to be added to read group of BAM files."
+          },
+          "bam_csi_index": {
+            "type": "boolean",
+            "title": "Use CSI Index for BAM files",
+            "description": "Create a CSI index for BAM files instead of the traditional BAI index.",
+            "default": false
+          },
+          "star_ignore_sjdbgtf": {
+            "type": "boolean",
+            "title": "STAR: Ignore sjdbGTF",
+            "description": "When using pre-built STAR indices do not re-extract and use splice junctions from the GTF file.",
+            "default": false
+          },
+          "stringtie_ignore_gtf": {
+            "type": "boolean",
+            "title": "StringTie: Ignore GTF",
+            "description": "Perform reference-guided de novo assembly of transcripts using StringTie without using GTF constraints.",
+            "default": false
+          },
+          "extra_star_align_args": {
+            "type": "string",
+            "title": "Extra STAR Alignment Arguments",
+            "description": "Extra arguments to pass to the STAR alignment command."
+          },
+          "extra_bowtie2_align_args": {
+            "type": "string",
+            "title": "Extra Bowtie2 Alignment Arguments",
+            "description": "Extra arguments to pass to the Bowtie2 alignment command."
+          },
+          "extra_salmon_quant_args": {
+            "type": "string",
+            "title": "Extra Salmon Quant Arguments",
+            "description": "Extra arguments to pass to the Salmon quant command."
+          },
+          "extra_kallisto_quant_args": {
+            "type": "string",
+            "title": "Extra Kallisto Quant Arguments",
+            "description": "Extra arguments to pass to the Kallisto quant command."
+          },
+          "kallisto_quant_fraglen": {
+            "type": "integer",
+            "title": "Kallisto Quant Fragment Length",
+            "description": "Estimated average fragment length for Kallisto quantification (required for single-end data).",
+            "default": 200
+          },
+          "kallisto_quant_fraglen_sd": {
+            "type": "integer",
+            "title": "Kallisto Quant Fragment Length SD",
+            "description": "Estimated standard deviation of fragment length for Kallisto quantification (required for single-end data).",
+            "default": 200
           },
           "save_unaligned": {
             "type": "boolean",
@@ -235,11 +594,67 @@
           }
         }
       },
+      "optional_outputs": {
+        "title": "Optional Outputs",
+        "type": "object",
+        "description": "Options to save additional intermediate files.",
+        "properties": {
+          "save_merged_fastq": {
+            "type": "boolean",
+            "title": "Save Merged FastQ Files",
+            "description": "Save FastQ files after merging re-sequenced libraries in the results directory.",
+            "default": false
+          },
+          "save_align_intermeds": {
+            "type": "boolean",
+            "title": "Save Alignment Intermediates",
+            "description": "Save the intermediate BAM files from the alignment step.",
+            "default": false
+          }
+        }
+      },
+      "qc_options": {
+        "title": "QC Options",
+        "type": "object",
+        "description": "Options for quality control steps.",
+        "properties": {
+          "deseq2_vst": {
+            "type": "boolean",
+            "title": "Use DESeq2 VST",
+            "description": "Use DESeq2 vst transformation instead of rlog for PCA and heatmap plotting.",
+            "default": true
+          },
+          "rseqc_modules": {
+            "type": "string",
+            "title": "RSeQC Modules",
+            "description": "Comma-separated list of RSeQC modules to run.",
+            "help_text": "Available modules: bam_stat, inner_distance, infer_experiment, junction_annotation, junction_saturation, read_distribution, read_duplication, tin"
+          }
+        }
+      },
       "process_skipping_options": {
         "title": "Process skipping options",
         "type": "object",
         "description": "Options to skip various steps within the workflow.",
         "properties": {
+          "skip_gtf_filter": {
+            "type": "boolean",
+            "title": "Skip GTF Filter",
+            "description": "Skip filtering of GTF for valid scaffolds and/ or transcript IDs.",
+            "default": false
+          },
+          "skip_gtf_transcript_filter": {
+            "type": "boolean",
+            "title": "Skip GTF Transcript Filter",
+            "description": "Skip the filtering of GTF transcripts to those present in the genome FASTA file.",
+            "default": false
+          },
+          "skip_umi_extract": {
+            "type": "boolean",
+            "title": "Skip UMI Extract",
+            "description": "Skip the UMI extraction from the read in case the UMIs have been moved to the headers in advance of the pipeline run.",
+            "default": false
+          },
           "skip_qualimap": {
             "type": "boolean",
             "title": "Skip Qualimap",
@@ -268,6 +683,12 @@
           "skip_preseq": {
             "type": "boolean",
             "title": "Skip Preseq",
+            "default": true
+          },
+          "skip_markduplicates": {
+            "type": "boolean",
+            "title": "Skip Mark Duplicates",
+            "description": "Skip picard MarkDuplicates step.",
             "default": false
           },
           "skip_rseqc": {
@@ -293,6 +714,12 @@
           "skip_qc": {
             "type": "boolean",
             "title": "Skip all QC steps except for MultiQC",
+            "default": false
+          },
+          "skip_linting": {
+            "type": "boolean",
+            "title": "Skip Linting",
+            "description": "Skip linting of the samplesheet.",
             "default": false
           }
         }
@@ -331,9 +758,48 @@
                   },
                   "umitools_bc_pattern": {
                     "type": "string",
-                    "title": "Umitools Extract Method",
+                    "title": "Umitools BC Pattern (R1)",
                     "help_text": "More details can be found in the [UMI-tools documentation](https://umi-tools.readthedocs.io/en/latest/reference/extract.html#extract-method).",
                     "description": "The UMI barcode pattern to use e.g. 'NNNNNN' indicates that the first 6 nucleotides of the read are from the UMI."
+                  },
+                  "umitools_bc_pattern2": {
+                    "type": "string",
+                    "title": "Umitools BC Pattern (R2)",
+                    "description": "The UMI barcode pattern to use for the second read in paired-end sequencing.",
+                    "help_text": "More details can be found in the [UMI-tools documentation](https://umi-tools.readthedocs.io/en/latest/reference/extract.html#extract-method)."
+                  },
+                  "umi_discard_read": {
+                    "type": "integer",
+                    "title": "UMI Discard Read",
+                    "description": "After UMI extraction, discard either R1 (set to 1) or R2 (set to 2) if UMI was extracted from that read.",
+                    "enum": [1, 2]
+                  },
+                  "umitools_umi_separator": {
+                    "type": "string",
+                    "title": "Umitools UMI Separator",
+                    "description": "The character that separates the UMI in the read name (used when UMIs are already in the read name)."
+                  },
+                  "umitools_grouping_method": {
+                    "type": "string",
+                    "title": "Umitools Grouping Method",
+                    "description": "Method to use to determine read groups by UMI and mapping coordinates.",
+                    "default": "directional",
+                    "enum": ["unique", "percentile", "cluster", "adjacency", "directional"],
+                    "enumNames": ["unique", "percentile", "cluster", "adjacency", "directional"]
+                  },
+                  "umitools_dedup_stats": {
+                    "type": "boolean",
+                    "title": "Generate UMI Deduplication Stats",
+                    "description": "Generate UMI deduplication statistics.",
+                    "default": false
+                  },
+                  "umi_dedup_tool": {
+                    "type": "string",
+                    "title": "UMI Deduplication Tool",
+                    "description": "Specifies the UMI deduplication tool to use.",
+                    "default": "umitools",
+                    "enum": ["umitools", "umicollapse"],
+                    "enumNames": ["UMI-tools", "UMICollapse"]
                   },
                   "save_umi_intermeds": {
                     "type": "boolean",
@@ -375,6 +841,14 @@
                 "properties": {
                   "remove_ribo_rna": {
                     "enum": [true]
+                  },
+                  "ribo_removal_tool": {
+                    "type": "string",
+                    "title": "Ribosomal RNA Removal Tool",
+                    "description": "Specifies the tool to use for ribosomal RNA removal.",
+                    "default": "sortmerna",
+                    "enum": ["sortmerna"],
+                    "enumNames": ["SortMeRNA"]
                   },
                   "save_non_ribo_reads": {
                     "type": "boolean",

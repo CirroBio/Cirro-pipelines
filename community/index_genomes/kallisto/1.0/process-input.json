@@ -1,0 +1,8 @@
+{
+  "fasta": "$.dataset.params.fasta",
+  "gtf": "$.dataset.params.gtf",
+  "container": "quay.io/biocontainers/kallisto:|$.dataset.params.kallisto_version",
+  "kallisto_extra_args": "$.dataset.params.kallisto_extra_args",
+  "transcriptome_source": "$.dataset.params.transcriptome_source",
+  "outdir": "$.dataset.dataPath"
+}
