@@ -1,12 +1,12 @@
 {
     "outdir": "$.params.dataset.s3|/data/",
-    "input": "$.dataset.params.input",
-    "dada_ref_taxonomy": "$.dataset.params.taxonomic_database.dada_ref_taxonomy",
-    "qiime_ref_taxonomy": "$.dataset.params.taxonomic_database.qiime_ref_taxonomy",
-    "filter_ssu": "$.dataset.params.asv_filtering.filter_ssu",
-    "min_len_asv": "$.dataset.params.asv_filtering.min_len_asv",
-    "max_len_asv": "$.dataset.params.asv_filtering.max_len_asv",
-    "exclude_taxa": "$.dataset.params.asv_filtering.exclude_taxa",
-    "min_frequency": "$.dataset.params.asv_filtering.min_frequency",
-    "min_samples": "$.dataset.params.asv_filtering.min_samples"
+    "input": "$.params.dataset.paramJson.input",
+    "dada_ref_taxonomy": "$.params.dataset.paramJson.taxonomic_database.dada_ref_taxonomy",
+    "qiime_ref_taxonomy": "$.params.dataset.paramJson.taxonomic_database.qiime_ref_taxonomy",
+    "filter_ssu": "$.params.dataset.paramJson.asv_filtering.filter_ssu",
+    "min_len_asv": "$.params.dataset.paramJson.asv_filtering.min_len_asv",
+    "max_len_asv": "$.params.dataset.paramJson.asv_filtering.max_len_asv",
+    "exclude_taxa": "$.params.dataset.paramJson.asv_filtering.exclude_taxa",
+    "min_frequency": "$.params.dataset.paramJson.asv_filtering.min_frequency",
+    "min_samples": "$.params.dataset.paramJson.asv_filtering.min_samples"
 }

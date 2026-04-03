@@ -4,8 +4,8 @@
     "baktadb": "s3://pubweb-references/bakta/v5.1_2024-03-07/db.tar.gz",
     "assembler": "unicycler",
     "assembly_type": "short",
-    "mode": "$.dataset.params.mode",
-    "annotation_tool": "$.dataset.params.annotation_tool",
-    "skip_kraken2": "$.dataset.params.skip_kraken2",
-    "skip_annotation": "$.dataset.params.skip_annotation"
+    "mode": "$.params.dataset.paramJson.mode",
+    "annotation_tool": "$.params.dataset.paramJson.annotation_tool",
+    "skip_kraken2": "$.params.dataset.paramJson.skip_kraken2",
+    "skip_annotation": "$.params.dataset.paramJson.skip_annotation"
 }

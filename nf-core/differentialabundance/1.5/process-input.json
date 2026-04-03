@@ -1,12 +1,12 @@
 {
     "input": "samplesheet.csv",
-    "variable": "$.dataset.params.input_output_options.variable",
-    "reference": "$.dataset.params.input_output_options.reference",
-    "target": "$.dataset.params.input_output_options.target",
+    "variable": "$.params.dataset.paramJson.input_output_options.variable",
+    "reference": "$.params.dataset.paramJson.input_output_options.reference",
+    "target": "$.params.dataset.paramJson.input_output_options.target",
     "outdir": "$.params.dataset.s3|/data/",
     "matrix": "$.params.inputs[0].s3|/data/salmon/salmon.merged.gene_counts.tsv",
     "transcript_length_matrix": "$.params.inputs[0].s3|/data/salmon/salmon.merged.gene_lengths.tsv",
     "contrasts": "contrasts.csv",
-    "shinyngs_build_app": "$.dataset.params.shiny_app_settings.shinyngs_build_app",
+    "shinyngs_build_app": "$.params.dataset.paramJson.shiny_app_settings.shinyngs_build_app",
     "igenomes_base": "s3://pubweb-references/igenomes"
 }

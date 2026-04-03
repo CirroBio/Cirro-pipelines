@@ -1,10 +1,10 @@
 {
-  "tools": "$.dataset.params.tool_selection.tools",
-  "report": "$.dataset.params.tool_selection.reports",
-  "genome": "$.dataset.params.ref_genome.genome",
-  "trim": "$.dataset.params.trimming.bbmap",
-  "max_memory": "$.dataset.params.compute_options.max_memory",
-  "max_cpus": "$.dataset.params.compute_options.max_cpus",
+  "tools": "$.params.dataset.paramJson.tool_selection.tools",
+  "report": "$.params.dataset.paramJson.tool_selection.reports",
+  "genome": "$.params.dataset.paramJson.ref_genome.genome",
+  "trim": "$.params.dataset.paramJson.trimming.bbmap",
+  "max_memory": "$.params.dataset.paramJson.compute_options.max_memory",
+  "max_cpus": "$.params.dataset.paramJson.compute_options.max_cpus",
   "outdir": "$.params.dataset.s3|/data/",
   "input": "manifest.csv",
   "genomes_base": "s3://pubweb-references/rnafusion/3.0.2/"
