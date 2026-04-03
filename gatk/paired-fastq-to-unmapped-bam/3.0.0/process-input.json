@@ -1,7 +1,7 @@
 {
-  "ConvertPairedFastQsToUnmappedBamWf.run_date": "$.params.dataset.paramJson.run_date",
-  "ConvertPairedFastQsToUnmappedBamWf.platform_name": "$.params.dataset.paramJson.platform_name",
-  "ConvertPairedFastQsToUnmappedBamWf.sequencing_center": "$.params.dataset.paramJson.sequencing_center",
+  "ConvertPairedFastQsToUnmappedBamWf.run_date": "$.dataset.params.run_date",
+  "ConvertPairedFastQsToUnmappedBamWf.platform_name": "$.dataset.params.platform_name",
+  "ConvertPairedFastQsToUnmappedBamWf.sequencing_center": "$.dataset.params.sequencing_center",
   "final_workflow_outputs_dir": "$.params.dataset.s3|/data/",
   "final_call_logs_dir": "$.params.dataset.s3|/logs/"
 }

@@ -1,6 +1,6 @@
 {
-  "genome": "$.params.dataset.paramJson.genome",
-  "dragen_mode": "$.params.dataset.paramJson.dragen_mode",
+  "genome": "$.dataset.params.genome",
+  "dragen_mode": "$.dataset.params.dragen_mode",
   "final_workflow_outputs_dir": "$.params.dataset.s3|/data/",
   "final_call_logs_dir": "$.params.dataset.s3|/logs/"
 }

@@ -2,11 +2,11 @@
     "outdir": "$.params.dataset.s3|/data/",
     "kraken2db": "s3://pubweb-references/kraken/k2_minusb_20220607/k2_minusb_20220607.tar.gz",
     "baktadb": "s3://pubweb-references/bakta/v5.1_2024-03-07/db.tar.gz",
-    "assembler": "$.params.dataset.paramJson.assembler.assembler",
+    "assembler": "$.dataset.params.assembler.assembler",
     "assembly_type": "long",
-    "unicycler_mode": "$.params.dataset.paramJson.assembler.unicycler_mode",
-    "canu_mode": "$.params.dataset.paramJson.assembler.canu_mode",
-    "annotation_tool": "$.params.dataset.paramJson.annotation.annotation_tool",
-    "skip_kraken2": "$.params.dataset.paramJson.skip_kraken2",
-    "skip_annotation": "$.params.dataset.paramJson.skip_annotation"
+    "unicycler_mode": "$.dataset.params.assembler.unicycler_mode",
+    "canu_mode": "$.dataset.params.assembler.canu_mode",
+    "annotation_tool": "$.dataset.params.annotation.annotation_tool",
+    "skip_kraken2": "$.dataset.params.skip_kraken2",
+    "skip_annotation": "$.dataset.params.skip_annotation"
 }
