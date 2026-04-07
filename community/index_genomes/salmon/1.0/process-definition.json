@@ -21,7 +21,7 @@
   "computeDefaults": [
     {
       "executor": "NEXTFLOW",
-      "json": "s3://<RESOURCES_BUCKET>/process/community/index_genomes/process-compute.config",
+      "json": "s3://<RESOURCES_BUCKET>/process/public/community/index_genomes/process-compute.config",
       "name": "Default"
     }
   ],
