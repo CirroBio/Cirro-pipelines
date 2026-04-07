@@ -1,0 +1,38 @@
+{
+  "form": {
+    "type": "object",
+    "properties": {
+      "fasta": {
+        "title": "Reference FASTA",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.f*",
+        "description": "Reference genome FASTA used to build the BWA-MEM2 index."
+      },
+      "gtf": {
+        "title": "GTF Annotation (optional)",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.*",
+        "description": "Gene annotation GTF file (optional)."
+      },
+      "bwamem2_version": {
+        "title": "BWA-MEM2 Version",
+        "description": "Select the specific version of BWA-MEM2 to use (see quay.io/biocontainers/bwa-mem2 for available versions)",
+        "type": "string",
+        "default": "2.3--he70b90d_0"
+      },
+      "bwamem2_extra_args": {
+        "title": "Extra Arguments",
+        "description": "Additional arguments to pass to bwa-mem2 index.",
+        "type": "string"
+      }
+    },
+    "required": ["fasta", "bwamem2_version"]
+  },
+  "ui": {
+    "bwamem2_extra_args": {
+      "ui:placeholder": ""
+    }
+  }
+}
