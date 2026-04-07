@@ -1,0 +1,7 @@
+{
+  "fasta": "$.dataset.params.fasta",
+  "gtf": "$.dataset.params.gtf",
+  "outdir": "$.dataset.dataPath",
+  "container": "quay.io/biocontainers/bwa-mem2:|$.dataset.params.bwamem2_version",
+  "bwamem2_extra_args": "$.dataset.params.bwamem2_extra_args"
+}

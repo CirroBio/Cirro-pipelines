@@ -1,0 +1,78 @@
+{
+  "id": "genome_bwa-mem2_index",
+  "childProcessIds": [],
+  "name": "BWA-MEM2 Aligner Index",
+  "desc": "Genome index built for alignment with the BWA-MEM2 aligner",
+  "executor": "INGEST",
+  "documentationUrl": "",
+  "code": {
+    "repository": "NA",
+    "uri": ""
+  },
+  "computeDefaults": [],
+  "paramMapJson": "",
+  "formJson": "",
+  "webOptimizationJson": "",
+  "fileMappingRules": [
+    {
+      "description": "0123",
+      "min": 1,
+      "isSample": false,
+      "fileNamePatterns": [
+        {
+          "exampleName": "genome.0123",
+          "description": "BWA-MEM2 0123 file",
+          "sampleMatchingPattern": "[\\S ]*.0123"
+        }
+      ]
+    },
+    {
+      "description": "BWT.2BIT.64",
+      "min": 1,
+      "isSample": false,
+      "fileNamePatterns": [
+        {
+          "exampleName": "genome.bwt.2bit.64",
+          "description": "BWA-MEM2 BWT file",
+          "sampleMatchingPattern": "[\\S ]*.bwt.2bit.64"
+        }
+      ]
+    },
+    {
+      "description": "PAC",
+      "min": 1,
+      "isSample": false,
+      "fileNamePatterns": [
+        {
+          "exampleName": "genome.pac",
+          "description": "BWA-MEM2 packed sequence file",
+          "sampleMatchingPattern": "[\\S ]*.pac"
+        }
+      ]
+    },
+    {
+      "description": "ANN",
+      "min": 1,
+      "isSample": false,
+      "fileNamePatterns": [
+        {
+          "exampleName": "genome.ann",
+          "description": "BWA-MEM2 annotations file",
+          "sampleMatchingPattern": "[\\S ]*.ann"
+        }
+      ]
+    },
+    {
+      "description": "AMB",
+      "min": 1,
+      "isSample": false,
+      "fileNamePatterns": [
+        {
+          "exampleName": "genome.amb",
+          "description": "BWA-MEM2 ambiguous bases file",
+          "sampleMatchingPattern": "[\\S ]*.amb"
+        }
+      ]
+    }
+  ]
+}
