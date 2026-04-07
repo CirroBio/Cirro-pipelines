@@ -20,7 +20,7 @@
         "title": "BWA-MEM2 Version",
         "description": "Select the specific version of BWA-MEM2 to use (see quay.io/biocontainers/bwa-mem2 for available versions)",
         "type": "string",
-        "default": "2.2.1--hd03093a_5"
+        "default": "2.3--he70b90d_0"
       },
       "bwamem2_extra_args": {
         "title": "Extra Arguments",
