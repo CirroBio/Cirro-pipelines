@@ -191,11 +191,15 @@ if __name__ == "__main__":
 
     # dbNSFP
     if dbnsfp_param:
-        dbnsfp = f"s3://pubweb-references/VEP/{database[genome][0]}/dbNSFP4.2a_{database[genome][0].lower()}.gz"
-        dbnsfp_tbi = f"s3://pubweb-references/VEP/{database[genome][0]}/dbNSFP4.2a_{database[genome][0].lower()}.gz.tbi"
-        ds.add_param('dbnsfp', dbnsfp, overwrite=True)
-        ds.add_param('dbnsfp_tbi', dbnsfp_tbi, overwrite=True)
-        ds.add_param('dbnsfp_consequence', 'ALL', overwrite=True)
+        if genome in database:
+            dbnsfp = f"s3://pubweb-references/VEP/{database[genome][0]}/dbNSFP4.2a_{database[genome][0].lower()}.gz"
+            dbnsfp_tbi = f"s3://pubweb-references/VEP/{database[genome][0]}/dbNSFP4.2a_{database[genome][0].lower()}.gz.tbi"
+            ds.add_param('dbnsfp', dbnsfp, overwrite=True)
+            ds.add_param('dbnsfp_tbi', dbnsfp_tbi, overwrite=True)
+            ds.add_param('dbnsfp_consequence', 'ALL', overwrite=True)
+        else:
+            ds.logger.warning(f"No dbNSFP reference genome found for {genome} -- removing dbNSFP plugin")
+            ds.remove_param('vep_dbnsfp')
 
     # Splice AI
     if spliceai:
