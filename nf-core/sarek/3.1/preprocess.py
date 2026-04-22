@@ -280,11 +280,11 @@ def filter_params_by_schema(ds: PreprocessDataset):
 
     # Remove params not recognized by the schema, but preserve Cirro passthrough params
     # (e.g. compute_multiplier) that are used by process-compute.config, not the pipeline schema.
-    removed = []
-    for key in list(ds.params.keys()):
-        if key not in allowed and key not in _CIRRO_PASSTHROUGH_PARAMS:
-            ds.remove_param(key, force=True)
-            removed.append(key)
+    removed = [
+        key for key in list(ds.params.keys()) if key not in allowed and key not in _CIRRO_PASSTHROUGH_PARAMS
+    ]
+    for key in removed:
+        ds.remove_param(key, force=True)
 
     if removed:
         ds.logger.info(f"filter_params_by_schema: removed {len(removed)} unrecognized param(s): {removed}")
