@@ -131,7 +131,7 @@ def filter_params_by_schema(ds: PreprocessDataset):
         return
 
     allowed = set()
-    for section in schema.get("$defs", {}).values():
+    for section in {**schema.get("$defs", {}), **schema.get("definitions", {})}.values():
         allowed.update(section.get("properties", {}).keys())
 
     ds.logger.info(f"Schema defines {len(allowed):,} parameters")

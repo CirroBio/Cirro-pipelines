@@ -273,7 +273,7 @@ def filter_params_by_schema(ds: PreprocessDataset):
 
     # Collect all parameter names defined across the schema's top-level $defs sections
     allowed = set()
-    for section in schema.get("$defs", {}).values():
+    for section in {**schema.get("$defs", {}), **schema.get("definitions", {})}.values():
         allowed.update(section.get("properties", {}).keys())
 
     ds.logger.info(f"filter_params_by_schema: schema defines {len(allowed):,} recognized parameters")
