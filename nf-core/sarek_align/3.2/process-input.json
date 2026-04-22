@@ -1,4 +1,6 @@
 {
+  "workflow_version": "$.params.dataset.paramJson.workflow_version",
+  "extra_params_json": "$.params.dataset.paramJson.extra_params_json",
   "wes": "$.params.dataset.paramJson.analysis_type.wes",
   "trim_fastq": "$.params.dataset.paramJson.read_trimming_options.trim_fastq",
   "clip_r1": "$.params.dataset.paramJson.read_trimming_options.clip_r1",

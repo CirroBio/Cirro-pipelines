@@ -9,6 +9,10 @@
       "annotation_tool": {
         "ui:widget": "checkboxes"
       }
+    },
+    "extra_params_json": {
+      "ui:widget": "textarea",
+      "ui:placeholder": "{\"skip_markduplicates\": true, \"save_bam_mapped\": true}"
     }
   },
   "form": {
@@ -19,18 +23,8 @@
       "workflow_version": {
         "type": "string",
         "title": "Workflow Version",
-        "description": "Select the specific version of nf-core/sarek used for analysis",
-        "enum": [
-          "3.1",
-          "3.1.1",
-          "3.1.2",
-          "3.2.3",
-          "3.3.2",
-          "3.4.4",
-          "3.5.1",
-          "3.6.0"
-        ],
-        "default": "3.6.0"
+        "description": "Specify the version of nf-core/sarek to use (e.g. 3.8.1)",
+        "default": "3.8.1"
       },
       "analysis_type": {
         "title": "Experiment Design",
@@ -247,6 +241,13 @@
             }
           }
         }
+      },
+      "extra_params_json": {
+        "type": "string",
+        "title": "Extra Parameters (JSON)",
+        "description": "Optional: provide additional workflow parameters as a JSON object (e.g. {\"skip_markduplicates\": true}). Parameters are validated against the nf-core/sarek schema for the selected workflow version — unrecognized keys are silently removed.",
+        "maxLength": 10000,
+        "default": ""
       }
     }
   }

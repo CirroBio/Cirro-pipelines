@@ -1,4 +1,6 @@
 {
+  "workflow_version": "$.params.dataset.paramJson.workflow_version",
+  "extra_params_json": "$.params.dataset.paramJson.extra_params_json",
   "step": "annotate",
   "annotation_tool": "$.params.dataset.paramJson.annotation.annotation_tool",
   "vep_dbnsfp": "$.params.dataset.paramJson.annotation.vep_dbnsfp",
