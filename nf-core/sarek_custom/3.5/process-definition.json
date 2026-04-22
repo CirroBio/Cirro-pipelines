@@ -2,7 +2,7 @@
     "id": "process-nf-core-sarek-custom-genome-3-5",
     "childProcessIds": [],
     "name": "Variant Calling from FASTQ - Custom Genome",
-    "desc": "DNA alignment and variant calling based on GATK4 best practices (v3.5.0) using a custom FASTA reference",
+    "desc": "DNA alignment and variant calling based on GATK4 best practices using a custom FASTA reference",
     "executor": "NEXTFLOW",
     "pipelineTypeOverride": "nf-core",
     "category": "DNA Sequencing",
@@ -11,7 +11,8 @@
       "repository": "GITHUBPUBLIC",
       "script": "main.nf",
       "uri": "nf-core/sarek",
-      "version": "3.5.0"
+      "version": "User Defined",
+      "executorVersion": "25.10.4"
     },
     "usesSampleSheet": true,
     "computeDefaults": [

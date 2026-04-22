@@ -23,7 +23,8 @@
     "repository": "GITHUBPUBLIC",
     "script": "main.nf",
     "uri": "nf-core/sarek",
-    "version": "User Defined"
+    "version": "User Defined",
+    "executorVersion": "25.10.4"
   },
   "allowMultipleSources": true,
   "usesSampleSheet": true,
