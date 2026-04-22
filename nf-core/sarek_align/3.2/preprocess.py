@@ -65,7 +65,7 @@ _PROTECTED_PARAMS = frozenset({
 
 # compute_multiplier is consumed by process-compute.config (not the nf-core schema)
 # and must survive the schema filter.
-_CIRRO_PASSTHROUGH_PARAMS = frozenset({"compute_multiplier"})
+_CIRRO_PASSTHROUGH_PARAMS = frozenset({"compute_multiplier", "optical_duplicate_pixel_distance"})
 
 _MAX_EXTRA_JSON_BYTES = 10_000
 

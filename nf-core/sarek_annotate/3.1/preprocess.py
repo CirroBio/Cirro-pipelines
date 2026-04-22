@@ -210,7 +210,7 @@ _PROTECTED_PARAMS = frozenset({
 })
 
 # sarek_annotate uses update_compute (not add_param) for resource vars, so no passthrough needed
-_CIRRO_PASSTHROUGH_PARAMS = frozenset()
+_CIRRO_PASSTHROUGH_PARAMS = frozenset({"optical_duplicate_pixel_distance"})
 
 _MAX_EXTRA_JSON_BYTES = 10_000
 

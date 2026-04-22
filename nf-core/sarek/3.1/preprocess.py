@@ -162,7 +162,7 @@ _PROTECTED_PARAMS = frozenset({
 
 # These Cirro-specific params are consumed by process-compute.config (not the nf-core schema)
 # and must survive the schema filter even though they are not in nextflow_schema.json.
-_CIRRO_PASSTHROUGH_PARAMS = frozenset({"compute_multiplier"})
+_CIRRO_PASSTHROUGH_PARAMS = frozenset({"compute_multiplier", "optical_duplicate_pixel_distance"})
 
 # Maximum allowed size for the extra_params_json textarea to prevent resource exhaustion.
 _MAX_EXTRA_JSON_BYTES = 10_000

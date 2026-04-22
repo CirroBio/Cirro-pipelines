@@ -82,7 +82,7 @@ _PROTECTED_PARAMS = frozenset({
 })
 
 # sarek_custom has no compute_multiplier; wes passes through as a native nf-core param
-_CIRRO_PASSTHROUGH_PARAMS = frozenset()
+_CIRRO_PASSTHROUGH_PARAMS = frozenset({"optical_duplicate_pixel_distance"})
 
 _MAX_EXTRA_JSON_BYTES = 10_000
 
