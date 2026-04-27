@@ -1,5 +1,6 @@
 {
-  "workflow_version": "$.dataset.params.workflow_version",
+  "workflow_version": "$.dataset.params.workflow.workflow_version",
+  "executor_version": "$.dataset.params.workflow.executor_version",
   "extra_params_json": "$.dataset.params.extra_params_json",
   "tools": "$.dataset.params.analysis_type.tools",
   "wes": "$.dataset.params.analysis_type.wes",
