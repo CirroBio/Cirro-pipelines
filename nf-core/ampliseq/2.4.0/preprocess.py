@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
 
-from collections import defaultdict
 from cirro.helpers.preprocess_dataset import PreprocessDataset
 import pandas as pd
 import re
+
+
+def format_sample_id(s: str) -> str:
+    s = str(s)
+    s = re.sub('[^a-zA-Z0-9_]+', '_', s)
+    s = s if re.match("^[a-zA-Z]+.*", s) else f"Sample_{s}"
+    return s
 
 
 def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
@@ -54,11 +60,7 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
     # Make sure that every sampleID starts with a letter
     samplesheet["sampleID"] = (
         samplesheet["sampleID"]
-        .apply(str)
-        .apply(lambda s: re.sub('[^a-zA-Z0-9_]+', '_', s))
-        .apply(
-            lambda s: s if re.match("^[a-zA-Z]+.*", s) else f"Sample_{s}"
-        )
+        .apply(format_sample_id)
     )
 
     # Make sure that every sample name is unique
@@ -128,6 +130,8 @@ if __name__ == "__main__":
                 if cname != "ID"
             ]
         )
+
+        metadata["ID"] = metadata["ID"].apply(format_sample_id)
 
         ds.logger.info("Formatted metadata:")
         ds.logger.info(metadata)
