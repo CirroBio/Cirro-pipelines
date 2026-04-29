@@ -1,4 +1,5 @@
 {
+{
   "ui": {
     "analysis_type": {
       "tools": {
@@ -37,8 +38,8 @@
           },
           "executor_version": {
             "type": "string",
-            "title": "Nextflow Version Required",
-            "description": "Minimum Nextflow version for the selected sarek release. Auto-populated from Workflow Version — for reference only.",
+            "title": "Nextflow Version",
+            "description": "Nextflow version used for execution.",
             "default": "25.10.2"
           }
         },

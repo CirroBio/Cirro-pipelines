@@ -160,9 +160,20 @@ _PROTECTED_PARAMS = frozenset({
     "compute_multiplier", # WES/WGS resource multiplier — computed from wes param
 })
 
-# These Cirro-specific params are consumed by process-compute.config (not the nf-core schema)
-# and must survive the schema filter even though they are not in nextflow_schema.json.
-_CIRRO_PASSTHROUGH_PARAMS = frozenset({"compute_multiplier", "optical_duplicate_pixel_distance"})
+# These params must survive the schema filter regardless of the sarek version.
+# compute_multiplier/optical_duplicate_pixel_distance are consumed by process-compute.config
+# (not the nf-core schema). igenomes_base, vep_cache, snpeff_cache, and monochrome_logs are
+# standard nf-core params present in modern sarek schemas, but we pin them here as well so
+# that Cirro's custom S3 paths are never accidentally removed if an unusual schema version
+# omits them.
+_CIRRO_PASSTHROUGH_PARAMS = frozenset({
+    "compute_multiplier",
+    "optical_duplicate_pixel_distance",
+    "igenomes_base",
+    "vep_cache",
+    "snpeff_cache",
+    "monochrome_logs",
+})
 
 # Maximum allowed size for the extra_params_json textarea to prevent resource exhaustion.
 _MAX_EXTRA_JSON_BYTES = 10_000

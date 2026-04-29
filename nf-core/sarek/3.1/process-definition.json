@@ -23,7 +23,7 @@
     "script": "main.nf",
     "uri": "nf-core/sarek",
     "version": "User Defined",
-    "executorVersion": "25.10.4"
+    "executorVersion": "User Defined"
   },
   "allowMultipleSources": true,
   "usesSampleSheet": true,
