@@ -34,8 +34,9 @@
       "executor_version": {
         "type": "string",
         "title": "Nextflow Version",
-        "description": "Nextflow version used for execution.",
-        "default": "25.10.2"
+        "description": "Nextflow version used to run this workflow. Auto-populated based on Workflow Version.",
+        "default": "25.10.4",
+        "readOnly": true
       },
       "analysis_type": {
         "title": "Experiment Design",
@@ -392,68 +393,36 @@
     },
     "allOf": [
       {
-        "if": {
-          "properties": { "workflow_version": { "pattern": "^(3\\.([7-9]|[1-9]\\d+)\\.|[4-9]\\.|[1-9][0-9]+\\.)" } }
-        },
-        "then": {
-          "properties": { "executor_version": { "default": "25.10.2" } }
-        }
+        "if": { "properties": { "workflow_version": { "pattern": "^(3\\.([7-9]|[1-9]\\d+)\\.|[4-9]\\.|[1-9][0-9]+\\.)" } } },
+        "then": { "properties": { "executor_version": { "default": "25.10.4" } } }
       },
       {
-        "if": {
-          "properties": { "workflow_version": { "const": "3.6.1" } }
-        },
-        "then": {
-          "properties": { "executor_version": { "default": "25.04.8" } }
-        }
+        "if": { "properties": { "workflow_version": { "const": "3.6.1" } } },
+        "then": { "properties": { "executor_version": { "default": "25.04.8" } } }
       },
       {
-        "if": {
-          "properties": { "workflow_version": { "const": "3.6.0" } }
-        },
-        "then": {
-          "properties": { "executor_version": { "default": "24.10.5" } }
-        }
+        "if": { "properties": { "workflow_version": { "const": "3.6.0" } } },
+        "then": { "properties": { "executor_version": { "default": "24.10.5" } } }
       },
       {
-        "if": {
-          "properties": { "workflow_version": { "pattern": "^3\\.5\\." } }
-        },
-        "then": {
-          "properties": { "executor_version": { "default": "24.04.2" } }
-        }
+        "if": { "properties": { "workflow_version": { "pattern": "^3\\.5\\." } } },
+        "then": { "properties": { "executor_version": { "default": "24.04.2" } } }
       },
       {
-        "if": {
-          "properties": { "workflow_version": { "pattern": "^3\\.([34]\\.|2\\.[1-9])" } }
-        },
-        "then": {
-          "properties": { "executor_version": { "default": "23.04.0" } }
-        }
+        "if": { "properties": { "workflow_version": { "pattern": "^3\\.([34]\\.|2\\.[1-9])" } } },
+        "then": { "properties": { "executor_version": { "default": "23.04.0" } } }
       },
       {
-        "if": {
-          "properties": { "workflow_version": { "const": "3.2.0" } }
-        },
-        "then": {
-          "properties": { "executor_version": { "default": "22.10.1" } }
-        }
+        "if": { "properties": { "workflow_version": { "const": "3.2.0" } } },
+        "then": { "properties": { "executor_version": { "default": "22.10.1" } } }
       },
       {
-        "if": {
-          "properties": { "workflow_version": { "pattern": "^3\\.[01]\\." } }
-        },
-        "then": {
-          "properties": { "executor_version": { "default": "21.10.3" } }
-        }
+        "if": { "properties": { "workflow_version": { "pattern": "^3\\.[01]\\." } } },
+        "then": { "properties": { "executor_version": { "default": "21.10.3" } } }
       },
       {
-        "if": {
-          "properties": { "workflow_version": { "pattern": "^2\\.7\\." } }
-        },
-        "then": {
-          "properties": { "executor_version": { "default": "20.04.0" } }
-        }
+        "if": { "properties": { "workflow_version": { "pattern": "^2\\.7\\." } } },
+        "then": { "properties": { "executor_version": { "default": "20.04.0" } } }
       }
     ]
   }
