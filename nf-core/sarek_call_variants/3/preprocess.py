@@ -128,9 +128,17 @@ _PROTECTED_PARAMS = frozenset({
     "compute_multiplier",  # computed from wes
 })
 
-# compute_multiplier is consumed by process-compute.config (not the nf-core schema)
-# and must survive the schema filter.
-_CIRRO_PASSTHROUGH_PARAMS = frozenset({"compute_multiplier", "optical_duplicate_pixel_distance"})
+# compute_multiplier and optical_duplicate_pixel_distance are consumed by process-compute.config
+# (not the nf-core schema). igenomes_base, vep_cache, snpeff_cache, and monochrome_logs are
+# Cirro-pinned S3 paths that must survive schema filtering regardless of sarek version.
+_CIRRO_PASSTHROUGH_PARAMS = frozenset({
+    "compute_multiplier",
+    "optical_duplicate_pixel_distance",
+    "igenomes_base",
+    "vep_cache",
+    "snpeff_cache",
+    "monochrome_logs",
+})
 
 _MAX_EXTRA_JSON_BYTES = 10_000
 

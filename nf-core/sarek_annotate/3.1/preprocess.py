@@ -209,8 +209,16 @@ _PROTECTED_PARAMS = frozenset({
     "step",  # hardcoded to "annotate" by process-input.json
 })
 
-# sarek_annotate uses update_compute (not add_param) for resource vars, so no passthrough needed
-_CIRRO_PASSTHROUGH_PARAMS = frozenset({"optical_duplicate_pixel_distance"})
+# sarek_annotate uses update_compute (not add_param) for resource vars, so compute_multiplier
+# is not needed here. igenomes_base, vep_cache, snpeff_cache, and monochrome_logs are
+# Cirro-pinned S3 paths that must survive schema filtering regardless of sarek version.
+_CIRRO_PASSTHROUGH_PARAMS = frozenset({
+    "optical_duplicate_pixel_distance",
+    "igenomes_base",
+    "vep_cache",
+    "snpeff_cache",
+    "monochrome_logs",
+})
 
 _MAX_EXTRA_JSON_BYTES = 10_000
 
