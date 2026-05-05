@@ -15,6 +15,12 @@ if "grouping" in ds.samplesheet.columns.values:
     ds.logger.info("Removing the 'grouping' column from the sample sheet")
     ds.samplesheet.drop(columns=["grouping"], inplace=True)
 
+# Build fastq_dir as a comma-delimited list of all input dataset paths
+data_paths = [dataset['dataPath'] for dataset in ds.metadata['inputs']]
+assert len(data_paths) > 0, "No input datasets found"
+ds.add_param("fastq_dir", ",".join(data_paths))
+ds.logger.info(f"fastq_dir: {ds.params['fastq_dir']}")
+
 ds.logger.info("Sample sheet provided by the user:")
 ds.logger.info(ds.samplesheet)
 assert ds.samplesheet.shape[0] > 0, "No files detected -- there may be an error with data ingest"

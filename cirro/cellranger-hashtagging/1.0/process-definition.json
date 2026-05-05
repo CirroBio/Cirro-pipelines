@@ -17,6 +17,7 @@
     "version": "main",
     "script": "hashtagging.nf"
   },
+  "allowMultipleSources": true,
   "usesSampleSheet": true,
   "computeDefaults": [
     {

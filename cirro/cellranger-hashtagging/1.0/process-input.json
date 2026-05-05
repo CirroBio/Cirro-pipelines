@@ -1,5 +1,4 @@
 {
-  "fastq_dir": "$.inputs[0].dataPath",
   "transcriptome_dir": "$.dataset.params.transcriptome_dir",
   "include_introns": "$.dataset.params.include_introns",
   "hashtag_csv": "$.dataset.params.hashtag_csv",

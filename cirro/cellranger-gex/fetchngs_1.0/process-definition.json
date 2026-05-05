@@ -16,6 +16,7 @@
     "version": "main",
     "script": "count.nf"
   },
+  "allowMultipleSources": true,
   "computeDefaults": [
     {
       "executor": "NEXTFLOW",
