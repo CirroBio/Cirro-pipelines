@@ -6,16 +6,16 @@ from typing import Union
 import pandas as pd
 
 
-def read_input_dataset(ds: PreprocessDataset) -> list[dict]:
+def read_input_dataset(data_path: str, logger: Logger) -> list[dict]:
 
-    # Get the list of files in the parent dataset
-    manifest_fp = ds.params["input_dataset"] + "/web/manifest.json"
-    ds.logger.info(f"Reading files from input_dataset ({manifest_fp})")
+    # Get the list of files in the dataset
+    manifest_fp = data_path + "/web/manifest.json"
+    logger.info(f"Reading files from input dataset ({manifest_fp})")
     manifest = read_json(manifest_fp)
 
     # Add the full file path
     for i in manifest['files']:
-        i['file'] = ds.params["input_dataset"] + "/" + i['file']
+        i['file'] = data_path + "/" + i['file']
 
     return manifest
 
@@ -50,14 +50,17 @@ def main():
     # Instantiate the Cirro dataset object
     ds = PreprocessDataset.from_running()
 
-    # Read the list of files from the input dataset
-    manifest = read_input_dataset(ds)
+    # Read the list of files from all input datasets
+    all_files = []
+    for dataset in ds.metadata['inputs']:
+        manifest = read_input_dataset(dataset['s3'], ds.logger)
+        all_files.extend(manifest['files'])
 
     # Parse the files, filtering to FASTQ files and parsing
     # the sample, run, and read index
     files = pd.DataFrame([
         parse_fastq(r)
-        for r in manifest["files"]
+        for r in all_files
         if is_fastq(r)
     ])
 

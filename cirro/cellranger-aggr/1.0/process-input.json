@@ -1,5 +1,4 @@
 {
-  "input": "$.inputs[0].dataPath",
   "aggr_name": "$.dataset.params.aggr_name",
   "cellranger_version": "$.dataset.params.cellranger_version",
   "output": "$.dataset.dataPath"

@@ -27,11 +27,10 @@ ds.add_param(
     "sample.grouping.csv"
 )
 
-# Find the folder which contains the FASTQ files (to account for subfolders)
-ds.add_param(
-    "fastq_dir",
-    ds.files["file"][0].rsplit("/", 1)[0]
-)
+# Build fastq_dir as a comma-delimited list of all input dataset paths
+data_paths = [dataset['dataPath'] for dataset in ds.metadata['inputs']]
+assert len(data_paths) > 0, "No input datasets found"
+ds.add_param("fastq_dir", ",".join(data_paths))
 
 # If either the feature_csv was not provided
 for kw in ["feature_csv"]:

@@ -14,7 +14,7 @@
   "code": {
     "repository": "GITHUBPUBLIC",
     "uri": "CirroBio/nf-cellranger-tools",
-    "version": "multiple-inputs",
+    "version": "main",
     "script": "hashtagging.nf"
   },
   "allowMultipleSources": true,
