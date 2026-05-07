@@ -27,11 +27,14 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
 
     # Get the sample metadata (if any)
     # Populate the 'patient' column with the provided value,
-    # falling back to the sample ID if missing
+    # falling back to the sample ID if missing.
+    # Default 'sex' to "XX" and 'status' to 0 if not provided.
     samples = (
         ds.samplesheet
-        .reindex(columns=["sample", "patient"])
+        .reindex(columns=["sample", "patient", "sex", "status"])
         .assign(patient=lambda d: d['patient'].fillna(d['sample']))
+        .assign(sex=lambda d: d['sex'].fillna("XX"))
+        .assign(status=lambda d: d['status'].fillna(0).astype(int))
         .set_index("sample")
     )
 
@@ -42,9 +45,9 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
     manifest = (
         manifest
         .set_index("sample")
-        .assign(patient=samples["patient"])
+        .assign(patient=samples["patient"], sex=samples["sex"], status=samples["status"])
         .reset_index()
-        .reindex(columns=['patient', 'sample', 'lane', 'fastq_1', 'fastq_2'])
+        .reindex(columns=['patient', 'sample', 'sex', 'status', 'lane', 'fastq_1', 'fastq_2'])
         .assign(lane=[str(i) for i in range(manifest.shape[0])])
     )
 
