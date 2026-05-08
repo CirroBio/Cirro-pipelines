@@ -1,6 +1,7 @@
 {
   "id": "process-nf-core-sarek-3-1",
   "childProcessIds": [
+    "process-nf-core-sarek-annotate-3-1",
     "omics-gatk-bp-germline-bam2vcf-30x-1-0",
     "omics-gatk-bp-somatic-wes-bam2vcf-1-0",
     "omics-nvidia-parabricks-bam2fq2bam-wgs-5x-1-0",
