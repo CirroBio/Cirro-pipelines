@@ -18,18 +18,18 @@
   "usesSampleSheet": true,
   "fileMappingRules": [
     {
-      "description": "Mutect filtered VCF",
+      "description": "Variant Calling VCF",
       "min": 0,
       "fileNamePatterns": [
         {
-          "exampleName": "sampleName.mutect2.filtered.vcf.gz",
+          "exampleName": "variant_calling/mutect2/sampleName/sampleName.mutect2.variants.vcf.gz",
           "description": "VCF",
-          "sampleMatchingPattern": "(?<sampleName>[\\S ]+)\\.mutect2\\.filtered\\.vcf\\.gz$"
+          "sampleMatchingPattern": "variant_calling/[^/]+/[^/]+/(?P<sampleName>[\\S ]+?)\\.(?P<caller>[^.]+)\\.variants\\.vcf\\.gz$"
         },
         {
-          "exampleName": "sampleName.mutect2.filtered.vcf.gz.tbi",
+          "exampleName": "variant_calling/mutect2/sampleName/sampleName.mutect2.variants.vcf.gz.tbi",
           "description": "VCF index",
-          "sampleMatchingPattern": "(?<sampleName>[\\S ]+)\\.mutect2\\.filtered\\.vcf\\.gz\\.tbi$"
+          "sampleMatchingPattern": "variant_calling/[^/]+/[^/]+/(?P<sampleName>[\\S ]+?)\\.(?P<caller>[^.]+)\\.variants\\.vcf\\.gz\\.tbi$"
         }
       ]
     }

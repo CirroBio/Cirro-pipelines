@@ -27,6 +27,24 @@
   },
   "allowMultipleSources": true,
   "usesSampleSheet": true,
+  "fileMappingRules": [
+    {
+      "description": "Variant Calling VCF",
+      "min": 0,
+      "fileNamePatterns": [
+        {
+          "exampleName": "variant_calling/mutect2/sampleName/sampleName.mutect2.variants.vcf.gz",
+          "description": "VCF",
+          "sampleMatchingPattern": "variant_calling/[^/]+/[^/]+/(?P<sampleName>[\\S ]+?)\\.(?P<caller>[^.]+)\\.variants\\.vcf\\.gz$"
+        },
+        {
+          "exampleName": "variant_calling/mutect2/sampleName/sampleName.mutect2.variants.vcf.gz.tbi",
+          "description": "VCF index",
+          "sampleMatchingPattern": "variant_calling/[^/]+/[^/]+/(?P<sampleName>[\\S ]+?)\\.(?P<caller>[^.]+)\\.variants\\.vcf\\.gz\\.tbi$"
+        }
+      ]
+    }
+  ],
   "computeDefaults": [
     {
       "executor": "NEXTFLOW",
