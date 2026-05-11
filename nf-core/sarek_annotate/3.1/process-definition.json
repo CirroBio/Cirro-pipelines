@@ -13,7 +13,7 @@
     "script": "main.nf",
     "uri": "nf-core/sarek",
     "version": "User Defined",
-    "executorVersion": "25.10.0"
+    "executorVersion": "25.10.2"
   },
   "usesSampleSheet": true,
   "computeDefaults": [
