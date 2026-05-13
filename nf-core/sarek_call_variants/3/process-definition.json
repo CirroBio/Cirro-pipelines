@@ -14,7 +14,7 @@
     "script": "main.nf",
     "uri": "nf-core/sarek",
     "version": "User Defined",
-    "executorVersion": "25.10.2"
+    "executorVersion": "25.10.4"
   },
   "usesSampleSheet": true,
   "fileMappingRules": [
