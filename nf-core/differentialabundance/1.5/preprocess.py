@@ -66,7 +66,7 @@ def set_matrix_paths(ds: PreprocessDataset):
     data_path = ds.metadata["inputs"][0]["dataPath"]
     ds.logger.info(f"Input dataset dataPath: {data_path}")
 
-    matrix = f"{data_path}/data/{aligner_dir}/salmon.merged.gene_counts.tsv"
+    matrix = f"{data_path}/{aligner_dir}/salmon.merged.gene_counts.tsv"
     transcript_length_matrix = f"{data_path}/data/{aligner_dir}/salmon.merged.gene_lengths.tsv"
 
     ds.logger.info(f"matrix={matrix}")
