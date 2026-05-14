@@ -1,6 +1,6 @@
 {
   "manifest": "samplesheet.csv",
-  "counts": "$.inputs[0].dataPath|/$.dataset.params.counts",
+  "counts": "$.inputs[0].dataPath|/|$.dataset.params.counts",
   "algorithm": "$.dataset.params.algorithm",
   "comp_col": "$.dataset.params.comp_col",
   "comp_ref": "$.dataset.params.comp_ref",
