@@ -41,12 +41,39 @@ def set_genome(ds: PreprocessDataset):
     """
     Use the genome parameter which was selected for the input dataset.
     """
-
-    # Get the metadata set up for this dataset, which
-    # includes the params of the input dataset
     input_params = ds.metadata["inputs"][0]["params"]
+    genome = input_params.get("genome")
+    if genome:
+        ds.add_param("genome", genome)
+        ds.logger.info(f"genome={genome}")
+    else:
+        ds.logger.info("No iGenomes genome param found in input dataset; skipping genome annotation")
 
-    ds.add_param("genome", input_params["igenomes"]["genome"])
+
+def set_matrix_paths(ds: PreprocessDataset):
+    """Set the count matrix paths based on the aligner used in the input rnaseq dataset."""
+    input_params = ds.metadata["inputs"][0]["params"]
+    aligner = input_params.get("aligner", "star_salmon")
+    ds.logger.info(f"Input dataset aligner: {aligner}")
+
+    # Map each aligner to the subdirectory where Salmon count matrices are written
+    aligner_dir_map = {
+        "star_salmon": "star_salmon",
+        "bowtie2_salmon": "bowtie2_salmon",
+    }
+    aligner_dir = aligner_dir_map.get(aligner, "salmon")
+
+    data_path = ds.metadata["inputs"][0]["dataPath"]
+    ds.logger.info(f"Input dataset dataPath: {data_path}")
+
+    matrix = f"{data_path}/data/{aligner_dir}/salmon.merged.gene_counts.tsv"
+    transcript_length_matrix = f"{data_path}/data/{aligner_dir}/salmon.merged.gene_lengths.tsv"
+
+    ds.logger.info(f"matrix={matrix}")
+    ds.logger.info(f"transcript_length_matrix={transcript_length_matrix}")
+
+    ds.add_param("matrix", matrix)
+    ds.add_param("transcript_length_matrix", transcript_length_matrix)
 
 
 if __name__ == "__main__":
@@ -54,3 +81,4 @@ if __name__ == "__main__":
     make_samplesheet(ds)
     make_contrasts(ds)
     set_genome(ds)
+    set_matrix_paths(ds)
