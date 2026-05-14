@@ -8,8 +8,7 @@
         "type": "string",
         "pathType": "dataset",
         "mm": { "matchBase": true },
-        "file": "*.tsv",
-        "default": "data/star_salmon/salmon.merged.gene_counts.tsv"
+        "file": "*.tsv"
       },
       "algorithm": {
         "title": "Algorithm",
@@ -51,7 +50,8 @@
         "type": "string",
         "default": ""
       }
-    }
+    },
+    "required": ["counts"]
   },
   "ui": {}
 }
