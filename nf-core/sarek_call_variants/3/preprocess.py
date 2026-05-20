@@ -3,6 +3,7 @@
 from cirro.helpers.preprocess_dataset import PreprocessDataset
 import pandas as pd
 import urllib.request
+import urllib.error
 import json
 
 
@@ -15,9 +16,9 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
 
     # Format a wide sample sheet
     def _bam_pref(filename: str) -> int:
-        if '.recal.bam' in filename:
+        if filename.endswith('.recal.bam'):
             return 0
-        elif '.sorted.bam' in filename:
+        elif filename.endswith('.sorted.bam'):
             return 1
         else:
             return 2
@@ -122,6 +123,8 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
     return manifest
 
 
+_DEFAULT_WORKFLOW_VERSION = "3.8.1"
+
 # Params set by Cirro infrastructure or computed by this script that must not
 # be overridden by user-supplied extra JSON.
 _PROTECTED_PARAMS = frozenset({
@@ -133,6 +136,8 @@ _PROTECTED_PARAMS = frozenset({
     "monochrome_logs",
     "step",             # hardcoded to "variant_calling" by process-input.json
     "compute_multiplier",  # computed from wes
+    "wes",              # consumed to compute compute_multiplier before extra JSON is applied
+    "intervals",        # consumed to set no_intervals before extra JSON is applied
 })
 
 # compute_multiplier and optical_duplicate_pixel_distance are consumed by process-compute.config
@@ -212,7 +217,7 @@ def filter_params_by_schema(ds: PreprocessDataset):
     extra_params_json) and drops invalid extra JSON params before they reach Nextflow.
     Params in _CIRRO_PASSTHROUGH_PARAMS are preserved even if absent from the schema.
     """
-    version = ds.params.get("workflow_version", "3.8.1")
+    version = ds.params.get("workflow_version", _DEFAULT_WORKFLOW_VERSION)
 
     # Always remove — this is a Cirro-only param that must not reach Nextflow
     ds.remove_param("workflow_version", force=True)
@@ -221,8 +226,16 @@ def filter_params_by_schema(ds: PreprocessDataset):
     ds.logger.info(f"filter_params_by_schema: fetching schema for nf-core/sarek {version}")
 
     try:
-        with urllib.request.urlopen(url) as response:
+        with urllib.request.urlopen(url, timeout=30) as response:
             schema = json.loads(response.read().decode())
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            raise RuntimeError(
+                f"nf-core/sarek version '{version}' not found. "
+                f"See https://nf-co.re/sarek/releases for available versions."
+            ) from e
+        ds.logger.warning(f"filter_params_by_schema: HTTP error fetching schema — {e}, skipping filter")
+        return
     except Exception as e:
         ds.logger.warning(f"filter_params_by_schema: could not fetch schema — {e}, skipping filter")
         return
@@ -248,7 +261,7 @@ if __name__ == "__main__":
 
     ds = PreprocessDataset.from_running()
 
-    ds.logger.info(f"Starting sarek_call_variants preprocess — workflow_version={ds.params.get('workflow_version', '3.8.1')!r}")
+    ds.logger.info(f"Starting sarek_call_variants preprocess — workflow_version={ds.params.get('workflow_version', _DEFAULT_WORKFLOW_VERSION)!r}")
     ds.logger.info(f"analysis_type={ds.params.get('analysis_type')!r}, genome={ds.params.get('genome')!r}")
 
     manifest = make_manifest(ds)

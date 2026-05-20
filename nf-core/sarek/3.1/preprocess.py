@@ -4,6 +4,7 @@ from cirro.helpers.preprocess_dataset import PreprocessDataset
 import pandas as pd
 from typing import List
 import urllib.request
+import urllib.error
 import json
 
 
@@ -147,6 +148,8 @@ def fix_umi_form_dependencies(ds: PreprocessDataset):
     ds.remove_param("umi_tool", force=True)
 
 
+_DEFAULT_WORKFLOW_VERSION = "3.8.1"
+
 # Params that the extra JSON input field must never override.
 # Includes both Cirro framework params (input/outdir) and Cirro-computed values
 # (compute_multiplier) that must not be replaced by user input.
@@ -158,6 +161,8 @@ _PROTECTED_PARAMS = frozenset({
     "snpeff_cache",       # snpEff annotation cache S3 path
     "monochrome_logs",    # internal logging flag
     "compute_multiplier", # WES/WGS resource multiplier — computed from wes param
+    "wes",               # consumed to compute compute_multiplier before extra JSON is applied
+    "intervals",         # consumed to set no_intervals before extra JSON is applied
 })
 
 # These params must survive the schema filter regardless of the sarek version.
@@ -262,7 +267,7 @@ def filter_params_by_schema(ds: PreprocessDataset):
     even if absent from the nf-core schema, because they are consumed by Cirro's
     process-compute.config rather than by the pipeline itself.
     """
-    version = ds.params.get("workflow_version", "3.8.1")
+    version = ds.params.get("workflow_version", _DEFAULT_WORKFLOW_VERSION)
 
     # Remove workflow_version unconditionally — it is a Cirro-only param and must
     # not reach Nextflow regardless of whether the schema fetch succeeds.
@@ -272,14 +277,18 @@ def filter_params_by_schema(ds: PreprocessDataset):
     ds.logger.info(f"filter_params_by_schema: fetching schema for nf-core/sarek {version}")
 
     try:
-        with urllib.request.urlopen(url) as response:
+        with urllib.request.urlopen(url, timeout=30) as response:
             schema = json.loads(response.read().decode())
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            raise RuntimeError(
+                f"nf-core/sarek version '{version}' not found. "
+                f"See https://nf-co.re/sarek/releases for available versions."
+            ) from e
+        ds.logger.warning(f"filter_params_by_schema: HTTP error fetching schema — {e}, skipping filter")
+        return
     except Exception as e:
-        # If the schema cannot be fetched, log a warning and skip filtering.
-        # Note: without filtering, any keys injected via extra_params_json that
-        # are not valid Nextflow params will cause pipeline schema-validation errors.
-        ds.logger.warning(f"filter_params_by_schema: could not fetch schema — {e}")
-        ds.logger.warning("filter_params_by_schema: skipping schema-based param filtering")
+        ds.logger.warning(f"filter_params_by_schema: could not fetch schema — {e}, skipping filter")
         return
 
     # Collect all parameter names defined across the schema's top-level $defs sections
@@ -310,7 +319,7 @@ if __name__ == "__main__":
     # Load the information for this dataset
     ds = PreprocessDataset.from_running()
 
-    ds.logger.info(f"Starting sarek preprocess — workflow_version={ds.params.get('workflow_version', '3.8.1')!r}")
+    ds.logger.info(f"Starting sarek preprocess — workflow_version={ds.params.get('workflow_version', _DEFAULT_WORKFLOW_VERSION)!r}")
     ds.logger.info(f"analysis_type={ds.params.get('analysis_type')!r}, genome={ds.params.get('genome')!r}")
 
     # Make the samplesheet

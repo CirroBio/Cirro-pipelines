@@ -3,6 +3,7 @@
 from cirro.helpers.preprocess_dataset import PreprocessDataset
 import pandas as pd
 import urllib.request
+import urllib.error
 import json
 
 
@@ -69,6 +70,8 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
 
     return manifest
 
+
+_DEFAULT_WORKFLOW_VERSION = "3.8.1"
 
 # Params set by Cirro infrastructure that must not be overridden by user-supplied extra JSON.
 _PROTECTED_PARAMS = frozenset({
@@ -148,7 +151,7 @@ def filter_params_by_schema(ds: PreprocessDataset):
     ds.params key not listed there. Cleans up Cirro-only params (workflow_version,
     extra_params_json) and drops invalid extra JSON params before they reach Nextflow.
     """
-    version = ds.params.get("workflow_version", "3.8.1")
+    version = ds.params.get("workflow_version", _DEFAULT_WORKFLOW_VERSION)
 
     # Always remove — this is a Cirro-only param that must not reach Nextflow
     ds.remove_param("workflow_version", force=True)
@@ -157,8 +160,16 @@ def filter_params_by_schema(ds: PreprocessDataset):
     ds.logger.info(f"filter_params_by_schema: fetching schema for nf-core/sarek {version}")
 
     try:
-        with urllib.request.urlopen(url) as response:
+        with urllib.request.urlopen(url, timeout=30) as response:
             schema = json.loads(response.read().decode())
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            raise RuntimeError(
+                f"nf-core/sarek version '{version}' not found. "
+                f"See https://nf-co.re/sarek/releases for available versions."
+            ) from e
+        ds.logger.warning(f"filter_params_by_schema: HTTP error fetching schema — {e}, skipping filter")
+        return
     except Exception as e:
         ds.logger.warning(f"filter_params_by_schema: could not fetch schema — {e}, skipping filter")
         return
@@ -184,7 +195,7 @@ if __name__ == "__main__":
 
     ds = PreprocessDataset.from_running()
 
-    ds.logger.info(f"Starting sarek_custom preprocess — workflow_version={ds.params.get('workflow_version', '3.8.1')!r}")
+    ds.logger.info(f"Starting sarek_custom preprocess — workflow_version={ds.params.get('workflow_version', _DEFAULT_WORKFLOW_VERSION)!r}")
 
     manifest = make_manifest(ds)
 
