@@ -14,30 +14,37 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
     assert ds.files.shape[0] > 0, "No files detected -- error with data ingest"
 
     # Format a wide sample sheet
+    def _bam_pref(filename: str) -> int:
+        if '.recal.bam' in filename:
+            return 0
+        elif '.sorted.bam' in filename:
+            return 1
+        else:
+            return 2
+
     manifest = (
         ds.files
-        .assign(ext=ds.files["file"].apply(lambda s: s.split(".")[-1]))
-        .pivot(
-            index="sample",
-            columns="ext",
-            values="file"
+        .loc[ds.files["file"].str.contains(r'\.bam(\.bai)?$', regex=True)]
+        .assign(
+            stem=lambda df: df["file"].str.replace(r'\.bam(\.bai)?$', '', regex=True),
+            ext=lambda df: df["file"].str.extract(r'\.(bam(?:\.bai)?)$')[0]
         )
+        .pivot(index=["sample", "stem"], columns="ext", values="file")
+        .rename_axis(columns=None)
+        .dropna(subset=["bam", "bam.bai"])
+        .assign(_pref=lambda df: df["bam"].apply(_bam_pref))
+        .groupby(level="sample", group_keys=False)
+        .apply(lambda g: g[g["_pref"] == g["_pref"].min()])
+        .drop(columns=["_pref"])
+        .reset_index()
+        .rename(columns={"bam.bai": "bai"})
+        .drop(columns=["stem"])
     )
 
     assert manifest.shape[0] > 0, "No files detected -- error with data ingest"
 
-    ds.logger.info("Pivoted Table:")
-    ds.logger.info(manifest.to_csv())
-
-    # Each sample should have both a bam and bai file
-    for ext in ["bam", "bai"]:
-        assert ext in manifest.columns.values, f"Requires {ext} files"
-    for sample, r in manifest.iterrows():
-        for ext in ["bam", "bai"]:
-            assert not pd.isnull(r[ext]), f"Missing {ext} for {sample}"
-
-    # Reset the index to get the sample column back
-    manifest = manifest.reset_index()
+    ds.logger.info("BAM/BAI pairs:")
+    ds.logger.info(manifest.to_csv(index=None))
 
     # append metadata to file paths
     samples = ds.samplesheet.set_index("sample")
