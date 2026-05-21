@@ -3,7 +3,7 @@
   "childProcessIds": [],
   "dataType": "Genomic Variants - Annotated (nf-core/sarek)",
   "name": "Variant Annotation (nf-core/sarek)",
-  "desc": "Annotation of DNA variants based on GATK4 best practices (v3.1.1)",
+  "desc": "Annotation of DNA variants based on GATK4 best practices",
   "executor": "NEXTFLOW",
   "pipelineTypeOverride": "nf-core",
   "category": "DNA Sequencing",
@@ -12,7 +12,8 @@
     "repository": "GITHUBPUBLIC",
     "script": "main.nf",
     "uri": "nf-core/sarek",
-    "version": "3.1.2"
+    "version": "User Defined",
+    "executorVersion": "25.10.4"
   },
   "usesSampleSheet": true,
   "computeDefaults": [

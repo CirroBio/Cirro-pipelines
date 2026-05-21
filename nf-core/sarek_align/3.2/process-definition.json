@@ -23,7 +23,8 @@
     "repository": "GITHUBPUBLIC",
     "script": "main.nf",
     "uri": "nf-core/sarek",
-    "version": "User Defined"
+    "version": "User Defined",
+    "executorVersion": "25.10.4"
   },
   "allowMultipleSources": true,
   "usesSampleSheet": true,
@@ -44,14 +45,24 @@
       "min": 2,
       "fileNamePatterns": [
         {
+          "exampleName": "preprocessing/mapped/SampleName.sorted.bam",
+          "description": "Sorted aligned reads (BAM)",
+          "sampleMatchingPattern": "preprocessing/(?P<bamType>[\\S ]*)/(?P<sampleName>[\\S ]*)/.*\\.sorted.bam"
+        },
+        {
+          "exampleName": "preprocessing/mapped/SampleName.sorted.bam.bai",
+          "description": "Sorted aligned reads (BAM Index)",
+          "sampleMatchingPattern": "preprocessing/(?P<bamType>[\\S ]*)/(?P<sampleName>[\\S ]*)/.*\\.sorted.bam.bai"
+        },
+        {
           "exampleName": "preprocessing/mapped/SampleName.bam",
           "description": "Aligned reads (BAM)",
-          "sampleMatchingPattern": "preprocessing/mapped/(?P<sampleName>[\\S ]*)/.*\\.bam"
+          "sampleMatchingPattern": "preprocessing/(?P<bamType>[\\S ]*)/(?P<sampleName>[\\S ]*)/.*\\.bam"
         },
         {
           "exampleName": "preprocessing/mapped/SampleName.bam.bai",
           "description": "Aligned reads (BAM Index)",
-          "sampleMatchingPattern": "preprocessing/mapped/(?P<sampleName>[\\S ]*)/.*\\.bam.bai"
+          "sampleMatchingPattern": "preprocessing/(?P<bamType>[\\S ]*)/(?P<sampleName>[\\S ]*)/.*\\.bam.bai"
         }
       ]
     }

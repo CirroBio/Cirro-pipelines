@@ -1,6 +1,8 @@
 {
   "id": "process-nf-core-sarek-call-variants-3-2",
-  "childProcessIds": [],
+  "childProcessIds": [
+    "process-nf-core-sarek-annotate-3-1"
+  ],
   "name": "Variant Calling from BAM (nf-core/sarek)",
   "desc": "DNA variant calling based on GATK4 best practices",
   "executor": "NEXTFLOW",
@@ -11,23 +13,24 @@
     "repository": "GITHUBPUBLIC",
     "script": "main.nf",
     "uri": "nf-core/sarek",
-    "version": "User Defined"
+    "version": "User Defined",
+    "executorVersion": "25.10.4"
   },
   "usesSampleSheet": true,
   "fileMappingRules": [
     {
-      "description": "Mutect filtered VCF",
+      "description": "Variant Calling VCF",
       "min": 0,
       "fileNamePatterns": [
         {
-          "exampleName": "sampleName.mutect2.filtered.vcf.gz",
+          "exampleName": "variant_calling/mutect2/sampleName/sampleName.mutect2.variants.vcf.gz",
           "description": "VCF",
-          "sampleMatchingPattern": "(?<sampleName>[\\S ]+)\\.mutect2\\.filtered\\.vcf\\.gz$"
+          "sampleMatchingPattern": "variant_calling/[^/]+/[^/]+/(?P<sampleName>[\\S ]+?)\\.(?P<caller>[^.]+)\\.variants\\.vcf\\.gz$"
         },
         {
-          "exampleName": "sampleName.mutect2.filtered.vcf.gz.tbi",
+          "exampleName": "variant_calling/mutect2/sampleName/sampleName.mutect2.variants.vcf.gz.tbi",
           "description": "VCF index",
-          "sampleMatchingPattern": "(?<sampleName>[\\S ]+)\\.mutect2\\.filtered\\.vcf\\.gz\\.tbi$"
+          "sampleMatchingPattern": "variant_calling/[^/]+/[^/]+/(?P<sampleName>[\\S ]+?)\\.(?P<caller>[^.]+)\\.variants\\.vcf\\.gz\\.tbi$"
         }
       ]
     }
