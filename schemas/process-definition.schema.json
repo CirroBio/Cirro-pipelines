@@ -133,7 +133,7 @@
     },
     "usesSampleSheet": {
       "description": "Specifies if the process can accept the Cirro-provided sample sheet.",
-      "type": "boolean",
+      "type": "boolean"
     },
     "computeDefaults": {
       "description": "Defines the compute config for the process. Currently, only one entry is used.",
