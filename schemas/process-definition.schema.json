@@ -133,7 +133,7 @@
     },
     "usesSampleSheet": {
       "description": "Specifies if the process can accept the Cirro-provided sample sheet.",
-      "type": "boolean"
+      "type": "boolean",
     },
     "computeDefaults": {
       "description": "Defines the compute config for the process. Currently, only one entry is used.",
@@ -158,15 +158,23 @@
     },
     "paramMapJson": {
       "description": "S3 path to the process-input.json file.",
-      "type": "string"
+      "type": "string",
+      "default": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json"
     },
     "formJson": {
       "description": "S3 path to the process-form.json file.",
-      "type": "string"
+      "type": "string",
+      "default": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-form.json"
     },
     "preProcessScript": {
       "description": "S3 path to the preprocess life cycle hook script.",
-      "type": "string"
+      "type": "string",
+      "default": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/preprocess.py"
+    },
+    "inlineDocumentationUri": {
+      "description": "S3 path to the documentation shown in Cirro.",
+      "type": "string",
+      "default": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/README.md"
     },
     "webOptimizationJson": {
       "description": "S3 path for the process-output.json file.",
