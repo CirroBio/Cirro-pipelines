@@ -61,6 +61,37 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
     return manifest
 
 
+def resolve_reference_genome(ds: PreprocessDataset):
+    """Wire up the reference based on the iGenomes vs Custom Genome selection.
+
+    For iGenomes the curated ``genome`` key is passed through unchanged. For a
+    custom genome the user selects a pre-built BWA index dataset; we point
+    ``--fasta``/``--bwa`` at that dataset and drop ``--genome``/``--igenomes_base``.
+    The BWA index pipeline publishes ``genome.fasta.gz`` and the flat index files
+    (``genome.{amb,ann,bwt,pac,sa}``) directly into the dataset's data directory,
+    so the directory itself serves as the ``--bwa`` argument (nf-core's bwa/mem
+    module derives the index prefix from the ``.amb`` file).
+    """
+    genome_source = ds.params.get("genome_source")
+    ds.remove_param("genome_source", force=True)
+
+    bwa_index = ds.params.get("bwa_index")
+    ds.remove_param("bwa_index", force=True)
+
+    if genome_source == "dataset":
+        if not bwa_index:
+            raise ValueError(
+                "Custom Genome selected but no BWA genome index dataset was provided."
+            )
+        ds.logger.info(f"genome_source=dataset: using custom BWA index at {bwa_index}")
+        ds.add_param("fasta", f"{bwa_index}/genome.fasta.gz", overwrite=True)
+        ds.add_param("bwa", bwa_index, overwrite=True)
+        ds.remove_param("genome", force=True)
+        ds.remove_param("igenomes_base", force=True)
+    else:
+        ds.logger.info(f"genome_source=igenomes: genome={ds.params.get('genome')!r}")
+
+
 _DEFAULT_WORKFLOW_VERSION = "3.8.1"
 
 # Params set by Cirro infrastructure or computed by this script that must not
@@ -206,6 +237,9 @@ if __name__ == "__main__":
     ds.logger.info(manifest.to_csv(index=None))
     manifest.to_csv("manifest.csv", index=None)
     ds.logger.info(f"Wrote {manifest.shape[0]} row(s) to manifest.csv")
+
+    # Resolve the reference genome (iGenomes vs Custom BWA index)
+    resolve_reference_genome(ds)
 
     # `compute_multiplier` == 2 for WGS and 1 for WES; consumed by process-compute.config
     wes = ds.params.get('wes', False)
