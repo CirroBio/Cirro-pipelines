@@ -35,5 +35,17 @@
   "igenomes_base": "s3://pubweb-references/igenomes",
   "vep_cache": "s3://pubweb-references/vep_cache",
   "snpeff_cache": "s3://pubweb-references/snpeff_cache",
+  "only_paired_variant_calling": "$.dataset.params.analysis_type.only_paired_variant_calling",
+  "joint_mutect2": "$.dataset.params.analysis_type.joint_mutect2",
+  "pon": "$.dataset.params.analysis_type.pon",
+  "ignore_soft_clipped_bases": "$.dataset.params.analysis_type.ignore_soft_clipped_bases",
+  "joint_germline": "$.dataset.params.analysis_type.joint_germline",
+  "vep_mastermind": "$.dataset.params.annotation.vep_mastermind",
+  "vep_condel": "$.dataset.params.annotation.vep_condel",
+  "vep_phenotypes": "$.dataset.params.annotation.vep_phenotypes",
+  "vep_out_format": "$.dataset.params.annotation.vep_out_format",
+  "length_required": "$.dataset.params.read_trimming_options.length_required",
+  "save_mapped": "$.dataset.params.advanced_options.save_mapped",
+  "split_fastq": "$.dataset.params.advanced_options.split_fastq",
   "monochrome_logs": true
 }

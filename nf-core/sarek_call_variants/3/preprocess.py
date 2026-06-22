@@ -123,6 +123,64 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
     return manifest
 
 
+# Tool/sample/resource dependencies that the form cannot express, mirroring the
+# runtime validation in nf-core/sarek's samplesheet_to_channel subworkflow. Sarek
+# errors on the first group at runtime, so we fail fast here with a clear message.
+_TUMOR_REQUIRING_TOOLS = ("ascat", "controlfreec", "mutect2", "msisensorpro")
+_NORMAL_REQUIRING_TOOLS = ("ascat", "deepvariant", "haplotypecaller", "msisensorpro")
+_SEX_REQUIRING_TOOLS = ("ascat", "controlfreec")
+
+
+def validate_tool_dependencies(ds: PreprocessDataset, manifest: pd.DataFrame):
+    """Check tool/sample/resource dependencies before the run starts.
+
+    Mirrors the runtime validation in nf-core/sarek's samplesheet_to_channel
+    subworkflow. All issues are logged (errors for conditions sarek treats as
+    fatal, warnings for softer ones) rather than raised, so the user sees the
+    problem in the preprocess logs.
+    """
+    selected = {str(t) for t in (ds.params.get("tools") or [])}
+    if not selected:
+        return
+
+    statuses = set(manifest["status"])
+
+    tumor_tools = sorted(selected.intersection(_TUMOR_REQUIRING_TOOLS))
+    if tumor_tools and 1 not in statuses:
+        ds.logger.error(
+            "These selected tool(s) require at least one tumor sample (status=Tumor), "
+            f"but none was found in the samplesheet: {', '.join(tumor_tools)}."
+        )
+
+    normal_tools = sorted(selected.intersection(_NORMAL_REQUIRING_TOOLS))
+    if normal_tools and 0 not in statuses:
+        ds.logger.error(
+            "These selected tool(s) require at least one normal sample (status=Normal), "
+            f"but none was found in the samplesheet: {', '.join(normal_tools)}."
+        )
+
+    sex_tools = sorted(selected.intersection(_SEX_REQUIRING_TOOLS))
+    if sex_tools and (manifest["sex"] == "NA").any():
+        ds.logger.error(
+            f"The tool(s) {', '.join(sex_tools)} require sex (XX/XY) for every sample, "
+            "but one or more samples have sex=NA. Set the sex column in the samplesheet."
+        )
+
+    # ASCAT needs allele/loci reference files that Cirro does not supply by default.
+    if "ascat" in selected and not (ds.params.get("ascat_alleles") and ds.params.get("ascat_loci")):
+        ds.logger.warning(
+            "ASCAT was selected but ascat_alleles/ascat_loci were not provided. ASCAT will "
+            "fail unless both are supplied via the Extra Parameters (JSON) field."
+        )
+
+    # Mutect2 without a germline resource runs without germline-based filtering.
+    if "mutect2" in selected and not ds.params.get("germline_resource"):
+        ds.logger.warning(
+            "Mutect2 was selected without a germline resource; no germline-based filtering "
+            "of somatic calls will be performed."
+        )
+
+
 _DEFAULT_WORKFLOW_VERSION = "3.8.1"
 
 # Params set by Cirro infrastructure or computed by this script that must not
@@ -269,6 +327,9 @@ if __name__ == "__main__":
     manifest.to_csv("manifest.csv", index=None)
     ds.logger.info(f"Wrote {manifest.shape[0]} row(s) to manifest.csv")
 
+    # Validate tool/sample/resource dependencies while tools is still a list.
+    validate_tool_dependencies(ds, manifest)
+
     tools = ds.params.get('tools')
     assert tools, "ERROR: You must select at least one variant calling tool."
 
@@ -329,13 +390,17 @@ if __name__ == "__main__":
 
     # PON handling
     if ds.params.get('analysis_type') == 'Somatic Variant Calling':
-        if genome == 'GATK.GRCh37':
+        # A user-supplied panel-of-normals takes precedence; sarek generates its
+        # .tbi index automatically if one is not alongside it.
+        if ds.params.get('pon'):
+            ds.logger.info("PON: using user-supplied panel of normals")
+        elif genome == 'GATK.GRCh37':
             pon = "s3://pubweb-references/igenomes/Homo_sapiens/GATK/GRCh37/Annotation/GATKBundle/Mutect2-WGS-panel-b37.vcf.gz"
             pon_tbi = "s3://pubweb-references/igenomes/Homo_sapiens/GATK/GRCh37/Annotation/GATKBundle/Mutect2-WGS-panel-b37.vcf.gz.tbi"
             ds.add_param('pon', pon, overwrite=True)
             ds.add_param('pon_tbi', pon_tbi, overwrite=True)
             ds.logger.info("PON: added GRCh37 somatic panel of normals")
-        if genome == "GATK.GRCh38":
+        elif genome == "GATK.GRCh38":
             pon = "s3://pubweb-references/igenomes/Homo_sapiens/GATK/GRCh38/Annotation/GATKBundle/1000g_pon.hg38.vcf.gz"
             pon_tbi = "s3://pubweb-references/igenomes/Homo_sapiens/GATK/GRCh38/Annotation/GATKBundle/1000g_pon.hg38.vcf.gz.tbi"
             ds.add_param('pon', pon, overwrite=True)

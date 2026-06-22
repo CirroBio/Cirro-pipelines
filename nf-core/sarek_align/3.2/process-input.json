@@ -19,5 +19,9 @@
   "igenomes_base": "s3://pubweb-references/igenomes",
   "vep_cache": "s3://pubweb-references/vep_cache",
   "snpeff_cache": "s3://pubweb-references/snpeff_cache",
+  "length_required": "$.params.dataset.paramJson.read_trimming_options.length_required",
+  "save_output_as_bam": "$.params.dataset.paramJson.advanced_options.save_output_as_bam",
+  "save_mapped": "$.params.dataset.paramJson.advanced_options.save_mapped",
+  "split_fastq": "$.params.dataset.paramJson.advanced_options.split_fastq",
   "monochrome_logs": true
 }

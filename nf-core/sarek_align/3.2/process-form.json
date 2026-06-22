@@ -163,6 +163,12 @@
                     "type": "boolean",
                     "title": "Save the trimmed FastQ files in the results directory?",
                     "default": false
+                  },
+                  "length_required": {
+                    "type": "integer",
+                    "title": "Minimum read length",
+                    "description": "Minimum length of reads to keep after trimming (FastP --length_required).",
+                    "default": 15
                   }
                 }
               }
@@ -179,6 +185,24 @@
             "title": "MarkDuplicates - Optical Duplicate Pixel Distance",
             "description": "The `--OPTICAL_DUPLICATE_PIXEL_DISTANCE` parameter is used by MarkDuplicates to set the maximum offset between two duplicate clusters in pixels for them to be considered optical duplicates. A value of 100 is generally appropriate for unpatterned Illumina flowcells and 250 is appropriate for patterned Illumina flow cells.",
             "default": 100
+          },
+          "save_output_as_bam": {
+            "type": "boolean",
+            "title": "Save Output as BAM",
+            "description": "Save mapped reads as BAM files instead of the default CRAM format.",
+            "default": false
+          },
+          "save_mapped": {
+            "type": "boolean",
+            "title": "Save Mapped Reads",
+            "description": "Save the mapped BAM/CRAM files (before duplicate marking) to the results directory.",
+            "default": false
+          },
+          "split_fastq": {
+            "type": "integer",
+            "title": "Split FastQ size",
+            "description": "Number of reads per split of each FastQ file; splitting parallelizes mapping across shards to speed it up. Set 0 to disable splitting.",
+            "default": 50000000
           }
         }
       },

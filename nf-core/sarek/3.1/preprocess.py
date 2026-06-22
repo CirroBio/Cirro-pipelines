@@ -147,6 +147,108 @@ def fix_umi_form_dependencies(ds: PreprocessDataset):
 
     ds.remove_param("umi_tool", force=True)
 
+    # fastp UMI extraction requires a UMI length and is incompatible with reading
+    # UMIs from the read header (mirrors nf-core/sarek's runtime checks).
+    if umi_tool == "use_fastp":
+        if not ds.params.get("umi_length"):
+            ds.logger.error(
+                "fastp UMI extraction (UMI Location) requires a UMI Length to be specified."
+            )
+        if ds.params.get("umi_in_read_header"):
+            ds.logger.error(
+                "fastp UMI extraction and 'UMI in Read Header' cannot be used together. "
+                "Please choose only one UMI handling approach."
+            )
+
+    # fgbio consensus with UMIs already in the read header requires the read
+    # structure to be '+T +T'.
+    if umi_tool == "use_fgbio" and ds.params.get("umi_in_read_header"):
+        if ds.params.get("umi_read_structure") not in (None, "+T +T"):
+            ds.logger.error(
+                "When UMIs are in the read header (umi_in_read_header), the fgbio UMI "
+                "read structure must be '+T +T'. Please update the UMI Read Structure."
+            )
+
+
+# Tool/sample/resource dependencies that the form cannot express, mirroring the
+# runtime validation in nf-core/sarek's samplesheet_to_channel subworkflow. Sarek
+# errors on the first group at runtime, so we fail fast here with a clear message.
+_TUMOR_REQUIRING_TOOLS = ("ascat", "controlfreec", "mutect2", "msisensorpro")
+_NORMAL_REQUIRING_TOOLS = ("ascat", "deepvariant", "haplotypecaller", "msisensorpro")
+_SEX_REQUIRING_TOOLS = ("ascat", "controlfreec")
+
+
+def validate_tool_dependencies(ds: PreprocessDataset, manifest: pd.DataFrame):
+    """Check tool/sample/resource dependencies before the run starts.
+
+    Mirrors the runtime validation in nf-core/sarek's samplesheet_to_channel
+    subworkflow. All issues are logged (errors for conditions sarek treats as
+    fatal, warnings for softer ones) rather than raised, so the user sees the
+    problem in the preprocess logs.
+    """
+    selected = {str(t) for t in (ds.params.get("tools") or [])}
+    if not selected:
+        return
+
+    statuses = set(manifest["status"])
+
+    tumor_tools = sorted(selected.intersection(_TUMOR_REQUIRING_TOOLS))
+    if tumor_tools and 1 not in statuses:
+        ds.logger.error(
+            "These selected tool(s) require at least one tumor sample (status=Tumor), "
+            f"but none was found in the samplesheet: {', '.join(tumor_tools)}."
+        )
+
+    normal_tools = sorted(selected.intersection(_NORMAL_REQUIRING_TOOLS))
+    if normal_tools and 0 not in statuses:
+        ds.logger.error(
+            "These selected tool(s) require at least one normal sample (status=Normal), "
+            f"but none was found in the samplesheet: {', '.join(normal_tools)}."
+        )
+
+    sex_tools = sorted(selected.intersection(_SEX_REQUIRING_TOOLS))
+    if sex_tools and (manifest["sex"] == "NA").any():
+        ds.logger.error(
+            f"The tool(s) {', '.join(sex_tools)} require sex (XX/XY) for every sample, "
+            "but one or more samples have sex=NA. Set the sex column in the samplesheet."
+        )
+
+    # ASCAT needs allele/loci reference files that Cirro does not supply by default.
+    if "ascat" in selected and not (ds.params.get("ascat_alleles") and ds.params.get("ascat_loci")):
+        ds.logger.warning(
+            "ASCAT was selected but ascat_alleles/ascat_loci were not provided. ASCAT will "
+            "fail unless both are supplied via the Extra Parameters (JSON) field."
+        )
+
+    # Mutect2 without a germline resource runs without germline-based filtering.
+    if "mutect2" in selected and not ds.params.get("germline_resource"):
+        ds.logger.warning(
+            "Mutect2 was selected without a germline resource; no germline-based filtering "
+            "of somatic calls will be performed."
+        )
+
+
+def warn_custom_genome_limitations(ds: PreprocessDataset):
+    """Warn about features unavailable when a custom BWA genome dataset is used.
+
+    Custom genome datasets provide only the FASTA + BWA index — no GATK known-sites
+    (dbsnp/known_indels) or annotation caches — so base recalibration and variant
+    annotation cannot run against them. Must be called before resolve_reference_genome
+    removes ``genome_source``.
+    """
+    if ds.params.get("genome_source") != "dataset":
+        return
+    ds.logger.warning(
+        "Custom genome selected: GATK known-sites (dbsnp/known_indels) are not available, "
+        "so base recalibration will fail. Skip it by adding "
+        '{"skip_tools": "baserecalibrator"} to the Extra Parameters (JSON) field.'
+    )
+    if ds.params.get("annotation_tool"):
+        ds.logger.warning(
+            "Custom genome selected: variant annotation (VEP/snpEff) reference data is not "
+            "available for custom genomes and annotation will be skipped or fail."
+        )
+
 
 def resolve_reference_genome(ds: PreprocessDataset):
     """Wire up the reference based on the iGenomes vs Custom Genome selection.
@@ -363,6 +465,11 @@ if __name__ == "__main__":
     manifest.to_csv("manifest.csv", index=None)
     ds.logger.info(f"Wrote {manifest.shape[0]} row(s) to manifest.csv")
 
+    # Validate tool/sample/resource dependencies and warn about custom-genome
+    # limitations while genome_source/tools/annotation_tool are still present.
+    validate_tool_dependencies(ds, manifest)
+    warn_custom_genome_limitations(ds)
+
     # Resolve the reference genome (iGenomes vs Custom BWA index) before any
     # downstream logic reads the genome param.
     resolve_reference_genome(ds)
@@ -431,13 +538,17 @@ if __name__ == "__main__":
     # PON handling
 
     if params.get('analysis_type') == 'Somatic Variant Calling':
-        if genome == 'GATK.GRCh37':
+        # A user-supplied panel-of-normals takes precedence; sarek generates its
+        # .tbi index automatically if one is not alongside it.
+        if params.get('pon'):
+            ds.logger.info("PON: using user-supplied panel of normals")
+        elif genome == 'GATK.GRCh37':
             pon = "s3://pubweb-references/igenomes/Homo_sapiens/GATK/GRCh37/Annotation/GATKBundle/Mutect2-WGS-panel-b37.vcf.gz"
             pon_tbi = "s3://pubweb-references/igenomes/Homo_sapiens/GATK/GRCh37/Annotation/GATKBundle/Mutect2-WGS-panel-b37.vcf.gz.tbi"
             ds.add_param('pon', pon, overwrite=True)
             ds.add_param('pon_tbi', pon_tbi, overwrite=True)
             ds.logger.info("PON: added GRCh37 somatic panel of normals")
-        if genome == "GATK.GRCh38":
+        elif genome == "GATK.GRCh38":
             pon = "s3://pubweb-references/igenomes/Homo_sapiens/GATK/GRCh38/Annotation/GATKBundle/1000g_pon.hg38.vcf.gz"
             pon_tbi = "s3://pubweb-references/igenomes/Homo_sapiens/GATK/GRCh38/Annotation/GATKBundle/1000g_pon.hg38.vcf.gz.tbi"
             ds.add_param('pon', pon, overwrite=True)

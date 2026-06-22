@@ -13,5 +13,9 @@
   "igenomes_base": "s3://pubweb-references/igenomes",
   "vep_cache": "s3://pubweb-references/vep_cache",
   "snpeff_cache": "s3://pubweb-references/snpeff_cache",
+  "vep_mastermind": "$.params.dataset.paramJson.annotation.vep_mastermind",
+  "vep_condel": "$.params.dataset.paramJson.annotation.vep_condel",
+  "vep_phenotypes": "$.params.dataset.paramJson.annotation.vep_phenotypes",
+  "vep_out_format": "$.params.dataset.paramJson.annotation.vep_out_format",
   "monochrome_logs": true
 }

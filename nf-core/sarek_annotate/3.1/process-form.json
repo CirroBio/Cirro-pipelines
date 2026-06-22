@@ -95,6 +95,32 @@
               "title": "SpliceRegion plugin",
               "description": "Enable the use of the VEP SpliceRegion plugin to provide granular predictions of splicing effects.",
               "default": false
+            },
+            "vep_mastermind": {
+              "type": "boolean",
+              "title": "Mastermind plugin",
+              "description": "Enable the use of the VEP Mastermind plugin to retrieve genomic evidence citation counts for variants.",
+              "default": false
+            },
+            "vep_condel": {
+              "type": "boolean",
+              "title": "Condel plugin",
+              "description": "Enable the use of the VEP Condel plugin to compute a Consensus Deleteriousness score for missense variants from SIFT and PolyPhen-2.",
+              "default": false
+            },
+            "vep_phenotypes": {
+              "type": "boolean",
+              "title": "Phenotypes plugin",
+              "description": "Enable the use of the VEP Phenotypes plugin to retrieve overlapping phenotype information from Ensembl.",
+              "default": false
+            },
+            "vep_out_format": {
+              "type": "string",
+              "title": "VEP output format",
+              "description": "Format of the VEP output file.",
+              "default": "vcf",
+              "enum": ["vcf", "json", "tab"],
+              "enumNames": ["VCF", "JSON", "Tab-delimited"]
             }
           }
         }

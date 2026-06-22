@@ -61,6 +61,22 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
     return manifest
 
 
+def warn_custom_genome_limitations(ds: PreprocessDataset):
+    """Warn when a custom BWA genome is used that base recalibration cannot run.
+
+    Custom genome datasets provide only the FASTA + BWA index — no GATK known-sites
+    (dbsnp/known_indels) — so base recalibration will fail. Must be called before
+    resolve_reference_genome removes ``genome_source``.
+    """
+    if ds.params.get("genome_source") != "dataset":
+        return
+    ds.logger.warning(
+        "Custom genome selected: GATK known-sites (dbsnp/known_indels) are not available, "
+        "so base recalibration will fail. Skip it by adding "
+        '{"skip_tools": "baserecalibrator"} to the Extra Parameters (JSON) field.'
+    )
+
+
 def resolve_reference_genome(ds: PreprocessDataset):
     """Wire up the reference based on the iGenomes vs Custom Genome selection.
 
@@ -237,6 +253,9 @@ if __name__ == "__main__":
     ds.logger.info(manifest.to_csv(index=None))
     manifest.to_csv("manifest.csv", index=None)
     ds.logger.info(f"Wrote {manifest.shape[0]} row(s) to manifest.csv")
+
+    # Warn about custom-genome limitations while genome_source is still present.
+    warn_custom_genome_limitations(ds)
 
     # Resolve the reference genome (iGenomes vs Custom BWA index)
     resolve_reference_genome(ds)

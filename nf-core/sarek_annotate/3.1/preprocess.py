@@ -101,8 +101,13 @@ def preprocess(ds):
         index=None
     )
 
-    # Annotation tool is allowed to be empty, init empty list if it is
+    # The annotate step requires at least one tool (sarek errors otherwise).
     annotation_tool = ds.params.get('annotation_tool') or []
+    if not annotation_tool:
+        ds.logger.error(
+            "No annotation tool selected. The annotate step requires at least one of "
+            "VEP or snpEff."
+        )
 
     # Combine the two
     tools = ','.join(map(str, annotation_tool))
