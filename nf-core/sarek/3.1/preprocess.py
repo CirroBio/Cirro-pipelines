@@ -240,14 +240,39 @@ def warn_custom_genome_limitations(ds: PreprocessDataset):
         return
     ds.logger.warning(
         "Custom genome selected: GATK known-sites (dbsnp/known_indels) are not available, "
-        "so base recalibration will fail. Skip it by adding "
-        '{"skip_tools": "baserecalibrator"} to the Extra Parameters (JSON) field.'
+        "so base recalibration cannot run (it is skipped automatically — see "
+        "skip_baserecalibration_without_known_sites)."
     )
     if ds.params.get("annotation_tool"):
         ds.logger.warning(
             "Custom genome selected: variant annotation (VEP/snpEff) reference data is not "
             "available for custom genomes and annotation will be skipped or fail."
         )
+
+
+def skip_baserecalibration_without_known_sites(ds: PreprocessDataset, is_custom_genome: bool):
+    """Skip base recalibration when no known-sites resources are available.
+
+    GATK BaseRecalibrator requires at least one of dbsnp/known_indels. iGenomes
+    references supply these via the genome config at runtime, so only custom genomes
+    need this guard: when neither resource is present in the params, add
+    `baserecalibrator` to `skip_tools` so the run does not fail. Call after all params
+    are populated (post extra-JSON and schema filter) so user-supplied resources are
+    taken into account.
+    """
+    if not is_custom_genome:
+        return
+    if ds.params.get("dbsnp") or ds.params.get("known_indels"):
+        return
+    existing = ds.params.get("skip_tools")
+    skip = [t for t in str(existing).split(",") if t] if existing else []
+    if "baserecalibrator" not in skip:
+        skip.append("baserecalibrator")
+    ds.add_param("skip_tools", ",".join(skip), overwrite=True)
+    ds.logger.info(
+        "No dbsnp/known_indels provided — adding 'baserecalibrator' to skip_tools "
+        f"(skip_tools={','.join(skip)})."
+    )
 
 
 def resolve_reference_genome(ds: PreprocessDataset):
@@ -470,6 +495,9 @@ if __name__ == "__main__":
     validate_tool_dependencies(ds, manifest)
     warn_custom_genome_limitations(ds)
 
+    # Capture the genome source before resolve_reference_genome removes it.
+    is_custom_genome = ds.params.get("genome_source") == "dataset"
+
     # Resolve the reference genome (iGenomes vs Custom BWA index) before any
     # downstream logic reads the genome param.
     resolve_reference_genome(ds)
@@ -591,6 +619,10 @@ if __name__ == "__main__":
     # the selected workflow version. This also cleans up Cirro-only housekeeping params
     # (workflow_version, extra_params_json) that must not reach Nextflow.
     filter_params_by_schema(ds)
+
+    # With all params populated, skip base recalibration for custom genomes that
+    # lack known-sites resources (dbsnp/known_indels). iGenomes supplies these.
+    skip_baserecalibration_without_known_sites(ds, is_custom_genome)
 
     # log all params
     ds.logger.info(f"Final params ({len(ds.params)} total): {ds.params}")
