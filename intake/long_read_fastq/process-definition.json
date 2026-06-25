@@ -4,7 +4,6 @@
     "hutch-pacbio-hifi-16S",
     "process-nf-core-bacass-long-read-2-1-0",
     "process-nf-core-bacass-hybrid-2-1-0",
-    "process-nf-core-sarek-custom-genome-3-5",
     "omics-sentieon-longread-ont-1-0",
     "omics-sentieon-longread-pacbio-hifi-1-0",
     "hutch-upload-sra-ftp"
