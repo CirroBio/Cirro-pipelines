@@ -190,7 +190,7 @@
             "type": "boolean",
             "title": "Save Output as BAM",
             "description": "Save mapped reads as BAM files instead of the default CRAM format.",
-            "default": false
+            "default": true
           },
           "save_mapped": {
             "type": "boolean",
