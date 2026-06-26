@@ -181,6 +181,37 @@ def validate_tool_dependencies(ds: PreprocessDataset, manifest: pd.DataFrame):
         )
 
 
+def resolve_reference_genome(ds: PreprocessDataset):
+    """Wire up the reference based on the iGenomes vs Custom Genome selection.
+
+    For iGenomes the curated ``genome`` key is passed through unchanged. For a
+    custom genome the user selects a pre-built BWA index dataset; we point
+    ``--fasta``/``--bwa`` at that dataset and drop ``--genome``/``--igenomes_base``.
+    The BWA index pipeline publishes ``genome.fasta.gz`` and the flat index files
+    (``genome.{amb,ann,bwt,pac,sa}``) directly into the dataset's data directory,
+    so the directory itself serves as the ``--bwa`` argument (nf-core's bwa/mem
+    module derives the index prefix from the ``.amb`` file).
+    """
+    genome_source = ds.params.get("genome_source")
+    ds.remove_param("genome_source", force=True)
+
+    bwa_index = ds.params.get("bwa_index")
+    ds.remove_param("bwa_index", force=True)
+
+    if genome_source == "dataset":
+        if not bwa_index:
+            raise ValueError(
+                "Custom Genome selected but no BWA genome index dataset was provided."
+            )
+        ds.logger.info(f"genome_source=dataset: using custom BWA index at {bwa_index}")
+        ds.add_param("fasta", f"{bwa_index}/genome.fasta.gz", overwrite=True)
+        ds.add_param("bwa", bwa_index, overwrite=True)
+        ds.remove_param("genome", force=True)
+        ds.remove_param("igenomes_base", force=True)
+    else:
+        ds.logger.info(f"genome_source=igenomes: genome={ds.params.get('genome')!r}")
+
+
 _DEFAULT_WORKFLOW_VERSION = "3.8.1"
 
 # Params set by Cirro infrastructure or computed by this script that must not
@@ -344,6 +375,16 @@ if __name__ == "__main__":
     if not ds.params.get("intervals"):
         ds.add_param("no_intervals", True)
         ds.logger.info("No intervals file selected — adding --no_intervals flag")
+
+    # Resolve the reference genome (iGenomes vs Custom BWA index) before any
+    # downstream logic reads the genome param. Warn that custom genomes lack the
+    # annotation/known-sites references the iGenomes path supplies.
+    if ds.params.get("genome_source") == "dataset" and ds.params.get("annotation_tool"):
+        ds.logger.warning(
+            "Custom genome selected: variant annotation (VEP/snpEff) reference data is not "
+            "available for custom genomes and annotation will be skipped or fail."
+        )
+    resolve_reference_genome(ds)
 
     genome = ds.params.get('genome')
     ds.logger.info(f"Reference genome: {genome!r}")
