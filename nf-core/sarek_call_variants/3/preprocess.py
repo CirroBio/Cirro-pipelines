@@ -14,37 +14,52 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
 
     assert ds.files.shape[0] > 0, "No files detected -- error with data ingest"
 
+    # sarek emits alignments as BAM (default) or CRAM. Detect which the input
+    # dataset contains and build the matching samplesheet columns (sarek accepts
+    # bam+bai or cram+crai, never mixed). BAM is checked first so existing BAM
+    # datasets behave exactly as before.
+    files = ds.files["file"]
+    if files.str.contains(r'\.bam(\.bai)?$', regex=True).any():
+        data_ext, idx_suffix = "bam", "bai"
+    elif files.str.contains(r'\.cram(\.crai)?$', regex=True).any():
+        data_ext, idx_suffix = "cram", "crai"
+    else:
+        raise ValueError("No BAM or CRAM alignment files found in the input dataset")
+    ds.logger.info(f"Detected {data_ext.upper()} alignments")
+
+    index_ext = f"{data_ext}.{idx_suffix}"
+
     # Format a wide sample sheet
-    def _bam_pref(filename: str) -> int:
-        if filename.endswith('.recal.bam'):
+    def _aln_pref(filename: str) -> int:
+        if filename.endswith(f'.recal.{data_ext}'):
             return 0
-        elif filename.endswith('.sorted.bam'):
+        elif filename.endswith(f'.sorted.{data_ext}'):
             return 1
         else:
             return 2
 
     manifest = (
         ds.files
-        .loc[ds.files["file"].str.contains(r'\.bam(\.bai)?$', regex=True)]
+        .loc[files.str.contains(rf'\.{data_ext}(\.{idx_suffix})?$', regex=True)]
         .assign(
-            stem=lambda df: df["file"].str.replace(r'\.bam(\.bai)?$', '', regex=True),
-            ext=lambda df: df["file"].str.extract(r'\.(bam(?:\.bai)?)$')[0]
+            stem=lambda df: df["file"].str.replace(rf'\.{data_ext}(\.{idx_suffix})?$', '', regex=True),
+            ext=lambda df: df["file"].str.extract(rf'\.({data_ext}(?:\.{idx_suffix})?)$')[0]
         )
         .pivot(index=["sample", "stem"], columns="ext", values="file")
         .rename_axis(columns=None)
-        .dropna(subset=["bam", "bam.bai"])
-        .assign(_pref=lambda df: df["bam"].apply(_bam_pref))
+        .dropna(subset=[data_ext, index_ext])
+        .assign(_pref=lambda df: df[data_ext].apply(_aln_pref))
         .groupby(level="sample", group_keys=False)
         .apply(lambda g: g[g["_pref"] == g["_pref"].min()])
         .drop(columns=["_pref"])
         .reset_index()
-        .rename(columns={"bam.bai": "bai"})
+        .rename(columns={index_ext: idx_suffix})
         .drop(columns=["stem"])
     )
 
     assert manifest.shape[0] > 0, "No files detected -- error with data ingest"
 
-    ds.logger.info("BAM/BAI pairs:")
+    ds.logger.info(f"{data_ext.upper()}/{idx_suffix.upper()} pairs:")
     ds.logger.info(manifest.to_csv(index=None))
 
     # append metadata to file paths
@@ -54,7 +69,7 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
         for k, v in samples.items()
     })
 
-    ordering = ['patient', 'sex', 'status', 'sample', 'lane', 'bam', 'bai']
+    ordering = ['patient', 'sex', 'status', 'sample', 'lane', data_ext, idx_suffix]
     manifest: pd.DataFrame = manifest.reindex(columns=ordering)
 
     # Overwrite the 'lane' column to provide a unique value per-row
