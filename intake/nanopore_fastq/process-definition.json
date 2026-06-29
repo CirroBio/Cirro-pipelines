@@ -1,5 +1,5 @@
 {
-  "id": "nanpore_fastq",
+  "id": "nanopore_fastq",
   "childProcessIds": [],
   "name": "Nanopore Sequencing (FASTQ)",
   "desc": "Oxford Nanopore Technologies (ONT) sequencing data in FASTQ format",
