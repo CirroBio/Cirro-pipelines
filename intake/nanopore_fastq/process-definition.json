@@ -1,0 +1,29 @@
+{
+  "id": "nanpore_fastq",
+  "childProcessIds": [],
+  "name": "Nanopore Sequencing (FASTQ)",
+  "desc": "Oxford Nanopore Technologies (ONT) sequencing data in FASTQ format",
+  "executor": "INGEST",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-nanopore-sequencing/",
+  "code": {
+    "repository": "NA",
+    "uri": ""
+  },
+  "computeDefaults": [],
+  "paramMapJson": "",
+  "formJson": "",
+  "webOptimizationJson": "",
+  "fileMappingRules": [
+    {
+      "description": "Nanopore Sequencing (FASTQ)",
+      "min": 1,
+      "fileNamePatterns": [
+        {
+          "exampleName": "SampleName.fastq(.gz)",
+          "description": "FASTQ",
+          "sampleMatchingPattern": "(?P<sampleName>[\\S ]*)\\.(fq|fastq)(\\.gz|)"
+        }
+      ]
+    }
+  ]
+}
