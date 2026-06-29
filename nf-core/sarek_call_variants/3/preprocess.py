@@ -202,7 +202,7 @@ def resolve_reference_genome(ds: PreprocessDataset):
     For iGenomes the curated ``genome`` key is passed through unchanged. For a
     custom genome the user selects a pre-built BWA index dataset; we point
     ``--fasta``/``--bwa`` at that dataset and drop ``--genome``/``--igenomes_base``.
-    The BWA index pipeline publishes ``genome.fasta.gz`` and the flat index files
+    The BWA index pipeline publishes ``genome.fasta`` and the flat index files
     (``genome.{amb,ann,bwt,pac,sa}``) directly into the dataset's data directory,
     so the directory itself serves as the ``--bwa`` argument (nf-core's bwa/mem
     module derives the index prefix from the ``.amb`` file).
@@ -219,7 +219,7 @@ def resolve_reference_genome(ds: PreprocessDataset):
                 "Custom Genome selected but no BWA genome index dataset was provided."
             )
         ds.logger.info(f"genome_source=dataset: using custom BWA index at {bwa_index}")
-        ds.add_param("fasta", f"{bwa_index}/genome.fasta.gz", overwrite=True)
+        ds.add_param("fasta", f"{bwa_index}/genome.fasta", overwrite=True)
         ds.add_param("bwa", bwa_index, overwrite=True)
         ds.remove_param("genome", force=True)
         ds.remove_param("igenomes_base", force=True)
