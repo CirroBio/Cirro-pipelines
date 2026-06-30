@@ -299,6 +299,7 @@ def resolve_reference_genome(ds: PreprocessDataset):
             )
         ds.logger.info(f"genome_source=dataset: using custom BWA index at {bwa_index}")
         ds.add_param("fasta", f"{bwa_index}/genome.fasta", overwrite=True)
+        ds.add_param("fasta_fai", f"{bwa_index}/genome.fasta.fai", overwrite=True)
         ds.add_param("bwa", bwa_index, overwrite=True)
         ds.remove_param("genome", force=True)
         ds.remove_param("igenomes_base", force=True)
