@@ -61,6 +61,79 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
     return manifest
 
 
+def warn_custom_genome_limitations(ds: PreprocessDataset):
+    """Warn when a custom BWA genome is used that base recalibration cannot run.
+
+    Custom genome datasets provide only the FASTA + BWA index — no GATK known-sites
+    (dbsnp/known_indels) — so base recalibration will fail. Must be called before
+    resolve_reference_genome removes ``genome_source``.
+    """
+    if ds.params.get("genome_source") != "dataset":
+        return
+    ds.logger.warning(
+        "Custom genome selected: GATK known-sites (dbsnp/known_indels) are not available, "
+        "so base recalibration cannot run (it is skipped automatically — see "
+        "skip_baserecalibration_without_known_sites)."
+    )
+
+
+def skip_baserecalibration_without_known_sites(ds: PreprocessDataset, is_custom_genome: bool):
+    """Skip base recalibration when no known-sites resources are available.
+
+    GATK BaseRecalibrator requires at least one of dbsnp/known_indels. iGenomes
+    references supply these via the genome config at runtime, so only custom genomes
+    need this guard: when neither resource is present in the params, add
+    `baserecalibrator` to `skip_tools` so the run does not fail. Call after all params
+    are populated (post extra-JSON and schema filter) so user-supplied resources are
+    taken into account.
+    """
+    if not is_custom_genome:
+        return
+    if ds.params.get("dbsnp") or ds.params.get("known_indels"):
+        return
+    existing = ds.params.get("skip_tools")
+    skip = [t for t in str(existing).split(",") if t] if existing else []
+    if "baserecalibrator" not in skip:
+        skip.append("baserecalibrator")
+    ds.add_param("skip_tools", ",".join(skip), overwrite=True)
+    ds.logger.info(
+        "No dbsnp/known_indels provided — adding 'baserecalibrator' to skip_tools "
+        f"(skip_tools={','.join(skip)})."
+    )
+
+
+def resolve_reference_genome(ds: PreprocessDataset):
+    """Wire up the reference based on the iGenomes vs Custom Genome selection.
+
+    For iGenomes the curated ``genome`` key is passed through unchanged. For a
+    custom genome the user selects a pre-built BWA index dataset; we point
+    ``--fasta``/``--bwa`` at that dataset and drop ``--genome``/``--igenomes_base``.
+    The BWA index pipeline publishes ``genome.fasta`` and the flat index files
+    (``genome.{amb,ann,bwt,pac,sa}``) directly into the dataset's data directory,
+    so the directory itself serves as the ``--bwa`` argument (nf-core's bwa/mem
+    module derives the index prefix from the ``.amb`` file).
+    """
+    genome_source = ds.params.get("genome_source")
+    ds.remove_param("genome_source", force=True)
+
+    bwa_index = ds.params.get("bwa_index")
+    ds.remove_param("bwa_index", force=True)
+
+    if genome_source == "dataset":
+        if not bwa_index:
+            raise ValueError(
+                "Custom Genome selected but no BWA genome index dataset was provided."
+            )
+        ds.logger.info(f"genome_source=dataset: using custom BWA index at {bwa_index}")
+        ds.add_param("fasta", f"{bwa_index}/genome.fasta", overwrite=True)
+        ds.add_param("fasta_fai", f"{bwa_index}/genome.fasta.fai", overwrite=True)
+        ds.add_param("bwa", bwa_index, overwrite=True)
+        ds.remove_param("genome", force=True)
+        ds.remove_param("igenomes_base", force=True)
+    else:
+        ds.logger.info(f"genome_source=igenomes: genome={ds.params.get('genome')!r}")
+
+
 _DEFAULT_WORKFLOW_VERSION = "3.8.1"
 
 # Params set by Cirro infrastructure or computed by this script that must not
@@ -207,6 +280,15 @@ if __name__ == "__main__":
     manifest.to_csv("manifest.csv", index=None)
     ds.logger.info(f"Wrote {manifest.shape[0]} row(s) to manifest.csv")
 
+    # Warn about custom-genome limitations while genome_source is still present.
+    warn_custom_genome_limitations(ds)
+
+    # Capture the genome source before resolve_reference_genome removes it.
+    is_custom_genome = ds.params.get("genome_source") == "dataset"
+
+    # Resolve the reference genome (iGenomes vs Custom BWA index)
+    resolve_reference_genome(ds)
+
     # `compute_multiplier` == 2 for WGS and 1 for WES; consumed by process-compute.config
     wes = ds.params.get('wes', False)
     compute_multiplier = int(2 - int(wes))
@@ -220,5 +302,9 @@ if __name__ == "__main__":
 
     apply_extra_json_params(ds)
     filter_params_by_schema(ds)
+
+    # With all params populated, skip base recalibration for custom genomes that
+    # lack known-sites resources (dbsnp/known_indels). iGenomes supplies these.
+    skip_baserecalibration_without_known_sites(ds, is_custom_genome)
 
     ds.logger.info(f"Final params ({len(ds.params)} total): {ds.params}")

@@ -31,18 +31,72 @@
         "title": "Experiment Design",
         "description": "Indicate the analysis type (germline/somatic) and select high level parameters for the workflow.",
         "type": "object",
-        "required": ["genome", "analysis_type", "tools", "wes"],
+        "required": ["analysis_type", "tools", "wes"],
         "properties": {
-          "genome": {
+          "genome_selection": {
             "title": "Reference Genome",
-            "type": "string",
-            "default": "GATK.GRCh38",
-            "enum": ["GATK.GRCh38", "GATK.GRCh37", "GRCm38"],
-            "enumNames": [
-              "Homo sapiens (GATK.GRCh38)",
-              "Homo sapiens (GATK.GRCh37)",
-              "Mus musculus (GRCm38)"
-            ]
+            "type": "object",
+            "properties": {
+              "genome_source": {
+                "type": "string",
+                "title": "Reference Genome Source",
+                "description": "Select whether to use a curated iGenomes reference or a pre-built BWA genome index dataset from Cirro.",
+                "enum": ["igenomes", "dataset"],
+                "enumNames": ["iGenomes", "Custom Genome"],
+                "default": "igenomes"
+              }
+            },
+            "dependencies": {
+              "genome_source": {
+                "oneOf": [
+                  {
+                    "properties": {
+                      "genome_source": { "enum": ["igenomes"] },
+                      "igenomes": {
+                        "type": "object",
+                        "title": "Reference Genome (iGenomes)",
+                        "description": "Select a curated reference genome from the iGenomes collection.",
+                        "properties": {
+                          "genome": {
+                            "title": "Select A Reference Genome",
+                            "type": "string",
+                            "default": "GATK.GRCh38",
+                            "enum": ["GATK.GRCh38", "GATK.GRCh37", "GRCm38"],
+                            "enumNames": [
+                              "Homo sapiens (GATK.GRCh38)",
+                              "Homo sapiens (GATK.GRCh37)",
+                              "Mus musculus (GRCm38)"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "genome_source": { "enum": ["dataset"] },
+                      "bwa_cirro_reference": {
+                        "type": "object",
+                        "title": "Custom Genome Index (BWA)",
+                        "description": "Select a pre-built BWA genome index dataset from Cirro. Variant annotation (VEP/snpEff) and GATK known-sites/germline resources are not available for custom genomes.",
+                        "properties": {
+                          "genome_index": {
+                            "title": "BWA Genome Index",
+                            "type": "string",
+                            "pathType": "dataset",
+                            "process": [
+                              "process-cirro-genome-index-bwa-1-0",
+                              "genome_bwa_index"
+                            ],
+                            "description": "Pre-built BWA genome index dataset"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
           },
           "wes": {
             "title": "Whole Exome/Targeted Gene Panel Assay",
@@ -155,6 +209,12 @@
                     ]
                   },
                   "uniqueItems": true
+                },
+                "only_paired_variant_calling": {
+                  "type": "boolean",
+                  "title": "Only paired variant calling",
+                  "description": "Skip germline variant calling for matched normal samples; only perform tumor/normal somatic calling. Normal samples without a matched tumor are still processed through germline calling.",
+                  "default": false
                 }
               }
             }
@@ -179,6 +239,45 @@
                   "type": "boolean",
                   "title": "Joint calling with Mutect2",
                   "description": "Runs Mutect2 in joint (multi-sample) mode for better concordance among variant calls of tumor samples from the same patient.",
+                  "default": false
+                },
+                "pon": {
+                  "title": "Panel of Normals (Mutect2)",
+                  "description": "Panel-of-normals VCF (bgzipped) for GATK Mutect2, used to filter recurrent technical artifacts. If omitted, Mutect2 runs without a PON and produces an unfiltered VCF.",
+                  "type": "string",
+                  "pathType": "references",
+                  "file": "**/*.vcf.gz",
+                  "useS3Path": true
+                },
+                "ignore_soft_clipped_bases": {
+                  "type": "boolean",
+                  "title": "Ignore soft-clipped bases",
+                  "description": "Do not analyze soft-clipped bases in the reads (passes --dont-use-soft-clipped-bases to GATK Mutect2).",
+                  "default": false
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "required": [
+                "tools"
+              ],
+              "properties": {
+                "tools": {
+                  "contains": {
+                    "type": "string",
+                    "const": "haplotypecaller"
+                  }
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "joint_germline": {
+                  "type": "boolean",
+                  "title": "Joint germline calling",
+                  "description": "Turn on joint germline variant calling for GATK HaplotypeCaller, using all normal germline samples together followed by VQSR filtering.",
                   "default": false
                 }
               }
@@ -239,6 +338,32 @@
               "title": "SpliceRegion plugin",
               "description": "Enable the use of the VEP SpliceRegion plugin to provide granular predictions of splicing effects.",
               "default": false
+            },
+            "vep_mastermind": {
+              "type": "boolean",
+              "title": "Mastermind plugin",
+              "description": "Enable the use of the VEP Mastermind plugin to retrieve genomic evidence citation counts for variants.",
+              "default": false
+            },
+            "vep_condel": {
+              "type": "boolean",
+              "title": "Condel plugin",
+              "description": "Enable the use of the VEP Condel plugin to compute a Consensus Deleteriousness score for missense variants from SIFT and PolyPhen-2.",
+              "default": false
+            },
+            "vep_phenotypes": {
+              "type": "boolean",
+              "title": "Phenotypes plugin",
+              "description": "Enable the use of the VEP Phenotypes plugin to retrieve overlapping phenotype information from Ensembl.",
+              "default": false
+            },
+            "vep_out_format": {
+              "type": "string",
+              "title": "VEP output format",
+              "description": "Format of the VEP output file.",
+              "default": "vcf",
+              "enum": ["vcf", "json", "tab"],
+              "enumNames": ["VCF", "JSON", "Tab-delimited"]
             }
           }
         }

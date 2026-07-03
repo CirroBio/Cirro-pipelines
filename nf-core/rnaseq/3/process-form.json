@@ -55,7 +55,7 @@
                             "title": "Reference Genome Source",
                             "description": "Select whether to use a curated iGenomes reference or a genome index dataset from Cirro",
                             "enum": ["igenomes", "dataset"],
-                            "enumNames": ["iGenomes", "Cirro Dataset"],
+                            "enumNames": ["iGenomes", "Custom Genome"],
                             "default": "igenomes"
                           }
                         },
@@ -141,7 +141,7 @@
                             "title": "Reference Genome Source",
                             "description": "Select whether to use a curated iGenomes reference or a genome index dataset from Cirro",
                             "enum": ["igenomes", "dataset"],
-                            "enumNames": ["iGenomes", "Cirro Dataset"],
+                            "enumNames": ["iGenomes", "Custom Genome"],
                             "default": "igenomes"
                           }
                         },
@@ -227,7 +227,7 @@
                             "title": "Reference Genome Source",
                             "description": "Select whether to use a curated iGenomes reference or a genome index dataset from Cirro",
                             "enum": ["igenomes", "dataset"],
-                            "enumNames": ["iGenomes", "Cirro Dataset"],
+                            "enumNames": ["iGenomes", "Custom Genome"],
                             "default": "igenomes"
                           }
                         },
@@ -296,7 +296,7 @@
                             "title": "Reference Genome Source",
                             "description": "Select whether to use a curated iGenomes reference or a genome index dataset from Cirro",
                             "enum": ["igenomes", "dataset"],
-                            "enumNames": ["iGenomes", "Cirro Dataset"],
+                            "enumNames": ["iGenomes", "Custom Genome"],
                             "default": "igenomes"
                           }
                         },

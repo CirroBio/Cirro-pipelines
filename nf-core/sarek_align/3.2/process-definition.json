@@ -46,23 +46,23 @@
       "fileNamePatterns": [
         {
           "exampleName": "preprocessing/mapped/SampleName.sorted.bam",
-          "description": "Sorted aligned reads (BAM)",
-          "sampleMatchingPattern": "preprocessing/(?P<bamType>[\\S ]*)/(?P<sampleName>[\\S ]*)/.*\\.sorted.bam"
+          "description": "Sorted aligned reads (BAM/CRAM)",
+          "sampleMatchingPattern": "preprocessing/(?P<bamType>[\\S ]*)/(?P<sampleName>[\\S ]*)/.*\\.sorted.(bam|cram)"
         },
         {
           "exampleName": "preprocessing/mapped/SampleName.sorted.bam.bai",
-          "description": "Sorted aligned reads (BAM Index)",
-          "sampleMatchingPattern": "preprocessing/(?P<bamType>[\\S ]*)/(?P<sampleName>[\\S ]*)/.*\\.sorted.bam.bai"
+          "description": "Sorted aligned reads (BAM/CRAM Index)",
+          "sampleMatchingPattern": "preprocessing/(?P<bamType>[\\S ]*)/(?P<sampleName>[\\S ]*)/.*\\.sorted.(bam.bai|cram.crai)"
         },
         {
           "exampleName": "preprocessing/mapped/SampleName.bam",
-          "description": "Aligned reads (BAM)",
-          "sampleMatchingPattern": "preprocessing/(?P<bamType>[\\S ]*)/(?P<sampleName>[\\S ]*)/.*\\.bam"
+          "description": "Aligned reads (BAM/CRAM)",
+          "sampleMatchingPattern": "preprocessing/(?P<bamType>[\\S ]*)/(?P<sampleName>[\\S ]*)/.*\\.(bam|cram)"
         },
         {
           "exampleName": "preprocessing/mapped/SampleName.bam.bai",
-          "description": "Aligned reads (BAM Index)",
-          "sampleMatchingPattern": "preprocessing/(?P<bamType>[\\S ]*)/(?P<sampleName>[\\S ]*)/.*\\.bam.bai"
+          "description": "Aligned reads (BAM/CRAM Index)",
+          "sampleMatchingPattern": "preprocessing/(?P<bamType>[\\S ]*)/(?P<sampleName>[\\S ]*)/.*\\.(bam.bai|cram.crai)"
         }
       ]
     }
