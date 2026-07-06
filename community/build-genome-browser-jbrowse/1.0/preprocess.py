@@ -25,7 +25,7 @@ def parse_s3_uri(s3_uri):
 
 
 def make_file_ref(s3_uri):
-    url = "https://cirrobio.github.io/render-service-worker/s3/" + s3_uri.removeprefix("s3://")
+    url = "https://viewers.cirro.bio/render-service-worker/s3/" + s3_uri.removeprefix("s3://")
     return {"url": url}
 
 
