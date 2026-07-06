@@ -179,7 +179,7 @@ if __name__ == "__main__":
         track = {"type": "bigwig", "name": infer_name(path), "file": make_file_ref(path)}
         tracks.append(track)
 
-    for path in selected_paths(ds.params, "gtf")
+    for path in selected_paths(ds.params, "gtf"):
         ds.logger.info(f"GTF: {path}")
         idx = find_index(path, [".tbi"])
         if idx:
