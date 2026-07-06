@@ -59,7 +59,7 @@
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-dna-sequencing/",
   "code": {
     "repository": "GITHUBPUBLIC",
-    "script": "main.nf",
+    "script": "workflow/main.nf",
     "uri": "CirroBio/Cirro-jbrowse-config",
     "version": "main"
   },
