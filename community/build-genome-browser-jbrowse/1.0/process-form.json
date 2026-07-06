@@ -46,12 +46,12 @@
         "file": "**/*.bigWig",
         "pathType": "dataset"
       },
-      "gtf": {
-        "title": "GTF Files",
-        "description": "Gene annotations in bgzipped, tabix-indexed GTF format",
+      "gff": {
+        "title": "GFF3 Files",
+        "description": "Gene annotations in bgzipped, tabix-indexed GFF3 format",
         "type": "string",
         "multiple": true,
-        "file": "**/*.gtf.gz",
+        "file": "**/*.gff*.gz",
         "pathType": "dataset"
       }
     }
