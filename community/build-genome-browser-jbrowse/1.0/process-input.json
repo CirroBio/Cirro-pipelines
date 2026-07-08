@@ -1,0 +1,11 @@
+{
+  "inputs": "inputs.json",
+  "outdir": "$.dataset.dataPath",
+  "assembly_name": "$.dataset.params.assembly_name",
+  "fasta": "$.dataset.params.fasta",
+  "bam": "$.dataset.params.bam",
+  "cram": "$.dataset.params.cram",
+  "vcf": "$.dataset.params.vcf",
+  "bigwig": "$.dataset.params.bigwig",
+  "gff": "$.dataset.params.gff"
+}

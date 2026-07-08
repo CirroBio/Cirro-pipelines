@@ -1,0 +1,60 @@
+{
+  "form": {
+    "type": "object",
+    "properties": {
+      "assembly_name": {
+        "title": "Reference Genome Name",
+        "description": "Display name for the reference genome shown in the browser (e.g. GRCh38, hg38, mm10) (optional)",
+        "type": "string"
+      },
+      "fasta": {
+        "title": "Reference FASTA (optional)",
+        "description": "Reference genome FASTA file. If not provided, it will be detected from the input pipeline's execution logs.",
+        "type": "string",
+        "file": "**/*.f*",
+        "pathType": "dataset"
+      },
+      "bam": {
+        "title": "BAM Files",
+        "description": "Alignment files in BAM format",
+        "type": "string",
+        "multiple": true,
+        "file": "**/*.bam",
+        "pathType": "dataset"
+      },
+      "cram": {
+        "title": "CRAM Files",
+        "description": "Alignment files in CRAM format",
+        "type": "string",
+        "multiple": true,
+        "file": "**/*.cram",
+        "pathType": "dataset"
+      },
+      "vcf": {
+        "title": "VCF Files",
+        "description": "Variant calls in gzipped VCF format",
+        "type": "string",
+        "multiple": true,
+        "file": "**/*.vcf.gz",
+        "pathType": "dataset"
+      },
+      "bigwig": {
+        "title": "BigWig Files",
+        "description": "Coverage or signal tracks in BigWig format",
+        "type": "string",
+        "multiple": true,
+        "file": "**/*.bigWig",
+        "pathType": "dataset"
+      },
+      "gff": {
+        "title": "GFF3 Files",
+        "description": "Gene annotations in bgzipped, tabix-indexed GFF3 format",
+        "type": "string",
+        "multiple": true,
+        "file": "**/*.gff*.gz",
+        "pathType": "dataset"
+      }
+    }
+  },
+  "ui": {}
+}
