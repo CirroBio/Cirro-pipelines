@@ -1,0 +1,7 @@
+{
+  "fasta": "$.dataset.params.fasta",
+  "gtf": "$.dataset.params.gtf",
+  "outdir": "$.dataset.dataPath",
+  "container": "$.dataset.params.container",
+  "simpleaf_extra_args": "$.dataset.params.simpleaf_extra_args"
+}

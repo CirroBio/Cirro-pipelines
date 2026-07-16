@@ -1,0 +1,61 @@
+{
+  "form": {
+    "type": "object",
+    "properties": {
+      "fasta": {
+        "title": "Genome FASTA",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.f*",
+        "description": "Reference genome FASTA (gzipped or uncompressed)."
+      },
+      "gtf": {
+        "title": "GTF Annotation",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.gtf*",
+        "description": "Gene annotation GTF containing immunoglobulin (IG_*) and T-cell receptor (TR_*) gene segments."
+      },
+      "cellranger_version": {
+        "title": "Cell Ranger Version",
+        "description": "Cell Ranger version (appended to the quay.io/cumulus/cellranger image tag). Proprietary 10x Genomics software.",
+        "type": "string",
+        "default": "10.0.0",
+        "enum": [
+          "10.0.0",
+          "9.0.1",
+          "9.0.0",
+          "8.0.0",
+          "7.2.0",
+          "7.1.0",
+          "7.0.1",
+          "7.0.0",
+          "6.1.2",
+          "6.1.1",
+          "6.0.2",
+          "6.0.1",
+          "6.0.0",
+          "5.0.1",
+          "5.0.0",
+          "4.0.0",
+          "3.1.0",
+          "3.0.2",
+          "2.2.0"
+        ]
+      },
+      "cellranger_vdj_reference_name": {
+        "title": "Reference Name",
+        "description": "Name of the output reference directory.",
+        "type": "string",
+        "default": "cellranger_vdj_reference"
+      },
+      "cellranger_mkvdjref_args": {
+        "title": "mkvdjref Extra Arguments",
+        "description": "Additional arguments to pass to cellranger mkvdjref.",
+        "type": "string"
+      }
+    },
+    "required": ["fasta", "gtf", "cellranger_version"]
+  },
+  "ui": {}
+}

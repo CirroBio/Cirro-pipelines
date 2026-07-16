@@ -1,0 +1,40 @@
+{
+  "form": {
+    "type": "object",
+    "properties": {
+      "fasta": {
+        "title": "Genome FASTA",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.f*",
+        "description": "Reference genome FASTA (gzipped or uncompressed)."
+      },
+      "gtf": {
+        "title": "GTF Annotation",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.gtf*",
+        "description": "Gene annotation GTF (gzipped or uncompressed)."
+      },
+      "container": {
+        "title": "Container Image",
+        "description": "simpleaf container image (bundles simpleaf, alevin-fry, piscem, and salmon).",
+        "type": "string"
+      },
+      "simpleaf_extra_args": {
+        "title": "Extra Arguments",
+        "description": "Additional arguments to pass to simpleaf index (e.g. --use-salmon to index with salmon instead of piscem).",
+        "type": "string"
+      }
+    },
+    "required": ["fasta", "gtf", "container"]
+  },
+  "ui": {
+    "container": {
+      "ui:placeholder": "quay.io/biocontainers/simpleaf:<tag>"
+    },
+    "simpleaf_extra_args": {
+      "ui:placeholder": "--use-salmon"
+    }
+  }
+}

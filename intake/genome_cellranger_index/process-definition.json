@@ -1,0 +1,42 @@
+{
+  "id": "genome_cellranger_index",
+  "childProcessIds": [],
+  "name": "Cell Ranger Reference",
+  "desc": "10x Genomics gene-expression reference built with cellranger mkref",
+  "executor": "INGEST",
+  "documentationUrl": "",
+  "code": {
+    "repository": "NA",
+    "uri": ""
+  },
+  "computeDefaults": [],
+  "paramMapJson": "",
+  "formJson": "",
+  "webOptimizationJson": "",
+  "fileMappingRules": [
+    {
+      "description": "Reference metadata",
+      "min": 1,
+      "isSample": false,
+      "fileNamePatterns": [
+        {
+          "exampleName": "cellranger_reference/reference.json",
+          "description": "Cell Ranger reference metadata",
+          "sampleMatchingPattern": "[\\S ]*reference.json"
+        }
+      ]
+    },
+    {
+      "description": "STAR index",
+      "min": 1,
+      "isSample": false,
+      "fileNamePatterns": [
+        {
+          "exampleName": "cellranger_reference/star/SAindex",
+          "description": "STAR suffix array index file",
+          "sampleMatchingPattern": "[\\S ]*SAindex"
+        }
+      ]
+    }
+  ]
+}
