@@ -59,7 +59,7 @@
                   "title": "Xenium Experiment File (experiment.xenium)",
                   "type": "string",
                   "pathType": "dataset",
-                  "file": "**/experiment.xenium",
+                  "file": "**/*.xenium",
                   "useS3Path": true,
                   "description": "Select the experiment.xenium file at the top of the Xenium output folder. The whole folder around it is read: cell centroids from cells.parquet (or cells.csv.gz), the cell-feature matrix, any Xenium Ranger clustering under analysis/, and the morphology_focus image. Pixel size comes from experiment.xenium itself. Note that Xenium Ranger v2.0+ writes morphology_focus as a multi-file directory, which this reader does not handle — those runs are published without a background image."
                 }
@@ -83,7 +83,7 @@
                   "title": "Visium Scale Factors (spatial/scalefactors_json.json)",
                   "type": "string",
                   "pathType": "dataset",
-                  "file": "**/spatial/scalefactors_json.json",
+                  "file": "**/spatial/*scalefactors_json.json",
                   "useS3Path": true,
                   "description": "Select scalefactors_json.json inside the spatial/ folder of a Space Ranger run. The folder holding spatial/ (normally outs/) is what gets read: in-tissue spot positions, the filtered feature-barcode matrix, and any clustering under analysis/. Spot size is fixed at 55 microns and the scale is derived from spot_diameter_fullres. Space Ranger publishes only downsampled preview images, so Visium samples are published without a background image."
                 }
@@ -107,7 +107,7 @@
                   "title": "Visium HD Scale Factors (binned_outputs/.../spatial/scalefactors_json.json)",
                   "type": "string",
                   "pathType": "dataset",
-                  "file": "**/binned_outputs/*/spatial/scalefactors_json.json",
+                  "file": "**/binned_outputs/*/spatial/*scalefactors_json.json",
                   "useS3Path": true,
                   "description": "Select the scalefactors_json.json of any bin under binned_outputs/ — it only serves to locate the run. The folder holding binned_outputs/ is read, and the coarsest bin available is used (16 micron, else 8, else 2) so the browser stays responsive. Per-cell segmented_outputs/ are not read."
                 }
