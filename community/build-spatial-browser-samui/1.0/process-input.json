@@ -1,0 +1,18 @@
+{
+  "format": "$.dataset.params.input.format",
+  "sample_name": "$.dataset.params.input.sample_name",
+  "input_file": "$.dataset.params.input.input_file",
+  "dataset_folder": "$.inputs[0].dataPath",
+  "cells": "$.dataset.params.input.cells",
+  "matrix": "$.dataset.params.input.matrix",
+  "features": "$.dataset.params.input.features",
+  "image": "$.dataset.params.input.image",
+  "pixel_size": "$.dataset.params.calibration.pixel_size",
+  "mpp": "$.dataset.params.calibration.mpp",
+  "spot_size": "$.dataset.params.calibration.spot_size",
+  "coords_name": "$.dataset.params.display.coords_name",
+  "default_feature": "$.dataset.params.display.default_feature",
+  "no_image": "$.dataset.params.display.no_image",
+  "convert_8bit": "$.dataset.params.display.convert_8bit",
+  "outdir": "$.dataset.dataPath"
+}
