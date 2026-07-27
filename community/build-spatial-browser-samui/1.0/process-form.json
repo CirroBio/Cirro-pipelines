@@ -24,9 +24,9 @@
               "auto"
             ],
             "enumNames": [
-              "10x Xenium",
-              "10x Visium (Space Ranger)",
-              "10x Visium HD (Space Ranger)",
+              "10X Xenium",
+              "10X Visium (Space Ranger)",
+              "10X Visium HD (Space Ranger)",
               "SpatialData store (.zarr.zip)",
               "Individual files (cell table + expression matrix)",
               "Detect the platform automatically"
@@ -166,7 +166,7 @@
                   "pathType": "dataset",
                   "file": "**/*.{csv,parquet,h5}",
                   "useS3Path": true,
-                  "description": "Counts, observations by features. For CSV or Parquet the first column holds the observation IDs and the rest are features; a transposed matrix is fine because the orientation is worked out by matching IDs against the cell table. A 10x .h5 file is read directly. Features named NegPrb*, NegControl*, SystemControl* or Blank-* are dropped as controls."
+                  "description": "Counts, observations by features. For CSV or Parquet the first column holds the observation IDs and the rest are features; a transposed matrix is fine because the orientation is worked out by matching IDs against the cell table. A 10X .h5 file is read directly. Features named NegPrb*, NegControl*, SystemControl* or Blank-* are dropped as controls."
                 },
                 "features": {
                   "title": "Feature Table (optional)",
@@ -174,7 +174,7 @@
                   "pathType": "dataset",
                   "file": "**/*.{csv,parquet}",
                   "useS3Path": true,
-                  "description": "One row per feature, with the feature ID in the first column. If any column name contains \"type\" (as 10x feature_types does), only features typed Gene Expression are kept. Leave empty to use every feature in the matrix."
+                  "description": "One row per feature, with the feature ID in the first column. If any column name contains \"type\" (as 10X feature_types does), only features typed Gene Expression are kept. Leave empty to use every feature in the matrix."
                 },
                 "image": {
                   "title": "Background Image (optional)",
