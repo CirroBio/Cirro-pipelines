@@ -9,9 +9,6 @@
     "process-hutch-cellranger-hashtagging-1-0",
     "process-hutch-fastqc-1_0",
     "process-hutch-spaceranger-count-1-0",
-    "omics-scrnaseq-starsolo-1-0",
-    "omics-scrnaseq-salmon-alevin-fry-1-0",
-    "omics-scrnaseq-kallistobustools-1-0",
     "hutch-upload-sra-ftp"
   ],
   "name": "10X Single-Cell (FASTQ)",

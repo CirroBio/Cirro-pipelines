@@ -1,16 +1,7 @@
 {
   "id": "process-nf-core-sarek-align-3-2",
   "childProcessIds": [
-    "process-nf-core-sarek-call-variants-3-2",
-    "omics-gatk-bp-germline-bam2vcf-30x-1-0",
-    "omics-gatk-bp-somatic-wes-bam2vcf-1-0",
-    "omics-nvidia-parabricks-bam2fq2bam-wgs-5x-1-0",
-    "omics-nvidia-parabricks-bam2fq2bam-wgs-30x-1-0",
-    "omics-nvidia-parabricks-bam2fq2bam-wgs-50x-1-0",
-    "omics-sentieon-somatic-wes-1-0",
-    "omics-sentieon-somatic-wgs-1-0",
-    "omics-sentieon-germline-bam-wes-300x-1-0",
-    "omics-sentieon-germline-bam-wgs-32x-1-0"
+    "process-nf-core-sarek-call-variants-3-2"
   ],
   "dataType": "Pre-Processed Alignments (BAM)",
   "name": "Align Reads (nf-core/sarek)",

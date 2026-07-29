@@ -4,13 +4,6 @@
     "process-gatk-processing-for-variant-discovery-2_3_1",
     "process-gatk-whole-genome-germline-single-sample-3_1_6",
     "process-epi2me-wf-human-variation-2",
-    "omics-gatk-bp-germline-bam2vcf-30x-1-0",
-    "omics-gatk-bp-somatic-wes-bam2vcf-1-0",
-    "omics-nvidia-parabricks-bam2fq2bam-wgs-5x-1-0",
-    "omics-nvidia-parabricks-bam2fq2bam-wgs-30x-1-0",
-    "omics-nvidia-parabricks-bam2fq2bam-wgs-50x-1-0",
-    "omics-sentieon-germline-bam-wes-300x-1-0",
-    "omics-sentieon-germline-bam-wgs-32x-1-0",
     "hutch-upload-sra-ftp"
   ],
   "name": "Unaligned BAM",
