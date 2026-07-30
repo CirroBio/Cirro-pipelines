@@ -1,12 +1,6 @@
 {
   "id": "ingest_cram",
   "childProcessIds": [
-    "omics-ultima-genomics-deepvariant-40x-1-0",
-    "omics-nvidia-parabricks-bam2fq2bam-wgs-5x-1-0",
-    "omics-nvidia-parabricks-bam2fq2bam-wgs-30x-1-0",
-    "omics-nvidia-parabricks-bam2fq2bam-wgs-50x-1-0",
-    "omics-sentieon-germline-bam-wes-300x-1-0",
-    "omics-sentieon-germline-bam-wgs-32x-1-0",
     "hutch-upload-sra-ftp"
   ],
   "name": "CRAM",
