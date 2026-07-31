@@ -17,7 +17,7 @@
   "desc": "Convert spatial data (Xenium, Visium, Visium HD, a SpatialData store, or a cell table plus expression matrix) into a Samui browser sample and publish it alongside a copy of the viewer.",
   "executor": "NEXTFLOW",
   "category": "Spatial Analysis",
-  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-spatial-analysis/#build-spatial-browser-samui",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-spatial-analysis/",
   "code": {
     "repository": "GITHUBPUBLIC",
     "uri": "chaichontat/samui",
