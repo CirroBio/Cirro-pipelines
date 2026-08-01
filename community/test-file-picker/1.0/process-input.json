@@ -1,9 +1,0 @@
-{
-  "a_control": "$.dataset.params.a_control",
-  "b_depth0_xenium": "$.dataset.params.b_depth0_xenium",
-  "c_depth1_xenium": "$.dataset.params.c_nested.c_depth1_xenium",
-  "d_depth2_xenium": "$.dataset.params.d_deep.d_deeper.d_depth2_xenium",
-  "e_depth2_conditional_xenium": "$.dataset.params.e_conditional.e_depth2_conditional_xenium",
-  "f_conditional_any": "$.dataset.params.f_conditional_depth0.f_conditional_any",
-  "outdir": "$.dataset.dataPath"
-}
