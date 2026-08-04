@@ -1,8 +1,7 @@
 {
   "id": "sequencing-run",
   "childProcessIds": [
-    "process-hutch-interop-qc-1_0",
-    "process-bbi-dmux"
+    "process-hutch-interop-qc-1_0"
   ],
   "name": "Illumina Sequencing Run",
   "desc": "Illumina sequencing run output (raw BCLs)",
