@@ -8,7 +8,6 @@
     "process-hutch-fastqc-1_0",
     "process-nf-core-rnafusion-3_0",
     "process-hutch-ngscheckmate-1-0",
-    "process-nf-core-viralrecon-2_2",
     "process-hutch-subset-fastq-paired-rna-1_0",
     "hutch-gig-map-align-pangenome-1-0",
     "hutch-sourmash-tax",
