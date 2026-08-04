@@ -1,9 +1,0 @@
-{
-  "n_neighborhoods": "$.dataset.params.neighborhood_analysis.n_neighborhoods",
-  "n_neighbors": "$.dataset.params.neighborhood_analysis.n_neighbors",
-  "outdir": "$.dataset.dataPath",
-  "resolution": "$.dataset.params.clustering.resolution",
-  "filter_features": "$.dataset.params.clustering.filter_features",
-  "use_dashboards": "$.dataset.params.visualization.use_dashboards",
-  "regions": "regions.csv"
-}
