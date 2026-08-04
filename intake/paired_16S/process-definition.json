@@ -2,8 +2,7 @@
   "id": "paired_16S",
   "childProcessIds": [
     "process-nf-core-ampliseq-2-4-0",
-    "process-hutch-fastqc-1_0",
-    "hutch-upload-sra-ftp"
+    "process-hutch-fastqc-1_0"
   ],
   "name": "Paired 16S (FASTQ)",
   "desc": "FASTQ files generated from paired-end sequencing of 16S amplicons (optional index reads)",

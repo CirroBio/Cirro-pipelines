@@ -1,8 +1,6 @@
 {
   "id": "ingest_cram",
-  "childProcessIds": [
-    "hutch-upload-sra-ftp"
-  ],
+  "childProcessIds": [],
   "name": "CRAM",
   "desc": "Genomic sequences in CRAM format",
   "executor": "INGEST",
