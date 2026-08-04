@@ -24,8 +24,7 @@
     "hutch-gig-map-align-reads-1-0",
     "hutch-gig-map-align-pangenome-1-0",
     "hutch-sourmash-tax",
-    "process-nf-core-mag-3_0",
-    "hutch-upload-sra-ftp"
+    "process-nf-core-mag-3_0"
   ],
   "name": "Paired DNAseq (FASTQ)",
   "desc": "FASTQ files generated from paired-end sequencing of DNA libraries",

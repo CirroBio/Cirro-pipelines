@@ -3,8 +3,7 @@
   "childProcessIds": [
     "process-gatk-processing-for-variant-discovery-2_3_1",
     "process-gatk-whole-genome-germline-single-sample-3_1_6",
-    "process-epi2me-wf-human-variation-2",
-    "hutch-upload-sra-ftp"
+    "process-epi2me-wf-human-variation-2"
   ],
   "name": "Unaligned BAM",
   "desc": "Genomic sequences in unaligned BAM format",

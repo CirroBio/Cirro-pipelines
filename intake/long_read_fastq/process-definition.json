@@ -3,8 +3,7 @@
   "childProcessIds": [
     "hutch-pacbio-hifi-16S",
     "process-nf-core-bacass-long-read-2-1-0",
-    "process-nf-core-bacass-hybrid-2-1-0",
-    "hutch-upload-sra-ftp"
+    "process-nf-core-bacass-hybrid-2-1-0"
   ],
   "name": "Long Read Sequencing (FASTQ)",
   "desc": "FASTQ files generated from PacBio or Oxford Nanopore Sequencing",

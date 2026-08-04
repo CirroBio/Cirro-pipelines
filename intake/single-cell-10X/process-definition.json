@@ -8,8 +8,7 @@
     "process-hutch-cellranger-arc-count-1-0",
     "process-hutch-cellranger-hashtagging-1-0",
     "process-hutch-fastqc-1_0",
-    "process-hutch-spaceranger-count-1-0",
-    "hutch-upload-sra-ftp"
+    "process-hutch-spaceranger-count-1-0"
   ],
   "name": "10X Single-Cell (FASTQ)",
   "desc": "FASTQ files generated from the 10X single-cell sequencing platform",
