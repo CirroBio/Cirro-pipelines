@@ -1,8 +1,8 @@
 {
   "format": "$.dataset.params.input.format",
   "sample_name": "$.dataset.params.input.sample_name",
-  "input_file": "$.dataset.params.input.input_file",
-  "dataset_folder": "$.inputs[0].dataPath",
+  "folder": "$.dataset.params.input.folder",
+  "zarr": "$.dataset.params.input.zarr",
   "cells": "$.dataset.params.input.cells",
   "matrix": "$.dataset.params.input.matrix",
   "features": "$.dataset.params.input.features",

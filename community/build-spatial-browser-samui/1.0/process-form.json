@@ -5,7 +5,7 @@
       "input": {
         "type": "object",
         "title": "Input Data",
-        "description": "Start by saying what kind of data you have. Every platform reader is fed one folder, but the form can only select files, so you are asked for a single landmark file that sits at a known place inside that folder — the folder around it is what gets read.",
+        "description": "Start by saying what kind of data you have. Each platform reader is handed one folder — the top of the platform's output — and works out for itself which files inside it to read.",
         "required": [
           "format",
           "sample_name"
@@ -31,7 +31,7 @@
               "Individual files (cell table + expression matrix)",
               "Detect the platform automatically"
             ],
-            "description": "The platform that produced the data. This choice decides which file you are asked to select below and which reader the workflow runs. Whatever the platform, the result is the same: coordinates, feature groups and an optional background image, published as a Samui sample folder alongside a copy of the viewer."
+            "description": "The platform that produced the data. This choice decides what you are asked to select below and which reader the workflow runs. Whatever the platform, the result is the same: coordinates, feature groups and an optional background image, published as a Samui sample folder alongside a copy of the viewer."
           },
           "sample_name": {
             "title": "Sample Name",
@@ -52,16 +52,16 @@
             },
             "then": {
               "required": [
-                "input_file"
+                "folder"
               ],
               "properties": {
-                "input_file": {
-                  "title": "Xenium Experiment File (experiment.xenium)",
+                "folder": {
+                  "title": "Xenium Output Folder",
                   "type": "string",
                   "pathType": "dataset",
-                  "file": "**/*.xenium",
+                  "folder": "**/*",
                   "useS3Path": true,
-                  "description": "Select the experiment.xenium file at the top of the Xenium output folder. The whole folder around it is read: cell centroids from cells.parquet (or cells.csv.gz), the cell-feature matrix, any Xenium Ranger clustering under analysis/, and the morphology_focus image. Pixel size comes from experiment.xenium itself. Note that Xenium Ranger v2.0+ writes morphology_focus as a multi-file directory, which this reader does not handle — those runs are published without a background image."
+                  "description": "The folder holding experiment.xenium — the top of the Xenium output. The reader takes cell centroids from cells.parquet (or cells.csv.gz), expression from the cell-feature matrix, any Xenium Ranger clustering under analysis/, and the morphology_focus image. Pixel size comes from experiment.xenium. Xenium Ranger v2.0+ writes morphology_focus as a multi-file directory, which this reader does not handle — those runs are published without a background image."
                 }
               }
             }
@@ -76,16 +76,16 @@
             },
             "then": {
               "required": [
-                "input_file"
+                "folder"
               ],
               "properties": {
-                "input_file": {
-                  "title": "Visium Scale Factors (spatial/scalefactors_json.json)",
+                "folder": {
+                  "title": "Visium Output Folder",
                   "type": "string",
                   "pathType": "dataset",
-                  "file": "**/spatial/*scalefactors_json.json",
+                  "folder": "**/*",
                   "useS3Path": true,
-                  "description": "Select scalefactors_json.json inside the spatial/ folder of a Space Ranger run. The folder holding spatial/ (normally outs/) is what gets read: in-tissue spot positions, the filtered feature-barcode matrix, and any clustering under analysis/. Spot size is fixed at 55 microns and the scale is derived from spot_diameter_fullres. Space Ranger publishes only downsampled preview images, so Visium samples are published without a background image."
+                  "description": "The folder holding spatial/ — normally the Space Ranger outs/ directory, though the run directory wrapping it also works. The reader takes in-tissue spot positions, the filtered feature-barcode matrix, and any clustering under analysis/. Spot size is fixed at 55 microns and the scale is derived from spot_diameter_fullres. Space Ranger publishes only downsampled preview images, so Visium samples get no background image."
                 }
               }
             }
@@ -100,16 +100,40 @@
             },
             "then": {
               "required": [
-                "input_file"
+                "folder"
               ],
               "properties": {
-                "input_file": {
-                  "title": "Visium HD Scale Factors (binned_outputs/.../spatial/scalefactors_json.json)",
+                "folder": {
+                  "title": "Visium HD Output Folder",
                   "type": "string",
                   "pathType": "dataset",
-                  "file": "**/binned_outputs/*/spatial/*scalefactors_json.json",
+                  "folder": "**/*",
                   "useS3Path": true,
-                  "description": "Select the scalefactors_json.json of any bin under binned_outputs/ — it only serves to locate the run. The folder holding binned_outputs/ is read, and the coarsest bin available is used (16 micron, else 8, else 2) so the browser stays responsive. Per-cell segmented_outputs/ are not read."
+                  "description": "The folder holding binned_outputs/ — the Space Ranger outs/ directory. The coarsest bin available is used (16 micron, else 8, else 2) so the browser stays responsive; select the outs/ folder itself rather than an individual bin. Per-cell segmented_outputs/ are not read."
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "format": {
+                  "const": "auto"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "folder"
+              ],
+              "properties": {
+                "folder": {
+                  "title": "Platform Output Folder",
+                  "type": "string",
+                  "pathType": "dataset",
+                  "folder": "**/*",
+                  "useS3Path": true,
+                  "description": "The top of the platform output, whichever platform produced it. Detection recognizes Xenium, Visium and Visium HD, and a Space Ranger run which only wraps an outs/ folder is followed into it. The run fails with a clear message if nothing matches — in that case pick the platform explicitly above. Auto-detect cannot reach SpatialData stores or individual files."
                 }
               }
             }
@@ -124,16 +148,16 @@
             },
             "then": {
               "required": [
-                "input_file"
+                "zarr"
               ],
               "properties": {
-                "input_file": {
+                "zarr": {
                   "title": "SpatialData Store (.zarr.zip)",
                   "type": "string",
                   "pathType": "dataset",
                   "file": "**/*.zarr.zip",
                   "useS3Path": true,
-                  "description": "Select a zipped SpatialData store. The first table in the store is exported: coordinates from its obsm['spatial'] or, failing that, from the centroids of the matching shapes element; expression from X; categorical obs columns as annotations. Images held in the store are not exported yet. Stores written by older versions of spatialdata may carry obs or var names that current versions reject (characters such as micron signs or slashes); these are sanitized on read, so those characters appear as underscores in the feature and annotation labels. For an unzipped store, enter the S3 path of the .zarr directory (or of the zarr.json / .zgroup at its root) instead of picking a file."
+                  "description": "A zipped SpatialData store. The first table in the store is exported: coordinates from its obsm['spatial'] or, failing that, from the centroids of the matching shapes element; expression from X; categorical obs columns as annotations. Images held in the store are not exported yet. Stores written by older versions of spatialdata may carry obs or var names that current versions reject (characters such as micron signs or slashes); these are sanitized on read, so those characters appear as underscores in the feature and annotation labels. For an unzipped store, enter the S3 path of the .zarr directory instead of picking a file."
                 }
               }
             }
@@ -183,27 +207,6 @@
                   "file": "**/*.{tif,tiff}",
                   "useS3Path": true,
                   "description": "TIFF or OME-TIFF drawn underneath the points. It must share the coordinate frame of the x / y columns in the cell table."
-                }
-              }
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "format": {
-                  "const": "auto"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "input_file": {
-                  "title": "Any File Inside the Platform Folder (optional)",
-                  "type": "string",
-                  "pathType": "dataset",
-                  "file": "**/*",
-                  "useS3Path": true,
-                  "description": "Leave this empty to sniff the root of the input dataset, which works when the platform output was uploaded directly. If the platform output sits in a sub-folder, select any file that lives at the top of that sub-folder and its parent folder is sniffed instead. A Space Ranger run that only wraps an outs/ folder is followed into it. Detection recognizes Xenium, Visium and Visium HD, and the run fails with a clear message if none match — in that case pick the platform explicitly above. Auto-detect cannot reach SpatialData stores or individual files."
                 }
               }
             }
