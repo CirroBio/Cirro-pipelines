@@ -27,7 +27,7 @@
               "10X Xenium",
               "10X Visium (Space Ranger)",
               "10X Visium HD (Space Ranger)",
-              "SpatialData store (.zarr.zip)",
+              "SpatialData store (.zarr / .zarr.zip)",
               "Individual files (cell table + expression matrix)",
               "Detect the platform automatically"
             ],
@@ -58,9 +58,7 @@
                 "folder": {
                   "title": "Xenium Output Folder",
                   "type": "string",
-                  "pathType": "dataset",
-                  "folder": "**/*",
-                  "useS3Path": true,
+                  "format": "directory-path",
                   "description": "The folder holding experiment.xenium — the top of the Xenium output. The reader takes cell centroids from cells.parquet (or cells.csv.gz), expression from the cell-feature matrix, any Xenium Ranger clustering under analysis/, and the morphology_focus image. Pixel size comes from experiment.xenium. Xenium Ranger v2.0+ writes morphology_focus as a multi-file directory, which this reader does not handle — those runs are published without a background image."
                 }
               }
@@ -82,9 +80,7 @@
                 "folder": {
                   "title": "Visium Output Folder",
                   "type": "string",
-                  "pathType": "dataset",
-                  "folder": "**/*",
-                  "useS3Path": true,
+                  "format": "directory-path",
                   "description": "The folder holding spatial/ — normally the Space Ranger outs/ directory, though the run directory wrapping it also works. The reader takes in-tissue spot positions, the filtered feature-barcode matrix, and any clustering under analysis/. Spot size is fixed at 55 microns and the scale is derived from spot_diameter_fullres. Space Ranger publishes only downsampled preview images, so Visium samples get no background image."
                 }
               }
@@ -106,9 +102,7 @@
                 "folder": {
                   "title": "Visium HD Output Folder",
                   "type": "string",
-                  "pathType": "dataset",
-                  "folder": "**/*",
-                  "useS3Path": true,
+                  "format": "directory-path",
                   "description": "The folder holding binned_outputs/ — the Space Ranger outs/ directory. The coarsest bin available is used (16 micron, else 8, else 2) so the browser stays responsive; select the outs/ folder itself rather than an individual bin. Per-cell segmented_outputs/ are not read."
                 }
               }
@@ -130,9 +124,7 @@
                 "folder": {
                   "title": "Platform Output Folder",
                   "type": "string",
-                  "pathType": "dataset",
-                  "folder": "**/*",
-                  "useS3Path": true,
+                  "format": "directory-path",
                   "description": "The top of the platform output, whichever platform produced it. Detection recognizes Xenium, Visium and Visium HD, and a Space Ranger run which only wraps an outs/ folder is followed into it. The run fails with a clear message if nothing matches — in that case pick the platform explicitly above. Auto-detect cannot reach SpatialData stores or individual files."
                 }
               }
@@ -152,12 +144,11 @@
               ],
               "properties": {
                 "zarr": {
-                  "title": "SpatialData Store (.zarr.zip)",
+                  "title": "SpatialData Store",
                   "type": "string",
-                  "pathType": "dataset",
-                  "file": "**/*.zarr.zip",
-                  "useS3Path": true,
-                  "description": "A zipped SpatialData store. The first table in the store is exported: coordinates from its obsm['spatial'] or, failing that, from the centroids of the matching shapes element; expression from X; categorical obs columns as annotations. Images held in the store are not exported yet. Stores written by older versions of spatialdata may carry obs or var names that current versions reject (characters such as micron signs or slashes); these are sanitized on read, so those characters appear as underscores in the feature and annotation labels. For an unzipped store, enter the S3 path of the .zarr directory instead of picking a file."
+                  "format": "path",
+                  "pattern": "\\.zarr(\\.zip)?$",
+                  "description": "A SpatialData store, either a zipped .zarr.zip file or an unzipped .zarr directory. The first table in the store is exported: coordinates from its obsm['spatial'] or, failing that, from the centroids of the matching shapes element; expression from X; categorical obs columns as annotations. Images held in the store are not exported yet. Stores written by older versions of spatialdata may carry obs or var names that current versions reject (characters such as micron signs or slashes); these are sanitized on read, so those characters appear as underscores in the feature and annotation labels."
                 }
               }
             }
@@ -181,7 +172,6 @@
                   "type": "string",
                   "pathType": "dataset",
                   "file": "**/*.{csv,parquet}",
-                  "useS3Path": true,
                   "description": "One row per observation. Needs an ID column (id, cell_id, barcode, cell, obs or observation_id — otherwise the row number is used) and x / y coordinates (aliases such as x_centroid, center_x and pxl_col_in_fullres are accepted). Every remaining column becomes an overlay: text columns are grouped as Annotations, numeric columns as Cell metrics. Coordinates are assumed to be in image pixels unless you set Meters per pixel below."
                 },
                 "matrix": {
@@ -189,7 +179,6 @@
                   "type": "string",
                   "pathType": "dataset",
                   "file": "**/*.{csv,parquet,h5}",
-                  "useS3Path": true,
                   "description": "Counts, observations by features. For CSV or Parquet the first column holds the observation IDs and the rest are features; a transposed matrix is fine because the orientation is worked out by matching IDs against the cell table. A 10X .h5 file is read directly. Features named NegPrb*, NegControl*, SystemControl* or Blank-* are dropped as controls."
                 },
                 "features": {
@@ -197,7 +186,6 @@
                   "type": "string",
                   "pathType": "dataset",
                   "file": "**/*.{csv,parquet}",
-                  "useS3Path": true,
                   "description": "One row per feature, with the feature ID in the first column. If any column name contains \"type\" (as 10X feature_types does), only features typed Gene Expression are kept. Leave empty to use every feature in the matrix."
                 },
                 "image": {
@@ -205,7 +193,6 @@
                   "type": "string",
                   "pathType": "dataset",
                   "file": "**/*.{tif,tiff}",
-                  "useS3Path": true,
                   "description": "TIFF or OME-TIFF drawn underneath the points. It must share the coordinate frame of the x / y columns in the cell table."
                 }
               }
