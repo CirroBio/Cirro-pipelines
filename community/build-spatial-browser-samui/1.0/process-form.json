@@ -59,7 +59,7 @@
                   "title": "Xenium Output Folder",
                   "type": "string",
                   "format": "directory-path",
-                  "description": "The folder holding experiment.xenium — the top of the Xenium output. The reader takes cell centroids from cells.parquet (or cells.csv.gz), expression from the cell-feature matrix, any Xenium Ranger clustering under analysis/, and the morphology_focus image. Pixel size comes from experiment.xenium. Xenium Ranger v2.0+ writes morphology_focus as a multi-file directory, which this reader does not handle — those runs are published without a background image."
+                  "description": "The top-level output folder for a single Xenium region, as written by Xenium Onboard Analysis or Xenium Ranger. It usually contains experiment.xenium, cells.parquet (or cells.csv.gz), cell_feature_matrix/, analysis/ and morphology_focus.ome.tif. The reader takes cell centroids, expression, any clustering under analysis/, and the morphology image; pixel size comes from experiment.xenium. Xenium Ranger v2.0+ writes morphology_focus as a multi-file directory, which this reader does not handle — those runs are published without a background image."
                 }
               }
             }
@@ -81,7 +81,7 @@
                   "title": "Visium Output Folder",
                   "type": "string",
                   "format": "directory-path",
-                  "description": "The folder holding spatial/ — normally the Space Ranger outs/ directory, though the run directory wrapping it also works. The reader takes in-tissue spot positions, the filtered feature-barcode matrix, and any clustering under analysis/. Spot size is fixed at 55 microns and the scale is derived from spot_diameter_fullres. Space Ranger publishes only downsampled preview images, so Visium samples get no background image."
+                  "description": "The Space Ranger results folder for a Visium slide, normally named outs/ — the run directory wrapping it also works. It usually contains spatial/ (tissue_positions and scalefactors_json.json), filtered_feature_bc_matrix.h5, and analysis/. The reader takes in-tissue spot positions, the filtered feature-barcode matrix, and any clustering. Spot size is fixed at 55 microns and the scale is derived from spot_diameter_fullres. Space Ranger publishes only downsampled preview images, so Visium samples get no background image."
                 }
               }
             }
@@ -103,7 +103,7 @@
                   "title": "Visium HD Output Folder",
                   "type": "string",
                   "format": "directory-path",
-                  "description": "The folder holding binned_outputs/ — the Space Ranger outs/ directory. The coarsest bin available is used (16 micron, else 8, else 2) so the browser stays responsive; select the outs/ folder itself rather than an individual bin. Per-cell segmented_outputs/ are not read."
+                  "description": "The Space Ranger results folder for a Visium HD slide, normally named outs/. It usually contains binned_outputs/ (holding square_002um, square_008um and square_016um) alongside segmented_outputs/. Select that top-level folder rather than one of the individual bins: the coarsest bin available is used (16 micron, else 8, else 2) so the browser stays responsive. Per-cell segmented_outputs/ are not read."
                 }
               }
             }
@@ -125,7 +125,7 @@
                   "title": "Platform Output Folder",
                   "type": "string",
                   "format": "directory-path",
-                  "description": "The top of the platform output, whichever platform produced it. Detection recognizes Xenium, Visium and Visium HD, and a Space Ranger run which only wraps an outs/ folder is followed into it. The run fails with a clear message if nothing matches — in that case pick the platform explicitly above. Auto-detect cannot reach SpatialData stores or individual files."
+                  "description": "The top-level output folder from whichever platform produced the data. Detection reads the folder for a platform signature — experiment.xenium or cell_feature_matrix/ for Xenium, binned_outputs/ for Visium HD, spatial/tissue_positions for Visium — and a Space Ranger run which only wraps an outs/ folder is followed into it. The run fails with a clear message if nothing matches, in which case pick the platform explicitly above. Auto-detect cannot reach SpatialData stores or individual files."
                 }
               }
             }
