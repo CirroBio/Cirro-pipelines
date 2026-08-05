@@ -101,19 +101,7 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
     ])
 
     # Normalize 'sex' to the XX/XY/NA encoding sarek requires, defaulting to NA
-    sex = manifest['sex'].apply(normalize_sex)
-    unrecognized = sorted({
-        str(raw).strip()
-        for raw in manifest['sex']
-        if not pd.isna(raw)
-        and str(raw).strip()
-        and str(raw).strip().lower() not in _SEX_ALIASES
-    })
-    if unrecognized:
-        ds.logger.warning(
-            f"Unrecognized sex value(s) in the samplesheet, set to NA: {', '.join(unrecognized)}"
-        )
-    manifest = manifest.assign(sex=sex)
+    manifest = manifest.assign(sex=manifest["sex"].apply(normalize_sex))
 
     # Transform status values "Normal" -> 0 and "Tumor" -> 1
     manifest = manifest.replace(
