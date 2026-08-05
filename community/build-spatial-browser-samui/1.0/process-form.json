@@ -5,7 +5,6 @@
       "input": {
         "type": "object",
         "title": "Input Data",
-        "description": "Start by saying what kind of data you have. Each platform reader is handed one folder — the top of the platform's output — and works out for itself which files inside it to read.",
         "required": [
           "format",
           "sample_name"
@@ -30,15 +29,14 @@
               "SpatialData store (.zarr / .zarr.zip)",
               "Individual files (cell table + expression matrix)",
               "Detect the platform automatically"
-            ],
-            "description": "The platform that produced the data. This choice decides what you are asked to select below and which reader the workflow runs. Whatever the platform, the result is the same: coordinates, feature groups and an optional background image, published as a Samui sample folder alongside a copy of the viewer."
+            ]
           },
           "sample_name": {
             "title": "Sample Name",
             "type": "string",
             "default": "sample",
             "pattern": "^[A-Za-z0-9._-]+$",
-            "description": "Name of the published sample folder and the sample label shown in the browser. Letters, numbers, dots, dashes and underscores only."
+            "description": "Names the published folder and labels the sample in the browser."
           }
         },
         "allOf": [
@@ -59,7 +57,7 @@
                   "title": "Xenium Output Folder",
                   "type": "string",
                   "format": "directory-path",
-                  "description": "The top-level output folder for a single Xenium region, as written by Xenium Onboard Analysis or Xenium Ranger. It usually contains experiment.xenium, cells.parquet (or cells.csv.gz), cell_feature_matrix/, analysis/ and morphology_focus.ome.tif. The reader takes cell centroids, expression, any clustering under analysis/, and the morphology image; pixel size comes from experiment.xenium. Xenium Ranger v2.0+ writes morphology_focus as a multi-file directory, which this reader does not handle — those runs are published without a background image."
+                  "description": "A single Xenium region, holding experiment.xenium and cell_feature_matrix/. Runs with a multi-file morphology_focus/ directory (Xenium Ranger v2.0+) are published without a background image."
                 }
               }
             }
@@ -81,7 +79,7 @@
                   "title": "Visium Output Folder",
                   "type": "string",
                   "format": "directory-path",
-                  "description": "The Space Ranger results folder for a Visium slide, normally named outs/ — the run directory wrapping it also works. It usually contains spatial/ (tissue_positions and scalefactors_json.json), filtered_feature_bc_matrix.h5, and analysis/. The reader takes in-tissue spot positions, the filtered feature-barcode matrix, and any clustering. Spot size is fixed at 55 microns and the scale is derived from spot_diameter_fullres. Space Ranger publishes only downsampled preview images, so Visium samples get no background image."
+                  "description": "A Space Ranger results folder, holding spatial/ and filtered_feature_bc_matrix.h5. Space Ranger writes only downsampled previews, so no background image is published."
                 }
               }
             }
@@ -103,7 +101,7 @@
                   "title": "Visium HD Output Folder",
                   "type": "string",
                   "format": "directory-path",
-                  "description": "The Space Ranger results folder for a Visium HD slide, normally named outs/. It usually contains binned_outputs/ (holding square_002um, square_008um and square_016um) alongside segmented_outputs/. Select that top-level folder rather than one of the individual bins: the coarsest bin available is used (16 micron, else 8, else 2) so the browser stays responsive. Per-cell segmented_outputs/ are not read."
+                  "description": "A Space Ranger HD results folder, holding binned_outputs/. Select it rather than an individual bin; the coarsest bin available is used."
                 }
               }
             }
@@ -125,7 +123,7 @@
                   "title": "Platform Output Folder",
                   "type": "string",
                   "format": "directory-path",
-                  "description": "The top-level output folder from whichever platform produced the data. Detection reads the folder for a platform signature — experiment.xenium or cell_feature_matrix/ for Xenium, binned_outputs/ for Visium HD, spatial/tissue_positions for Visium — and a Space Ranger run which only wraps an outs/ folder is followed into it. The run fails with a clear message if nothing matches, in which case pick the platform explicitly above. Auto-detect cannot reach SpatialData stores or individual files."
+                  "description": "Identified from its contents. Recognizes Xenium, Visium and Visium HD."
                 }
               }
             }
@@ -148,7 +146,7 @@
                   "type": "string",
                   "format": "path",
                   "pattern": "\\.zarr(\\.zip)?$",
-                  "description": "A SpatialData store, either a zipped .zarr.zip file or an unzipped .zarr directory. The first table in the store is exported: coordinates from its obsm['spatial'] or, failing that, from the centroids of the matching shapes element; expression from X; categorical obs columns as annotations. Images held in the store are not exported yet. Stores written by older versions of spatialdata may carry obs or var names that current versions reject (characters such as micron signs or slashes); these are sanitized on read, so those characters appear as underscores in the feature and annotation labels."
+                  "description": "Zipped (.zarr.zip) or unzipped (.zarr). The first table is exported; images in the store are not."
                 }
               }
             }
@@ -168,32 +166,32 @@
               ],
               "properties": {
                 "cells": {
-                  "title": "Cell / Spot Table (required)",
+                  "title": "Cell / Spot Table",
                   "type": "string",
                   "pathType": "dataset",
                   "file": "**/*.{csv,parquet}",
-                  "description": "One row per observation. Needs an ID column (id, cell_id, barcode, cell, obs or observation_id — otherwise the row number is used) and x / y coordinates (aliases such as x_centroid, center_x and pxl_col_in_fullres are accepted). Every remaining column becomes an overlay: text columns are grouped as Annotations, numeric columns as Cell metrics. Coordinates are assumed to be in image pixels unless you set Meters per pixel below."
+                  "description": "One row per observation: an ID column, x and y coordinates in pixels, and any label or metric columns to overlay."
                 },
                 "matrix": {
-                  "title": "Expression Matrix (required)",
+                  "title": "Expression Matrix",
                   "type": "string",
                   "pathType": "dataset",
                   "file": "**/*.{csv,parquet,h5}",
-                  "description": "Counts, observations by features. For CSV or Parquet the first column holds the observation IDs and the rest are features; a transposed matrix is fine because the orientation is worked out by matching IDs against the cell table. A 10X .h5 file is read directly. Features named NegPrb*, NegControl*, SystemControl* or Blank-* are dropped as controls."
+                  "description": "Counts, observations by features, keyed to the cell table by ID."
                 },
                 "features": {
                   "title": "Feature Table (optional)",
                   "type": "string",
                   "pathType": "dataset",
                   "file": "**/*.{csv,parquet}",
-                  "description": "One row per feature, with the feature ID in the first column. If any column name contains \"type\" (as 10X feature_types does), only features typed Gene Expression are kept. Leave empty to use every feature in the matrix."
+                  "description": "Restricts the matrix to gene-expression features."
                 },
                 "image": {
                   "title": "Background Image (optional)",
                   "type": "string",
                   "pathType": "dataset",
                   "file": "**/*.{tif,tiff}",
-                  "description": "TIFF or OME-TIFF drawn underneath the points. It must share the coordinate frame of the x / y columns in the cell table."
+                  "description": "TIFF sharing the coordinate frame of the cell table."
                 }
               }
             }
@@ -203,51 +201,48 @@
       "calibration": {
         "type": "object",
         "title": "Calibration",
-        "description": "Every reader derives these from the platform's own metadata. Set them only to override that — for example when the metadata file is missing, or for individual-file input, where coordinates are assumed to already be in image pixels. Leave blank to use the platform default.",
+        "description": "Overrides values the reader takes from the platform metadata.",
         "properties": {
           "pixel_size": {
             "title": "Pixel Size (microns per pixel)",
-            "type": "number",
-            "description": "Microns per pixel of the platform image, used to convert micron coordinates into pixels. Overrides the value read from platform metadata — for Xenium that is pixel_size in experiment.xenium, which falls back to 0.2125 when the file is absent."
+            "type": "number"
           },
           "mpp": {
             "title": "Meters per Pixel",
             "type": "number",
-            "description": "Scale applied to both the coordinates and the background image, in meters per pixel. Overrides whatever the reader derived. Individual-file input defaults to 1.0, meaning coordinates are treated as raw image pixels."
+            "description": "Scales both the coordinates and the image. Individual-file input defaults to 1.0, treating coordinates as pixels."
           },
           "spot_size": {
             "title": "Marker Diameter (meters)",
-            "type": "number",
-            "description": "Diameter of the marker drawn for each observation, in meters. Defaults to the physical size of the platform's unit: 55e-6 for a Visium spot, the bin width for Visium HD, 10e-6 for a Xenium cell, 1e-5 for a SpatialData store or individual-file input."
+            "type": "number"
           }
         }
       },
       "display": {
         "type": "object",
         "title": "Display Options",
-        "description": "How the published sample presents itself when it is opened in the browser.",
         "properties": {
           "coords_name": {
             "title": "Name for the Observations",
             "type": "string",
-            "description": "Label used for the set of points, for example cells, spots, bins or beads. Defaults to whichever term suits the platform."
+            "description": "For example cells, spots, or bins."
           },
           "default_feature": {
             "title": "Feature Shown on Load",
             "type": "string",
-            "description": "Name of the feature — usually a gene — displayed automatically when the sample opens. It must match a feature present in the data; anything else is ignored."
+            "description": "Must match a feature present in the data."
           },
           "no_image": {
             "title": "Skip the Background Image",
             "type": "boolean",
             "default": false,
-            "description": "Publish coordinates and features only. Useful when the Xenium morphology image is very large, fails to decode, or simply is not wanted. The other formats attach no background image in the first place (Visium and Visium HD ship only downsampled previews, and SpatialData images are not exported yet), so this has no effect on them."
+            "description": "Publish coordinates and features only."
           },
           "convert_8bit": {
             "title": "Downcast the Image to 8-bit",
             "type": "boolean",
             "default": false,
-            "description": "Convert the background image to 8-bit before tiling. Produces a much smaller output and a faster first load, at the cost of dynamic range in dim regions."
+            "description": "Smaller output and faster loading, at the cost of dynamic range."
           }
         }
       }
