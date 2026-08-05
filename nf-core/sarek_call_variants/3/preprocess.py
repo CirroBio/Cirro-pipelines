@@ -7,6 +7,27 @@ import urllib.error
 import json
 
 
+# Spellings of sex seen in user samplesheets, mapped to the XX/XY encoding sarek
+# requires. Anything else (including a blank cell) becomes NA.
+_SEX_ALIASES = {
+    'f': 'XX',
+    'female': 'XX',
+    'xx': 'XX',
+    'm': 'XY',
+    'male': 'XY',
+    'xy': 'XY',
+    'na': 'NA',
+    'unknown': 'NA',
+}
+
+
+def normalize_sex(value) -> str:
+    """Map a samplesheet sex value to sarek's XX/XY/NA encoding."""
+    if pd.isna(value):
+        return 'NA'
+    return _SEX_ALIASES.get(str(value).strip().lower(), 'NA')
+
+
 def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
 
     ds.logger.info("Input Files:")
@@ -79,10 +100,20 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
         for i in range(manifest.shape[0])
     ])
 
-    # Set the default value for 'sex' to be NA
-    manifest = manifest.assign(
-        sex=manifest['sex'].fillna('NA')
-    )
+    # Normalize 'sex' to the XX/XY/NA encoding sarek requires, defaulting to NA
+    sex = manifest['sex'].apply(normalize_sex)
+    unrecognized = sorted({
+        str(raw).strip()
+        for raw in manifest['sex']
+        if not pd.isna(raw)
+        and str(raw).strip()
+        and str(raw).strip().lower() not in _SEX_ALIASES
+    })
+    if unrecognized:
+        ds.logger.warning(
+            f"Unrecognized sex value(s) in the samplesheet, set to NA: {', '.join(unrecognized)}"
+        )
+    manifest = manifest.assign(sex=sex)
 
     # Transform status values "Normal" -> 0 and "Tumor" -> 1
     manifest = manifest.replace(
