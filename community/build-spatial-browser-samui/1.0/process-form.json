@@ -1,0 +1,272 @@
+{
+  "form": {
+    "type": "object",
+    "properties": {
+      "input": {
+        "type": "object",
+        "title": "Input Data",
+        "required": [
+          "format",
+          "sample_name"
+        ],
+        "properties": {
+          "format": {
+            "title": "Data Type",
+            "type": "string",
+            "default": "xenium",
+            "enum": [
+              "xenium",
+              "visium",
+              "visium_hd",
+              "spatialdata",
+              "files",
+              "auto"
+            ],
+            "enumNames": [
+              "10X Xenium",
+              "10X Visium (Space Ranger)",
+              "10X Visium HD (Space Ranger)",
+              "SpatialData store (.zarr / .zarr.zip)",
+              "Individual files (cell table + expression matrix)",
+              "Detect the platform automatically"
+            ]
+          },
+          "sample_name": {
+            "title": "Sample Name",
+            "type": "string",
+            "default": "sample",
+            "pattern": "^[A-Za-z0-9._-]+$",
+            "description": "Names the published folder and labels the sample in the browser."
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "format": {
+                  "const": "xenium"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "folder"
+              ],
+              "properties": {
+                "folder": {
+                  "title": "Xenium Output Folder",
+                  "type": "string",
+                  "format": "directory-path",
+                  "description": "A single Xenium region, holding experiment.xenium and cell_feature_matrix/. Runs with a multi-file morphology_focus/ directory (Xenium Ranger v2.0+) are published without a background image."
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "format": {
+                  "const": "visium"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "folder"
+              ],
+              "properties": {
+                "folder": {
+                  "title": "Visium Output Folder",
+                  "type": "string",
+                  "format": "directory-path",
+                  "description": "A Space Ranger results folder, holding spatial/ and filtered_feature_bc_matrix.h5. Space Ranger writes only downsampled previews, so no background image is published."
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "format": {
+                  "const": "visium_hd"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "folder"
+              ],
+              "properties": {
+                "folder": {
+                  "title": "Visium HD Output Folder",
+                  "type": "string",
+                  "format": "directory-path",
+                  "description": "A Space Ranger HD results folder, holding binned_outputs/. Select it rather than an individual bin; the coarsest bin available is used."
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "format": {
+                  "const": "auto"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "folder"
+              ],
+              "properties": {
+                "folder": {
+                  "title": "Platform Output Folder",
+                  "type": "string",
+                  "format": "directory-path",
+                  "description": "Identified from its contents. Recognizes Xenium, Visium and Visium HD."
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "format": {
+                  "const": "spatialdata"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "zarr"
+              ],
+              "properties": {
+                "zarr": {
+                  "title": "SpatialData Store",
+                  "type": "string",
+                  "format": "path",
+                  "pattern": "\\.zarr(\\.zip)?$",
+                  "description": "Zipped (.zarr.zip) or unzipped (.zarr). The first table is exported; images in the store are not."
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "format": {
+                  "const": "files"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "cells",
+                "matrix"
+              ],
+              "properties": {
+                "cells": {
+                  "title": "Cell / Spot Table",
+                  "type": "string",
+                  "pathType": "dataset",
+                  "file": "**/*.{csv,parquet}",
+                  "description": "One row per observation: an ID column, x and y coordinates in pixels, and any label or metric columns to overlay."
+                },
+                "matrix": {
+                  "title": "Expression Matrix",
+                  "type": "string",
+                  "pathType": "dataset",
+                  "file": "**/*.{csv,parquet,h5}",
+                  "description": "Counts, observations by features, keyed to the cell table by ID."
+                },
+                "features": {
+                  "title": "Feature Table (optional)",
+                  "type": "string",
+                  "pathType": "dataset",
+                  "file": "**/*.{csv,parquet}",
+                  "description": "Restricts the matrix to gene-expression features."
+                },
+                "image": {
+                  "title": "Background Image (optional)",
+                  "type": "string",
+                  "pathType": "dataset",
+                  "file": "**/*.{tif,tiff}",
+                  "description": "TIFF sharing the coordinate frame of the cell table."
+                }
+              }
+            }
+          }
+        ]
+      },
+      "calibration": {
+        "type": "object",
+        "title": "Calibration",
+        "description": "Overrides values the reader takes from the platform metadata.",
+        "properties": {
+          "pixel_size": {
+            "title": "Pixel Size (microns per pixel)",
+            "type": "number"
+          },
+          "mpp": {
+            "title": "Meters per Pixel",
+            "type": "number",
+            "description": "Scales both the coordinates and the image. Individual-file input defaults to 1.0, treating coordinates as pixels."
+          },
+          "spot_size": {
+            "title": "Marker Diameter (meters)",
+            "type": "number"
+          }
+        }
+      },
+      "display": {
+        "type": "object",
+        "title": "Display Options",
+        "properties": {
+          "coords_name": {
+            "title": "Name for the Observations",
+            "type": "string",
+            "description": "For example cells, spots, or bins."
+          },
+          "default_feature": {
+            "title": "Feature Shown on Load",
+            "type": "string",
+            "description": "Must match a feature present in the data."
+          },
+          "no_image": {
+            "title": "Skip the Background Image",
+            "type": "boolean",
+            "default": false,
+            "description": "Publish coordinates and features only."
+          },
+          "convert_8bit": {
+            "title": "Downcast the Image to 8-bit",
+            "type": "boolean",
+            "default": false,
+            "description": "Smaller output and faster loading, at the cost of dynamic range."
+          }
+        }
+      }
+    }
+  },
+  "ui": {
+    "calibration": {
+      "pixel_size": {
+        "ui:placeholder": "0.2125"
+      },
+      "mpp": {
+        "ui:placeholder": "1e-6"
+      },
+      "spot_size": {
+        "ui:placeholder": "1e-5"
+      }
+    },
+    "display": {
+      "coords_name": {
+        "ui:placeholder": "cells"
+      },
+      "default_feature": {
+        "ui:placeholder": "EPCAM"
+      }
+    }
+  }
+}
