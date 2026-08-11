@@ -112,6 +112,14 @@ def resolve_reference_genome(ds: PreprocessDataset):
     (``genome.{amb,ann,bwt,pac,sa}``) directly into the dataset's data directory,
     so the directory itself serves as the ``--bwa`` argument (nf-core's bwa/mem
     module derives the index prefix from the ``.amb`` file).
+
+    Dropping ``--genome`` is not sufficient on its own: sarek's nextflow.config
+    defaults ``genome`` to 'GATK.GRCh38', so every reference param Cirro leaves unset
+    (dict, dbsnp, known_indels, intervals, germline_resource, pon, snpeff_db, vep_*)
+    would still resolve to GRCh38 iGenomes values and clash with the custom FASTA.
+    ``--igenomes_ignore`` empties ``params.genomes``, so every getGenomeAttribute
+    lookup returns null and the missing references are derived from the custom FASTA
+    instead.
     """
     genome_source = ds.params.get("genome_source")
     ds.remove_param("genome_source", force=True)
@@ -128,6 +136,7 @@ def resolve_reference_genome(ds: PreprocessDataset):
         ds.add_param("fasta", f"{bwa_index}/genome.fasta", overwrite=True)
         ds.add_param("fasta_fai", f"{bwa_index}/genome.fasta.fai", overwrite=True)
         ds.add_param("bwa", bwa_index, overwrite=True)
+        ds.add_param("igenomes_ignore", True, overwrite=True)
         ds.remove_param("genome", force=True)
         ds.remove_param("igenomes_base", force=True)
     else:
@@ -142,6 +151,7 @@ _PROTECTED_PARAMS = frozenset({
     "input",
     "outdir",
     "igenomes_base",
+    "igenomes_ignore",  # set by resolve_reference_genome for custom genomes
     "vep_cache",
     "snpeff_cache",
     "monochrome_logs",

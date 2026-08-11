@@ -215,6 +215,27 @@ def validate_tool_dependencies(ds: PreprocessDataset, manifest: pd.DataFrame):
         )
 
 
+def drop_annotation_for_custom_genome(ds: PreprocessDataset, is_custom_genome: bool):
+    """Drop the annotation tool selection when a custom genome is used.
+
+    VEP and snpEff need assembly-specific caches keyed off the iGenomes genome
+    (vep_genome, vep_species, snpeff_db); none of those resolve for a custom genome,
+    so sarek would fail at the annotation step. Dropping the selection lets the rest
+    of the run complete unannotated. Must be called before annotation_tool is merged
+    into the tools string.
+    """
+    if not is_custom_genome:
+        return
+    annotation_tool = ds.params.get("annotation_tool")
+    if not annotation_tool:
+        return
+    ds.logger.warning(
+        "Custom genome selected: VEP/snpEff reference data is not available, so the "
+        f"selected annotation tool(s) ({', '.join(map(str, annotation_tool))}) will be skipped."
+    )
+    ds.remove_param("annotation_tool", force=True)
+
+
 def resolve_reference_genome(ds: PreprocessDataset):
     """Wire up the reference based on the iGenomes vs Custom Genome selection.
 
@@ -225,6 +246,14 @@ def resolve_reference_genome(ds: PreprocessDataset):
     (``genome.{amb,ann,bwt,pac,sa}``) directly into the dataset's data directory,
     so the directory itself serves as the ``--bwa`` argument (nf-core's bwa/mem
     module derives the index prefix from the ``.amb`` file).
+
+    Dropping ``--genome`` is not sufficient on its own: sarek's nextflow.config
+    defaults ``genome`` to 'GATK.GRCh38', so every reference param Cirro leaves unset
+    (dict, dbsnp, known_indels, intervals, germline_resource, pon, snpeff_db, vep_*)
+    would still resolve to GRCh38 iGenomes values and clash with the custom FASTA.
+    ``--igenomes_ignore`` empties ``params.genomes``, so every getGenomeAttribute
+    lookup returns null and the missing references are derived from the custom FASTA
+    instead.
     """
     genome_source = ds.params.get("genome_source")
     ds.remove_param("genome_source", force=True)
@@ -241,6 +270,7 @@ def resolve_reference_genome(ds: PreprocessDataset):
         ds.add_param("fasta", f"{bwa_index}/genome.fasta", overwrite=True)
         ds.add_param("fasta_fai", f"{bwa_index}/genome.fasta.fai", overwrite=True)
         ds.add_param("bwa", bwa_index, overwrite=True)
+        ds.add_param("igenomes_ignore", True, overwrite=True)
         ds.remove_param("genome", force=True)
         ds.remove_param("igenomes_base", force=True)
     else:
@@ -255,6 +285,7 @@ _PROTECTED_PARAMS = frozenset({
     "input",
     "outdir",
     "igenomes_base",
+    "igenomes_ignore",  # set by resolve_reference_genome for custom genomes
     "vep_cache",
     "snpeff_cache",
     "monochrome_logs",
@@ -396,6 +427,11 @@ if __name__ == "__main__":
     # Validate tool/sample/resource dependencies while tools is still a list.
     validate_tool_dependencies(ds, manifest)
 
+    # Capture the genome source before resolve_reference_genome removes it.
+    is_custom_genome = ds.params.get("genome_source") == "dataset"
+
+    drop_annotation_for_custom_genome(ds, is_custom_genome)
+
     tools = ds.params.get('tools')
     assert tools, "ERROR: You must select at least one variant calling tool."
 
@@ -412,13 +448,7 @@ if __name__ == "__main__":
         ds.logger.info("No intervals file selected — adding --no_intervals flag")
 
     # Resolve the reference genome (iGenomes vs Custom BWA index) before any
-    # downstream logic reads the genome param. Warn that custom genomes lack the
-    # annotation/known-sites references the iGenomes path supplies.
-    if ds.params.get("genome_source") == "dataset" and ds.params.get("annotation_tool"):
-        ds.logger.warning(
-            "Custom genome selected: variant annotation (VEP/snpEff) reference data is not "
-            "available for custom genomes and annotation will be skipped or fail."
-        )
+    # downstream logic reads the genome param.
     resolve_reference_genome(ds)
 
     genome = ds.params.get('genome')

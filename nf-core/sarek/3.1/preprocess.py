@@ -228,26 +228,41 @@ def validate_tool_dependencies(ds: PreprocessDataset, manifest: pd.DataFrame):
         )
 
 
-def warn_custom_genome_limitations(ds: PreprocessDataset):
-    """Warn about features unavailable when a custom BWA genome dataset is used.
+def warn_custom_genome_limitations(ds: PreprocessDataset, is_custom_genome: bool):
+    """Warn that base recalibration cannot run against a custom BWA genome dataset.
 
     Custom genome datasets provide only the FASTA + BWA index — no GATK known-sites
-    (dbsnp/known_indels) or annotation caches — so base recalibration and variant
-    annotation cannot run against them. Must be called before resolve_reference_genome
-    removes ``genome_source``.
+    (dbsnp/known_indels) — so base recalibration is skipped automatically (see
+    skip_baserecalibration_without_known_sites).
     """
-    if ds.params.get("genome_source") != "dataset":
+    if not is_custom_genome:
         return
     ds.logger.warning(
         "Custom genome selected: GATK known-sites (dbsnp/known_indels) are not available, "
         "so base recalibration cannot run (it is skipped automatically — see "
         "skip_baserecalibration_without_known_sites)."
     )
-    if ds.params.get("annotation_tool"):
-        ds.logger.warning(
-            "Custom genome selected: variant annotation (VEP/snpEff) reference data is not "
-            "available for custom genomes and annotation will be skipped or fail."
-        )
+
+
+def drop_annotation_for_custom_genome(ds: PreprocessDataset, is_custom_genome: bool):
+    """Drop the annotation tool selection when a custom genome is used.
+
+    VEP and snpEff need assembly-specific caches keyed off the iGenomes genome
+    (vep_genome, vep_species, snpeff_db); none of those resolve for a custom genome,
+    so sarek would fail at the annotation step. Dropping the selection lets the rest
+    of the run complete unannotated. Must be called before annotation_tool is merged
+    into the tools string.
+    """
+    if not is_custom_genome:
+        return
+    annotation_tool = ds.params.get("annotation_tool")
+    if not annotation_tool:
+        return
+    ds.logger.warning(
+        "Custom genome selected: VEP/snpEff reference data is not available, so the "
+        f"selected annotation tool(s) ({', '.join(map(str, annotation_tool))}) will be skipped."
+    )
+    ds.remove_param("annotation_tool", force=True)
 
 
 def skip_baserecalibration_without_known_sites(ds: PreprocessDataset, is_custom_genome: bool):
@@ -285,6 +300,14 @@ def resolve_reference_genome(ds: PreprocessDataset):
     (``genome.{amb,ann,bwt,pac,sa}``) directly into the dataset's data directory,
     so the directory itself serves as the ``--bwa`` argument (nf-core's bwa/mem
     module derives the index prefix from the ``.amb`` file).
+
+    Dropping ``--genome`` is not sufficient on its own: sarek's nextflow.config
+    defaults ``genome`` to 'GATK.GRCh38', so every reference param Cirro leaves unset
+    (dict, dbsnp, known_indels, intervals, germline_resource, pon, snpeff_db, vep_*)
+    would still resolve to GRCh38 iGenomes values and clash with the custom FASTA.
+    ``--igenomes_ignore`` empties ``params.genomes``, so every getGenomeAttribute
+    lookup returns null and the missing references are derived from the custom FASTA
+    instead.
     """
     genome_source = ds.params.get("genome_source")
     ds.remove_param("genome_source", force=True)
@@ -301,6 +324,7 @@ def resolve_reference_genome(ds: PreprocessDataset):
         ds.add_param("fasta", f"{bwa_index}/genome.fasta", overwrite=True)
         ds.add_param("fasta_fai", f"{bwa_index}/genome.fasta.fai", overwrite=True)
         ds.add_param("bwa", bwa_index, overwrite=True)
+        ds.add_param("igenomes_ignore", True, overwrite=True)
         ds.remove_param("genome", force=True)
         ds.remove_param("igenomes_base", force=True)
     else:
@@ -316,6 +340,7 @@ _PROTECTED_PARAMS = frozenset({
     "input",              # manifest.csv — built by this script
     "outdir",             # output directory — assigned by Cirro
     "igenomes_base",      # iGenomes S3 base URL
+    "igenomes_ignore",    # set by resolve_reference_genome for custom genomes
     "vep_cache",          # VEP annotation cache S3 path
     "snpeff_cache",       # snpEff annotation cache S3 path
     "monochrome_logs",    # internal logging flag
@@ -491,13 +516,15 @@ if __name__ == "__main__":
     manifest.to_csv("manifest.csv", index=None)
     ds.logger.info(f"Wrote {manifest.shape[0]} row(s) to manifest.csv")
 
-    # Validate tool/sample/resource dependencies and warn about custom-genome
-    # limitations while genome_source/tools/annotation_tool are still present.
+    # Validate tool/sample/resource dependencies while tools/annotation_tool are
+    # still lists.
     validate_tool_dependencies(ds, manifest)
-    warn_custom_genome_limitations(ds)
 
     # Capture the genome source before resolve_reference_genome removes it.
     is_custom_genome = ds.params.get("genome_source") == "dataset"
+
+    warn_custom_genome_limitations(ds, is_custom_genome)
+    drop_annotation_for_custom_genome(ds, is_custom_genome)
 
     # Resolve the reference genome (iGenomes vs Custom BWA index) before any
     # downstream logic reads the genome param.
