@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 
 from cirro.helpers.preprocess_dataset import PreprocessDataset
+from cirro.models.s3_path import S3Path
+import boto3
 import pandas as pd
+from pathlib import Path
 from typing import List
 import urllib.request
 import urllib.error
@@ -331,6 +334,70 @@ def resolve_reference_genome(ds: PreprocessDataset):
         ds.logger.info(f"genome_source=igenomes: genome={ds.params.get('genome')!r}")
 
 
+# VCF params handed to Mutect2, each paired with the index param that must accompany
+# it. Both entries can resolve to files with the same name — the Cirro reference
+# library only offers germline_resource.vcf.gz as a VCF, so selecting it for the panel
+# of normals as well makes --pon and --germline_resource collide.
+_VCF_PARAM_PAIRS = (
+    ("germline_resource", "germline_resource_tbi"),
+    ("pon", "pon_tbi"),
+)
+
+
+def stage_colliding_vcf_params(ds: PreprocessDataset):
+    """Stage uniquely named local copies of VCF params whose file names collide.
+
+    Nextflow stages every input of a process into a single work directory, so two
+    params pointing at files with the same name abort the run:
+
+        Process ...:MUTECT2_PAIRED input file name collision -- There are multiple
+        input files for each of the following file names: germline_resource.vcf.gz
+
+    Copy each offending VCF into the launch directory under a name prefixed with its
+    param key and repoint the param at that copy. The index is staged as
+    ``<staged_vcf>.tbi`` because GATK requires it to sit next to the VCF under a
+    matching name; where no index param is set, sarek indexes the staged copy itself.
+    Nextflow uploads these local inputs to the work directory on demand.
+    """
+    paths = {
+        vcf_param: ds.params[vcf_param]
+        for vcf_param, _ in _VCF_PARAM_PAIRS
+        if ds.params.get(vcf_param)
+    }
+
+    by_name = {}
+    for vcf_param, path in paths.items():
+        by_name.setdefault(path.rsplit("/", 1)[-1], []).append(vcf_param)
+
+    colliding = {
+        vcf_param
+        for vcf_params in by_name.values() if len(vcf_params) > 1
+        for vcf_param in vcf_params
+    }
+    if not colliding:
+        ds.logger.info("VCF inputs: no file name collisions to resolve")
+        return
+
+    ds.logger.info(f"VCF inputs: resolving file name collision between {sorted(colliding)}")
+
+    s3 = boto3.client("s3")
+    for vcf_param, tbi_param in _VCF_PARAM_PAIRS:
+        if vcf_param not in colliding:
+            continue
+
+        staged_vcf = f"{vcf_param}_{paths[vcf_param].rsplit('/', 1)[-1]}"
+        to_stage = [(vcf_param, paths[vcf_param], staged_vcf)]
+        if ds.params.get(tbi_param):
+            to_stage.append((tbi_param, ds.params[tbi_param], f"{staged_vcf}.tbi"))
+
+        for param, uri, local_name in to_stage:
+            source = S3Path(uri)
+            assert source.valid, f"Cannot stage a copy of --{param}: {uri} is not an S3 path"
+            ds.logger.info(f"VCF inputs: staging {uri} as {local_name}")
+            s3.download_file(source.bucket, source.key, local_name)
+            ds.add_param(param, str(Path(local_name).resolve()), overwrite=True)
+
+
 _DEFAULT_WORKFLOW_VERSION = "3.8.1"
 
 # Params that the extra JSON input field must never override.
@@ -642,6 +709,10 @@ if __name__ == "__main__":
     # These are added before schema filtering so that invalid keys are
     # automatically removed in the next step rather than causing Nextflow errors.
     apply_extra_json_params(ds)
+
+    # Give the Mutect2 VCF params distinct file names, now that every source of a
+    # germline_resource/pon value (form, iGenomes defaults, extra JSON) has been applied.
+    stage_colliding_vcf_params(ds)
 
     # Remove any parameters not defined in the nf-core/sarek nextflow_schema.json for
     # the selected workflow version. This also cleans up Cirro-only housekeeping params
