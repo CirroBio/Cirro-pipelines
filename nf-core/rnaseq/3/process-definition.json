@@ -15,7 +15,7 @@
     "repository": "GITHUBPUBLIC",
     "script": "main.nf",
     "uri": "nf-core/rnaseq",
-    "version": "User Defined"
+    "version": "3.23.0"
   },
   "allowMultipleSources": true,
   "usesSampleSheet": true,
