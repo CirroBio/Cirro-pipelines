@@ -7,6 +7,27 @@ import urllib.error
 import json
 
 
+# Spellings of sex seen in user samplesheets, mapped to the XX/XY encoding sarek
+# requires. Anything else (including a blank cell) becomes the given default.
+_SEX_ALIASES = {
+    'f': 'XX',
+    'female': 'XX',
+    'xx': 'XX',
+    'm': 'XY',
+    'male': 'XY',
+    'xy': 'XY',
+    'na': 'NA',
+    'unknown': 'NA',
+}
+
+
+def normalize_sex(value, default: str = 'NA') -> str:
+    """Map a samplesheet sex value to sarek's XX/XY/NA encoding."""
+    if pd.isna(value):
+        return default
+    return _SEX_ALIASES.get(str(value).strip().lower(), default)
+
+
 def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
 
     # Filter out any index files that may have been uploaded
@@ -29,7 +50,8 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
     # Get the sample metadata (if any)
     # Populate the 'patient' column with the provided value,
     # falling back to the sample ID if missing.
-    # Default 'sex' to "XX" and 'status' to 0 if not provided.
+    # Normalize 'sex' to the XX/XY/NA encoding sarek requires, defaulting to XX
+    # since alignment-only does not need sex differentiation. Default 'status' to 0.
     samplesheet = ds.samplesheet.reindex(columns=["sample", "patient", "sex", "status"])
     missing_status = samplesheet["status"].isna().sum()
     if missing_status > 0:
@@ -40,7 +62,7 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
     samples = (
         samplesheet
         .assign(patient=lambda d: d['patient'].fillna(d['sample']))
-        .assign(sex=lambda d: d['sex'].fillna("XX"))
+        .assign(sex=lambda d: d['sex'].apply(normalize_sex, default='XX'))
         .assign(status=lambda d: d['status'].fillna(0).astype(int))
         .set_index("sample")
     )
