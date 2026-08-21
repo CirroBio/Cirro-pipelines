@@ -8,6 +8,7 @@
   "cellExpansion": "$.dataset.params.stardist_options.cellExpansion",
   "cellConstrainScale": "$.dataset.params.stardist_options.cellConstrainScale",
   "build_dashboard": "$.dataset.params.dashboard_options.build_dashboard",
+  "cluster_by": "$.dataset.params.dashboard_options.cluster_by",
   "cluster_resolution": "$.dataset.params.dashboard_options.cluster_resolution",
   "scaling": "$.dataset.params.dashboard_options.scaling",
   "clip_lower": "$.dataset.params.dashboard_options.clip_lower",
