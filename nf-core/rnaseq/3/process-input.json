@@ -1,5 +1,5 @@
 {
-    "input": "manifest.csv",
+    "input": "$.dataset.s3|/config/manifest.csv",
     "igenomes_base": "s3://pubweb-references/igenomes",
     "star_salmon_genome_source": "$.dataset.params.aligner_and_reference_genome.reference_genome.star_salmon_genome_selection.genome_source",
     "star_salmon_genome": "$.dataset.params.aligner_and_reference_genome.reference_genome.star_salmon_genome_selection.igenomes.genome",
