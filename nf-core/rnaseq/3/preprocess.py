@@ -149,7 +149,7 @@ if __name__ == "__main__":
     manifest = make_manifest(ds)
 
     # Write out the manifest
-    manifest_path = f"{ds.dataset_path}/config/manifest.csv"
+    manifest_path = f"{ds.dataset_root}/config/manifest.csv"
     manifest.to_csv(manifest_path, index=None)
     ds.logger.info(f"Wrote out {manifest.shape[0]:,} lines to {manifest_path}")
 
