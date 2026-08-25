@@ -221,7 +221,7 @@ if __name__ == "__main__":
         # iGenomes: promote the aligner-specific genome selection to the pipeline genome param
         genome = ds.params.get(f"{aligner}_genome")
         if genome:
-            ds.add_param("genome", genome)
+            ds.add_param("genome", genome, overwrite=True)
             ds.logger.info(f"genome_source=igenomes: genome={genome}")
         else:
             ds.logger.warning(f"genome_source=igenomes but no genome param found for aligner={aligner!r}")
