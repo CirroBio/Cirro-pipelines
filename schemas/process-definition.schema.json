@@ -135,6 +135,14 @@
       "description": "Specifies if the process can accept the Cirro-provided sample sheet.",
       "type": "boolean"
     },
+    "executionModes": {
+      "description": "Execution modes the process supports. Omit to declare Standard only.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/definitions/executionMode"
+      }
+    },
     "computeDefaults": {
       "description": "Defines the compute config for the process. Currently, only one entry is used.",
       "maxItems": 1,
@@ -261,9 +269,14 @@
     }
   },
   "definitions": {
+    "executionMode": {
+      "type": "string",
+      "description": "Where the process can run: STANDARD is AWS Batch, PERFORMANCE is AWS HealthOmics.",
+      "enum": ["STANDARD", "PERFORMANCE"]
+    },
     "executorType": {
       "description": "How the workflow is executed",
-      "enum": ["NEXTFLOW", "CROMWELL", "INGEST", "OMICS_READY2RUN"]
+      "enum": ["NEXTFLOW", "CROMWELL", "INGEST"]
     },
     "repositoryType": {
       "type": "string",
