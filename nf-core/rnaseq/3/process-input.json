@@ -16,7 +16,7 @@
     "bowtie2_salmon_genome": "$.dataset.params.aligner_and_reference_genome.reference_genome.bowtie2_salmon_genome_selection.igenomes.genome",
     "bowtie2_index": "$.dataset.params.aligner_and_reference_genome.reference_genome.bowtie2_salmon_genome_selection.bowtie2_cirro_reference.genome_index|/data",
     "bowtie2_salmon_salmon_index": "$.dataset.params.aligner_and_reference_genome.reference_genome.bowtie2_salmon_genome_selection.salmon_cirro_reference.genome_index|/data",
-    "outdir": "$.params.dataset.s3|/data/",
+    "outdir": "$.dataset.dataPath",
     "gtf_extra_attributes": "$.dataset.params.reference_genome_options.gtf_extra_attributes",
     "gtf_group_features": "$.dataset.params.reference_genome_options.gtf_group_features",
     "featurecounts_group_type": "$.dataset.params.reference_genome_options.featurecounts_group_type",
