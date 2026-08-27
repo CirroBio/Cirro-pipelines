@@ -271,8 +271,8 @@
   "definitions": {
     "executionMode": {
       "type": "string",
-      "description": "Where the process can run: STANDARD is AWS Batch, PERFORMANCE is AWS HealthOmics.",
-      "enum": ["STANDARD", "PERFORMANCE"]
+      "description": "Where the process can run: STANDARD is AWS Batch, HEALTHOMICS is AWS HealthOmics.",
+      "enum": ["STANDARD", "HEALTHOMICS"]
     },
     "executorType": {
       "description": "How the workflow is executed",
