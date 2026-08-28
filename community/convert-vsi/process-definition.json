@@ -23,6 +23,7 @@
   },
   "allowMultipleSources": false,
   "usesSampleSheet": false,
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "computeDefaults": [
     {
       "executor": "NEXTFLOW",
