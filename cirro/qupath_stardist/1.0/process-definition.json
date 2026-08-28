@@ -16,6 +16,7 @@
     "version": "1.0.2",
     "script": "stardist.nf"
   },
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "computeDefaults": [
     {
       "executor": "NEXTFLOW",
