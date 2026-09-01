@@ -102,11 +102,14 @@ if __name__ == "__main__":
 
     samplesheet = make_manifest(ds)
 
-    # Write out to a file
-    samplesheet.to_csv("samplesheet.tsv", index=None, sep="\t")
-
-    # Add the param for the samplesheet
-    ds.add_param("input", "samplesheet.tsv")
+    # Write the samplesheet to the S3 location which process-input.json maps the
+    # input param to. HealthOmics stages every file param from S3 and stages no part
+    # of the working directory this script runs in, so a bare filename cannot resolve
+    # there. The add_param call keeps that value and writes params.json, which the
+    # HealthOmics run request is built from.
+    samplesheet_path = ds.params["input"]
+    samplesheet.to_csv(samplesheet_path, index=None, sep="\t")
+    ds.add_param("input", samplesheet_path, overwrite=True)
 
     # If the user set ignore_empty_input_files
     if ds.params.get("ignore_empty_input_files", False):
@@ -136,14 +139,22 @@ if __name__ == "__main__":
         ds.logger.info("Formatted metadata:")
         ds.logger.info(metadata)
 
+        metadata_path = ds.params["metadata"]
+
         metadata.to_csv(
-            "metadata.tsv",
+            metadata_path,
             sep="\t",
             index=None
         )
 
         # Add the param for the metadata
-        ds.add_param("metadata", "metadata.tsv")
+        ds.add_param("metadata", metadata_path, overwrite=True)
+
+    else:
+
+        # No metadata table was written, so the mapped location holds no object.
+        # HealthOmics rejects a run whose file param points at a missing object.
+        ds.remove_param("metadata")
 
     # If a custom reference was provided
     if ds.params.get("dada_ref_tax_custom", False):

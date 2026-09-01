@@ -1,5 +1,7 @@
 {
     "outdir": "$.params.dataset.s3|/data/",
+    "input": "$.params.dataset.s3|/config/samplesheet.tsv",
+    "metadata": "$.params.dataset.s3|/config/metadata.tsv",
     "FW_primer": "$.params.dataset.paramJson.FW_primer",
     "RV_primer": "$.params.dataset.paramJson.RV_primer",
     "metadata_category": "$.params.dataset.paramJson.metadata_category",
