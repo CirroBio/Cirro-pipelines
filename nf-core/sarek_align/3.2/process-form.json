@@ -70,22 +70,62 @@
                   {
                     "properties": {
                       "genome_source": { "enum": ["dataset"] },
-                      "bwa_cirro_reference": {
-                        "type": "object",
-                        "title": "Custom Genome Index (BWA)",
-                        "description": "Select a pre-built BWA genome index dataset from Cirro. GATK known-sites resources are not available for custom genomes.",
-                        "properties": {
-                          "genome_index": {
-                            "title": "BWA Genome Index",
-                            "type": "string",
-                            "pathType": "dataset",
-                            "process": [
-                              "process-cirro-genome-index-bwa-1-0",
-                              "genome_bwa_index"
-                            ],
-                            "description": "Pre-built BWA genome index dataset"
+                      "aligner": {
+                        "type": "string",
+                        "title": "Aligner",
+                        "description": "Aligner used to build the custom genome index dataset. Must match the index type selected below.",
+                        "enum": ["bwa-mem", "bwa-mem2"],
+                        "enumNames": ["BWA", "BWA-MEM2"],
+                        "default": "bwa-mem"
+                      }
+                    },
+                    "dependencies": {
+                      "aligner": {
+                        "oneOf": [
+                          {
+                            "properties": {
+                              "aligner": { "enum": ["bwa-mem"] },
+                              "bwa_cirro_reference": {
+                                "type": "object",
+                                "title": "Custom Genome Index (BWA)",
+                                "description": "Select a pre-built BWA genome index dataset from Cirro. GATK known-sites resources are not available for custom genomes.",
+                                "properties": {
+                                  "genome_index": {
+                                    "title": "BWA Genome Index",
+                                    "type": "string",
+                                    "pathType": "dataset",
+                                    "process": [
+                                      "process-cirro-genome-index-bwa-1-0",
+                                      "genome_bwa_index"
+                                    ],
+                                    "description": "Pre-built BWA genome index dataset"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "properties": {
+                              "aligner": { "enum": ["bwa-mem2"] },
+                              "bwamem2_cirro_reference": {
+                                "type": "object",
+                                "title": "Custom Genome Index (BWA-MEM2)",
+                                "description": "Select a pre-built BWA-MEM2 genome index dataset from Cirro. GATK known-sites resources are not available for custom genomes.",
+                                "properties": {
+                                  "genome_index": {
+                                    "title": "BWA-MEM2 Genome Index",
+                                    "type": "string",
+                                    "pathType": "dataset",
+                                    "process": [
+                                      "process-cirro-genome-index-bwa-mem2-1-0"
+                                    ],
+                                    "description": "Pre-built BWA-MEM2 genome index dataset"
+                                  }
+                                }
+                              }
+                            }
                           }
-                        }
+                        ]
                       }
                     }
                   }
