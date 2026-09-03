@@ -132,6 +132,7 @@ Key fields:
 | `childProcessIds` | Process IDs that can consume this process's output |
 | `dataType` | Human-readable output data type label |
 | `executor` | `"NEXTFLOW"` for pipeline processes, `"INGEST"` for intake processes |
+| `executionModes` | Optional. Where the process can run: `["STANDARD"]` (AWS Batch), `["HEALTHOMICS"]` (AWS HealthOmics), or both. Omit to declare Standard only |
 | `category` | UI grouping (e.g. `"Reference Data"`) |
 | `code.repository` | `"GITHUBPUBLIC"` or `"NA"` |
 | `code.uri` | GitHub repo (e.g. `"CirroBio/nf-index-genome"`) |

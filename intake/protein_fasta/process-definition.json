@@ -1,10 +1,6 @@
 {
   "id": "protein_fasta",
-  "childProcessIds": [
-    "omics-alphafold-600-1-0",
-    "omics-alphafold-601-1200-1-0",
-    "omics-esmfold-800-1-0"
-  ],
+  "childProcessIds": [],
   "name": "Protein Sequence(s) (FASTA)",
   "desc": "Protein sequence(s) in amino acid FASTA format",
   "executor": "INGEST",

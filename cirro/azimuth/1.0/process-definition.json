@@ -1,7 +1,6 @@
 {
   "id": "process-cirro-azimuth-1",
   "parentProcessIds": [
-    "process-bbi-sci",
     "single-cell-h5",
     "ingest_cellranger",
     "process-hutch-cellranger-hashtagging-1-0",

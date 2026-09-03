@@ -14,7 +14,7 @@
     "repository": "GITHUBPUBLIC",
     "uri": "CirroBio/nf-index-genome",
     "version": "main",
-    "script": "main_bwa-mem2.nf"
+    "script": "main_bwamem2.nf"
   },
   "allowMultipleSources": false,
   "usesSampleSheet": false,

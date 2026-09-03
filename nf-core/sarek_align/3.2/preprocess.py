@@ -7,6 +7,27 @@ import urllib.error
 import json
 
 
+# Spellings of sex seen in user samplesheets, mapped to the XX/XY encoding sarek
+# requires. Anything else (including a blank cell) becomes the given default.
+_SEX_ALIASES = {
+    'f': 'XX',
+    'female': 'XX',
+    'xx': 'XX',
+    'm': 'XY',
+    'male': 'XY',
+    'xy': 'XY',
+    'na': 'NA',
+    'unknown': 'NA',
+}
+
+
+def normalize_sex(value, default: str = 'NA') -> str:
+    """Map a samplesheet sex value to sarek's XX/XY/NA encoding."""
+    if pd.isna(value):
+        return default
+    return _SEX_ALIASES.get(str(value).strip().lower(), default)
+
+
 def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
 
     # Filter out any index files that may have been uploaded
@@ -29,7 +50,8 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
     # Get the sample metadata (if any)
     # Populate the 'patient' column with the provided value,
     # falling back to the sample ID if missing.
-    # Default 'sex' to "XX" and 'status' to 0 if not provided.
+    # Normalize 'sex' to the XX/XY/NA encoding sarek requires, defaulting to XX
+    # since alignment-only does not need sex differentiation. Default 'status' to 0.
     samplesheet = ds.samplesheet.reindex(columns=["sample", "patient", "sex", "status"])
     missing_status = samplesheet["status"].isna().sum()
     if missing_status > 0:
@@ -40,7 +62,7 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
     samples = (
         samplesheet
         .assign(patient=lambda d: d['patient'].fillna(d['sample']))
-        .assign(sex=lambda d: d['sex'].fillna("XX"))
+        .assign(sex=lambda d: d['sex'].apply(normalize_sex, default='XX'))
         .assign(status=lambda d: d['status'].fillna(0).astype(int))
         .set_index("sample")
     )
@@ -112,6 +134,14 @@ def resolve_reference_genome(ds: PreprocessDataset):
     (``genome.{amb,ann,bwt,pac,sa}``) directly into the dataset's data directory,
     so the directory itself serves as the ``--bwa`` argument (nf-core's bwa/mem
     module derives the index prefix from the ``.amb`` file).
+
+    Dropping ``--genome`` is not sufficient on its own: sarek's nextflow.config
+    defaults ``genome`` to 'GATK.GRCh38', so every reference param Cirro leaves unset
+    (dict, dbsnp, known_indels, intervals, germline_resource, pon, snpeff_db, vep_*)
+    would still resolve to GRCh38 iGenomes values and clash with the custom FASTA.
+    ``--igenomes_ignore`` empties ``params.genomes``, so every getGenomeAttribute
+    lookup returns null and the missing references are derived from the custom FASTA
+    instead.
     """
     genome_source = ds.params.get("genome_source")
     ds.remove_param("genome_source", force=True)
@@ -128,6 +158,7 @@ def resolve_reference_genome(ds: PreprocessDataset):
         ds.add_param("fasta", f"{bwa_index}/genome.fasta", overwrite=True)
         ds.add_param("fasta_fai", f"{bwa_index}/genome.fasta.fai", overwrite=True)
         ds.add_param("bwa", bwa_index, overwrite=True)
+        ds.add_param("igenomes_ignore", True, overwrite=True)
         ds.remove_param("genome", force=True)
         ds.remove_param("igenomes_base", force=True)
     else:
@@ -142,6 +173,7 @@ _PROTECTED_PARAMS = frozenset({
     "input",
     "outdir",
     "igenomes_base",
+    "igenomes_ignore",  # set by resolve_reference_genome for custom genomes
     "vep_cache",
     "snpeff_cache",
     "monochrome_logs",

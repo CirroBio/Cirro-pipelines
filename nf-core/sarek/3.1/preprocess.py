@@ -1,11 +1,35 @@
 #!/usr/bin/env python3
 
 from cirro.helpers.preprocess_dataset import PreprocessDataset
+from cirro.models.s3_path import S3Path
+import boto3
 import pandas as pd
+from pathlib import Path
 from typing import List
 import urllib.request
 import urllib.error
 import json
+
+
+# Spellings of sex seen in user samplesheets, mapped to the XX/XY encoding sarek
+# requires. Anything else (including a blank cell) becomes NA.
+_SEX_ALIASES = {
+    'f': 'XX',
+    'female': 'XX',
+    'xx': 'XX',
+    'm': 'XY',
+    'male': 'XY',
+    'xy': 'XY',
+    'na': 'NA',
+    'unknown': 'NA',
+}
+
+
+def normalize_sex(value) -> str:
+    """Map a samplesheet sex value to sarek's XX/XY/NA encoding."""
+    if pd.isna(value):
+        return 'NA'
+    return _SEX_ALIASES.get(str(value).strip().lower(), 'NA')
 
 
 def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
@@ -49,10 +73,8 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
     if len(non_canonical) != 0:
         manifest = manifest.drop(columns=non_canonical)
 
-    # Set the default value for 'sex' to be NA
-    manifest = manifest.assign(
-        sex=manifest['sex'].fillna('NA')
-    )
+    # Normalize 'sex' to the XX/XY/NA encoding sarek requires, defaulting to NA
+    manifest = manifest.assign(sex=manifest["sex"].apply(normalize_sex))
 
     # Transform status values "Normal" -> 0 and "Tumor" -> 1
     manifest = manifest.replace(
@@ -228,26 +250,41 @@ def validate_tool_dependencies(ds: PreprocessDataset, manifest: pd.DataFrame):
         )
 
 
-def warn_custom_genome_limitations(ds: PreprocessDataset):
-    """Warn about features unavailable when a custom BWA genome dataset is used.
+def warn_custom_genome_limitations(ds: PreprocessDataset, is_custom_genome: bool):
+    """Warn that base recalibration cannot run against a custom BWA genome dataset.
 
     Custom genome datasets provide only the FASTA + BWA index — no GATK known-sites
-    (dbsnp/known_indels) or annotation caches — so base recalibration and variant
-    annotation cannot run against them. Must be called before resolve_reference_genome
-    removes ``genome_source``.
+    (dbsnp/known_indels) — so base recalibration is skipped automatically (see
+    skip_baserecalibration_without_known_sites).
     """
-    if ds.params.get("genome_source") != "dataset":
+    if not is_custom_genome:
         return
     ds.logger.warning(
         "Custom genome selected: GATK known-sites (dbsnp/known_indels) are not available, "
         "so base recalibration cannot run (it is skipped automatically — see "
         "skip_baserecalibration_without_known_sites)."
     )
-    if ds.params.get("annotation_tool"):
-        ds.logger.warning(
-            "Custom genome selected: variant annotation (VEP/snpEff) reference data is not "
-            "available for custom genomes and annotation will be skipped or fail."
-        )
+
+
+def drop_annotation_for_custom_genome(ds: PreprocessDataset, is_custom_genome: bool):
+    """Drop the annotation tool selection when a custom genome is used.
+
+    VEP and snpEff need assembly-specific caches keyed off the iGenomes genome
+    (vep_genome, vep_species, snpeff_db); none of those resolve for a custom genome,
+    so sarek would fail at the annotation step. Dropping the selection lets the rest
+    of the run complete unannotated. Must be called before annotation_tool is merged
+    into the tools string.
+    """
+    if not is_custom_genome:
+        return
+    annotation_tool = ds.params.get("annotation_tool")
+    if not annotation_tool:
+        return
+    ds.logger.warning(
+        "Custom genome selected: VEP/snpEff reference data is not available, so the "
+        f"selected annotation tool(s) ({', '.join(map(str, annotation_tool))}) will be skipped."
+    )
+    ds.remove_param("annotation_tool", force=True)
 
 
 def skip_baserecalibration_without_known_sites(ds: PreprocessDataset, is_custom_genome: bool):
@@ -285,6 +322,14 @@ def resolve_reference_genome(ds: PreprocessDataset):
     (``genome.{amb,ann,bwt,pac,sa}``) directly into the dataset's data directory,
     so the directory itself serves as the ``--bwa`` argument (nf-core's bwa/mem
     module derives the index prefix from the ``.amb`` file).
+
+    Dropping ``--genome`` is not sufficient on its own: sarek's nextflow.config
+    defaults ``genome`` to 'GATK.GRCh38', so every reference param Cirro leaves unset
+    (dict, dbsnp, known_indels, intervals, germline_resource, pon, snpeff_db, vep_*)
+    would still resolve to GRCh38 iGenomes values and clash with the custom FASTA.
+    ``--igenomes_ignore`` empties ``params.genomes``, so every getGenomeAttribute
+    lookup returns null and the missing references are derived from the custom FASTA
+    instead.
     """
     genome_source = ds.params.get("genome_source")
     ds.remove_param("genome_source", force=True)
@@ -301,10 +346,75 @@ def resolve_reference_genome(ds: PreprocessDataset):
         ds.add_param("fasta", f"{bwa_index}/genome.fasta", overwrite=True)
         ds.add_param("fasta_fai", f"{bwa_index}/genome.fasta.fai", overwrite=True)
         ds.add_param("bwa", bwa_index, overwrite=True)
+        ds.add_param("igenomes_ignore", True, overwrite=True)
         ds.remove_param("genome", force=True)
         ds.remove_param("igenomes_base", force=True)
     else:
         ds.logger.info(f"genome_source=igenomes: genome={ds.params.get('genome')!r}")
+
+
+# VCF params handed to Mutect2, each paired with the index param that must accompany
+# it. Both entries can resolve to files with the same name — the Cirro reference
+# library only offers germline_resource.vcf.gz as a VCF, so selecting it for the panel
+# of normals as well makes --pon and --germline_resource collide.
+_VCF_PARAM_PAIRS = (
+    ("germline_resource", "germline_resource_tbi"),
+    ("pon", "pon_tbi"),
+)
+
+
+def stage_colliding_vcf_params(ds: PreprocessDataset):
+    """Stage uniquely named local copies of VCF params whose file names collide.
+
+    Nextflow stages every input of a process into a single work directory, so two
+    params pointing at files with the same name abort the run:
+
+        Process ...:MUTECT2_PAIRED input file name collision -- There are multiple
+        input files for each of the following file names: germline_resource.vcf.gz
+
+    Copy each offending VCF into the launch directory under a name prefixed with its
+    param key and repoint the param at that copy. The index is staged as
+    ``<staged_vcf>.tbi`` because GATK requires it to sit next to the VCF under a
+    matching name; where no index param is set, sarek indexes the staged copy itself.
+    Nextflow uploads these local inputs to the work directory on demand.
+    """
+    paths = {
+        vcf_param: ds.params[vcf_param]
+        for vcf_param, _ in _VCF_PARAM_PAIRS
+        if ds.params.get(vcf_param)
+    }
+
+    by_name = {}
+    for vcf_param, path in paths.items():
+        by_name.setdefault(path.rsplit("/", 1)[-1], []).append(vcf_param)
+
+    colliding = {
+        vcf_param
+        for vcf_params in by_name.values() if len(vcf_params) > 1
+        for vcf_param in vcf_params
+    }
+    if not colliding:
+        ds.logger.info("VCF inputs: no file name collisions to resolve")
+        return
+
+    ds.logger.info(f"VCF inputs: resolving file name collision between {sorted(colliding)}")
+
+    s3 = boto3.client("s3")
+    for vcf_param, tbi_param in _VCF_PARAM_PAIRS:
+        if vcf_param not in colliding:
+            continue
+
+        staged_vcf = f"{vcf_param}_{paths[vcf_param].rsplit('/', 1)[-1]}"
+        to_stage = [(vcf_param, paths[vcf_param], staged_vcf)]
+        if ds.params.get(tbi_param):
+            to_stage.append((tbi_param, ds.params[tbi_param], f"{staged_vcf}.tbi"))
+
+        for param, uri, local_name in to_stage:
+            source = S3Path(uri)
+            assert source.valid, f"Cannot stage a copy of --{param}: {uri} is not an S3 path"
+            ds.logger.info(f"VCF inputs: staging {uri} as {local_name}")
+            s3.download_file(source.bucket, source.key, local_name)
+            ds.add_param(param, str(Path(local_name).resolve()), overwrite=True)
 
 
 _DEFAULT_WORKFLOW_VERSION = "3.8.1"
@@ -316,6 +426,7 @@ _PROTECTED_PARAMS = frozenset({
     "input",              # manifest.csv — built by this script
     "outdir",             # output directory — assigned by Cirro
     "igenomes_base",      # iGenomes S3 base URL
+    "igenomes_ignore",    # set by resolve_reference_genome for custom genomes
     "vep_cache",          # VEP annotation cache S3 path
     "snpeff_cache",       # snpEff annotation cache S3 path
     "monochrome_logs",    # internal logging flag
@@ -491,13 +602,15 @@ if __name__ == "__main__":
     manifest.to_csv("manifest.csv", index=None)
     ds.logger.info(f"Wrote {manifest.shape[0]} row(s) to manifest.csv")
 
-    # Validate tool/sample/resource dependencies and warn about custom-genome
-    # limitations while genome_source/tools/annotation_tool are still present.
+    # Validate tool/sample/resource dependencies while tools/annotation_tool are
+    # still lists.
     validate_tool_dependencies(ds, manifest)
-    warn_custom_genome_limitations(ds)
 
     # Capture the genome source before resolve_reference_genome removes it.
     is_custom_genome = ds.params.get("genome_source") == "dataset"
+
+    warn_custom_genome_limitations(ds, is_custom_genome)
+    drop_annotation_for_custom_genome(ds, is_custom_genome)
 
     # Resolve the reference genome (iGenomes vs Custom BWA index) before any
     # downstream logic reads the genome param.
@@ -615,6 +728,10 @@ if __name__ == "__main__":
     # These are added before schema filtering so that invalid keys are
     # automatically removed in the next step rather than causing Nextflow errors.
     apply_extra_json_params(ds)
+
+    # Give the Mutect2 VCF params distinct file names, now that every source of a
+    # germline_resource/pon value (form, iGenomes defaults, extra JSON) has been applied.
+    stage_colliding_vcf_params(ds)
 
     # Remove any parameters not defined in the nf-core/sarek nextflow_schema.json for
     # the selected workflow version. This also cleans up Cirro-only housekeeping params

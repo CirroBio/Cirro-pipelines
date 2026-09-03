@@ -6,14 +6,14 @@
         "title": "Transcriptome",
         "description": "Reference genome used for alignment of RNAseq data",
         "type": "string",
-        "default": "s3://pubweb-references/cellranger/refdata-gex-GRCh38-2024-A",
+        "default": "s3://pubweb-references/cellranger/refdata-gex-GRCh38-2024-A/",
         "enum": [
-          "s3://pubweb-references/cellranger/refdata-gex-GRCh38-2024-A",
-          "s3://pubweb-references/cellranger/refdata-gex-GRCh38-2020-A",
-          "s3://pubweb-references/cellranger/refdata-gex-GRCh38-and-GRCm39-2024-A",
-          "s3://pubweb-references/cellranger/refdata-gex-GRCh38-and-mm10-2020-A",
-          "s3://pubweb-references/cellranger/refdata-gex-GRCm39-2024-A",
-          "s3://pubweb-references/cellranger/refdata-gex-mm10-2020-A"
+          "s3://pubweb-references/cellranger/refdata-gex-GRCh38-2024-A/",
+          "s3://pubweb-references/cellranger/refdata-gex-GRCh38-2020-A/",
+          "s3://pubweb-references/cellranger/refdata-gex-GRCh38-and-GRCm39-2024-A/",
+          "s3://pubweb-references/cellranger/refdata-gex-GRCh38-and-mm10-2020-A/",
+          "s3://pubweb-references/cellranger/refdata-gex-GRCm39-2024-A/",
+          "s3://pubweb-references/cellranger/refdata-gex-mm10-2020-A/"
         ],
         "enumNames": [
           "Homo sapiens (GRCh38-2024)",
@@ -33,8 +33,9 @@
       "cellranger_version": {
         "title": "CellRanger Version",
         "type": "string",
-        "default": "9.0.1",
+        "default": "10.0.0",
         "enum": [
+          "10.0.0",
           "9.0.1",
           "9.0.0",
           "8.0.0",

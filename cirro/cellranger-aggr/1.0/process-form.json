@@ -11,8 +11,9 @@
       "cellranger_version": {
         "title": "CellRanger Version",
         "type": "string",
-        "default": "9.0.1",
+        "default": "10.0.0",
         "enum": [
+          "10.0.0",
           "9.0.1",
           "9.0.0",
           "8.0.0",
