@@ -6,7 +6,7 @@
   "desc": "Run Space Ranger on demultiplexed Visium FASTQ data",
   "executor": "NEXTFLOW",
   "category": "Spatial Transcriptomics",
-  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-single-cell/#visium-spatial-transcriptomics",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-spatial-analysis/#visium-spatial-transcriptomics",
   "code": {
     "repository": "GITHUBPUBLIC",
     "uri": "CirroBio/nf-cellranger-tools",

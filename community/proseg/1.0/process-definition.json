@@ -10,7 +10,7 @@
     "desc": "Segment cells spatially using the Proseg algorithm (Setty Lab - Fred Hutch)",
     "executor": "NEXTFLOW",
     "category": "Spatial Transcriptomics",
-    "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-single-cell/#proseg-spatial-transcriptomics",
+    "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-spatial-analysis/#proseg-spatial-transcriptomics",
     "code": {
         "repository": "GITHUBPUBLIC",
         "script": "main.nf",
