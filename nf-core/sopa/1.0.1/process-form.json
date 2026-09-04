@@ -24,7 +24,7 @@
               "toy_dataset"
             ],
             "enumNames": [
-              "10x Xenium",
+              "10X Xenium",
               "Vizgen MERSCOPE",
               "NanoString CosMx",
               "Resolve Molecular Cartography",
@@ -620,7 +620,7 @@
       "explorer": {
         "title": "Xenium Explorer Output",
         "type": "object",
-        "description": "The .explorer output opens in 10x Genomics Xenium Explorer",
+        "description": "The .explorer output opens in 10X Genomics Xenium Explorer",
         "properties": {
           "pixel_size": {
             "type": "number",
