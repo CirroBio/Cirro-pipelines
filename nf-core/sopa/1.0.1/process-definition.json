@@ -18,7 +18,8 @@
     "repository": "GITHUBPUBLIC",
     "script": "main.nf",
     "uri": "nf-core/sopa",
-    "version": "1.0.1"
+    "version": "1.0.1",
+    "executorVersion": "26.04.0"
   },
   "allowMultipleSources": false,
   "usesSampleSheet": false,
