@@ -78,9 +78,7 @@ if __name__ == "__main__":
     # input param to -- the dataset's own config/ folder, as nf-core/ampliseq does.
     # That records the exact input to the run alongside its results, instead of
     # leaving it in the working directory this script runs in.
-    samplesheet_path = ds.params["input"]
-    samplesheet.to_csv(samplesheet_path, index=None)
-    ds.add_param("input", samplesheet_path, overwrite=True)
+    samplesheet.to_csv(ds.params["input"], index=None)
 
     # spatial_data exists only to carry the dataset path into this script
     ds.remove_param("spatial_data", force=True)
