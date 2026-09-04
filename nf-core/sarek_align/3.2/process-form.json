@@ -117,7 +117,8 @@
                                     "type": "string",
                                     "pathType": "dataset",
                                     "process": [
-                                      "process-cirro-genome-index-bwa-mem2-1-0"
+                                      "process-cirro-genome-index-bwa-mem2-1-0",
+                                      "genome_bwa-mem2_index"
                                     ],
                                     "description": "Pre-built BWA-MEM2 genome index dataset"
                                   }
