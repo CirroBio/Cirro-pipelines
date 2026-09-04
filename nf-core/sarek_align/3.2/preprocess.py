@@ -128,12 +128,14 @@ def resolve_reference_genome(ds: PreprocessDataset):
     """Wire up the reference based on the iGenomes vs Custom Genome selection.
 
     For iGenomes the curated ``genome`` key is passed through unchanged. For a
-    custom genome the user selects a pre-built BWA index dataset; we point
-    ``--fasta``/``--bwa`` at that dataset and drop ``--genome``/``--igenomes_base``.
-    The BWA index pipeline publishes ``genome.fasta`` and the flat index files
-    (``genome.{amb,ann,bwt,pac,sa}``) directly into the dataset's data directory,
-    so the directory itself serves as the ``--bwa`` argument (nf-core's bwa/mem
-    module derives the index prefix from the ``.amb`` file).
+    custom genome the user selects a pre-built BWA or BWA-MEM2 index dataset
+    (mutually exclusive in the form, keyed off ``aligner``); we point
+    ``--fasta``/``--bwa``-or-``--bwamem2`` at that dataset and drop
+    ``--genome``/``--igenomes_base``. Both index pipelines publish
+    ``genome.fasta`` and their respective flat index files directly into the
+    dataset's data directory, so the directory itself serves as the index
+    argument (nf-core's bwa/mem and bwamem2/mem modules derive the index
+    prefix from the index files present).
 
     Dropping ``--genome`` is not sufficient on its own: sarek's nextflow.config
     defaults ``genome`` to 'GATK.GRCh38', so every reference param Cirro leaves unset
@@ -146,18 +148,33 @@ def resolve_reference_genome(ds: PreprocessDataset):
     genome_source = ds.params.get("genome_source")
     ds.remove_param("genome_source", force=True)
 
+    aligner = ds.params.get("aligner")
+    ds.remove_param("aligner", force=True)
+
     bwa_index = ds.params.get("bwa_index")
     ds.remove_param("bwa_index", force=True)
 
+    bwamem2_index = ds.params.get("bwamem2_index")
+    ds.remove_param("bwamem2_index", force=True)
+
     if genome_source == "dataset":
-        if not bwa_index:
+        use_bwamem2 = aligner == "bwa-mem2"
+        custom_index = bwamem2_index if use_bwamem2 else bwa_index
+        if not custom_index:
             raise ValueError(
-                "Custom Genome selected but no BWA genome index dataset was provided."
+                f"Custom Genome selected with aligner={aligner!r} but no matching "
+                "genome index dataset was provided."
             )
-        ds.logger.info(f"genome_source=dataset: using custom BWA index at {bwa_index}")
-        ds.add_param("fasta", f"{bwa_index}/genome.fasta", overwrite=True)
-        ds.add_param("fasta_fai", f"{bwa_index}/genome.fasta.fai", overwrite=True)
-        ds.add_param("bwa", bwa_index, overwrite=True)
+        ds.logger.info(
+            f"genome_source=dataset: using custom {aligner or 'bwa-mem'} index at {custom_index}"
+        )
+        ds.add_param("fasta", f"{custom_index}/genome.fasta", overwrite=True)
+        ds.add_param("fasta_fai", f"{custom_index}/genome.fasta.fai", overwrite=True)
+        ds.add_param("aligner", aligner or "bwa-mem", overwrite=True)
+        if use_bwamem2:
+            ds.add_param("bwamem2", custom_index, overwrite=True)
+        else:
+            ds.add_param("bwa", custom_index, overwrite=True)
         ds.add_param("igenomes_ignore", True, overwrite=True)
         ds.remove_param("genome", force=True)
         ds.remove_param("igenomes_base", force=True)
