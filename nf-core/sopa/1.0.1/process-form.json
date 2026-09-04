@@ -1,0 +1,664 @@
+{
+  "form": {
+    "title": "Spatial Omics (nf-core/sopa)",
+    "type": "object",
+    "properties": {
+      "reader": {
+        "title": "Reader",
+        "type": "object",
+        "description": "Platform that produced the spatial data",
+        "properties": {
+          "technology": {
+            "type": "string",
+            "title": "Technology",
+            "description": "Platform that produced the input data. Determines which reader is used and what the input dataset must contain.",
+            "enum": [
+              "xenium",
+              "merscope",
+              "cosmx",
+              "molecular_cartography",
+              "macsima",
+              "phenocycler",
+              "hyperion",
+              "ome_tif",
+              "toy_dataset"
+            ],
+            "enumNames": [
+              "10x Xenium",
+              "Vizgen MERSCOPE",
+              "NanoString CosMx",
+              "Resolve Molecular Cartography",
+              "Miltenyi MACSima",
+              "Akoya PhenoCycler",
+              "Standard BioTools Hyperion",
+              "Generic OME-TIFF",
+              "Toy dataset (generated in-workflow, for testing)"
+            ],
+            "default": "xenium",
+            "help_text": "Xenium, MERSCOPE, CosMx, Molecular Cartography, MACSima and Hyperion read a machine-output directory. PhenoCycler and OME-TIFF read a single all-channel image file, which must be the only such file in the input dataset. Visium HD is not available here: it needs a Space Ranger reference and a different samplesheet."
+          }
+        },
+        "required": [
+          "technology"
+        ]
+      },
+      "tissue_segmentation": {
+        "title": "Tissue Segmentation",
+        "type": "object",
+        "description": "Optional detection of the tissue region before cell segmentation",
+        "properties": {
+          "use_tissue_segmentation": {
+            "type": "boolean",
+            "title": "Run tissue segmentation",
+            "description": "Restrict the analysis to the region of the slide covered by tissue.",
+            "default": false
+          }
+        },
+        "dependencies": {
+          "use_tissue_segmentation": {
+            "oneOf": [
+              {
+                "properties": {
+                  "use_tissue_segmentation": {
+                    "enum": [
+                      true
+                    ]
+                  },
+                  "level": {
+                    "type": "number",
+                    "title": "Image pyramid level",
+                    "description": "Level of the image pyramid used for tissue segmentation. Higher levels are lower resolution and faster."
+                  },
+                  "mode": {
+                    "type": "string",
+                    "title": "Mode",
+                    "description": "Which signal separates tissue from background.",
+                    "enum": [
+                      "staining",
+                      "saturation"
+                    ],
+                    "enumNames": [
+                      "Staining intensity",
+                      "Saturation (H&E images)"
+                    ]
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "use_tissue_segmentation": {
+                    "enum": [
+                      false
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "image_preprocessing": {
+        "title": "Image Preprocessing",
+        "type": "object",
+        "description": "Applied before the channel-based segmentation methods (Cellpose, StarDist) only",
+        "properties": {
+          "gaussian_sigma": {
+            "type": "number",
+            "title": "Gaussian sigma",
+            "description": "Standard deviation of the Gaussian blur applied before segmentation (scipy gaussian_filter)."
+          },
+          "clip_limit": {
+            "type": "number",
+            "title": "CLAHE clip limit",
+            "description": "Contrast limit for adaptive histogram equalization (skimage equalize_adapthist)."
+          },
+          "clahe_kernel_size": {
+            "type": "number",
+            "title": "CLAHE kernel size",
+            "description": "Kernel size for adaptive histogram equalization (skimage equalize_adapthist)."
+          }
+        }
+      },
+      "cellpose": {
+        "title": "Cellpose Segmentation",
+        "type": "object",
+        "description": "Channel-based segmentation; patches are measured in pixels",
+        "properties": {
+          "use_cellpose": {
+            "type": "boolean",
+            "title": "Run Cellpose",
+            "description": "Segment cells from channel intensities using Cellpose.",
+            "default": false
+          }
+        },
+        "dependencies": {
+          "use_cellpose": {
+            "oneOf": [
+              {
+                "properties": {
+                  "use_cellpose": {
+                    "enum": [
+                      true
+                    ]
+                  },
+                  "cellpose_diameter": {
+                    "type": "number",
+                    "title": "Cell diameter (pixels)",
+                    "description": "Expected cell diameter, in pixels."
+                  },
+                  "cellpose_channels": {
+                    "type": "string",
+                    "title": "Channels",
+                    "description": "Channel name(s) to segment on, for example DAPI. Separate multiple names with a space, comma or pipe."
+                  },
+                  "cellpose_model_type": {
+                    "type": "string",
+                    "title": "Model",
+                    "description": "Cellpose model to use, for example cyto3 or nuclei."
+                  },
+                  "flow_threshold": {
+                    "type": "number",
+                    "title": "Flow threshold",
+                    "description": "Cellpose flow_threshold. Raise it to accept more cells."
+                  },
+                  "cellprob_threshold": {
+                    "type": "number",
+                    "title": "Cell probability threshold",
+                    "description": "Cellpose cellprob_threshold. Lower it to accept more cells."
+                  },
+                  "cellpose_use_gpu": {
+                    "type": "boolean",
+                    "title": "Use GPU",
+                    "description": "Run Cellpose on a GPU. Requires a compute environment with GPU instances available."
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "use_cellpose": {
+                    "enum": [
+                      false
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "stardist": {
+        "title": "StarDist Segmentation",
+        "type": "object",
+        "description": "Channel-based segmentation; patches are measured in pixels",
+        "properties": {
+          "use_stardist": {
+            "type": "boolean",
+            "title": "Run StarDist",
+            "description": "Segment cells from channel intensities using StarDist.",
+            "default": false
+          }
+        },
+        "dependencies": {
+          "use_stardist": {
+            "oneOf": [
+              {
+                "properties": {
+                  "use_stardist": {
+                    "enum": [
+                      true
+                    ]
+                  },
+                  "stardist_model_type": {
+                    "type": "string",
+                    "title": "Model",
+                    "description": "Name of the StarDist model to use."
+                  },
+                  "stardist_channels": {
+                    "type": "string",
+                    "title": "Channels",
+                    "description": "Channel name(s) to segment on. Separate multiple names with a space, comma or pipe."
+                  },
+                  "prob_thresh": {
+                    "type": "number",
+                    "title": "Probability threshold",
+                    "description": "StarDist prob_thresh."
+                  },
+                  "nms_thresh": {
+                    "type": "number",
+                    "title": "NMS threshold",
+                    "description": "StarDist nms_thresh, the non-maximum-suppression overlap limit."
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "use_stardist": {
+                    "enum": [
+                      false
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "proseg": {
+        "title": "Proseg Segmentation",
+        "type": "object",
+        "description": "Transcript-based segmentation. Proseg runs on the whole slide at once, so leave Patch width (microns) at -1",
+        "properties": {
+          "use_proseg": {
+            "type": "boolean",
+            "title": "Run Proseg",
+            "description": "Segment cells from transcript positions using Proseg.",
+            "default": false
+          }
+        },
+        "dependencies": {
+          "use_proseg": {
+            "oneOf": [
+              {
+                "properties": {
+                  "use_proseg": {
+                    "enum": [
+                      true
+                    ]
+                  },
+                  "infer_presets": {
+                    "type": "boolean",
+                    "title": "Infer presets",
+                    "description": "Derive the Proseg presets from the columns of the transcript dataframe rather than setting them explicitly."
+                  },
+                  "command_line_suffix": {
+                    "type": "string",
+                    "title": "Extra arguments",
+                    "description": "Appended verbatim to the Proseg command line."
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "use_proseg": {
+                    "enum": [
+                      false
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "baysor": {
+        "title": "Baysor Segmentation",
+        "type": "object",
+        "description": "Transcript-based segmentation; patches are measured in microns",
+        "properties": {
+          "use_baysor": {
+            "type": "boolean",
+            "title": "Run Baysor",
+            "description": "Segment cells from transcript positions using Baysor.",
+            "default": false
+          }
+        },
+        "dependencies": {
+          "use_baysor": {
+            "oneOf": [
+              {
+                "properties": {
+                  "use_baysor": {
+                    "enum": [
+                      true
+                    ]
+                  },
+                  "baysor_scale": {
+                    "type": "number",
+                    "title": "Scale (microns)",
+                    "description": "Typical cell radius in microns. -1 lets Baysor estimate it.",
+                    "default": -1.0
+                  },
+                  "baysor_scale_std": {
+                    "type": "string",
+                    "title": "Scale standard deviation",
+                    "description": "Expected spread of cell radii, as a value or a percentage of the scale.",
+                    "default": "25%"
+                  },
+                  "prior_segmentation_confidence": {
+                    "type": "number",
+                    "title": "Prior segmentation confidence",
+                    "description": "How much to trust a prior segmentation, from 0 to 1. Only used when a prior shapes key is set.",
+                    "default": 0.2
+                  },
+                  "min_molecules_per_cell": {
+                    "type": "number",
+                    "title": "Minimum molecules per cell",
+                    "description": "Cells with fewer transcripts are discarded.",
+                    "default": 20.0
+                  },
+                  "min_molecules_per_gene": {
+                    "type": "number",
+                    "title": "Minimum molecules per gene",
+                    "description": "Genes with fewer transcripts are ignored.",
+                    "default": 10.0
+                  },
+                  "force_2d": {
+                    "type": "boolean",
+                    "title": "Force 2D",
+                    "description": "Ignore the z coordinate of the transcripts.",
+                    "default": true
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "use_baysor": {
+                    "enum": [
+                      false
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "comseg": {
+        "title": "ComSeg Segmentation",
+        "type": "object",
+        "description": "Transcript-based segmentation; patches are measured in microns",
+        "properties": {
+          "use_comseg": {
+            "type": "boolean",
+            "title": "Run ComSeg",
+            "description": "Segment cells from transcript positions using ComSeg.",
+            "default": false
+          }
+        },
+        "dependencies": {
+          "use_comseg": {
+            "oneOf": [
+              {
+                "properties": {
+                  "use_comseg": {
+                    "enum": [
+                      true
+                    ]
+                  },
+                  "mean_cell_diameter": {
+                    "type": "number",
+                    "title": "Mean cell diameter (microns)",
+                    "description": "ComSeg mean_cell_diameter.",
+                    "default": 10.0
+                  },
+                  "max_cell_radius": {
+                    "type": "number",
+                    "title": "Maximum cell radius (microns)",
+                    "description": "ComSeg max_cell_radius.",
+                    "default": 15.0
+                  },
+                  "alpha": {
+                    "type": "number",
+                    "title": "Alpha",
+                    "description": "ComSeg alpha, controlling the concavity of the cell boundaries.",
+                    "default": 0.5
+                  },
+                  "min_rna_per_cell": {
+                    "type": "number",
+                    "title": "Minimum RNA per cell",
+                    "description": "Cells with fewer transcripts are discarded.",
+                    "default": 1.0
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "use_comseg": {
+                    "enum": [
+                      false
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "patches": {
+        "title": "Patches",
+        "type": "object",
+        "description": "The slide is cut into patches and segmented in parallel. Channel-based methods (Cellpose, StarDist) use the pixel settings; transcript-based methods (Proseg, Baysor, ComSeg) use the micron settings",
+        "properties": {
+          "patch_width_pixel": {
+            "type": "number",
+            "title": "Patch width (pixels)",
+            "description": "Width and height of each image patch, in pixels."
+          },
+          "patch_overlap_pixel": {
+            "type": "number",
+            "title": "Patch overlap (pixels)",
+            "description": "Overlap between image patches, in pixels. About twice a cell diameter works well."
+          },
+          "patch_width_microns": {
+            "type": "number",
+            "title": "Patch width (microns)",
+            "description": "Width and height of each transcript patch, in microns. Use -1 for a single patch covering the whole slide, which Proseg requires."
+          },
+          "patch_overlap_microns": {
+            "type": "number",
+            "title": "Patch overlap (microns)",
+            "description": "Overlap between transcript patches, in microns. About twice a cell diameter works well."
+          },
+          "image_scale": {
+            "type": "string",
+            "title": "Image scale",
+            "description": "Pyramid scale used for the image patches, for example scale1. Defaults to the highest resolution."
+          },
+          "prior_shapes_key": {
+            "type": "string",
+            "title": "Prior shapes key",
+            "description": "Boundaries to use as a segmentation prior: either a column of the transcript dataframe or a shapes key of the SpatialData object.",
+            "help_text": "When Cellpose is combined with Proseg, Baysor or ComSeg this is set to cellpose_boundaries automatically."
+          },
+          "unassigned_value": {
+            "type": "string",
+            "title": "Unassigned value",
+            "description": "Value the prior gives to transcripts that fall outside every cell. Leave empty if that value is already 0."
+          }
+        }
+      },
+      "filtering": {
+        "title": "Cell Filtering",
+        "type": "object",
+        "description": "Removal of low-quality cells during and after segmentation",
+        "properties": {
+          "min_area_pixels2": {
+            "type": "number",
+            "title": "Minimum cell area (pixels squared)",
+            "description": "Smaller cells are discarded. Applies to Cellpose and StarDist.",
+            "default": 0.0
+          },
+          "min_area_microns2": {
+            "type": "number",
+            "title": "Minimum cell area (microns squared)",
+            "description": "Smaller cells are discarded. Applies to Baysor and ComSeg, not to Proseg.",
+            "default": 0.0
+          },
+          "min_transcripts": {
+            "type": "number",
+            "title": "Minimum transcripts per cell",
+            "description": "Cells with fewer transcripts are discarded."
+          },
+          "min_intensity_ratio": {
+            "type": "number",
+            "title": "Minimum intensity ratio",
+            "description": "Cells whose mean channel intensity is below this fraction of the 90th percentile are discarded."
+          }
+        }
+      },
+      "aggregation": {
+        "title": "Aggregation",
+        "type": "object",
+        "description": "Building the cell-by-gene and cell-by-channel tables",
+        "properties": {
+          "aggregate_genes": {
+            "type": "boolean",
+            "title": "Aggregate genes",
+            "description": "Count the transcripts of each gene inside each cell."
+          },
+          "aggregate_channels": {
+            "type": "boolean",
+            "title": "Aggregate channels",
+            "description": "Average the intensity of each channel inside each cell."
+          },
+          "expand_radius_ratio": {
+            "type": "string",
+            "title": "Expand radius ratio",
+            "description": "Grow each cell polygon by this multiple of the mean cell radius before averaging channels, which captures boundary stainings. Affects channel averaging only."
+          }
+        }
+      },
+      "scanpy_preprocessing": {
+        "title": "Scanpy Preprocessing",
+        "type": "object",
+        "description": "Optional table preprocessing after aggregation and annotation",
+        "properties": {
+          "use_scanpy_preprocessing": {
+            "type": "boolean",
+            "title": "Run scanpy preprocessing",
+            "description": "Normalize, log-transform and cluster the aggregated table, and compute a UMAP.",
+            "default": false
+          }
+        },
+        "dependencies": {
+          "use_scanpy_preprocessing": {
+            "oneOf": [
+              {
+                "properties": {
+                  "use_scanpy_preprocessing": {
+                    "enum": [
+                      true
+                    ]
+                  },
+                  "resolution": {
+                    "type": "number",
+                    "title": "Leiden resolution",
+                    "description": "Resolution of the Leiden clustering. Higher values give more clusters."
+                  },
+                  "hvg": {
+                    "type": "boolean",
+                    "title": "Use highly variable genes",
+                    "description": "Select highly variable genes before computing the UMAP and clusters."
+                  },
+                  "check_counts": {
+                    "type": "boolean",
+                    "title": "Check counts",
+                    "description": "Verify that the table holds raw counts before normalizing."
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "use_scanpy_preprocessing": {
+                    "enum": [
+                      false
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "fluorescence_annotation": {
+        "title": "Fluorescence Annotation",
+        "type": "object",
+        "description": "Optional marker-based cell-type annotation, for channel-based data",
+        "properties": {
+          "use_fluorescence_annotation": {
+            "type": "boolean",
+            "title": "Run fluorescence annotation",
+            "description": "Assign a cell type to each cell from its brightest marker channel.",
+            "default": false
+          }
+        },
+        "dependencies": {
+          "use_fluorescence_annotation": {
+            "oneOf": [
+              {
+                "properties": {
+                  "use_fluorescence_annotation": {
+                    "enum": [
+                      true
+                    ]
+                  },
+                  "marker_cell_dict": {
+                    "type": "string",
+                    "title": "Marker to cell type map",
+                    "description": "Python dictionary, as a string, mapping marker channel names to the cell type each marker identifies."
+                  },
+                  "fluorescence_cell_type_key": {
+                    "type": "string",
+                    "title": "Cell type key",
+                    "description": "Column of the cell table the annotation is written to."
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "use_fluorescence_annotation": {
+                    "enum": [
+                      false
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "explorer": {
+        "title": "Xenium Explorer Output",
+        "type": "object",
+        "description": "The .explorer output opens in 10x Genomics Xenium Explorer",
+        "properties": {
+          "pixel_size": {
+            "type": "number",
+            "title": "Pixel size (microns)",
+            "description": "Microns per pixel. A wrong value makes the scale bar in Explorer wrong.",
+            "default": 0.2125
+          },
+          "lazy": {
+            "type": "boolean",
+            "title": "Load images lazily",
+            "description": "Keep images on disk instead of in memory, unless they are smaller than the RAM threshold below.",
+            "default": true
+          },
+          "ram_threshold_gb": {
+            "type": "number",
+            "title": "RAM threshold (GB)",
+            "description": "Images smaller than this are loaded into memory even when lazy loading is on.",
+            "default": 4.0
+          }
+        }
+      }
+    }
+  },
+  "ui": {
+    "fluorescence_annotation": {
+      "marker_cell_dict": {
+        "ui:placeholder": "{\"CK\": \"Tumoral cell\", \"CD3\": \"T cell\", \"CD20\": \"B cell\"}"
+      }
+    },
+    "proseg": {
+      "command_line_suffix": {
+        "ui:placeholder": "--voxel-layers 4"
+      }
+    },
+    "tissue_segmentation": {
+      "mode": {
+        "ui:widget": "radio"
+      }
+    }
+  }
+}
