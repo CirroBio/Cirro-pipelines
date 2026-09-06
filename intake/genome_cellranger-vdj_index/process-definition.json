@@ -2,7 +2,7 @@
   "id": "genome_cellranger-vdj_index",
   "childProcessIds": [],
   "name": "Cell Ranger V(D)J Reference",
-  "desc": "10x Genomics V(D)J immune-profiling reference built with cellranger mkvdjref",
+  "desc": "10X Genomics V(D)J immune-profiling reference built with cellranger mkvdjref",
   "executor": "INGEST",
   "documentationUrl": "",
   "code": {

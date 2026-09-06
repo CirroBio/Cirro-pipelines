@@ -18,7 +18,7 @@
       },
       "cellrangerarc_version": {
         "title": "Cell Ranger ARC Version",
-        "description": "Cell Ranger ARC version (appended to the quay.io/cumulus/cellranger-arc image tag). Proprietary 10x Genomics software.",
+        "description": "Cell Ranger ARC version (appended to the quay.io/cumulus/cellranger-arc image tag). Proprietary 10X Genomics software.",
         "type": "string",
         "default": "2.0.2",
         "enum": [
@@ -37,8 +37,8 @@
         "title": "ATAC Motifs (optional)",
         "type": "string",
         "pathType": "dataset",
-        "file": "**/*.*",
-        "description": "ATAC transcription-factor motifs file in JASPAR format (optional)."
+        "file": "**/*.{txt,jaspar,pfm}",
+        "description": "ATAC transcription-factor motifs file in JASPAR format (optional). Leave unset to build the reference without motif annotation."
       },
       "cellrangerarc_mkref_args": {
         "title": "mkref Extra Arguments",

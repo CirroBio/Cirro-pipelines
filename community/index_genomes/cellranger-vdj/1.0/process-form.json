@@ -18,7 +18,7 @@
       },
       "cellranger_version": {
         "title": "Cell Ranger Version",
-        "description": "Cell Ranger version (appended to the quay.io/cumulus/cellranger image tag). Proprietary 10x Genomics software.",
+        "description": "Cell Ranger version (appended to the quay.io/cumulus/cellranger image tag). Proprietary 10X Genomics software.",
         "type": "string",
         "default": "10.0.0",
         "enum": [

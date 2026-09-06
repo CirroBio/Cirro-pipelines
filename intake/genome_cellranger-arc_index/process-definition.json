@@ -2,7 +2,7 @@
   "id": "genome_cellranger-arc_index",
   "childProcessIds": [],
   "name": "Cell Ranger ARC Reference",
-  "desc": "10x Genomics multiome (ATAC + gene expression) reference built with cellranger-arc mkref",
+  "desc": "10X Genomics multiome (ATAC + gene expression) reference built with cellranger-arc mkref",
   "executor": "INGEST",
   "documentationUrl": "",
   "code": {

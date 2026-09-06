@@ -1,24 +1,25 @@
 {
-  "id": "process-nf-core-scrna-cellranger",
+  "id": "process-nf-core-scrnaseq-4-2-0",
   "parentProcessIds": [
     "single-cell-10X"
   ],
   "childProcessIds": [],
   "dataType": "Single-Cell Data (GEX)",
-  "name": "FASTQ to Gene Counts via CellRanger (nf-core/scrnaseq)",
-  "desc": "Analysis of 10X single-cell sequencing of gene expression",
+  "name": "Single-Cell Gene Expression (nf-core/scrnaseq)",
+  "desc": "Single-cell RNA sequencing analysis using Alevin-fry, kallisto|bustools, STARsolo, Cell Ranger, Cell Ranger ARC or Cell Ranger multi, with a reference genome selected to match the chosen aligner",
   "executor": "NEXTFLOW",
   "pipelineTypeOverride": "nf-core",
   "category": "Single-Cell Analysis",
-  "documentationUrl": "https://nf-co.re/scrnaseq/4.0.0/",
+  "documentationUrl": "https://nf-co.re/scrnaseq/4.2.0/",
   "code": {
     "repository": "GITHUBPUBLIC",
     "script": "main.nf",
     "uri": "nf-core/scrnaseq",
-    "version": "4.0.0"
+    "version": "User Defined",
+    "executorVersion": "25.10.4"
   },
-  "usesSampleSheet": true,
   "allowMultipleSources": true,
+  "usesSampleSheet": true,
   "computeDefaults": [
     {
       "executor": "NEXTFLOW",

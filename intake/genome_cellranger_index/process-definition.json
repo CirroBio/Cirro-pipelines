@@ -2,7 +2,7 @@
   "id": "genome_cellranger_index",
   "childProcessIds": [],
   "name": "Cell Ranger Reference",
-  "desc": "10x Genomics gene-expression reference built with cellranger mkref",
+  "desc": "10X Genomics gene-expression reference built with cellranger mkref",
   "executor": "INGEST",
   "documentationUrl": "",
   "code": {

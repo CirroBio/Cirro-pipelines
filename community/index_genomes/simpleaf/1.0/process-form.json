@@ -18,8 +18,9 @@
       },
       "container": {
         "title": "Container Image",
-        "description": "simpleaf container image (bundles simpleaf, alevin-fry, piscem, and salmon).",
-        "type": "string"
+        "description": "simpleaf container image (bundles simpleaf, alevin-fry, piscem, and salmon). The default matches the simpleaf that nf-core/scrnaseq 4.2.0 quantifies with; a piscem from a different major version writes an index layout that pipeline cannot read.",
+        "type": "string",
+        "default": "quay.io/biocontainers/simpleaf:0.19.5--ha6fb395_0"
       },
       "simpleaf_extra_args": {
         "title": "Extra Arguments",

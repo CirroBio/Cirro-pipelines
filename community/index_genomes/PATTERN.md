@@ -91,7 +91,7 @@ Each method is a versioned folder with the four standard process files:
     ```
     "container": "quay.io/cumulus/cellranger:|$.dataset.params.cellranger_version"
     ```
-    Cell Ranger is proprietary 10x Genomics software distributed via the Cumulus
+    Cell Ranger is proprietary 10X Genomics software distributed via the Cumulus
     images, which carry plain semver tags. This mirrors the `cirro/cellranger-*`
     processes (base image + selectable version). cellranger and cellranger-vdj
     share the `quay.io/cumulus/cellranger` image; cellranger-arc uses
@@ -102,6 +102,12 @@ Each method is a versioned folder with the four standard process files:
     "container": "$.dataset.params.container"
     ```
     Used where there is no single stable base image / tag scheme to select from.
+    The default must name the version the consuming pipeline reads the index
+    with, because both tools write version-specific index layouts: piscem 0.23
+    (simpleaf 0.30) splits the sshash structure into `.ssi`/`.ssi.mphf`, which
+    the piscem inside simpleaf 0.19.5 — what nf-core/scrnaseq 4.2.0 quantifies
+    with — rejects, looking for a single `piscem_idx.sshash`. Leaving the field
+    without a default is how an unreadable index gets built.
 
 - **process-output.json** — identical across methods; a single
   `hot.Manifest` command to catalog the output files.

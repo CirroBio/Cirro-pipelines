@@ -6,7 +6,7 @@
   "childProcessIds": [],
   "dataType": "Genome Index (Cell Ranger ARC)",
   "name": "Build Genome Index (Cell Ranger ARC)",
-  "desc": "Build a 10x Genomics Cell Ranger ARC multiome (ATAC + gene expression) reference with cellranger-arc mkref from genome, GTF, and optional ATAC TF motifs.",
+  "desc": "Build a 10X Genomics Cell Ranger ARC multiome (ATAC + gene expression) reference with cellranger-arc mkref from genome, GTF, and optional ATAC TF motifs.",
   "executor": "NEXTFLOW",
   "category": "Reference Data",
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-reference/#genome-index-cellranger-arc",

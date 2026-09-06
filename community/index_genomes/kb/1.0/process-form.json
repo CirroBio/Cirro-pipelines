@@ -18,8 +18,9 @@
       },
       "container": {
         "title": "Container Image",
-        "description": "kb-python container image.",
-        "type": "string"
+        "description": "kb-python container image. The default matches the kb-python that nf-core/scrnaseq 4.2.0 counts with; an index built by a different kallisto version may not be readable there.",
+        "type": "string",
+        "default": "quay.io/biocontainers/kb-python:0.28.2--pyhdfd78af_2"
       },
       "kb_workflow": {
         "title": "Workflow",
