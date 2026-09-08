@@ -10,7 +10,7 @@
   "executor": "NEXTFLOW",
   "pipelineTypeOverride": "nf-core",
   "category": "Single-Cell Analysis",
-  "documentationUrl": "https://nf-co.re/scrnaseq/4.2.0/",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-single-cell/#single-cell-gene-expression-nf-corescrnaseq",
   "code": {
     "repository": "GITHUBPUBLIC",
     "script": "main.nf",
