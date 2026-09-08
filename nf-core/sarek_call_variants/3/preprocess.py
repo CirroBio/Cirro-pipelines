@@ -344,6 +344,30 @@ def stage_colliding_vcf_params(ds: PreprocessDataset):
             ds.add_param(param, str(Path(local_name).resolve()), overwrite=True)
 
 
+def require_analysis_type_binding(ds: PreprocessDataset):
+    """Fail when the launch payload did not bind to the form's analysis_type block.
+
+    process-form.json declares ``wes`` required within ``analysis_type`` and gives it a
+    default, so any launch whose paramJson matches the form supplies it. Its absence means
+    the whole block resolved to nothing — and ``intervals`` lives in that same block, so it
+    was dropped too, which would silently turn a targeted run into a genome-wide one.
+
+    Nothing else catches this: the form declares no top-level ``required`` and draft-07
+    permits additional properties, so a flat parameter dict validates cleanly and then
+    binds none of the nested JSONPaths in process-input.json.
+    """
+    if "wes" in ds.params:
+        return
+
+    raise ValueError(
+        "Launch parameters did not match the process form: 'wes' is absent, so the "
+        "analysis_type block bound nothing and 'intervals' was dropped with it. "
+        "paramJson must nest parameters exactly as process-form.json declares them "
+        "(analysis_type.wes, analysis_type.intervals, analysis_type.tools); "
+        "a flat parameter dict binds nothing."
+    )
+
+
 _DEFAULT_WORKFLOW_VERSION = "3.8.1"
 
 # Params set by Cirro infrastructure or computed by this script that must not
@@ -485,6 +509,8 @@ if __name__ == "__main__":
 
     ds.logger.info(f"Starting sarek_call_variants preprocess — workflow_version={ds.params.get('workflow_version', _DEFAULT_WORKFLOW_VERSION)!r}")
     ds.logger.info(f"analysis_type={ds.params.get('analysis_type')!r}, genome={ds.params.get('genome')!r}")
+
+    require_analysis_type_binding(ds)
 
     manifest = make_manifest(ds)
     ds.logger.info(manifest.to_csv(index=None))
