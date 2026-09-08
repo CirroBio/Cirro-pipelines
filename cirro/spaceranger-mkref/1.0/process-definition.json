@@ -6,7 +6,7 @@
   "desc": "Format custom probes for Visium analysis",
   "executor": "NEXTFLOW",
   "category": "Spatial Transcriptomics",
-  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-single-cell/#visium-custom-probes",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-spatial-analysis/#visium-custom-probes",
   "code": {
     "repository": "GITHUBPUBLIC",
     "uri": "CirroBio/nf-cellranger-tools",
