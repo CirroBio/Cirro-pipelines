@@ -1,0 +1,42 @@
+{
+  "id": "genome_cellranger-vdj_index",
+  "childProcessIds": [],
+  "name": "Cell Ranger V(D)J Reference",
+  "desc": "10X Genomics V(D)J immune-profiling reference built with cellranger mkvdjref",
+  "executor": "INGEST",
+  "documentationUrl": "",
+  "code": {
+    "repository": "NA",
+    "uri": ""
+  },
+  "computeDefaults": [],
+  "paramMapJson": "",
+  "formJson": "",
+  "webOptimizationJson": "",
+  "fileMappingRules": [
+    {
+      "description": "V(D)J segment sequences",
+      "min": 1,
+      "isSample": false,
+      "fileNamePatterns": [
+        {
+          "exampleName": "cellranger_vdj_reference/fasta/regions.fa",
+          "description": "Extracted IG/TR V(D)J segment sequences",
+          "sampleMatchingPattern": "[\\S ]*regions.fa"
+        }
+      ]
+    },
+    {
+      "description": "Reference metadata",
+      "min": 1,
+      "isSample": false,
+      "fileNamePatterns": [
+        {
+          "exampleName": "cellranger_vdj_reference/reference.json",
+          "description": "Cell Ranger V(D)J reference metadata",
+          "sampleMatchingPattern": "[\\S ]*reference.json"
+        }
+      ]
+    }
+  ]
+}

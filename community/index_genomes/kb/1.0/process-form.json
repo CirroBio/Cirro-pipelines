@@ -1,0 +1,45 @@
+{
+  "form": {
+    "type": "object",
+    "properties": {
+      "fasta": {
+        "title": "Genome FASTA",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.f*",
+        "description": "Reference genome FASTA (gzipped or uncompressed)."
+      },
+      "gtf": {
+        "title": "GTF Annotation",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.gtf*",
+        "description": "Gene annotation GTF (gzipped or uncompressed)."
+      },
+      "container": {
+        "title": "Container Image",
+        "description": "kb-python container image. The default matches the kb-python that nf-core/scrnaseq 4.2.0 counts with; an index built by a different kallisto version may not be readable there.",
+        "type": "string",
+        "default": "quay.io/biocontainers/kb-python:0.28.2--pyhdfd78af_2"
+      },
+      "kb_workflow": {
+        "title": "Workflow",
+        "description": "kb ref workflow. Use 'standard' for a plain index, or 'nac'/'lamanno' to also build intron references for RNA velocity.",
+        "type": "string",
+        "enum": ["standard", "nac", "lamanno"],
+        "default": "standard"
+      },
+      "kb_extra_args": {
+        "title": "Extra Arguments",
+        "description": "Additional arguments to pass to kb ref.",
+        "type": "string"
+      }
+    },
+    "required": ["fasta", "gtf", "container"]
+  },
+  "ui": {
+    "container": {
+      "ui:placeholder": "quay.io/biocontainers/kb-python:<tag>"
+    }
+  }
+}

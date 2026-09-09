@@ -1,0 +1,52 @@
+{
+  "form": {
+    "type": "object",
+    "properties": {
+      "fasta": {
+        "title": "Genome FASTA",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.f*",
+        "description": "Reference genome FASTA (gzipped or uncompressed)."
+      },
+      "gtf": {
+        "title": "GTF Annotation",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.gtf*",
+        "description": "Gene annotation GTF. Must be well-formed: each transcript needs a 'transcript' row before its 'exon' rows."
+      },
+      "cellrangerarc_version": {
+        "title": "Cell Ranger ARC Version",
+        "description": "Cell Ranger ARC version (appended to the quay.io/cumulus/cellranger-arc image tag). Proprietary 10X Genomics software.",
+        "type": "string",
+        "default": "2.0.2",
+        "enum": [
+          "2.0.2",
+          "2.0.1",
+          "2.0.0"
+        ]
+      },
+      "cellrangerarc_reference_name": {
+        "title": "Reference Name",
+        "description": "Name of the output reference directory.",
+        "type": "string",
+        "default": "cellrangerarc_reference"
+      },
+      "cellrangerarc_motifs": {
+        "title": "ATAC Motifs (optional)",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.{txt,jaspar,pfm}",
+        "description": "ATAC transcription-factor motifs file in JASPAR format (optional). Leave unset to build the reference without motif annotation."
+      },
+      "cellrangerarc_mkref_args": {
+        "title": "mkref Extra Arguments",
+        "description": "Additional arguments to pass to cellranger-arc mkref.",
+        "type": "string"
+      }
+    },
+    "required": ["fasta", "gtf", "cellrangerarc_version"]
+  },
+  "ui": {}
+}
