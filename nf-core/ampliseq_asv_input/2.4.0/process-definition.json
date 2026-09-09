@@ -5,6 +5,7 @@
   "name": "Taxonomic Classification (nf-core/ampliseq)",
   "desc": "Identify the most likely taxonomic assignment for a set of 16S sequences",
   "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "pipelineTypeOverride": "nf-core",
   "category": "Microbial Analysis",
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-microbial-analysis#microbial-16s-nf-coreampliseq",

@@ -7,6 +7,7 @@
   "name": "Amplicon Analysis (nf-core/ampliseq)",
   "desc": "Microbial 16S amplicon sequencing analysis workflow using DADA2 and QIIME2",
   "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "pipelineTypeOverride": "nf-core",
   "category": "Microbial Analysis",
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-microbial-analysis#microbial-16s-nf-coreampliseq",

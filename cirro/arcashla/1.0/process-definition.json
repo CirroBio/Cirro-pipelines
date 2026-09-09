@@ -11,6 +11,7 @@
     "name": "HLA Typing (arcasHLA)",
     "desc": "Perform HLA typing from raw sequence reads using the arcasHLA utility",
     "executor": "NEXTFLOW",
+    "executionModes": ["STANDARD", "HEALTHOMICS"],
     "category": "RNA Sequencing",
     "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-rna-sequencing/#hla-typing-arcashla",
     "code": {
