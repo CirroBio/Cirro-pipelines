@@ -1,0 +1,8 @@
+{
+  "fasta": "$.dataset.params.fasta",
+  "gtf": "$.dataset.params.gtf",
+  "outdir": "$.dataset.dataPath",
+  "container": "quay.io/cumulus/cellranger:|$.dataset.params.cellranger_version",
+  "cellranger_vdj_reference_name": "$.dataset.params.cellranger_vdj_reference_name",
+  "cellranger_mkvdjref_args": "$.dataset.params.cellranger_mkvdjref_args"
+}

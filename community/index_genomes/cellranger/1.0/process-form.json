@@ -1,0 +1,70 @@
+{
+  "form": {
+    "type": "object",
+    "properties": {
+      "fasta": {
+        "title": "Genome FASTA",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.f*",
+        "description": "Reference genome FASTA (gzipped or uncompressed)."
+      },
+      "gtf": {
+        "title": "GTF Annotation",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*.gtf*",
+        "description": "Gene annotation GTF (gzipped or uncompressed)."
+      },
+      "cellranger_version": {
+        "title": "Cell Ranger Version",
+        "description": "Cell Ranger version (appended to the quay.io/cumulus/cellranger image tag). Proprietary 10X Genomics software.",
+        "type": "string",
+        "default": "10.0.0",
+        "enum": [
+          "10.0.0",
+          "9.0.1",
+          "9.0.0",
+          "8.0.0",
+          "7.2.0",
+          "7.1.0",
+          "7.0.1",
+          "7.0.0",
+          "6.1.2",
+          "6.1.1",
+          "6.0.2",
+          "6.0.1",
+          "6.0.0",
+          "5.0.1",
+          "5.0.0",
+          "4.0.0",
+          "3.1.0",
+          "3.0.2",
+          "2.2.0"
+        ]
+      },
+      "cellranger_reference_name": {
+        "title": "Reference Name",
+        "description": "Name of the output reference directory.",
+        "type": "string",
+        "default": "cellranger_reference"
+      },
+      "cellranger_mkref_args": {
+        "title": "mkref Extra Arguments",
+        "description": "Additional arguments to pass to cellranger mkref.",
+        "type": "string"
+      },
+      "cellranger_mkgtf_args": {
+        "title": "mkgtf Filter Arguments",
+        "description": "If set, pre-filter the GTF with cellranger mkgtf using these arguments before building the reference.",
+        "type": "string"
+      }
+    },
+    "required": ["fasta", "gtf", "cellranger_version"]
+  },
+  "ui": {
+    "cellranger_mkgtf_args": {
+      "ui:placeholder": "--attribute=gene_biotype:protein_coding"
+    }
+  }
+}

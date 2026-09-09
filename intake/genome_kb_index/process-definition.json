@@ -1,0 +1,42 @@
+{
+  "id": "genome_kb_index",
+  "childProcessIds": [],
+  "name": "kallisto|bustools (kb-python) Reference",
+  "desc": "kallisto|bustools reference built with kb-python for single-cell quantification (optionally with intron references for RNA velocity)",
+  "executor": "INGEST",
+  "documentationUrl": "",
+  "code": {
+    "repository": "NA",
+    "uri": ""
+  },
+  "computeDefaults": [],
+  "paramMapJson": "",
+  "formJson": "",
+  "webOptimizationJson": "",
+  "fileMappingRules": [
+    {
+      "description": "kallisto Index",
+      "min": 1,
+      "isSample": false,
+      "fileNamePatterns": [
+        {
+          "exampleName": "index.idx",
+          "description": "kallisto index file",
+          "sampleMatchingPattern": "[\\S ]*index.idx"
+        }
+      ]
+    },
+    {
+      "description": "Transcript-to-gene map",
+      "min": 1,
+      "isSample": false,
+      "fileNamePatterns": [
+        {
+          "exampleName": "t2g.txt",
+          "description": "Transcript-to-gene map used by BUStools",
+          "sampleMatchingPattern": "[\\S ]*t2g.txt"
+        }
+      ]
+    }
+  ]
+}

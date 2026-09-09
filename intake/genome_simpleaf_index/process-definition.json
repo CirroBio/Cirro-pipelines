@@ -1,0 +1,42 @@
+{
+  "id": "genome_simpleaf_index",
+  "childProcessIds": [],
+  "name": "Alevin-fry (simpleaf) Reference",
+  "desc": "Spliced+intron (splici) decoy-aware reference built with simpleaf for alevin-fry single-cell quantification",
+  "executor": "INGEST",
+  "documentationUrl": "",
+  "code": {
+    "repository": "NA",
+    "uri": ""
+  },
+  "computeDefaults": [],
+  "paramMapJson": "",
+  "formJson": "",
+  "webOptimizationJson": "",
+  "fileMappingRules": [
+    {
+      "description": "simpleaf Index",
+      "min": 1,
+      "isSample": false,
+      "fileNamePatterns": [
+        {
+          "exampleName": "simpleaf/index/simpleaf_index.json",
+          "description": "simpleaf index configuration file",
+          "sampleMatchingPattern": "[\\S ]*simpleaf_index.json"
+        }
+      ]
+    },
+    {
+      "description": "Transcript-to-gene map",
+      "min": 1,
+      "isSample": false,
+      "fileNamePatterns": [
+        {
+          "exampleName": "simpleaf/index/t2g_3col.tsv",
+          "description": "Three-column transcript-to-gene map",
+          "sampleMatchingPattern": "[\\S ]*t2g_3col.tsv"
+        }
+      ]
+    }
+  ]
+}

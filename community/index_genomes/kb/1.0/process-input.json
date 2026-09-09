@@ -1,0 +1,8 @@
+{
+  "fasta": "$.dataset.params.fasta",
+  "gtf": "$.dataset.params.gtf",
+  "outdir": "$.dataset.dataPath",
+  "container": "$.dataset.params.container",
+  "kb_workflow": "$.dataset.params.kb_workflow",
+  "kb_extra_args": "$.dataset.params.kb_extra_args"
+}

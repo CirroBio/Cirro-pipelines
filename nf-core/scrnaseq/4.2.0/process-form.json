@@ -1,0 +1,1349 @@
+{
+  "form": {
+    "title": "Single-Cell RNA-Seq Analysis Pipeline",
+    "type": "object",
+    "required": [],
+    "properties": {
+      "workflow_version": {
+        "type": "string",
+        "title": "Workflow Version",
+        "description": "Select the specific version of nf-core/scrnaseq to use",
+        "default": "4.2.0",
+        "enum": [
+          "4.2.0",
+          "4.1.0",
+          "4.0.0"
+        ]
+      },
+      "aligner_and_reference_genome": {
+        "title": "Aligner & Reference Genome",
+        "type": "object",
+        "properties": {
+          "reference_genome": {
+            "title": "Reference Genome",
+            "type": "object",
+            "properties": {
+              "aligner": {
+                "type": "string",
+                "title": "Aligner",
+                "default": "cellranger",
+                "description": "Specifies the tool used to align reads and count features per cell.",
+                "enum": [
+                  "simpleaf",
+                  "kallisto",
+                  "star",
+                  "cellranger",
+                  "cellrangerarc",
+                  "cellrangermulti"
+                ],
+                "enumNames": [
+                  "Alevin-fry (simpleaf)",
+                  "kallisto | bustools",
+                  "STARsolo",
+                  "Cell Ranger",
+                  "Cell Ranger ARC (multiome)",
+                  "Cell Ranger multi"
+                ]
+              }
+            },
+            "dependencies": {
+              "aligner": {
+                "oneOf": [
+                  {
+                    "properties": {
+                      "aligner": {
+                        "enum": [
+                          "simpleaf"
+                        ]
+                      },
+                      "simpleaf_genome_selection": {
+                        "title": "Alevin-fry Reference Genome",
+                        "type": "object",
+                        "properties": {
+                          "genome_source": {
+                            "type": "string",
+                            "title": "Reference Genome Source",
+                            "description": "Select where the reference for this aligner comes from",
+                            "enum": [
+                              "igenomes",
+                              "dataset"
+                            ],
+                            "enumNames": [
+                              "iGenomes",
+                              "Custom Genome"
+                            ],
+                            "default": "igenomes"
+                          }
+                        },
+                        "dependencies": {
+                          "genome_source": {
+                            "oneOf": [
+                              {
+                                "properties": {
+                                  "genome_source": {
+                                    "enum": [
+                                      "igenomes"
+                                    ]
+                                  },
+                                  "igenomes": {
+                                    "type": "object",
+                                    "title": "Reference Genome (iGenomes)",
+                                    "description": "Select a curated reference genome. The pipeline builds the index it needs from this genome's FASTA and GTF.",
+                                    "properties": {
+                                      "genome": {
+                                        "type": "string",
+                                        "title": "Select A Reference Genome",
+                                        "description": "The following iGenomes are currently available for analysis",
+                                        "enum": [
+                                          "TAIR10",
+                                          "EB2",
+                                          "UMD3.1",
+                                          "bosTau8",
+                                          "WBcel235",
+                                          "ce10",
+                                          "CanFam3.1",
+                                          "canFam3",
+                                          "GRCz10",
+                                          "danRer10",
+                                          "BDGP6",
+                                          "dm6",
+                                          "EquCab2",
+                                          "equCab2",
+                                          "EB1",
+                                          "Galgal4",
+                                          "Gm01",
+                                          "GRCh37",
+                                          "GRCh38",
+                                          "hg18",
+                                          "hg19",
+                                          "hg38",
+                                          "Mmul_1",
+                                          "GRCm38",
+                                          "mm10",
+                                          "IRGSP-1.0",
+                                          "CHIMP2.1.4",
+                                          "panTro4",
+                                          "Rnor 5.0",
+                                          "Rnor 6.0",
+                                          "rn6",
+                                          "R64-1-1",
+                                          "sacCer3",
+                                          "EF2",
+                                          "Sbi1",
+                                          "Sscrofa10.2",
+                                          "susScr3",
+                                          "AGPv3"
+                                        ],
+                                        "enumNames": [
+                                          "Arabidopsis thaliana (TAIR10)",
+                                          "Bacillus subtilis 168 (EB2)",
+                                          "Bos taurus (UMD3.1)",
+                                          "Bos taurus (bosTau8)",
+                                          "Caenorhabditis elegans (WBcel235)",
+                                          "Caenorhabditis elegans (ce10)",
+                                          "Canis familiaris (CanFam3.1)",
+                                          "Canis familiaris (canFam3)",
+                                          "Danio rerio (GRCz10)",
+                                          "Danio rerio (danRer10)",
+                                          "Drosophila melanogaster (BDGP6)",
+                                          "Drosophila melanogaster (dm6)",
+                                          "Equus caballus (EquCab2)",
+                                          "Equus caballus (equCab2)",
+                                          "Escherichia coli K 12 DH10B (EB1)",
+                                          "Gallus gallus (Galgal4)",
+                                          "Glycine max (Gm01)",
+                                          "Homo sapiens (GRCh37)",
+                                          "Homo sapiens (GRCh38)",
+                                          "Homo sapiens (hg18)",
+                                          "Homo sapiens (hg19)",
+                                          "Homo sapiens (hg38)",
+                                          "Macaca mulatta (Mmul 1)",
+                                          "Mus musculus (GRCm38)",
+                                          "Mus musculus (mm10)",
+                                          "Oryza sativa japonica (IRGSP-1.0)",
+                                          "Pan troglodytes (CHIMP2.1.4)",
+                                          "Pan troglodytes (panTro4)",
+                                          "Rattus norvegicus (Rnor 5.0)",
+                                          "Rattus norvegicus (Rnor 6.0)",
+                                          "Rattus norvegicus (rn6)",
+                                          "Saccharomyces cerevisiae (R64-1-1)",
+                                          "Saccharomyces cerevisiae (sacCer3)",
+                                          "Schizosaccharomyces pombe (EF2)",
+                                          "Sorghum bicolor (Sbi1)",
+                                          "Sus scrofa (Sscrofa10.2)",
+                                          "Sus scrofa (susScr3)",
+                                          "Zea mays (AGPv3)"
+                                        ]
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "properties": {
+                                  "genome_source": {
+                                    "enum": [
+                                      "dataset"
+                                    ]
+                                  },
+                                  "simpleaf_cirro_reference": {
+                                    "type": "object",
+                                    "title": "Cirro Genome Index (Alevin-fry / simpleaf)",
+                                    "description": "Pre-built simpleaf reference dataset",
+                                    "properties": {
+                                      "genome_index": {
+                                        "title": "simpleaf Reference",
+                                        "type": "string",
+                                        "pathType": "dataset",
+                                        "process": [
+                                          "process-cirro-genome-index-simpleaf-1-0",
+                                          "genome_simpleaf_index"
+                                        ],
+                                        "description": "Pre-built simpleaf reference dataset"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "aligner": {
+                        "enum": [
+                          "kallisto"
+                        ]
+                      },
+                      "kallisto_genome_selection": {
+                        "title": "kallisto | bustools Reference Genome",
+                        "type": "object",
+                        "properties": {
+                          "genome_source": {
+                            "type": "string",
+                            "title": "Reference Genome Source",
+                            "description": "Select where the reference for this aligner comes from",
+                            "enum": [
+                              "igenomes",
+                              "dataset"
+                            ],
+                            "enumNames": [
+                              "iGenomes",
+                              "Custom Genome"
+                            ],
+                            "default": "igenomes"
+                          }
+                        },
+                        "dependencies": {
+                          "genome_source": {
+                            "oneOf": [
+                              {
+                                "properties": {
+                                  "genome_source": {
+                                    "enum": [
+                                      "igenomes"
+                                    ]
+                                  },
+                                  "igenomes": {
+                                    "type": "object",
+                                    "title": "Reference Genome (iGenomes)",
+                                    "description": "Select a curated reference genome. The pipeline builds the index it needs from this genome's FASTA and GTF.",
+                                    "properties": {
+                                      "genome": {
+                                        "type": "string",
+                                        "title": "Select A Reference Genome",
+                                        "description": "The following iGenomes are currently available for analysis",
+                                        "enum": [
+                                          "TAIR10",
+                                          "EB2",
+                                          "UMD3.1",
+                                          "bosTau8",
+                                          "WBcel235",
+                                          "ce10",
+                                          "CanFam3.1",
+                                          "canFam3",
+                                          "GRCz10",
+                                          "danRer10",
+                                          "BDGP6",
+                                          "dm6",
+                                          "EquCab2",
+                                          "equCab2",
+                                          "EB1",
+                                          "Galgal4",
+                                          "Gm01",
+                                          "GRCh37",
+                                          "GRCh38",
+                                          "hg18",
+                                          "hg19",
+                                          "hg38",
+                                          "Mmul_1",
+                                          "GRCm38",
+                                          "mm10",
+                                          "IRGSP-1.0",
+                                          "CHIMP2.1.4",
+                                          "panTro4",
+                                          "Rnor 5.0",
+                                          "Rnor 6.0",
+                                          "rn6",
+                                          "R64-1-1",
+                                          "sacCer3",
+                                          "EF2",
+                                          "Sbi1",
+                                          "Sscrofa10.2",
+                                          "susScr3",
+                                          "AGPv3"
+                                        ],
+                                        "enumNames": [
+                                          "Arabidopsis thaliana (TAIR10)",
+                                          "Bacillus subtilis 168 (EB2)",
+                                          "Bos taurus (UMD3.1)",
+                                          "Bos taurus (bosTau8)",
+                                          "Caenorhabditis elegans (WBcel235)",
+                                          "Caenorhabditis elegans (ce10)",
+                                          "Canis familiaris (CanFam3.1)",
+                                          "Canis familiaris (canFam3)",
+                                          "Danio rerio (GRCz10)",
+                                          "Danio rerio (danRer10)",
+                                          "Drosophila melanogaster (BDGP6)",
+                                          "Drosophila melanogaster (dm6)",
+                                          "Equus caballus (EquCab2)",
+                                          "Equus caballus (equCab2)",
+                                          "Escherichia coli K 12 DH10B (EB1)",
+                                          "Gallus gallus (Galgal4)",
+                                          "Glycine max (Gm01)",
+                                          "Homo sapiens (GRCh37)",
+                                          "Homo sapiens (GRCh38)",
+                                          "Homo sapiens (hg18)",
+                                          "Homo sapiens (hg19)",
+                                          "Homo sapiens (hg38)",
+                                          "Macaca mulatta (Mmul 1)",
+                                          "Mus musculus (GRCm38)",
+                                          "Mus musculus (mm10)",
+                                          "Oryza sativa japonica (IRGSP-1.0)",
+                                          "Pan troglodytes (CHIMP2.1.4)",
+                                          "Pan troglodytes (panTro4)",
+                                          "Rattus norvegicus (Rnor 5.0)",
+                                          "Rattus norvegicus (Rnor 6.0)",
+                                          "Rattus norvegicus (rn6)",
+                                          "Saccharomyces cerevisiae (R64-1-1)",
+                                          "Saccharomyces cerevisiae (sacCer3)",
+                                          "Schizosaccharomyces pombe (EF2)",
+                                          "Sorghum bicolor (Sbi1)",
+                                          "Sus scrofa (Sscrofa10.2)",
+                                          "Sus scrofa (susScr3)",
+                                          "Zea mays (AGPv3)"
+                                        ]
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "properties": {
+                                  "genome_source": {
+                                    "enum": [
+                                      "dataset"
+                                    ]
+                                  },
+                                  "kb_cirro_reference": {
+                                    "type": "object",
+                                    "title": "Cirro Genome Index (kallisto | bustools)",
+                                    "description": "Pre-built kb-python reference dataset",
+                                    "properties": {
+                                      "genome_index": {
+                                        "title": "kb Reference",
+                                        "type": "string",
+                                        "pathType": "dataset",
+                                        "process": [
+                                          "process-cirro-genome-index-kb-1-0",
+                                          "genome_kb_index"
+                                        ],
+                                        "description": "Pre-built kb-python reference dataset"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "aligner": {
+                        "enum": [
+                          "star"
+                        ]
+                      },
+                      "star_genome_selection": {
+                        "title": "STAR Reference Genome",
+                        "type": "object",
+                        "properties": {
+                          "genome_source": {
+                            "type": "string",
+                            "title": "Reference Genome Source",
+                            "description": "Select where the reference for this aligner comes from",
+                            "enum": [
+                              "igenomes",
+                              "dataset"
+                            ],
+                            "enumNames": [
+                              "iGenomes",
+                              "Custom Genome"
+                            ],
+                            "default": "igenomes"
+                          }
+                        },
+                        "dependencies": {
+                          "genome_source": {
+                            "oneOf": [
+                              {
+                                "properties": {
+                                  "genome_source": {
+                                    "enum": [
+                                      "igenomes"
+                                    ]
+                                  },
+                                  "igenomes": {
+                                    "type": "object",
+                                    "title": "Reference Genome (iGenomes)",
+                                    "description": "Select a curated reference genome. The pipeline builds the index it needs from this genome's FASTA and GTF.",
+                                    "properties": {
+                                      "genome": {
+                                        "type": "string",
+                                        "title": "Select A Reference Genome",
+                                        "description": "The following iGenomes are currently available for analysis",
+                                        "enum": [
+                                          "TAIR10",
+                                          "EB2",
+                                          "UMD3.1",
+                                          "bosTau8",
+                                          "WBcel235",
+                                          "ce10",
+                                          "CanFam3.1",
+                                          "canFam3",
+                                          "GRCz10",
+                                          "danRer10",
+                                          "BDGP6",
+                                          "dm6",
+                                          "EquCab2",
+                                          "equCab2",
+                                          "EB1",
+                                          "Galgal4",
+                                          "Gm01",
+                                          "GRCh37",
+                                          "GRCh38",
+                                          "hg18",
+                                          "hg19",
+                                          "hg38",
+                                          "Mmul_1",
+                                          "GRCm38",
+                                          "mm10",
+                                          "IRGSP-1.0",
+                                          "CHIMP2.1.4",
+                                          "panTro4",
+                                          "Rnor 5.0",
+                                          "Rnor 6.0",
+                                          "rn6",
+                                          "R64-1-1",
+                                          "sacCer3",
+                                          "EF2",
+                                          "Sbi1",
+                                          "Sscrofa10.2",
+                                          "susScr3",
+                                          "AGPv3"
+                                        ],
+                                        "enumNames": [
+                                          "Arabidopsis thaliana (TAIR10)",
+                                          "Bacillus subtilis 168 (EB2)",
+                                          "Bos taurus (UMD3.1)",
+                                          "Bos taurus (bosTau8)",
+                                          "Caenorhabditis elegans (WBcel235)",
+                                          "Caenorhabditis elegans (ce10)",
+                                          "Canis familiaris (CanFam3.1)",
+                                          "Canis familiaris (canFam3)",
+                                          "Danio rerio (GRCz10)",
+                                          "Danio rerio (danRer10)",
+                                          "Drosophila melanogaster (BDGP6)",
+                                          "Drosophila melanogaster (dm6)",
+                                          "Equus caballus (EquCab2)",
+                                          "Equus caballus (equCab2)",
+                                          "Escherichia coli K 12 DH10B (EB1)",
+                                          "Gallus gallus (Galgal4)",
+                                          "Glycine max (Gm01)",
+                                          "Homo sapiens (GRCh37)",
+                                          "Homo sapiens (GRCh38)",
+                                          "Homo sapiens (hg18)",
+                                          "Homo sapiens (hg19)",
+                                          "Homo sapiens (hg38)",
+                                          "Macaca mulatta (Mmul 1)",
+                                          "Mus musculus (GRCm38)",
+                                          "Mus musculus (mm10)",
+                                          "Oryza sativa japonica (IRGSP-1.0)",
+                                          "Pan troglodytes (CHIMP2.1.4)",
+                                          "Pan troglodytes (panTro4)",
+                                          "Rattus norvegicus (Rnor 5.0)",
+                                          "Rattus norvegicus (Rnor 6.0)",
+                                          "Rattus norvegicus (rn6)",
+                                          "Saccharomyces cerevisiae (R64-1-1)",
+                                          "Saccharomyces cerevisiae (sacCer3)",
+                                          "Schizosaccharomyces pombe (EF2)",
+                                          "Sorghum bicolor (Sbi1)",
+                                          "Sus scrofa (Sscrofa10.2)",
+                                          "Sus scrofa (susScr3)",
+                                          "Zea mays (AGPv3)"
+                                        ]
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "properties": {
+                                  "genome_source": {
+                                    "enum": [
+                                      "dataset"
+                                    ]
+                                  },
+                                  "star_cirro_reference": {
+                                    "type": "object",
+                                    "title": "Cirro Genome Index (STAR)",
+                                    "description": "Pre-built STAR genome index dataset",
+                                    "properties": {
+                                      "genome_index": {
+                                        "title": "STAR Genome Index",
+                                        "type": "string",
+                                        "pathType": "dataset",
+                                        "process": [
+                                          "process-cirro-genome-index-star-1-0",
+                                          "genome_star_index"
+                                        ],
+                                        "description": "Pre-built STAR genome index dataset"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "aligner": {
+                        "enum": [
+                          "cellranger"
+                        ]
+                      },
+                      "cellranger_genome_selection": {
+                        "title": "Cell Ranger Reference Genome",
+                        "type": "object",
+                        "properties": {
+                          "genome_source": {
+                            "type": "string",
+                            "title": "Reference Genome Source",
+                            "description": "Select where the reference for this aligner comes from",
+                            "enum": [
+                              "prebuilt",
+                              "igenomes",
+                              "dataset"
+                            ],
+                            "enumNames": [
+                              "10X Curated Reference",
+                              "iGenomes",
+                              "Custom Genome"
+                            ],
+                            "default": "prebuilt"
+                          }
+                        },
+                        "dependencies": {
+                          "genome_source": {
+                            "oneOf": [
+                              {
+                                "properties": {
+                                  "genome_source": {
+                                    "enum": [
+                                      "prebuilt"
+                                    ]
+                                  },
+                                  "prebuilt": {
+                                    "type": "object",
+                                    "title": "Reference Genome (10X Curated)",
+                                    "description": "Select a reference package published by 10X Genomics.",
+                                    "properties": {
+                                      "cellranger_index": {
+                                        "type": "string",
+                                        "title": "10X Reference Package",
+                                        "description": "Pre-built 10X Genomics gene-expression reference",
+                                        "default": "s3://pubweb-references/cellranger/refdata-gex-GRCh38-2024-A",
+                                        "enum": [
+                                          "s3://pubweb-references/cellranger/refdata-gex-GRCh38-2024-A",
+                                          "s3://pubweb-references/cellranger/refdata-gex-GRCh38-2020-A",
+                                          "s3://pubweb-references/cellranger/refdata-gex-GRCh38-and-GRCm39-2024-A",
+                                          "s3://pubweb-references/cellranger/refdata-gex-GRCh38-and-mm10-2020-A",
+                                          "s3://pubweb-references/cellranger/refdata-gex-GRCm39-2024-A",
+                                          "s3://pubweb-references/cellranger/refdata-gex-mm10-2020-A"
+                                        ],
+                                        "enumNames": [
+                                          "Homo sapiens (GRCh38-2024)",
+                                          "Homo sapiens (GRCh38-2020)",
+                                          "Homo sapiens (GRCh38-2024) and Mus musculus (GRCm39-2024)",
+                                          "Homo sapiens (GRCh38-2020) and Mus musculus (mm10-2020)",
+                                          "Mus musculus (GRCm39-2024)",
+                                          "Mus musculus (mm10-2020)"
+                                        ]
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "properties": {
+                                  "genome_source": {
+                                    "enum": [
+                                      "igenomes"
+                                    ]
+                                  },
+                                  "igenomes": {
+                                    "type": "object",
+                                    "title": "Reference Genome (iGenomes)",
+                                    "description": "Select a curated reference genome. The pipeline builds the index it needs from this genome's FASTA and GTF.",
+                                    "properties": {
+                                      "genome": {
+                                        "type": "string",
+                                        "title": "Select A Reference Genome",
+                                        "description": "The following iGenomes are currently available for analysis",
+                                        "enum": [
+                                          "TAIR10",
+                                          "EB2",
+                                          "UMD3.1",
+                                          "bosTau8",
+                                          "WBcel235",
+                                          "ce10",
+                                          "CanFam3.1",
+                                          "canFam3",
+                                          "GRCz10",
+                                          "danRer10",
+                                          "BDGP6",
+                                          "dm6",
+                                          "EquCab2",
+                                          "equCab2",
+                                          "EB1",
+                                          "Galgal4",
+                                          "Gm01",
+                                          "GRCh37",
+                                          "GRCh38",
+                                          "hg18",
+                                          "hg19",
+                                          "hg38",
+                                          "Mmul_1",
+                                          "GRCm38",
+                                          "mm10",
+                                          "IRGSP-1.0",
+                                          "CHIMP2.1.4",
+                                          "panTro4",
+                                          "Rnor 5.0",
+                                          "Rnor 6.0",
+                                          "rn6",
+                                          "R64-1-1",
+                                          "sacCer3",
+                                          "EF2",
+                                          "Sbi1",
+                                          "Sscrofa10.2",
+                                          "susScr3",
+                                          "AGPv3"
+                                        ],
+                                        "enumNames": [
+                                          "Arabidopsis thaliana (TAIR10)",
+                                          "Bacillus subtilis 168 (EB2)",
+                                          "Bos taurus (UMD3.1)",
+                                          "Bos taurus (bosTau8)",
+                                          "Caenorhabditis elegans (WBcel235)",
+                                          "Caenorhabditis elegans (ce10)",
+                                          "Canis familiaris (CanFam3.1)",
+                                          "Canis familiaris (canFam3)",
+                                          "Danio rerio (GRCz10)",
+                                          "Danio rerio (danRer10)",
+                                          "Drosophila melanogaster (BDGP6)",
+                                          "Drosophila melanogaster (dm6)",
+                                          "Equus caballus (EquCab2)",
+                                          "Equus caballus (equCab2)",
+                                          "Escherichia coli K 12 DH10B (EB1)",
+                                          "Gallus gallus (Galgal4)",
+                                          "Glycine max (Gm01)",
+                                          "Homo sapiens (GRCh37)",
+                                          "Homo sapiens (GRCh38)",
+                                          "Homo sapiens (hg18)",
+                                          "Homo sapiens (hg19)",
+                                          "Homo sapiens (hg38)",
+                                          "Macaca mulatta (Mmul 1)",
+                                          "Mus musculus (GRCm38)",
+                                          "Mus musculus (mm10)",
+                                          "Oryza sativa japonica (IRGSP-1.0)",
+                                          "Pan troglodytes (CHIMP2.1.4)",
+                                          "Pan troglodytes (panTro4)",
+                                          "Rattus norvegicus (Rnor 5.0)",
+                                          "Rattus norvegicus (Rnor 6.0)",
+                                          "Rattus norvegicus (rn6)",
+                                          "Saccharomyces cerevisiae (R64-1-1)",
+                                          "Saccharomyces cerevisiae (sacCer3)",
+                                          "Schizosaccharomyces pombe (EF2)",
+                                          "Sorghum bicolor (Sbi1)",
+                                          "Sus scrofa (Sscrofa10.2)",
+                                          "Sus scrofa (susScr3)",
+                                          "Zea mays (AGPv3)"
+                                        ]
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "properties": {
+                                  "genome_source": {
+                                    "enum": [
+                                      "dataset"
+                                    ]
+                                  },
+                                  "cellranger_cirro_reference": {
+                                    "type": "object",
+                                    "title": "Cirro Genome Index (Cell Ranger)",
+                                    "description": "Pre-built Cell Ranger reference dataset",
+                                    "properties": {
+                                      "genome_index": {
+                                        "title": "Cell Ranger Reference",
+                                        "type": "string",
+                                        "pathType": "dataset",
+                                        "process": [
+                                          "process-cirro-genome-index-cellranger-1-0",
+                                          "genome_cellranger_index"
+                                        ],
+                                        "description": "Pre-built Cell Ranger reference dataset"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "aligner": {
+                        "enum": [
+                          "cellrangerarc"
+                        ]
+                      },
+                      "cellrangerarc_genome_selection": {
+                        "title": "Cell Ranger ARC Reference Genome",
+                        "type": "object",
+                        "properties": {
+                          "genome_source": {
+                            "type": "string",
+                            "title": "Reference Genome Source",
+                            "description": "Select where the reference for this aligner comes from",
+                            "enum": [
+                              "igenomes",
+                              "dataset"
+                            ],
+                            "enumNames": [
+                              "iGenomes",
+                              "Custom Genome"
+                            ],
+                            "default": "igenomes"
+                          }
+                        },
+                        "dependencies": {
+                          "genome_source": {
+                            "oneOf": [
+                              {
+                                "properties": {
+                                  "genome_source": {
+                                    "enum": [
+                                      "igenomes"
+                                    ]
+                                  },
+                                  "igenomes": {
+                                    "type": "object",
+                                    "title": "Reference Genome (iGenomes)",
+                                    "description": "Select a curated reference genome. The pipeline builds the index it needs from this genome's FASTA and GTF.",
+                                    "properties": {
+                                      "genome": {
+                                        "type": "string",
+                                        "title": "Select A Reference Genome",
+                                        "description": "The following iGenomes are currently available for analysis",
+                                        "enum": [
+                                          "TAIR10",
+                                          "EB2",
+                                          "UMD3.1",
+                                          "bosTau8",
+                                          "WBcel235",
+                                          "ce10",
+                                          "CanFam3.1",
+                                          "canFam3",
+                                          "GRCz10",
+                                          "danRer10",
+                                          "BDGP6",
+                                          "dm6",
+                                          "EquCab2",
+                                          "equCab2",
+                                          "EB1",
+                                          "Galgal4",
+                                          "Gm01",
+                                          "GRCh37",
+                                          "GRCh38",
+                                          "hg18",
+                                          "hg19",
+                                          "hg38",
+                                          "Mmul_1",
+                                          "GRCm38",
+                                          "mm10",
+                                          "IRGSP-1.0",
+                                          "CHIMP2.1.4",
+                                          "panTro4",
+                                          "Rnor 5.0",
+                                          "Rnor 6.0",
+                                          "rn6",
+                                          "R64-1-1",
+                                          "sacCer3",
+                                          "EF2",
+                                          "Sbi1",
+                                          "Sscrofa10.2",
+                                          "susScr3",
+                                          "AGPv3"
+                                        ],
+                                        "enumNames": [
+                                          "Arabidopsis thaliana (TAIR10)",
+                                          "Bacillus subtilis 168 (EB2)",
+                                          "Bos taurus (UMD3.1)",
+                                          "Bos taurus (bosTau8)",
+                                          "Caenorhabditis elegans (WBcel235)",
+                                          "Caenorhabditis elegans (ce10)",
+                                          "Canis familiaris (CanFam3.1)",
+                                          "Canis familiaris (canFam3)",
+                                          "Danio rerio (GRCz10)",
+                                          "Danio rerio (danRer10)",
+                                          "Drosophila melanogaster (BDGP6)",
+                                          "Drosophila melanogaster (dm6)",
+                                          "Equus caballus (EquCab2)",
+                                          "Equus caballus (equCab2)",
+                                          "Escherichia coli K 12 DH10B (EB1)",
+                                          "Gallus gallus (Galgal4)",
+                                          "Glycine max (Gm01)",
+                                          "Homo sapiens (GRCh37)",
+                                          "Homo sapiens (GRCh38)",
+                                          "Homo sapiens (hg18)",
+                                          "Homo sapiens (hg19)",
+                                          "Homo sapiens (hg38)",
+                                          "Macaca mulatta (Mmul 1)",
+                                          "Mus musculus (GRCm38)",
+                                          "Mus musculus (mm10)",
+                                          "Oryza sativa japonica (IRGSP-1.0)",
+                                          "Pan troglodytes (CHIMP2.1.4)",
+                                          "Pan troglodytes (panTro4)",
+                                          "Rattus norvegicus (Rnor 5.0)",
+                                          "Rattus norvegicus (Rnor 6.0)",
+                                          "Rattus norvegicus (rn6)",
+                                          "Saccharomyces cerevisiae (R64-1-1)",
+                                          "Saccharomyces cerevisiae (sacCer3)",
+                                          "Schizosaccharomyces pombe (EF2)",
+                                          "Sorghum bicolor (Sbi1)",
+                                          "Sus scrofa (Sscrofa10.2)",
+                                          "Sus scrofa (susScr3)",
+                                          "Zea mays (AGPv3)"
+                                        ]
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "properties": {
+                                  "genome_source": {
+                                    "enum": [
+                                      "dataset"
+                                    ]
+                                  },
+                                  "cellrangerarc_cirro_reference": {
+                                    "type": "object",
+                                    "title": "Cirro Genome Index (Cell Ranger ARC)",
+                                    "description": "Pre-built Cell Ranger ARC reference dataset",
+                                    "properties": {
+                                      "genome_index": {
+                                        "title": "Cell Ranger ARC Reference",
+                                        "type": "string",
+                                        "pathType": "dataset",
+                                        "process": [
+                                          "process-cirro-genome-index-cellranger-arc-1-0",
+                                          "genome_cellranger-arc_index"
+                                        ],
+                                        "description": "Pre-built Cell Ranger ARC reference dataset"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "aligner": {
+                        "enum": [
+                          "cellrangermulti"
+                        ]
+                      },
+                      "cellrangermulti_genome_selection": {
+                        "title": "Cell Ranger multi Reference Genomes",
+                        "type": "object",
+                        "properties": {
+                          "genome_source": {
+                            "type": "string",
+                            "title": "Reference Genome Source",
+                            "description": "Select where the reference for this aligner comes from",
+                            "enum": [
+                              "prebuilt",
+                              "igenomes",
+                              "dataset"
+                            ],
+                            "enumNames": [
+                              "10X Curated Reference",
+                              "iGenomes",
+                              "Custom Genome"
+                            ],
+                            "default": "prebuilt"
+                          }
+                        },
+                        "dependencies": {
+                          "genome_source": {
+                            "oneOf": [
+                              {
+                                "properties": {
+                                  "genome_source": {
+                                    "enum": [
+                                      "prebuilt"
+                                    ]
+                                  },
+                                  "prebuilt": {
+                                    "type": "object",
+                                    "title": "Reference Genome (10X Curated)",
+                                    "description": "Select a reference package published by 10X Genomics.",
+                                    "properties": {
+                                      "cellranger_index": {
+                                        "type": "string",
+                                        "title": "10X Reference Package",
+                                        "description": "Pre-built 10X Genomics gene-expression reference",
+                                        "default": "s3://pubweb-references/cellranger/refdata-gex-GRCh38-2024-A",
+                                        "enum": [
+                                          "s3://pubweb-references/cellranger/refdata-gex-GRCh38-2024-A",
+                                          "s3://pubweb-references/cellranger/refdata-gex-GRCh38-2020-A",
+                                          "s3://pubweb-references/cellranger/refdata-gex-GRCh38-and-GRCm39-2024-A",
+                                          "s3://pubweb-references/cellranger/refdata-gex-GRCh38-and-mm10-2020-A",
+                                          "s3://pubweb-references/cellranger/refdata-gex-GRCm39-2024-A",
+                                          "s3://pubweb-references/cellranger/refdata-gex-mm10-2020-A"
+                                        ],
+                                        "enumNames": [
+                                          "Homo sapiens (GRCh38-2024)",
+                                          "Homo sapiens (GRCh38-2020)",
+                                          "Homo sapiens (GRCh38-2024) and Mus musculus (GRCm39-2024)",
+                                          "Homo sapiens (GRCh38-2020) and Mus musculus (mm10-2020)",
+                                          "Mus musculus (GRCm39-2024)",
+                                          "Mus musculus (mm10-2020)"
+                                        ]
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "properties": {
+                                  "genome_source": {
+                                    "enum": [
+                                      "igenomes"
+                                    ]
+                                  },
+                                  "igenomes": {
+                                    "type": "object",
+                                    "title": "Reference Genome (iGenomes)",
+                                    "description": "Select a curated reference genome. The pipeline builds the index it needs from this genome's FASTA and GTF.",
+                                    "properties": {
+                                      "genome": {
+                                        "type": "string",
+                                        "title": "Select A Reference Genome",
+                                        "description": "The following iGenomes are currently available for analysis",
+                                        "enum": [
+                                          "TAIR10",
+                                          "EB2",
+                                          "UMD3.1",
+                                          "bosTau8",
+                                          "WBcel235",
+                                          "ce10",
+                                          "CanFam3.1",
+                                          "canFam3",
+                                          "GRCz10",
+                                          "danRer10",
+                                          "BDGP6",
+                                          "dm6",
+                                          "EquCab2",
+                                          "equCab2",
+                                          "EB1",
+                                          "Galgal4",
+                                          "Gm01",
+                                          "GRCh37",
+                                          "GRCh38",
+                                          "hg18",
+                                          "hg19",
+                                          "hg38",
+                                          "Mmul_1",
+                                          "GRCm38",
+                                          "mm10",
+                                          "IRGSP-1.0",
+                                          "CHIMP2.1.4",
+                                          "panTro4",
+                                          "Rnor 5.0",
+                                          "Rnor 6.0",
+                                          "rn6",
+                                          "R64-1-1",
+                                          "sacCer3",
+                                          "EF2",
+                                          "Sbi1",
+                                          "Sscrofa10.2",
+                                          "susScr3",
+                                          "AGPv3"
+                                        ],
+                                        "enumNames": [
+                                          "Arabidopsis thaliana (TAIR10)",
+                                          "Bacillus subtilis 168 (EB2)",
+                                          "Bos taurus (UMD3.1)",
+                                          "Bos taurus (bosTau8)",
+                                          "Caenorhabditis elegans (WBcel235)",
+                                          "Caenorhabditis elegans (ce10)",
+                                          "Canis familiaris (CanFam3.1)",
+                                          "Canis familiaris (canFam3)",
+                                          "Danio rerio (GRCz10)",
+                                          "Danio rerio (danRer10)",
+                                          "Drosophila melanogaster (BDGP6)",
+                                          "Drosophila melanogaster (dm6)",
+                                          "Equus caballus (EquCab2)",
+                                          "Equus caballus (equCab2)",
+                                          "Escherichia coli K 12 DH10B (EB1)",
+                                          "Gallus gallus (Galgal4)",
+                                          "Glycine max (Gm01)",
+                                          "Homo sapiens (GRCh37)",
+                                          "Homo sapiens (GRCh38)",
+                                          "Homo sapiens (hg18)",
+                                          "Homo sapiens (hg19)",
+                                          "Homo sapiens (hg38)",
+                                          "Macaca mulatta (Mmul 1)",
+                                          "Mus musculus (GRCm38)",
+                                          "Mus musculus (mm10)",
+                                          "Oryza sativa japonica (IRGSP-1.0)",
+                                          "Pan troglodytes (CHIMP2.1.4)",
+                                          "Pan troglodytes (panTro4)",
+                                          "Rattus norvegicus (Rnor 5.0)",
+                                          "Rattus norvegicus (Rnor 6.0)",
+                                          "Rattus norvegicus (rn6)",
+                                          "Saccharomyces cerevisiae (R64-1-1)",
+                                          "Saccharomyces cerevisiae (sacCer3)",
+                                          "Schizosaccharomyces pombe (EF2)",
+                                          "Sorghum bicolor (Sbi1)",
+                                          "Sus scrofa (Sscrofa10.2)",
+                                          "Sus scrofa (susScr3)",
+                                          "Zea mays (AGPv3)"
+                                        ]
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "properties": {
+                                  "genome_source": {
+                                    "enum": [
+                                      "dataset"
+                                    ]
+                                  },
+                                  "cellranger_cirro_reference": {
+                                    "type": "object",
+                                    "title": "Cirro Genome Index (Cell Ranger)",
+                                    "description": "Pre-built Cell Ranger gene-expression reference dataset",
+                                    "properties": {
+                                      "genome_index": {
+                                        "title": "Gene Expression Reference",
+                                        "type": "string",
+                                        "pathType": "dataset",
+                                        "process": [
+                                          "process-cirro-genome-index-cellranger-1-0",
+                                          "genome_cellranger_index"
+                                        ],
+                                        "description": "Pre-built Cell Ranger gene-expression reference dataset"
+                                      }
+                                    }
+                                  },
+                                  "cellranger_vdj_cirro_reference": {
+                                    "type": "object",
+                                    "title": "Cirro Genome Index (Cell Ranger V(D)J)",
+                                    "description": "Pre-built Cell Ranger V(D)J reference dataset. Leave unset to have the pipeline build one, or to skip V(D)J.",
+                                    "properties": {
+                                      "genome_index": {
+                                        "title": "V(D)J Reference",
+                                        "type": "string",
+                                        "pathType": "dataset",
+                                        "process": [
+                                          "process-cirro-genome-index-cellranger-vdj-1-0",
+                                          "genome_cellranger-vdj_index"
+                                        ],
+                                        "description": "Pre-built Cell Ranger V(D)J reference dataset. Leave unset to have the pipeline build one, or to skip V(D)J."
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "protocol": {
+        "type": "string",
+        "title": "Protocol",
+        "description": "The chemistry used to generate the data. 'auto' is only supported by Cell Ranger; other aligners need an explicit value such as 10XV2, 10XV3 or 10XV4.",
+        "default": "auto"
+      },
+      "barcode_whitelist": {
+        "type": "string",
+        "title": "Barcode Whitelist",
+        "pathType": "dataset",
+        "file": "**/*.txt*",
+        "description": "Optional barcode whitelist. Leave unset to use the whitelist bundled with the selected protocol."
+      },
+      "simpleaf_options": {
+        "type": "object",
+        "title": "Alevin-fry Options",
+        "description": "Only applied when the Alevin-fry (simpleaf) aligner is selected",
+        "properties": {
+          "simpleaf_umi_resolution": {
+            "type": "string",
+            "title": "UMI Resolution Strategy",
+            "default": "cr-like",
+            "enum": [
+              "cr-like",
+              "cr-like-em",
+              "parsimony",
+              "parsimony-em",
+              "parsimony-gene",
+              "parsimony-gene-em"
+            ]
+          },
+          "remove_doublets": {
+            "type": "boolean",
+            "title": "Remove Doublets?"
+          },
+          "qcatch_n_partitions": {
+            "type": "integer",
+            "title": "qcatch Partitions"
+          }
+        }
+      },
+      "starsolo_options": {
+        "type": "object",
+        "title": "STARsolo Options",
+        "description": "Only applied when the STARsolo aligner is selected",
+        "properties": {
+          "star_feature": {
+            "type": "string",
+            "title": "Feature Counted",
+            "default": "Gene",
+            "enum": [
+              "Gene",
+              "GeneFull",
+              "Gene Velocyto"
+            ],
+            "enumNames": [
+              "Gene (exonic reads)",
+              "GeneFull (pre-mRNA, includes introns)",
+              "Gene Velocyto (spliced/unspliced)"
+            ]
+          },
+          "seq_center": {
+            "type": "string",
+            "title": "Sequencing Center"
+          }
+        }
+      },
+      "kallisto_options": {
+        "type": "object",
+        "title": "kallisto | bustools Options",
+        "description": "Only applied when the kallisto | bustools aligner is selected",
+        "properties": {
+          "kb_workflow": {
+            "type": "string",
+            "title": "Workflow",
+            "description": "Use 'standard' for gene counts, or 'nac'/'lamanno' for RNA-velocity. The selected reference must have been built with the same workflow.",
+            "default": "standard",
+            "enum": [
+              "standard",
+              "nac",
+              "lamanno"
+            ]
+          }
+        }
+      },
+      "cellranger_options": {
+        "type": "object",
+        "title": "Cell Ranger Options",
+        "description": "Only applied when the Cell Ranger aligner is selected",
+        "properties": {
+          "skip_cellranger_renaming": {
+            "type": "boolean",
+            "title": "Skip Cell Ranger FASTQ Renaming?"
+          }
+        }
+      },
+      "cellrangerarc_options": {
+        "type": "object",
+        "title": "Cell Ranger ARC Options",
+        "description": "Only applied when the Cell Ranger ARC aligner is selected",
+        "properties": {
+          "motifs": {
+            "type": "string",
+            "title": "ATAC Motifs",
+            "pathType": "dataset",
+            "file": "**/*.{txt,jaspar,pfm}",
+            "description": "ATAC transcription-factor motifs in JASPAR format, used when the pipeline builds the ARC reference itself."
+          },
+          "cellrangerarc_config": {
+            "type": "string",
+            "title": "ARC Config File",
+            "pathType": "dataset",
+            "file": "**/*config*",
+            "description": "Optional cellranger-arc mkref config file."
+          }
+        }
+      },
+      "cellranger_multi_options": {
+        "type": "object",
+        "title": "Cell Ranger multi Options",
+        "description": "Only applied when the Cell Ranger multi aligner is selected",
+        "properties": {
+          "skip_cellrangermulti_vdjref": {
+            "type": "boolean",
+            "title": "Skip Building V(D)J Reference?",
+            "description": "Skip V(D)J reference creation when the run has no V(D)J libraries."
+          },
+          "gex_reference_version": {
+            "type": "string",
+            "title": "GEX Reference Version"
+          },
+          "cellranger_multi_barcodes": {
+            "type": "string",
+            "title": "Barcode Sample Assignment CSV",
+            "pathType": "dataset",
+            "file": "**/*.csv"
+          },
+          "gex_frna_probe_set": {
+            "type": "string",
+            "title": "Fixed RNA Probe Set CSV",
+            "pathType": "dataset",
+            "file": "**/*.csv"
+          },
+          "gex_target_panel": {
+            "type": "string",
+            "title": "Target Panel CSV",
+            "pathType": "dataset",
+            "file": "**/*.csv"
+          },
+          "gex_cmo_set": {
+            "type": "string",
+            "title": "CMO Set CSV",
+            "pathType": "dataset",
+            "file": "**/*.csv"
+          },
+          "fb_reference": {
+            "type": "string",
+            "title": "Feature Barcode Reference CSV",
+            "pathType": "dataset",
+            "file": "**/*.csv"
+          },
+          "vdj_inner_enrichment_primers": {
+            "type": "string",
+            "title": "V(D)J Inner Enrichment Primers",
+            "pathType": "dataset",
+            "file": "**/*.txt"
+          }
+        }
+      },
+      "skip_tools": {
+        "type": "object",
+        "title": "Skip Tools",
+        "description": "Disable individual steps of the pipeline",
+        "properties": {
+          "skip_fastqc": {
+            "type": "boolean",
+            "title": "Skip FastQC?"
+          },
+          "skip_multiqc": {
+            "type": "boolean",
+            "title": "Skip MultiQC?"
+          },
+          "skip_cellbender": {
+            "type": "boolean",
+            "title": "Skip CellBender empty-drops filter?"
+          },
+          "skip_qcatch": {
+            "type": "boolean",
+            "title": "Skip qcatch QC?"
+          },
+          "skip_emptydrops": {
+            "type": "boolean",
+            "title": "Skip emptyDrops filter?"
+          }
+        }
+      },
+      "reference_genome_options": {
+        "type": "object",
+        "title": "Reference Output Options",
+        "properties": {
+          "save_reference": {
+            "type": "boolean",
+            "title": "Save Reference Built By The Pipeline?"
+          },
+          "save_align_intermeds": {
+            "type": "boolean",
+            "title": "Save Alignment Intermediates?"
+          }
+        }
+      }
+    }
+  },
+  "ui": {
+    "protocol": {
+      "ui:placeholder": "auto, 10XV2, 10XV3, 10XV4"
+    },
+    "cellranger_multi_options": {
+      "gex_reference_version": {
+        "ui:placeholder": "GRCh38"
+      }
+    }
+  }
+}
