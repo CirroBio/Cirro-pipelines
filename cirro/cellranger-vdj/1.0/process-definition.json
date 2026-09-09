@@ -5,6 +5,7 @@
   "name": "CellRanger V(D)J",
   "desc": "Analysis of 10X single-cell sequencing of V(D)J",
   "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "pipelineTypeOverride": "10X",
   "category": "Single-Cell Analysis",
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-single-cell/#cellranger-vdj",

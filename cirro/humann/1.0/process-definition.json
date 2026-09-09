@@ -10,6 +10,7 @@
   "name": "Predict Metagenomic Pathways (HUMAnN v3)",
   "desc": "Prediction of metabolic pathways encoded by a microbial community using the HUMAnN v3 software suite",
   "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "category": "Microbial Analysis",
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-microbial-analysis#metagenomic-pathways-humann",
   "code": {

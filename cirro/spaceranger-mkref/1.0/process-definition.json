@@ -5,6 +5,7 @@
   "name": "Build SpaceRanger Reference",
   "desc": "Format custom probes for Visium analysis",
   "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "category": "Spatial Transcriptomics",
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-spatial-analysis/#visium-custom-probes",
   "code": {

@@ -5,6 +5,7 @@
   "name": "Quantify Gene Expression (nf-core/nanostring)",
   "desc": "An analysis pipeline for Nanostring nCounter expression data (v1.2.1)",
   "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "pipelineTypeOverride": "nf-core",
   "category": "RNA Sequencing",
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-rna-sequencing/#nanostring-ncounter-nf-corenanostring",

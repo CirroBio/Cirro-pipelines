@@ -6,6 +6,7 @@
   "desc": "Quality control analysis of flow cytometry data",
   "category": "Flow Cytometry",
   "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-flow-cytometry/#automated-quality-control-analysis",
   "code": {
     "repository": "GITHUBPUBLIC",

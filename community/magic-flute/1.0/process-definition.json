@@ -4,6 +4,7 @@
   "name": "MAGeCK Flute",
   "desc": "MAGeCK Flute enables accurate identification of essential genes with their related biological functions.",
   "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "category": "Targeted Sequencing",
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-targeted-sequencing/#crispr-screen-analysis",
   "code": {

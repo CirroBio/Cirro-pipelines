@@ -4,6 +4,7 @@
   "name": "CUT&RUN (nf-core/cutandrun)",
   "desc": "Alignment, peak-calling, and downstream analysis for CUT&RUN and CUT&Tag (v2.0)",
   "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "pipelineTypeOverride": "nf-core",
   "category": "DNA Sequencing",
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-dna-sequencing/#cutrun-nf-corecutandrun",

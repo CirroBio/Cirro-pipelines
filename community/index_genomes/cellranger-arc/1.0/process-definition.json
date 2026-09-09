@@ -8,6 +8,7 @@
   "name": "Build Genome Index (Cell Ranger ARC)",
   "desc": "Build a 10X Genomics Cell Ranger ARC multiome (ATAC + gene expression) reference with cellranger-arc mkref from genome, GTF, and optional ATAC TF motifs.",
   "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "category": "Reference Data",
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-reference/#genome-index-cellranger-arc",
   "code": {

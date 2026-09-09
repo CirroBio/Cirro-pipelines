@@ -9,6 +9,7 @@
   "name": "Gene Set Enrichment Analysis",
   "desc": "Identification of enriched gene sets from differential expression results",
   "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "category": "Statistical Analysis",
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-statistical-analysis/#gene-set-enrichment-analysis",
   "code": {

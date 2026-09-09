@@ -5,6 +5,7 @@
   "name": "CellRanger Multiome (ATAC + GEX)",
   "desc": "Analysis of 10X Chromium Single Cell Multiome ATAC + Gene Expression",
   "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "pipelineTypeOverride": "10X",
   "category": "Single-Cell Analysis",
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-single-cell/#cellranger-multiome-atac-gex",

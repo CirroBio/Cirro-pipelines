@@ -4,6 +4,7 @@
   "name": "VirScan (PhIP-Flow v1.12)",
   "desc": "Analysis of antibody binding to viral epitopes in the VirScan library, using the PhIP-Flow analysis workflow.\nNegative controls should be annotated with control_status = 'beads_only'",
   "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "category": "Targeted Sequencing",
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-targeted-sequencing/#virscan",
   "code": {

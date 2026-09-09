@@ -8,6 +8,7 @@
   "name": "Build Genome Index (Bowtie2)",
   "desc": "Build a Bowtie2 index from a reference genome FASTA using the appropriate nf-core module.",
   "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "category": "Reference Data",
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-reference/#genome-index-bowtie2",
   "code": {

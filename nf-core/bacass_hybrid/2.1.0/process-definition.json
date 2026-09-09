@@ -5,6 +5,7 @@
   "name": "De Novo Assembly - Hybrid (nf-core/bacass)",
   "desc": "Simple bacterial genome assembly and annotation (v2.1.0)",
   "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "pipelineTypeOverride": "nf-core",
   "category": "Microbial Analysis",
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-microbial-analysis#de-novo-assembly-nf-corebacass",

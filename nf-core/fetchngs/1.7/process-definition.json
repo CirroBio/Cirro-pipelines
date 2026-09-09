@@ -30,6 +30,7 @@
   "name": "Public Download",
   "desc": "Pipeline to fetch metadata and raw FASTQ files from public databases",
   "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "category": "Data Download",
   "documentationUrl": "https://github.com/nf-core/fetchngs/releases/tag/1.10.0",
   "code": {

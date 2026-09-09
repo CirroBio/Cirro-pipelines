@@ -5,6 +5,7 @@
   "name": "Analyze Visium Spatial Transcriptomics",
   "desc": "Run Space Ranger on demultiplexed Visium FASTQ data",
   "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "category": "Spatial Transcriptomics",
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-spatial-analysis/#visium-spatial-transcriptomics",
   "code": {

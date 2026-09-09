@@ -10,6 +10,7 @@
     "name": "QuPath Image Analysis",
     "desc": "Run QuPath script on a collection of images",
     "executor": "NEXTFLOW",
+    "executionModes": ["STANDARD", "HEALTHOMICS"],
     "category": "Image Analysis",
     "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-image-analysis/#qupath",
     "code": {

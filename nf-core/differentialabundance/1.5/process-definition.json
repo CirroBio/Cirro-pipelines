@@ -5,6 +5,7 @@
   "name": "Differential Abundance Analysis (nf-core/differentialabundance)",
   "desc": "Differential abundance analysis for feature/ observation matrices from platforms such as RNA-seq (v1.5.0)",
   "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "pipelineTypeOverride": "nf-core",
   "category": "Statistical Analysis",
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-statistical-analysis/#differential-expression-analysis",

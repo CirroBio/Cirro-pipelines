@@ -7,6 +7,7 @@
   "name": "CellRanger Aggregate",
   "desc": "Combine multiple samples processed with 10X single-cell sequencing for gene expression",
   "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "pipelineTypeOverride": "10X",
   "category": "Single-Cell Analysis",
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-single-cell/#aggregate-cellranger-outputs",

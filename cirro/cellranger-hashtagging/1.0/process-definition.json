@@ -8,6 +8,7 @@
   "name": "CellRanger Demultiplex Hashtags",
   "desc": "Deconvolute CMO hashtagged single-cell data using CellRanger",
   "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "pipelineTypeOverride": "10X",
   "category": "Single-Cell Analysis",
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-single-cell/#cellranger-hashtagging",

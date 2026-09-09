@@ -8,6 +8,7 @@
   "name": "CellRanger Gene Expression (Public Data)",
   "desc": "Analysis of 10X single-cell sequencing of gene expression",
   "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "category": "Single-Cell Analysis",
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-single-cell/#cellranger-gene-expression",
   "code": {

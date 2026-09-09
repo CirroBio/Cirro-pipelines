@@ -22,6 +22,7 @@
   "name": "Decontaminate Metagenome (KneadData)",
   "desc": "Remove contaminating host sequences by alignment to a reference genome",
   "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "category": "Microbial Analysis",
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-microbial-analysis#decontaminate-metagenome-kneaddata",
   "code": {

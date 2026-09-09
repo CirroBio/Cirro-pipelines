@@ -4,6 +4,7 @@
   "name": "RNA Fusion (nf-core/rnafusion)",
   "desc": "Detect gene fusion events from RNAseq data",
   "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "pipelineTypeOverride": "nf-core",
   "category": "RNA Sequencing",
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-rna-sequencing/#rna-fusion-nf-corernafusion",

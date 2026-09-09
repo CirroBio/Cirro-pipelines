@@ -5,6 +5,7 @@
   "name": "CellRanger Multi Analysis",
   "desc": "Analysis of 10X single-cell sequencing of gene expression paired with V(D)J, antibody capture, or CRISPR guides",
   "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "pipelineTypeOverride": "10X",
   "category": "Single-Cell Analysis",
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-single-cell/#cellranger-multi-analysis",
