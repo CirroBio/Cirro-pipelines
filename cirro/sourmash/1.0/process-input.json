@@ -8,5 +8,5 @@
     "ksize": "$.dataset.params.k",
     "threshold_bp": "$.dataset.params.threshold_bp",
     "output": "$.dataset.dataPath",
-    "tax_db": "s3://pubweb-references/genbank/genbank-2022.03-gtdb-rs214-tax.db"
+    "tax_db": "$.referencesBucketUri|/genbank/genbank-2022.03-gtdb-rs214-tax.db"
 }

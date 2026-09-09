@@ -1,5 +1,5 @@
 {
-  "model": "s3://pubweb-references/stardist/2024-10-23-model/stardist_cell_seg_model.pb",
+  "model": "$.referencesBucketUri|/stardist/2024-10-23-model/stardist_cell_seg_model.pb",
   "input_tiff": "$.dataset.params.input_tiff",
   "minPercentileNormalization": "$.dataset.params.stardist_options.minPercentileNormalization",
   "maxPercentileNormalization": "$.dataset.params.stardist_options.maxPercentileNormalization",

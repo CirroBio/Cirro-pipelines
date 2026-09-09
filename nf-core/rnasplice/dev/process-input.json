@@ -1,7 +1,7 @@
 {
     "input": "$.dataset.s3|/config/manifest.csv",
     "contrasts": "$.dataset.s3|/config/contrasts.csv",
-    "igenomes_base": "s3://pubweb-references/igenomes",
+    "igenomes_base": "$.referencesBucketUri|/igenomes",
     "source": "fastq",
     "outdir": "$.dataset.s3|/data/",
     "genome": "$.dataset.params.genome",

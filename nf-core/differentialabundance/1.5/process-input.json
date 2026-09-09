@@ -8,5 +8,5 @@
     "transcript_length_matrix": "$.inputs[0].s3|/data/salmon/salmon.merged.gene_lengths.tsv",
     "contrasts": "$.dataset.s3|/config/contrasts.csv",
     "shinyngs_build_app": "$.dataset.params.shiny_app_settings.shinyngs_build_app",
-    "igenomes_base": "s3://pubweb-references/igenomes"
+    "igenomes_base": "$.referencesBucketUri|/igenomes"
 }

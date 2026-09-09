@@ -1,9 +1,9 @@
 {
-  "HaplotypeCallerGvcf_GATK4.ref_dict": "s3://pubweb-references/GATK/hg38/v0/Homo_sapiens_assembly38.dict",
-  "HaplotypeCallerGvcf_GATK4.ref_fasta": "s3://pubweb-references/GATK/hg38/v0/Homo_sapiens_assembly38.fasta",
-  "HaplotypeCallerGvcf_GATK4.ref_fasta_index": "s3://pubweb-references/GATK/hg38/v0/Homo_sapiens_assembly38.fasta.fai",
+  "HaplotypeCallerGvcf_GATK4.ref_dict": "$.referencesBucketUri|/GATK/hg38/v0/Homo_sapiens_assembly38.dict",
+  "HaplotypeCallerGvcf_GATK4.ref_fasta": "$.referencesBucketUri|/GATK/hg38/v0/Homo_sapiens_assembly38.fasta",
+  "HaplotypeCallerGvcf_GATK4.ref_fasta_index": "$.referencesBucketUri|/GATK/hg38/v0/Homo_sapiens_assembly38.fasta.fai",
 
-  "HaplotypeCallerGvcf_GATK4.scattered_calling_intervals_list": "s3://pubweb-references/GATK/hg38/v0/hg38_wgs_scattered_calling_intervals.txt",
+  "HaplotypeCallerGvcf_GATK4.scattered_calling_intervals_list": "$.referencesBucketUri|/GATK/hg38/v0/hg38_wgs_scattered_calling_intervals.txt",
 
   "final_workflow_outputs_dir": "$.dataset.s3|/data/",
   "final_call_logs_dir": "$.dataset.s3|/logs/"

@@ -1,5 +1,5 @@
 {
-  "genesets_file": "s3://pubweb-references/gmt/msigdb.v7.4.symbols.gmt",
+  "genesets_file": "$.referencesBucketUri|/gmt/msigdb.v7.4.symbols.gmt",
   "input_csv": "$.dataset.params.input_csv",
   "gene_column": "$.dataset.params.gene_column",
   "score_column": "$.dataset.params.score_column",

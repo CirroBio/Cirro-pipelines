@@ -1,7 +1,7 @@
 {
-  "gmt": "s3://pubweb-references/gmt/msigdb.v7.4.symbols.gmt",
-  "depmap_samples": "s3://pubweb-references/depmap/depmap_samples.csv",
-  "depmap_effect": "s3://pubweb-references/depmap/depmap_effect.csv",
+  "gmt": "$.referencesBucketUri|/gmt/msigdb.v7.4.symbols.gmt",
+  "depmap_samples": "$.referencesBucketUri|/depmap/depmap_samples.csv",
+  "depmap_effect": "$.referencesBucketUri|/depmap/depmap_effect.csv",
   "treatment_fastq": "$.dataset.params.treatment_fastq",
   "control_fastq": "$.dataset.params.control_fastq",
   "library": "$.dataset.params.library",

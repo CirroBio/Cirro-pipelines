@@ -1,8 +1,8 @@
 {
     "outdir": "$.dataset.s3|/data/",
     "input": "$.dataset.s3|/config/samplesheet.tsv",
-    "kraken2db": "s3://pubweb-references/kraken/k2_minusb_20220607/k2_minusb_20220607.tar.gz",
-    "baktadb": "s3://pubweb-references/bakta/v5.1_2024-03-07/db.tar.gz",
+    "kraken2db": "$.referencesBucketUri|/kraken/k2_minusb_20220607/k2_minusb_20220607.tar.gz",
+    "baktadb": "$.referencesBucketUri|/bakta/v5.1_2024-03-07/db.tar.gz",
     "assembler": "unicycler",
     "assembly_type": "short",
     "mode": "$.dataset.params.mode",

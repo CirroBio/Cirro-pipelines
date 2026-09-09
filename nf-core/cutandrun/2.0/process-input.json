@@ -1,7 +1,7 @@
 {
     "outdir": "$.dataset.s3|/data/",
     "input": "$.dataset.s3|/config/pipeline_samplesheet.csv",
-    "igenomes_base": "s3://pubweb-references/igenomes",
+    "igenomes_base": "$.referencesBucketUri|/igenomes",
     "genome": "$.dataset.params.genome",
     "minimum_alignment_q_score": "$.dataset.params.minimum_alignment_q_score",
     "dedup_target_reads": "$.dataset.params.dedup_target_reads",

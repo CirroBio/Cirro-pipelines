@@ -7,5 +7,5 @@
   "max_cpus": "$.dataset.params.compute_options.max_cpus",
   "outdir": "$.dataset.s3|/data/",
   "input": "$.dataset.s3|/config/manifest.csv",
-  "genomes_base": "s3://pubweb-references/rnafusion/3.0.2/"
+  "genomes_base": "$.referencesBucketUri|/rnafusion/3.0.2/"
 }
