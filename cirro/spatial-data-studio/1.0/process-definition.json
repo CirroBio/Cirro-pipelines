@@ -1,0 +1,39 @@
+{
+  "id": "process-cirro-spatial-data-studio-1-0",
+  "parentProcessIds": [
+    "custom_dataset",
+    "xenium",
+    "cosmx",
+    "ingest_spaceranger",
+    "process-hutch-spaceranger-count-1-0",
+    "xeniumranger-resegment-1-0",
+    "process-hutch-mcmicro-1-0"
+  ],
+  "childProcessIds": [],
+  "dataType": "Spatial Data Studio",
+  "name": "Analyze Spatial Data (Spatial Data Studio)",
+  "desc": "Find the spatial datasets in the input data (Xenium, Visium, Visium HD, MERSCOPE, CosMx, Curio Seeker, Steinbock, MCMICRO), analyze each with the recipe for its data type, and publish SpatialData checkpoints, plots, a MultiQC report, and a browsable viewer over the whole run.",
+  "executor": "NEXTFLOW",
+  "category": "Spatial Transcriptomics",
+  "documentationUrl": "https://cirrobio.github.io/spatial-data-studio/",
+  "code": {
+    "repository": "GITHUBPUBLIC",
+    "uri": "CirroBio/spatial-data-studio",
+    "script": "nextflow/main.nf",
+    "version": "v0.1.10"
+  },
+  "allowMultipleSources": true,
+  "usesSampleSheet": false,
+  "computeDefaults": [
+    {
+      "executor": "NEXTFLOW",
+      "json": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-compute.config",
+      "name": "Default"
+    }
+  ],
+  "paramMapJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json",
+  "formJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-form.json",
+  "preProcessScript": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/preprocess.py",
+  "inlineDocumentationUri": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/README.md",
+  "webOptimizationJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-output.json"
+}
