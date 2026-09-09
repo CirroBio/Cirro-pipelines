@@ -21,7 +21,12 @@ def load_schemas():
 
 def load_items(file_name):
     items = {}
-    files = list(Path('.').glob(f'*/**/{file_name}'))
+    # Skip .claude/worktrees, which holds full copies of the repo -- every
+    # process in one would otherwise register as a duplicate
+    files = [
+        file for file in Path('.').glob(f'*/**/{file_name}')
+        if '.claude' not in file.parts
+    ]
     for file in files:
         with file.open() as f:
             try:
