@@ -32,11 +32,8 @@ ds.logger.info("Formatted samplesheet:")
 ds.logger.info(samplesheet.to_csv(index=None))
 assert samplesheet.shape[0] > 0, "No files detected -- there may be an error with data ingest"
 
-# Write out to a file
-samplesheet.to_csv("samplesheet.csv", index=None)
-
-# Add the param for the samplesheet
-ds.add_param("samplesheet", "samplesheet.csv")
+# Write to the dataset's config/ folder (mapped in process-input.json)
+samplesheet.to_csv(ds.params["samplesheet"], index=None)
 
 # log
 ds.logger.info(ds.params)

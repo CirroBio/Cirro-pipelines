@@ -1,4 +1,5 @@
 {
+    "samplesheet": "$.dataset.s3|/config/pipeline_samplesheet.csv",
     "genomeDir": "s3://pubweb-references/arcashla/2023-08-31-chr6/indexes/chr6/",
     "genes": "$.dataset.params.genes",
     "population": "$.dataset.params.population",

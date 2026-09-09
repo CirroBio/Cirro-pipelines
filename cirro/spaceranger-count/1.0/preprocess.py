@@ -32,10 +32,9 @@ def main():
 
     assert valid, "All FASTQ data must match up to image files"
 
-    fastq_df.to_csv("fastq_manifest.csv", index=None)
-    ds.add_param("fastq_manifest", "fastq_manifest.csv")
-    img_df.to_csv("image_manifest.csv", index=None)
-    ds.add_param("image_manifest", "image_manifest.csv")
+    # Write to the dataset's config/ folder (mapped in process-input.json)
+    fastq_df.to_csv(ds.params["fastq_manifest"], index=None)
+    img_df.to_csv(ds.params["image_manifest"], index=None)
 
 
 def make_img_df(ds: PreprocessDataset):

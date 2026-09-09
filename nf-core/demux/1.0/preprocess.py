@@ -48,4 +48,5 @@ if __name__ == '__main__':
     ds = PreprocessDataset.from_running()
     samplesheet = make_manifest(ds)
     ds.logger.info(samplesheet.to_csv())
-    samplesheet.to_csv('manifest.csv', index=False)
+    # Write to the dataset's config/ folder (mapped in process-input.json)
+    samplesheet.to_csv(ds.params["input"], index=False)

@@ -1,5 +1,5 @@
 {
-  "manifest": "samplesheet.csv",
+  "manifest": "$.dataset.s3|/config/pipeline_samplesheet.csv",
   "counts": "$.dataset.params.counts",
   "algorithm": "$.dataset.params.algorithm",
   "comp_col": "$.dataset.params.comp_col",

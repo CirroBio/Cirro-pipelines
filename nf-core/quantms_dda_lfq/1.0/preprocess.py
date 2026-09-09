@@ -7,9 +7,8 @@ from cirro.helpers.preprocess_dataset import PreprocessDataset
 def main() -> None:
     ds = PreprocessDataset.from_running()
     samplesheet = parse_samplesheet(ds)
-    input_fp = "input.sdrf.tsv"
-    samplesheet.to_csv(input_fp, sep="\t", index=None)
-    ds.add_param("input", input_fp)
+    # Write to the dataset's config/ folder (mapped in process-input.json)
+    samplesheet.to_csv(ds.params["input"], sep="\t", index=None)
 
 
 def parse_samplesheet(ds: PreprocessDataset) -> pd.DataFrame:

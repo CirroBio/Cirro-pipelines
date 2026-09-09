@@ -101,8 +101,8 @@ if __name__ == "__main__":
 
     manifest = make_manifest(ds)
 
-    # Write manifest
-    manifest.to_csv("manifest.csv", index=None)
+    # Write to the dataset's config/ folder (mapped in process-input.json)
+    manifest.to_csv(ds.params["input"], index=None)
 
     ######### Process form handling ##########
     form_handling(ds)

@@ -221,8 +221,9 @@ if __name__ == "__main__":
     for line in manifest.to_csv(index=None).split("\n"):
         ds.logger.info(line)
 
-    manifest.to_csv("manifest.csv", index=None)
-    ds.logger.info(f"Wrote {manifest.shape[0]} row(s) to manifest.csv")
+    # Write to the dataset's config/ folder (mapped in process-input.json)
+    manifest.to_csv(ds.params["input"], index=None)
+    ds.logger.info(f"Wrote {manifest.shape[0]} row(s) to {ds.params['input']}")
 
     tools = ds.params.get("tools")
     assert tools, "ERROR: You must select at least one variant calling tool."

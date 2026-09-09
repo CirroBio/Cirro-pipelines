@@ -1,5 +1,6 @@
 {
   "results": "$.dataset.dataPath",
+  "sample_table": "$.dataset.s3|/config/pipeline_samplesheet.csv",
   "reads_prefix": "$.inputs[0].dataPath",
   "peptide_table": "$.dataset.params.peptide_table",
   "read_length": "$.dataset.params.read_length",

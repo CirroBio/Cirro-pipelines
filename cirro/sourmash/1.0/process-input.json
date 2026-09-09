@@ -1,4 +1,5 @@
 {
+    "samplesheet": "$.dataset.s3|/config/pipeline_samplesheet.csv",
     "bact_db": "$.dataset.params.bact_db",
     "viral_db": "$.dataset.params.viral_db",
     "archaea_db": "$.dataset.params.archaea_db",

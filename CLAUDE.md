@@ -121,6 +121,81 @@ The `|` separates the static image prefix from a JSONPath expression that resolv
 
 ---
 
+## process-input.json — JSONPath Roots
+
+The mapping resolves against the launch payload, whose only roots are `$.dataset`,
+`$.project`, `$.process` and `$.inputs`. Use `$.dataset.*` — the older
+`$.params.dataset.paramJson.*` / `$.params.dataset.s3` / `$.params.inputs[*]`
+spellings still resolve but are not the documented form.
+
+| Use | Path |
+|-----|------|
+| A form parameter | `$.dataset.params.<field>` (nested groups: `$.dataset.params.<group>.<field>`) |
+| Output directory | `$.dataset.dataPath` (equivalently `$.dataset.s3\|/data/`) |
+| Dataset root on S3 | `$.dataset.s3` |
+| An input dataset | `$.inputs[0].dataPath`, `$.inputs[0].s3`, or `$.inputs[*].dataPath` for all |
+
+---
+
+## preprocess.py — Staging Files to the Dataset
+
+A `preprocess.py` must **not** write workflow inputs to its working directory. Nothing
+stages that directory for the run, so a bare filename cannot resolve on HealthOmics,
+and the file is lost rather than recorded alongside the results. Write to the dataset's
+own `config/` folder instead.
+
+1. Declare the path in `process-input.json`:
+
+   ```json
+   "input": "$.dataset.s3|/config/manifest.csv"
+   ```
+
+2. Write to that resolved path in `preprocess.py`. No `add_param` call is needed — the
+   mapping has already put the value in `ds.params`:
+
+   ```python
+   # Write to the dataset's config/ folder (mapped in process-input.json)
+   manifest.to_csv(ds.params["input"], index=None)
+   ```
+
+**Never use these four names** — `config/` is also where Cirro writes the dataset's own
+config, and `PreprocessDataset.from_running()` reads all four at startup:
+
+| Reserved | Read into |
+|----------|-----------|
+| `config/samplesheet.csv` | `ds.samplesheet` |
+| `config/files.csv` | `ds.files` |
+| `config/params.json` | `ds.params` |
+| `config/metadata.json` | `ds.metadata` |
+
+Where a pipeline's own input is conceptually a samplesheet, `config/pipeline_samplesheet.csv`
+is the convention.
+
+**Conditional writes:** the mapping populates the param on every run, so a file that is
+only written under some conditions must have its param removed otherwise — a param
+pointing at a missing object fails the run:
+
+```python
+if probe_barcodes is None:
+    ds.remove_param("probe_barcodes")
+```
+
+**Non-pandas writes:** `pandas.to_csv` accepts an S3 URI, but `open()` does not. Use
+`boto3` for YAML, JSON or plain text (see `community/pgap/1.0/preprocess.py`).
+
+**Files referenced from inside a staged file** must carry the full S3 URI, not a relative
+name — derive the folder from the param that is mapped:
+
+```python
+submol_uri = ds.params["sample_sheet"].rsplit("/", 1)[0] + "/submol.yaml"
+```
+
+Cromwell (`"executor": "CROMWELL"`) processes are the exception: `inputs.json` and
+`options.json` are picked up from the working directory by convention and have no
+`process-input.json` param to redirect.
+
+---
+
 ## process-definition.json Structure
 
 Key fields:

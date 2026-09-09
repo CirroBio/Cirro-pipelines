@@ -148,9 +148,9 @@ if __name__ == "__main__":
 
     manifest = make_manifest(ds)
 
-    # Write out the manifest
-    manifest.to_csv("manifest.csv", index=None)
-    ds.logger.info(f"Wrote out {manifest.shape[0]:,} lines to manifest.csv")
+    # Write to the dataset's config/ folder (mapped in process-input.json)
+    manifest.to_csv(ds.params["input"], index=None)
+    ds.logger.info(f"Wrote out {manifest.shape[0]:,} lines to {ds.params['input']}")
 
     # Per-aligner form params to clean up — these are never passed to the pipeline directly
     aligner_specific_params = [

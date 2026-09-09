@@ -68,11 +68,8 @@ def main():
     # and use that information to format a samplesheet
     samplesheet = format_samplesheet(files, ds.logger)
 
-    # Write to disk
-    samplesheet.to_csv("samplesheet.csv", index=None)
-
-    # Point the workflow to the spreadsheet
-    ds.add_param("samplesheet", "samplesheet.csv")
+    # Write to the dataset's config/ folder (mapped in process-input.json)
+    samplesheet.to_csv(ds.params["samplesheet"], index=None)
 
     # Log the parameters present
     for k, v in ds.params.items():

@@ -55,25 +55,19 @@ probe_barcodes = pd.DataFrame(dict(
     )
 )).reset_index()
 
-# Save the sample barcode spreadsheet
+# Save the sample barcode spreadsheet to the dataset's config/ folder
+# (mapped in process-input.json)
 ds.logger.info("Sample probe barcodes specified:")
 ds.logger.info(probe_barcodes.to_csv(index=None))
-probe_barcodes.to_csv("probe_barcodes.csv", index=None)
-ds.add_param("probe_barcodes", "probe_barcodes.csv")
+probe_barcodes.to_csv(ds.params["probe_barcodes"], index=None)
 
 ds.logger.info("Samples provided by the user:")
 ds.logger.info(ds.samplesheet)
 assert ds.samplesheet.shape[0] > 0, "No files detected -- there may be an error with data ingest"
 
-# Write out the sample sheet
-ds.logger.info(f"Writing out {ds.samplesheet.shape[0]:,} lines to samples.csv")
-ds.samplesheet.to_csv("samples.csv", index=None)
-
-# Add it to the params
-ds.add_param(
-    "samples",
-    "samples.csv"
-)
+# Write to the dataset's config/ folder (mapped in process-input.json)
+ds.logger.info(f"Writing out {ds.samplesheet.shape[0]:,} lines to {ds.params['samples']}")
+ds.samplesheet.to_csv(ds.params["samples"], index=None)
 
 # Log the parameters present
 for k, v in ds.params.items():

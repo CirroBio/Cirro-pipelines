@@ -10,5 +10,5 @@ assert samplesheet.shape[0] > 0, "No files detected -- there may be an error wit
 
 ds.logger.info(samplesheet.head())
 
-# Write out the samplesheet to a local file
-samplesheet.to_csv("samplesheet.csv", index=None)
+# Write to the dataset's config/ folder (mapped in process-input.json)
+samplesheet.to_csv(ds.params["manifest"], index=None)

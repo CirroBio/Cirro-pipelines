@@ -1,5 +1,6 @@
 {
   "output": "$.dataset.dataPath",
+  "samplesheet": "$.dataset.s3|/config/pipeline_samplesheet.csv",
   "metaphlan_db": "s3://pubweb-references/metaphlan4/2023-12-20/mpa_vOct22_CHOCOPhlAnSGB_202212",
   "chocophlan_db": "s3://pubweb-references/humann/chocophlan/full_chocophlan.v201901_v31.tar.gz",
   "translated_search_db": "$.dataset.params.translated_search_db",

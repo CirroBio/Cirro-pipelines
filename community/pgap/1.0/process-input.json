@@ -1,4 +1,5 @@
 {
+  "sample_sheet": "$.dataset.s3|/config/sample_sheet.csv",
   "genome": "$.dataset.params.genome.fasta",
   "genus_species": "$.dataset.params.genome.genus_species",
   "strain": "$.dataset.params.genome.strain",
@@ -15,5 +16,5 @@
   "postal_code": "$.dataset.params.contact.postal_code",
   "country": "$.dataset.params.contact.country",
   "pgap_version": "$.dataset.params.pgap.version",
-  "output_folder": "$.params.dataset.dataPath"
+  "output_folder": "$.dataset.dataPath"
 }

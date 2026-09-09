@@ -35,8 +35,9 @@ if 'fcs_input' in ds.params and isinstance(ds.params['fcs_input'], str) and len(
 
     assert samplesheet.shape[0] == len(fcs_input)
 
+# Write to the dataset's config/ folder (mapped in process-input.json)
 samplesheet.to_csv(
-    "samplesheet.csv",
+    ds.params["samplesheet"],
     index=False
 )
 

@@ -5,6 +5,6 @@
 
   "HaplotypeCallerGvcf_GATK4.scattered_calling_intervals_list": "s3://pubweb-references/GATK/hg38/v0/hg38_wgs_scattered_calling_intervals.txt",
 
-  "final_workflow_outputs_dir": "$.params.dataset.s3|/data/",
-  "final_call_logs_dir": "$.params.dataset.s3|/logs/"
+  "final_workflow_outputs_dir": "$.dataset.s3|/data/",
+  "final_call_logs_dir": "$.dataset.s3|/logs/"
 }

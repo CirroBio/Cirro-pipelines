@@ -30,4 +30,5 @@ ds.logger.info("Analysis Manifest:")
 for line in manifest.to_csv(index=False).split("\n"):
     ds.logger.info(line)
 
-manifest.to_csv("manifest.csv", index=False)
+# Write to the dataset's config/ folder (mapped in process-input.json)
+manifest.to_csv(ds.params["input"], index=False)

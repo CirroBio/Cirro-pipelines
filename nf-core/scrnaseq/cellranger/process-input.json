@@ -1,6 +1,6 @@
 {
   "outdir": "$.dataset.dataPath",
-  "input": "samplesheet.csv",
+  "input": "$.dataset.s3|/config/pipeline_samplesheet.csv",
   "aligner": "cellranger",
   "igenomes_base": "s3://pubweb-references/igenomes",
   "protocol": "$.dataset.params.protocol",

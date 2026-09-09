@@ -17,15 +17,9 @@ ds.logger.info("Sample sheet provided by the user:")
 ds.logger.info(groupings)
 assert groupings.shape[0] > 0, "No files detected -- there may be an error with data ingest"
 
-# Write out the sample sheet
-ds.logger.info(f"Writing out {groupings.shape[0]:,} lines to sample.grouping.csv")
-groupings.to_csv("sample.grouping.csv", index=None)
-
-# Add it to the params
-ds.add_param(
-    "grouping",
-    "sample.grouping.csv"
-)
+# Write to the dataset's config/ folder (mapped in process-input.json)
+ds.logger.info(f"Writing out {groupings.shape[0]:,} lines to {ds.params['grouping']}")
+groupings.to_csv(ds.params["grouping"], index=None)
 
 # Build fastq_dir as a comma-delimited list of all input dataset paths
 data_paths = [dataset['dataPath'] for dataset in ds.metadata['inputs']]
@@ -40,6 +34,9 @@ for kw in ["feature_csv"]:
 
         # Remove it from the dict (so that the workflow default is used)
         ds.remove_param(kw)
+
+# Set below, only when the user supplies a probe barcode table
+probe_barcodes = None
 
 # If the user indicated that this is fixed RNA profiling
 if ds.params.get("is_frp"):
@@ -71,10 +68,15 @@ if ds.params.get("is_frp"):
 
         if probe_barcodes.shape[0] == 0:
             ds.logger.info("No samples detected in the FRP samples table")
+            probe_barcodes = None
         else:
             ds.logger.info(f"Detected {probe_barcodes.shape[0]:,} samples in the FRP samples table")
-            probe_barcodes.to_csv("probe_barcodes.csv", index=None)
-            ds.add_param("probe_barcodes", "probe_barcodes.csv")
+            # Write to the dataset's config/ folder (mapped in process-input.json)
+            probe_barcodes.to_csv(ds.params["probe_barcodes"], index=None)
+
+# No table was written, so the mapped location holds no object
+if probe_barcodes is None:
+    ds.remove_param("probe_barcodes")
 
 # Log the parameters present
 for k, v in ds.params.items():

@@ -95,11 +95,8 @@ if __name__ == "__main__":
     ds = PreprocessDataset.from_running()
     manifest = make_manifest(ds)
 
-    # Write out the table
-    manifest.to_csv("samplesheet.csv", index=None)
-
-    # Add the param
-    ds.add_param("input", "samplesheet.csv")
+    # Write to the dataset's config/ folder (mapped in process-input.json)
+    manifest.to_csv(ds.params["input"], index=None)
 
     # log
     ds.logger.info(ds.params)

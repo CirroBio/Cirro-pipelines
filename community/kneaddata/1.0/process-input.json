@@ -1,5 +1,5 @@
 {
-  "samplesheet": "samplesheet.csv",
+  "samplesheet": "$.dataset.s3|/config/pipeline_samplesheet.csv",
   "db": "$.dataset.params.reference.db",
   "outdir": "$.dataset.dataPath",
   "sequencer_source": "$.dataset.params.input_options.sequencer_source",

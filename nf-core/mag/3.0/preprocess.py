@@ -63,8 +63,8 @@ ds.logger.info(samplesheet.to_csv(index=None))
 msg = "No files detected -- there may be an error with data ingest"
 assert samplesheet.shape[0] > 0, msg
 
-samplesheet.to_csv("samplesheet.csv", index=None)
-ds.add_param("input", "samplesheet.csv")
+# Write to the dataset's config/ folder (mapped in process-input.json)
+samplesheet.to_csv(ds.params["input"], index=None)
 
 # Auto-detect single-end
 if samplesheet["short_reads_2"].isnull().all():

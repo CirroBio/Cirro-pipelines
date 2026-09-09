@@ -1,4 +1,6 @@
 {
+  "fastq_manifest": "$.dataset.s3|/config/fastq_manifest.csv",
+  "image_manifest": "$.dataset.s3|/config/image_manifest.csv",
   "ref": "$.dataset.params.ref|/data/custom_SpaceRanger_reference",
   "probes": "$.dataset.params.ref|/data/probes.csv",
   "images": "$.dataset.params.images|/data",

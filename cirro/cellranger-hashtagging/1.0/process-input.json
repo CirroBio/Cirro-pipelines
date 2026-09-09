@@ -1,4 +1,5 @@
 {
+  "grouping": "$.dataset.s3|/config/sample.grouping.csv",
   "transcriptome_dir": "$.dataset.params.transcriptome_dir",
   "include_introns": "$.dataset.params.include_introns",
   "hashtag_csv": "$.dataset.params.hashtag_csv",

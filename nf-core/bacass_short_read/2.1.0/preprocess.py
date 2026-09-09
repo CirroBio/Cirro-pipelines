@@ -58,11 +58,8 @@ if __name__ == "__main__":
     # Make the samplesheet
     samplesheet = make_manifest(ds)
 
-    # Write out to a file
-    samplesheet.to_csv("samplesheet.tsv", index=None, sep="\t")
-
-    # Add the param for the samplesheet
-    ds.add_param("input", "samplesheet.tsv")
+    # Write to the dataset's config/ folder (mapped in process-input.json)
+    samplesheet.to_csv(ds.params["input"], index=None, sep="\t")
 
     # Format the unicycler_args based on the mode
     if ds.params.get("unicycler_mode", None) is not None:

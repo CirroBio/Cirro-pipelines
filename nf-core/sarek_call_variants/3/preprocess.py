@@ -4,7 +4,6 @@ from cirro.helpers.preprocess_dataset import PreprocessDataset
 from cirro.models.s3_path import S3Path
 import boto3
 import pandas as pd
-from pathlib import Path
 import urllib.request
 import urllib.error
 import json
@@ -291,7 +290,7 @@ _VCF_PARAM_PAIRS = (
 
 
 def stage_colliding_vcf_params(ds: PreprocessDataset):
-    """Stage uniquely named local copies of VCF params whose file names collide.
+    """Stage uniquely named copies of VCF params whose file names collide.
 
     Nextflow stages every input of a process into a single work directory, so two
     params pointing at files with the same name abort the run:
@@ -299,11 +298,10 @@ def stage_colliding_vcf_params(ds: PreprocessDataset):
         Process ...:MUTECT2_PAIRED input file name collision -- There are multiple
         input files for each of the following file names: germline_resource.vcf.gz
 
-    Copy each offending VCF into the launch directory under a name prefixed with its
-    param key and repoint the param at that copy. The index is staged as
+    Copy each offending VCF into the dataset's config/ folder under a name prefixed
+    with its param key and repoint the param at that copy. The index is staged as
     ``<staged_vcf>.tbi`` because GATK requires it to sit next to the VCF under a
     matching name; where no index param is set, sarek indexes the staged copy itself.
-    Nextflow uploads these local inputs to the work directory on demand.
     """
     paths = {
         vcf_param: ds.params[vcf_param]
@@ -327,6 +325,7 @@ def stage_colliding_vcf_params(ds: PreprocessDataset):
     ds.logger.info(f"VCF inputs: resolving file name collision between {sorted(colliding)}")
 
     s3 = boto3.client("s3")
+    config_dir = ds.params["input"].rsplit("/", 1)[0]
     for vcf_param, tbi_param in _VCF_PARAM_PAIRS:
         if vcf_param not in colliding:
             continue
@@ -336,12 +335,18 @@ def stage_colliding_vcf_params(ds: PreprocessDataset):
         if ds.params.get(tbi_param):
             to_stage.append((tbi_param, ds.params[tbi_param], f"{staged_vcf}.tbi"))
 
-        for param, uri, local_name in to_stage:
+        for param, uri, staged_name in to_stage:
             source = S3Path(uri)
             assert source.valid, f"Cannot stage a copy of --{param}: {uri} is not an S3 path"
-            ds.logger.info(f"VCF inputs: staging {uri} as {local_name}")
-            s3.download_file(source.bucket, source.key, local_name)
-            ds.add_param(param, str(Path(local_name).resolve()), overwrite=True)
+            staged_uri = f"{config_dir}/{staged_name}"
+            dest = S3Path(staged_uri)
+            ds.logger.info(f"VCF inputs: staging {uri} as {staged_uri}")
+            s3.copy(
+                {"Bucket": source.bucket, "Key": source.key},
+                dest.bucket,
+                dest.key
+            )
+            ds.add_param(param, staged_uri, overwrite=True)
 
 
 def require_analysis_type_binding(ds: PreprocessDataset):
@@ -514,8 +519,9 @@ if __name__ == "__main__":
 
     manifest = make_manifest(ds)
     ds.logger.info(manifest.to_csv(index=None))
-    manifest.to_csv("manifest.csv", index=None)
-    ds.logger.info(f"Wrote {manifest.shape[0]} row(s) to manifest.csv")
+    # Write to the dataset's config/ folder (mapped in process-input.json)
+    manifest.to_csv(ds.params["input"], index=None)
+    ds.logger.info(f"Wrote {manifest.shape[0]} row(s) to {ds.params['input']}")
 
     # Validate tool/sample/resource dependencies while tools is still a list.
     validate_tool_dependencies(ds, manifest)

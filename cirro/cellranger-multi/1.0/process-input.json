@@ -1,4 +1,6 @@
 {
+  "grouping": "$.dataset.s3|/config/sample.grouping.csv",
+  "probe_barcodes": "$.dataset.s3|/config/probe_barcodes.csv",
   "transcriptome_dir": "$.dataset.params.refs.transcriptome_dir",
   "vdj_dir": "$.dataset.params.refs.vdj_dir",
   "feature_csv": "$.dataset.params.refs.feature_csv",

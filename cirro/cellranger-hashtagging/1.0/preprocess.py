@@ -25,15 +25,9 @@ ds.logger.info("Sample sheet provided by the user:")
 ds.logger.info(ds.samplesheet)
 assert ds.samplesheet.shape[0] > 0, "No files detected -- there may be an error with data ingest"
 
-# Write out the sample sheet
-ds.logger.info(f"Writing out {ds.samplesheet.shape[0]:,} lines to sample.grouping.csv")
-ds.samplesheet.to_csv("sample.grouping.csv", index=None)
-
-# Add it to the params
-ds.add_param(
-    "grouping",
-    "sample.grouping.csv"
-)
+# Write to the dataset's config/ folder (mapped in process-input.json)
+ds.logger.info(f"Writing out {ds.samplesheet.shape[0]:,} lines to {ds.params['grouping']}")
+ds.samplesheet.to_csv(ds.params["grouping"], index=None)
 
 # If the feature_csv was not provided
 if "feature_csv" in ds.params and ds.params["feature_csv"] is None:

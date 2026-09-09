@@ -74,6 +74,5 @@ df = (
 )
 log_lines("Reformatted:", df, index=None)
 
-# Write out the samplesheet
-df.to_csv("samplesheet.csv", index=None)
-ds.add_param("samplesheet", "samplesheet.csv")
+# Write to the dataset's config/ folder (mapped in process-input.json)
+df.to_csv(ds.params["samplesheet"], index=None)

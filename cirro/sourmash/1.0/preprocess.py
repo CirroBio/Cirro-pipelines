@@ -5,10 +5,10 @@ from cirro.helpers.preprocess_dataset import PreprocessDataset
 
 ds = PreprocessDataset.from_running()
 
-# Write out the list of files
+# Write the list of files to the dataset's config/ folder
+# (mapped in process-input.json)
 ds.logger.info(ds.files.to_csv(index=None))
-ds.files.to_csv("samplesheet.csv", index=None)
-ds.add_param("samplesheet", "samplesheet.csv")
+ds.files.to_csv(ds.params["samplesheet"], index=None)
 
 # Map the user-selected databases to their corresponding paths
 db_map = {

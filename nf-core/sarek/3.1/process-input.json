@@ -30,7 +30,7 @@
   "umi_length": "$.dataset.params.umi_options.umi_length",
   "umi_base_skip": "$.dataset.params.umi_options.umi_base_skip",
   "outdir": "$.dataset.dataPath",
-  "input": "manifest.csv",
+  "input": "$.dataset.s3|/config/manifest.csv",
   "germline_resource": "$.dataset.params.analysis_type.germline_resource",
   "igenomes_base": "s3://pubweb-references/igenomes/",
   "vep_cache": "s3://pubweb-references/vep_cache/",

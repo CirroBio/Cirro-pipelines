@@ -1,5 +1,5 @@
 {
-  "sample_sheet": "samplesheet.csv",
+  "sample_sheet": "$.dataset.s3|/config/pipeline_samplesheet.csv",
   "output": "$.dataset.dataPath",
   "genome": "$.dataset.params.reference.genome",
   "min_reads": "$.dataset.params.parameters.min_reads",

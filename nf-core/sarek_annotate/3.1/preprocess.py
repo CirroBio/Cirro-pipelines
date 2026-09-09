@@ -93,11 +93,11 @@ def preprocess(ds):
 
     print(f"{filtered_manifest.shape[0]:,} / {manifest.shape[0]:,} files passed the filter for *.vcf.gz")
 
-    # Write out the manifest
+    # Write to the dataset's config/ folder (mapped in process-input.json)
     filtered_manifest.reindex(
         columns=["patient", "sample", "vcf"]
     ).to_csv(
-        "manifest.csv",
+        ds.params["input"],
         index=None
     )
 
