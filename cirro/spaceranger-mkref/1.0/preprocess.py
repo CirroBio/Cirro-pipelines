@@ -21,8 +21,14 @@ if __name__ == "__main__":
 
     ds = PreprocessDataset.from_running()
 
-    # process-input.json builds fasta and genes by appending to genome_dir, so it
-    # has to be absolute before that mapping is applied
     resolve_references(ds, "genome_dir", "probes")
+
+    # process-input.json derives fasta and genes from the raw form value, which is
+    # relative, so both are rebuilt here from the resolved directory. The workflow
+    # takes those two paths and not the directory itself.
+    genome_dir = ds.params["genome_dir"]
+    ds.add_param("fasta", f"{genome_dir}/fasta/genome.fa", overwrite=True)
+    ds.add_param("genes", f"{genome_dir}/genes/genes.gtf", overwrite=True)
+    ds.remove_param("genome_dir")
 
     ds.logger.info(ds.params)
