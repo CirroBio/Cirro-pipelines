@@ -7,6 +7,20 @@ import boto3
 from cirro.api.models.s3_path import S3Path
 from cirro.helpers.preprocess_dataset import PreprocessDataset
 
+
+def resolve_references(ds: PreprocessDataset, *params: str):
+    """Make reference params absolute against the references bucket.
+
+    Form values name a path under that bucket rather than a full URI, so the
+    configuration is not tied to one deployment. A value that is already absolute
+    is left alone, which keeps datasets created before that change re-runnable.
+    """
+    for param in params:
+        value = ds.params.get(param)
+        if not isinstance(value, str) or not value or value.startswith("s3://"):
+            continue
+        ds.add_param(param, f"{ds.references_base}/{value}", overwrite=True)
+
 # Form params that exist only to drive the reference picker. None of them are
 # nf-core/scrnaseq parameters, so every one is removed before launch.
 SELECTION_PARAMS = [
@@ -272,6 +286,8 @@ if __name__ == "__main__":
 
     # Write to the dataset's config/ folder (mapped in process-input.json)
     make_samplesheet(ds, aligner).to_csv(ds.params["input"], index=False)
+
+    resolve_references(ds, "cellranger_prebuilt", "cellrangermulti_prebuilt")
 
     kept = resolve_reference(ds, aligner)
 

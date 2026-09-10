@@ -7,12 +7,12 @@
         "title": "Reference Genome",
         "description": "Reference genome used in conjunction with custom probes",
         "type": "string",
-        "default": "s3://pubweb-references/cellranger/refdata-gex-GRCh38-2024-A",
+        "default": "cellranger/refdata-gex-GRCh38-2024-A",
         "enum": [
-          "s3://pubweb-references/cellranger/refdata-gex-GRCh38-2024-A",
-          "s3://pubweb-references/cellranger/refdata-gex-GRCh38-2020-A",
-          "s3://pubweb-references/cellranger/refdata-gex-GRCm39-2024-A",
-          "s3://pubweb-references/cellranger/refdata-gex-mm10-2020-A"
+          "cellranger/refdata-gex-GRCh38-2024-A",
+          "cellranger/refdata-gex-GRCh38-2020-A",
+          "cellranger/refdata-gex-GRCm39-2024-A",
+          "cellranger/refdata-gex-mm10-2020-A"
         ],
         "enumNames": [
           "Homo sapiens (GRCh38-2024)",
@@ -25,10 +25,10 @@
         "title": "Probes",
         "description": "Reference genome probe set to be merged with custom probes",
         "type": "string",
-        "default": "s3://pubweb-references/cellranger/flex/Chromium_Human_Transcriptome_Probe_Set_v1.0.1_GRCh38-2020-A.csv",
+        "default": "cellranger/flex/Chromium_Human_Transcriptome_Probe_Set_v1.0.1_GRCh38-2020-A.csv",
         "enum": [
-          "s3://pubweb-references/cellranger/flex/Chromium_Human_Transcriptome_Probe_Set_v1.0.1_GRCh38-2020-A.csv",
-          "s3://pubweb-references/cellranger/flex/Chromium_Mouse_Transcriptome_Probe_Set_v1.0.1_mm10-2020-A.csv"
+          "cellranger/flex/Chromium_Human_Transcriptome_Probe_Set_v1.0.1_GRCh38-2020-A.csv",
+          "cellranger/flex/Chromium_Mouse_Transcriptome_Probe_Set_v1.0.1_mm10-2020-A.csv"
         ],
         "enumNames": [
           "Human Transcriptome Probe Set v1.0.1 (GRCh38-2020-A)",

@@ -16,16 +16,13 @@ def resolve_references(ds: PreprocessDataset, *params: str):
             continue
         ds.add_param(param, f"{ds.references_base}/{value}", overwrite=True)
 
-ds = PreprocessDataset.from_running()
 
-resolve_references(ds, "vdj_dir")
+if __name__ == "__main__":
 
-# Build fastq_dir as a comma-delimited list of all input dataset paths
-data_paths = [dataset['dataPath'] for dataset in ds.metadata['inputs']]
-assert len(data_paths) > 0, "No input datasets found"
-ds.add_param("fastq_dir", ",".join(data_paths))
-ds.logger.info(f"fastq_dir: {ds.params['fastq_dir']}")
+    ds = PreprocessDataset.from_running()
 
-# Log the parameters present
-for k, v in ds.params.items():
-    ds.logger.info(f"{k}: {v}")
+    # process-input.json builds fasta and genes by appending to genome_dir, so it
+    # has to be absolute before that mapping is applied
+    resolve_references(ds, "genome_dir", "probes")
+
+    ds.logger.info(ds.params)

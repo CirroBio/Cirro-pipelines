@@ -7,12 +7,12 @@
         "title": "Protein Search Database",
         "description": "Collection of reference proteins used for alignment",
         "type": "string",
-        "default": "s3://pubweb-references/humann/uniref/uniref90_201901b_full.dmnd",
+        "default": "humann/uniref/uniref90_201901b_full.dmnd",
         "enum": [
-          "s3://pubweb-references/humann/uniref/uniref90_201901b_full.dmnd",
-          "s3://pubweb-references/humann/uniref/uniref90_201901b_ec_filtered.dmnd",
-          "s3://pubweb-references/humann/uniref/uniref50_201901b_full.dmnd",
-          "s3://pubweb-references/humann/uniref/uniref50_201901b_ec_filtered.dmnd"
+          "humann/uniref/uniref90_201901b_full.dmnd",
+          "humann/uniref/uniref90_201901b_ec_filtered.dmnd",
+          "humann/uniref/uniref50_201901b_full.dmnd",
+          "humann/uniref/uniref50_201901b_ec_filtered.dmnd"
         ],
         "enumNames": [
           "Full UniRef90 (20.7GB, recommended)",
