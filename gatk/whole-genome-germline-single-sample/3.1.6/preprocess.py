@@ -118,33 +118,33 @@ def setup_reference(ds: PreprocessDataset) -> None:
 
     avail_references = {
         "Homo sapiens (GRCh38)": {
-            "contamination_sites_ud": "s3://pubweb-references/GATK/hg38/v0/contamination-resources/1000g/1000g.phase3.100k.b38.vcf.gz.dat.UD",
-            "contamination_sites_bed": "s3://pubweb-references/GATK/hg38/v0/contamination-resources/1000g/1000g.phase3.100k.b38.vcf.gz.dat.bed",
-            "contamination_sites_mu": "s3://pubweb-references/GATK/hg38/v0/contamination-resources/1000g/1000g.phase3.100k.b38.vcf.gz.dat.mu",
-            "calling_interval_list": "s3://pubweb-references/GATK/hg38/v0/wgs_calling_regions.hg38.interval_list",
+            "contamination_sites_ud": f"{ds.references_base}/GATK/hg38/v0/contamination-resources/1000g/1000g.phase3.100k.b38.vcf.gz.dat.UD",
+            "contamination_sites_bed": f"{ds.references_base}/GATK/hg38/v0/contamination-resources/1000g/1000g.phase3.100k.b38.vcf.gz.dat.bed",
+            "contamination_sites_mu": f"{ds.references_base}/GATK/hg38/v0/contamination-resources/1000g/1000g.phase3.100k.b38.vcf.gz.dat.mu",
+            "calling_interval_list": f"{ds.references_base}/GATK/hg38/v0/wgs_calling_regions.hg38.interval_list",
             "reference_fasta" : {
-                "ref_dict": "s3://pubweb-references/GATK/hg38/v0/dragen_reference/Homo_sapiens_assembly38_masked.dict",
-                "ref_fasta": "s3://pubweb-references/GATK/hg38/v0/dragen_reference/Homo_sapiens_assembly38_masked.fasta",
-                "ref_fasta_index": "s3://pubweb-references/GATK/hg38/v0/dragen_reference/Homo_sapiens_assembly38_masked.fasta.fai",
-                "ref_sa": "s3://pubweb-references/GATK/hg38/v0/dragen_reference/Homo_sapiens_assembly38_masked.fasta.64.sa",
-                "ref_alt": "s3://pubweb-references/GATK/hg38/v0/dragen_reference/Homo_sapiens_assembly38_masked.fasta.alt",
-                "ref_amb": "s3://pubweb-references/GATK/hg38/v0/dragen_reference/Homo_sapiens_assembly38_masked.fasta.64.amb",
-                "ref_bwt": "s3://pubweb-references/GATK/hg38/v0/dragen_reference/Homo_sapiens_assembly38_masked.fasta.64.bwt",
-                "ref_ann": "s3://pubweb-references/GATK/hg38/v0/dragen_reference/Homo_sapiens_assembly38_masked.fasta.64.ann",
-                "ref_pac": "s3://pubweb-references/GATK/hg38/v0/dragen_reference/Homo_sapiens_assembly38_masked.fasta.64.pac"
+                "ref_dict": f"{ds.references_base}/GATK/hg38/v0/dragen_reference/Homo_sapiens_assembly38_masked.dict",
+                "ref_fasta": f"{ds.references_base}/GATK/hg38/v0/dragen_reference/Homo_sapiens_assembly38_masked.fasta",
+                "ref_fasta_index": f"{ds.references_base}/GATK/hg38/v0/dragen_reference/Homo_sapiens_assembly38_masked.fasta.fai",
+                "ref_sa": f"{ds.references_base}/GATK/hg38/v0/dragen_reference/Homo_sapiens_assembly38_masked.fasta.64.sa",
+                "ref_alt": f"{ds.references_base}/GATK/hg38/v0/dragen_reference/Homo_sapiens_assembly38_masked.fasta.alt",
+                "ref_amb": f"{ds.references_base}/GATK/hg38/v0/dragen_reference/Homo_sapiens_assembly38_masked.fasta.64.amb",
+                "ref_bwt": f"{ds.references_base}/GATK/hg38/v0/dragen_reference/Homo_sapiens_assembly38_masked.fasta.64.bwt",
+                "ref_ann": f"{ds.references_base}/GATK/hg38/v0/dragen_reference/Homo_sapiens_assembly38_masked.fasta.64.ann",
+                "ref_pac": f"{ds.references_base}/GATK/hg38/v0/dragen_reference/Homo_sapiens_assembly38_masked.fasta.64.pac"
             },
             "known_indels_sites_vcfs": [
-                "s3://pubweb-references/GATK/hg38/v0/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz",
-                "s3://pubweb-references/GATK/hg38/v0/Homo_sapiens_assembly38.known_indels.vcf.gz"
+                f"{ds.references_base}/GATK/hg38/v0/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz",
+                f"{ds.references_base}/GATK/hg38/v0/Homo_sapiens_assembly38.known_indels.vcf.gz"
             ],
             "known_indels_sites_indices": [
-                "s3://pubweb-references/GATK/hg38/v0/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz.tbi",
-                "s3://pubweb-references/GATK/hg38/v0/Homo_sapiens_assembly38.known_indels.vcf.gz.tbi"
+                f"{ds.references_base}/GATK/hg38/v0/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz.tbi",
+                f"{ds.references_base}/GATK/hg38/v0/Homo_sapiens_assembly38.known_indels.vcf.gz.tbi"
             ],
-            "dbsnp_vcf": "s3://pubweb-references/GATK/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf",
-            "dbsnp_vcf_index": "s3://pubweb-references/GATK/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf.idx",
-            "evaluation_interval_list": "s3://pubweb-references/GATK/hg38/v0/wgs_evaluation_regions.hg38.interval_list",
-            "haplotype_database_file": "s3://pubweb-references/GATK/hg38/v0/Homo_sapiens_assembly38.haplotype_database.txt"
+            "dbsnp_vcf": f"{ds.references_base}/GATK/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf",
+            "dbsnp_vcf_index": f"{ds.references_base}/GATK/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf.idx",
+            "evaluation_interval_list": f"{ds.references_base}/GATK/hg38/v0/wgs_evaluation_regions.hg38.interval_list",
+            "haplotype_database_file": f"{ds.references_base}/GATK/hg38/v0/Homo_sapiens_assembly38.haplotype_database.txt"
         }
     }
 
@@ -157,7 +157,7 @@ def setup_reference(ds: PreprocessDataset) -> None:
     )
 
     wgs_coverage_interval_list = {
-        "Homo sapiens (GRCh38)": "s3://pubweb-references/GATK/hg38/v0/wgs_coverage_regions.hg38.interval_list"
+        "Homo sapiens (GRCh38)": f"{ds.references_base}/GATK/hg38/v0/wgs_coverage_regions.hg38.interval_list"
     }
     msg = f"No wgs_coverage_interval_list defined for genome {ds.params['genome']}"
     assert ds.params["genome"] in wgs_coverage_interval_list, msg

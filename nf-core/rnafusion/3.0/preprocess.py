@@ -4,7 +4,7 @@ import pandas as pd
 from cirro.helpers.preprocess_dataset import PreprocessDataset
 
 
-ref_bucket = "s3://pubweb-references/rnafusion/3.0.2"
+REF_SUBDIR = "rnafusion/3.0.2"
 
 def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
 
@@ -49,6 +49,7 @@ def update_params(ds, list, avail):
 def form_handling(ds: PreprocessDataset):
     """Process form handling"""
 
+    ref_bucket = f"{ds.references_base}/{REF_SUBDIR}"
     params = ds.params
 
     # remember that genome is a placeholder pointing to pre-made s3 bucket.

@@ -683,8 +683,8 @@ if __name__ == "__main__":
     # dbNSFP — only available for human genomes
     if dbnsfp_param:
         if genome in database:
-            dbnsfp = f"s3://pubweb-references/VEP/{database[genome][0]}/dbNSFP4.2a_{database[genome][0].lower()}.gz"
-            dbnsfp_tbi = f"s3://pubweb-references/VEP/{database[genome][0]}/dbNSFP4.2a_{database[genome][0].lower()}.gz.tbi"
+            dbnsfp = f"{ds.references_base}/VEP/{database[genome][0]}/dbNSFP4.2a_{database[genome][0].lower()}.gz"
+            dbnsfp_tbi = f"{ds.references_base}/VEP/{database[genome][0]}/dbNSFP4.2a_{database[genome][0].lower()}.gz.tbi"
             ds.add_param('dbnsfp', dbnsfp, overwrite=True)
             ds.add_param('dbnsfp_tbi', dbnsfp_tbi, overwrite=True)
             ds.add_param('dbnsfp_consequence', 'ALL', overwrite=True)
@@ -698,10 +698,10 @@ if __name__ == "__main__":
         if genome not in database:
             ds.logger.warning(f"SpliceAI: no reference data available for genome {genome!r} -- skipping SpliceAI plugin")
         else:
-            spliceai_snv = f"s3://pubweb-references/VEP/{database[genome][0]}/spliceai_scores.raw.snv.{database[genome][1]}.vcf.gz"
-            spliceai_snv_tbi = f"s3://pubweb-references/VEP/{database[genome][0]}/spliceai_scores.raw.snv.{database[genome][1]}.vcf.gz.tbi"
-            spliceai_indel = f"s3://pubweb-references/VEP/{database[genome][0]}/spliceai_scores.raw.indel.{database[genome][1]}.vcf.gz"
-            spliceai_indel_tbi = f"s3://pubweb-references/VEP/{database[genome][0]}/spliceai_scores.raw.indel.{database[genome][1]}.vcf.gz.tbi"
+            spliceai_snv = f"{ds.references_base}/VEP/{database[genome][0]}/spliceai_scores.raw.snv.{database[genome][1]}.vcf.gz"
+            spliceai_snv_tbi = f"{ds.references_base}/VEP/{database[genome][0]}/spliceai_scores.raw.snv.{database[genome][1]}.vcf.gz.tbi"
+            spliceai_indel = f"{ds.references_base}/VEP/{database[genome][0]}/spliceai_scores.raw.indel.{database[genome][1]}.vcf.gz"
+            spliceai_indel_tbi = f"{ds.references_base}/VEP/{database[genome][0]}/spliceai_scores.raw.indel.{database[genome][1]}.vcf.gz.tbi"
             ds.add_param('spliceai_snv', spliceai_snv, overwrite=True)
             ds.add_param('spliceai_snv_tbi', spliceai_snv_tbi, overwrite=True)
             ds.add_param('spliceai_indel', spliceai_indel, overwrite=True)
@@ -716,14 +716,14 @@ if __name__ == "__main__":
         if params.get('pon'):
             ds.logger.info("PON: using user-supplied panel of normals")
         elif genome == 'GATK.GRCh37':
-            pon = "s3://pubweb-references/igenomes/Homo_sapiens/GATK/GRCh37/Annotation/GATKBundle/Mutect2-WGS-panel-b37.vcf.gz"
-            pon_tbi = "s3://pubweb-references/igenomes/Homo_sapiens/GATK/GRCh37/Annotation/GATKBundle/Mutect2-WGS-panel-b37.vcf.gz.tbi"
+            pon = f"{ds.references_base}/igenomes/Homo_sapiens/GATK/GRCh37/Annotation/GATKBundle/Mutect2-WGS-panel-b37.vcf.gz"
+            pon_tbi = f"{ds.references_base}/igenomes/Homo_sapiens/GATK/GRCh37/Annotation/GATKBundle/Mutect2-WGS-panel-b37.vcf.gz.tbi"
             ds.add_param('pon', pon, overwrite=True)
             ds.add_param('pon_tbi', pon_tbi, overwrite=True)
             ds.logger.info("PON: added GRCh37 somatic panel of normals")
         elif genome == "GATK.GRCh38":
-            pon = "s3://pubweb-references/igenomes/Homo_sapiens/GATK/GRCh38/Annotation/GATKBundle/1000g_pon.hg38.vcf.gz"
-            pon_tbi = "s3://pubweb-references/igenomes/Homo_sapiens/GATK/GRCh38/Annotation/GATKBundle/1000g_pon.hg38.vcf.gz.tbi"
+            pon = f"{ds.references_base}/igenomes/Homo_sapiens/GATK/GRCh38/Annotation/GATKBundle/1000g_pon.hg38.vcf.gz"
+            pon_tbi = f"{ds.references_base}/igenomes/Homo_sapiens/GATK/GRCh38/Annotation/GATKBundle/1000g_pon.hg38.vcf.gz.tbi"
             ds.add_param('pon', pon, overwrite=True)
             ds.add_param('pon_tbi', pon_tbi, overwrite=True)
             ds.logger.info("PON: added GRCh38 somatic panel of normals")

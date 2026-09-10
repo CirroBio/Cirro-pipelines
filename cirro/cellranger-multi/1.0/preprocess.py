@@ -47,13 +47,13 @@ if ds.params.get("is_frp"):
         ds.logger.info("Adding human reference probe set")
         ds.add_param(
             "probes_csv",
-            "s3://pubweb-references/cellranger/flex/Chromium_Human_Transcriptome_Probe_Set_v1.0.1_GRCh38-2020-A.csv"
+            f"{ds.references_base}/cellranger/flex/Chromium_Human_Transcriptome_Probe_Set_v1.0.1_GRCh38-2020-A.csv"
         )
     else:
         ds.logger.info("Adding mouse reference probe set")
         ds.add_param(
             "probes_csv",
-            "s3://pubweb-references/cellranger/flex/Chromium_Mouse_Transcriptome_Probe_Set_v1.0.1_mm10-2020-A.csv"
+            f"{ds.references_base}/cellranger/flex/Chromium_Mouse_Transcriptome_Probe_Set_v1.0.1_mm10-2020-A.csv"
         )
 
     # Parse the samples table provided by the user

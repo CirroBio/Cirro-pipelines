@@ -29,7 +29,7 @@ def format_db(
     protozoa_db: str,
     fungi_db: str,
     ksize: int,
-    prefix: str = "s3://pubweb-references/",
+    prefix: str,
     suffix: str = ".zip",
     **kwargs
 ) -> str:
@@ -44,7 +44,7 @@ def format_db(
 
 ds.add_param(
     "db",
-    format_db(**ds.params)
+    format_db(**ds.params, prefix=f"{ds.references_base}/")
 )
 
 # Make sure that the user does not select a negative threshold value

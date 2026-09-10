@@ -9,7 +9,7 @@ ds = PreprocessDataset.from_running()
 # Set up the GEX reference
 ds.add_param(
     "transcriptome_dir",
-    "s3://pubweb-references/cellranger/" + {
+    f"{ds.references_base}/cellranger/" + {
         "Homo sapiens (GRCh38-2024)": "refdata-gex-GRCh38-2024-A",
         "Homo sapiens (GRCh38-2020)": "refdata-gex-GRCh38-2020-A",
         "Mus musculus (GRCm39-2024)": "refdata-gex-GRCm39-2024-A",
@@ -25,7 +25,7 @@ if ds.params.get("probe_set") is None or ds.params.get("probe_set") == "":
     # Use the default probes for the genome
     ds.add_param(
         "probe_set",
-        "s3://pubweb-references/cellranger/flex/" + (
+        f"{ds.references_base}/cellranger/flex/" + (
             "Chromium_Human_Transcriptome_Probe_Set_v1.0.1_GRCh38-2020-A.csv"
             if ds.params["reference"].startswith("Homo sapiens")
             else "Chromium_Mouse_Transcriptome_Probe_Set_v1.0.1_mm10-2020-A.csv" # noqa
