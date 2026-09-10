@@ -75,6 +75,10 @@ def main():
     for k, v in ds.params.items():
         ds.logger.info(f"{k}: {v}")
 
+    # Force params.json to be written: the HealthOmics pre-process Lambda fails the run
+    # when the file is absent, and the SDK writes it only when a parameter changes.
+    ds.keep_params(list(ds.params.keys()))
+
 
 def format_samplesheet(files: pd.DataFrame, logger: Logger) -> pd.DataFrame:
     """

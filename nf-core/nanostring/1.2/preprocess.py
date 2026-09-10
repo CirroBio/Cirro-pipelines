@@ -32,3 +32,7 @@ for line in manifest.to_csv(index=False).split("\n"):
 
 # Write to the dataset's config/ folder (mapped in process-input.json)
 manifest.to_csv(ds.params["input"], index=False)
+
+# Force params.json to be written: the HealthOmics pre-process Lambda fails the run
+# when the file is absent, and the SDK writes it only when a parameter changes.
+ds.keep_params(list(ds.params.keys()))

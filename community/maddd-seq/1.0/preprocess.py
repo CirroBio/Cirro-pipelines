@@ -40,3 +40,7 @@ samplesheet.to_csv(ds.params["sample_sheet"], index=None)
 
 # log
 ds.logger.info(ds.params)
+
+# Force params.json to be written: the HealthOmics pre-process Lambda fails the run
+# when the file is absent, and the SDK writes it only when a parameter changes.
+ds.keep_params(list(ds.params.keys()))

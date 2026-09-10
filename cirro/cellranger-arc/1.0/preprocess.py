@@ -92,3 +92,7 @@ log_lines("Reformatted:", df, index=None)
 
 # Write to the dataset's config/ folder (mapped in process-input.json)
 df.to_csv(ds.params["samplesheet"], index=None)
+
+# Force params.json to be written: the HealthOmics pre-process Lambda fails the run
+# when the file is absent, and the SDK writes it only when a parameter changes.
+ds.keep_params(list(ds.params.keys()))
