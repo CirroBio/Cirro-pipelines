@@ -6,7 +6,7 @@
     "assembler": "unicycler",
     "assembly_type": "hybrid",
     "merge_on": "$.dataset.params.merge_on",
-    "unicycler_mode": "$.dataset.params.assembler.unicycler_mode",
+    "unicycler_mode": "$.dataset.params.unicycler_mode",
     "annotation_tool": "$.dataset.params.annotation_tool",
     "skip_kraken2": "$.dataset.params.skip_kraken2",
     "skip_annotation": "$.dataset.params.skip_annotation"

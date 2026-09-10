@@ -106,7 +106,7 @@ if __name__ == "__main__":
 
     # Format the unicycler_args based on the mode
     if ds.params.get("unicycler_mode", None) is not None:
-        ds.add_param("unicycler_args", f"--mode {ds.params['unicycler_mode']}"),
+        ds.add_param("unicycler_args", f"--mode {ds.params['unicycler_mode']}")
         ds.remove_param("unicycler_mode")
 
     # log
