@@ -1,5 +1,5 @@
 {
-    "outdir": "$.dataset.s3|/data/",
+    "outdir": "$.dataset.dataPath",
     "input": "$.dataset.params.input",
     "dada_ref_taxonomy": "$.dataset.params.taxonomic_database.dada_ref_taxonomy",
     "qiime_ref_taxonomy": "$.dataset.params.taxonomic_database.qiime_ref_taxonomy",

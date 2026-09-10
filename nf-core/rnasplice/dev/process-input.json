@@ -3,7 +3,7 @@
     "contrasts": "$.dataset.s3|/config/contrasts.csv",
     "igenomes_base": "$.referencesBucketUri|/igenomes",
     "source": "fastq",
-    "outdir": "$.dataset.s3|/data/",
+    "outdir": "$.dataset.dataPath",
     "genome": "$.dataset.params.genome",
     "clip_r1": "$.dataset.params.read_trimming_options.clip_r1",
     "clip_r2": "$.dataset.params.read_trimming_options.clip_r2",

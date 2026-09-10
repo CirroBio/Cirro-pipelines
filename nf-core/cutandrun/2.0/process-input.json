@@ -1,5 +1,5 @@
 {
-    "outdir": "$.dataset.s3|/data/",
+    "outdir": "$.dataset.dataPath",
     "input": "$.dataset.s3|/config/pipeline_samplesheet.csv",
     "igenomes_base": "$.referencesBucketUri|/igenomes",
     "genome": "$.dataset.params.genome",

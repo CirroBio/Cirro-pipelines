@@ -12,5 +12,5 @@
     "filter_min_reads": "$.dataset.params.consensus_filtering.filter_min_reads",
     "filter_min_baseq": "$.dataset.params.consensus_filtering.filter_min_baseq",
     "filter_max_base_error_rate": "$.dataset.params.consensus_filtering.filter_max_base_error_rate",
-    "outdir": "$.dataset.s3|/data/"
+    "outdir": "$.dataset.dataPath"
 }

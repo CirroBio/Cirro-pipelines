@@ -40,7 +40,7 @@
     "num_enzyme_termini": "$.dataset.params.database_search.num_enzyme_termini",
     "num_hits": "$.dataset.params.database_search.num_hits",
     "openms_peakpicking": "$.dataset.params.spectrum_preprocessing.openms_peakpicking",
-    "outdir": "$.dataset.s3|/data/",
+    "outdir": "$.dataset.dataPath",
     "outlier_handling": "$.dataset.params.peptide_psm_indexing.psm_re_scoring_distribution_fitting.outlier_handling",
     "peakpicking_inmemory": "$.dataset.params.spectrum_preprocessing.peakpicking_inmemory",
     "peakpicking_ms_levels": "$.dataset.params.spectrum_preprocessing.peakpicking_ms_levels",

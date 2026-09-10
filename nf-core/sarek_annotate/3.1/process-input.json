@@ -8,7 +8,7 @@
   "vep_spliceai": "$.dataset.params.annotation.vep_spliceai",
   "vep_spliceregion": "$.dataset.params.annotation.vep_spliceregion",
   "genome": "$.dataset.params.analysis_type.genome",
-  "outdir": "$.dataset.s3|/data/",
+  "outdir": "$.dataset.dataPath",
   "input": "$.dataset.s3|/config/manifest.csv",
   "igenomes_base": "$.referencesBucketUri|/igenomes",
   "vep_cache": "$.referencesBucketUri|/vep_cache",

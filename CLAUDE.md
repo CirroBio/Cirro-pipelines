@@ -131,9 +131,13 @@ spellings still resolve but are not the documented form.
 | Use | Path |
 |-----|------|
 | A form parameter | `$.dataset.params.<field>` (nested groups: `$.dataset.params.<group>.<field>`) |
-| Output directory | `$.dataset.dataPath` (equivalently `$.dataset.s3\|/data/`) |
+| Output directory | `$.dataset.dataPath` — always this, never `$.dataset.s3\|/data/` |
 | Dataset root on S3 | `$.dataset.s3` |
 | An input dataset | `$.inputs[0].dataPath`, `$.inputs[0].s3`, or `$.inputs[*].dataPath` for all |
+
+`$.dataset.s3` is still right for the dataset's other folders — `|/config/<name>`,
+`|/web/`, `|/logs/`. Only the output directory has a dedicated field, and only that
+field is matched by name when a run is normalized for HealthOmics.
 
 ---
 

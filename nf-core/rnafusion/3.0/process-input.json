@@ -5,7 +5,7 @@
   "trim": "$.dataset.params.trimming.bbmap",
   "max_memory": "$.dataset.params.compute_options.max_memory",
   "max_cpus": "$.dataset.params.compute_options.max_cpus",
-  "outdir": "$.dataset.s3|/data/",
+  "outdir": "$.dataset.dataPath",
   "input": "$.dataset.s3|/config/manifest.csv",
   "genomes_base": "$.referencesBucketUri|/rnafusion/3.0.2/"
 }

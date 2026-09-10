@@ -15,7 +15,7 @@
     "alignment_format": "$.dataset.params.preprocessing.alignment_format",
     "fasta": "$.dataset.params.analysis_type.fasta",
     "intervals": "$.dataset.params.analysis_type.intervals",
-    "outdir": "$.dataset.s3|/data/",
+    "outdir": "$.dataset.dataPath",
     "input": "$.dataset.s3|/config/manifest.csv",
     "igenomes_ignore": true,
     "skip_tools": "baserecalibrator",

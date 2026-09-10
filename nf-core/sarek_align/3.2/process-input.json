@@ -16,7 +16,7 @@
   "bwamem2_index": "$.dataset.params.analysis_type.genome_selection.bwamem2_cirro_reference.genome_index|/data",
   "intervals": "$.dataset.params.analysis_type.intervals",
   "optical_duplicate_pixel_distance": "$.dataset.params.advanced_options.optical_duplicate_pixel_distance",
-  "outdir": "$.dataset.s3|/data/",
+  "outdir": "$.dataset.dataPath",
   "input": "$.dataset.s3|/config/manifest.csv",
   "igenomes_base": "$.referencesBucketUri|/igenomes/",
   "vep_cache": "$.referencesBucketUri|/vep_cache/",

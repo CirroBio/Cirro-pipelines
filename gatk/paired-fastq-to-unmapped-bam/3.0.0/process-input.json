@@ -2,6 +2,6 @@
   "ConvertPairedFastQsToUnmappedBamWf.run_date": "$.dataset.params.run_date",
   "ConvertPairedFastQsToUnmappedBamWf.platform_name": "$.dataset.params.platform_name",
   "ConvertPairedFastQsToUnmappedBamWf.sequencing_center": "$.dataset.params.sequencing_center",
-  "final_workflow_outputs_dir": "$.dataset.s3|/data/",
+  "final_workflow_outputs_dir": "$.dataset.dataPath",
   "final_call_logs_dir": "$.dataset.s3|/logs/"
 }

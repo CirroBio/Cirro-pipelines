@@ -5,5 +5,5 @@
     "normalization_method": "$.dataset.params.normalization_parameters.normalization_method",
     "gene_score_method": "$.dataset.params.gene_score_computation.gene_score_method",
     "igenomes_base": "$.referencesBucketUri|/igenomes",
-    "outdir": "$.dataset.s3|/data/"
+    "outdir": "$.dataset.dataPath"
 }
