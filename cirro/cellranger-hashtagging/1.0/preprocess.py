@@ -21,6 +21,13 @@ ds = PreprocessDataset.from_running()
 
 resolve_references(ds, "transcriptome_dir", "vdj_dir")
 
+# These name CellRanger reference directories. HealthOmics reads an S3 value with no
+# trailing separator as an object key and rejects the run, so mark them as folders.
+for ref_dir in ("transcriptome_dir", "vdj_dir"):
+    ref_path = ds.params.get(ref_dir)
+    if ref_path:
+        ds.add_param(ref_dir, ref_path.rstrip("/") + "/", overwrite=True)
+
 # The user must provide a column for `feature_types`
 for cname in ['feature_types']:
     msg = f"The user must annotate the '{cname}' for each sample"

@@ -73,10 +73,11 @@ def form_handling(ds: PreprocessDataset):
     # workflow cannot access files within container. 
     # unpack latest github release, upl s3 and point to paths below. 
     if 'arriba' in tools:
-        arriba_ref = f"{ref_bucket}/arriba"
+        # arriba_ref names a directory and no process reads it -- nextflow.config
+        # derives it from genomes_base and only the two files below are consumed.
+        # Passing it would hand HealthOmics an S3 folder with no trailing separator.
         arriba_ref_blacklist = f"{ref_bucket}/arriba/blacklist_hg38_GRCh38_v2.4.0.tsv.gz"
         arriba_ref_protein_domains = f"{ref_bucket}/arriba/protein_domains_hg38_GRCh38_v2.4.0.gff3"
-        ds.add_param('arriba_ref', arriba_ref, overwrite=True)
         ds.add_param('arriba_ref_blacklist', arriba_ref_blacklist, overwrite=True)
         ds.add_param('arriba_ref_protein_domains', arriba_ref_protein_domains, overwrite=True)
 
