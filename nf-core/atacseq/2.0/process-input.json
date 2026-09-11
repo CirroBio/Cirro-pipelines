@@ -1,7 +1,7 @@
 {
     "outdir": "$.dataset.dataPath",
     "input": "$.dataset.s3|/config/design.csv",
-    "igenomes_base": "$.referencesBucketUri|/igenomes",
+    "igenomes_base": "$.referencesBucketUri|/igenomes/",
     "genome": "$.dataset.params.genome",
     "fragment_size": "$.dataset.params.fragment_size",
     "skip_trimming": "$.dataset.params.adapter_trimming_options.skip_trimming",

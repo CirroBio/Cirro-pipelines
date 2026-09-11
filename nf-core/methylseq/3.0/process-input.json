@@ -1,7 +1,7 @@
 {
     "input": "$.dataset.s3|/config/pipeline_samplesheet.csv",
     "outdir": "$.dataset.dataPath",
-    "igenomes_base": "$.referencesBucketUri|/igenomes",
+    "igenomes_base": "$.referencesBucketUri|/igenomes/",
     "genome": "$.dataset.params.genome",
     "aligner": "$.dataset.params.aligner",
     "comprehensive": "$.dataset.params.comprehensive",
