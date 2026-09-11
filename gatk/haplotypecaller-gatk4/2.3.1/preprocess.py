@@ -2,7 +2,7 @@
 
 import json
 from cirro.helpers.preprocess_dataset import PreprocessDataset
-from cirro.api.models.s3_path import S3Path
+from cirro.models.s3_path import S3Path
 
 
 def setup_inputs(ds: PreprocessDataset):

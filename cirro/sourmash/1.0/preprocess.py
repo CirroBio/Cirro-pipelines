@@ -52,3 +52,7 @@ msg = f"Minimum threshold cannot be negative ({ds.params['threshold_bp']})"
 assert ds.params["threshold_bp"] > 0
 
 ds.logger.info(json.dumps(ds.params, indent=4))
+
+# Consumed above; not parameters the workflow declares.
+for param in ("archaea_db", "bact_db", "fungi_db", "protozoa_db", "viral_db"):
+    ds.remove_param(param, force=True)

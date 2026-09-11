@@ -1,5 +1,6 @@
 {
   "samplesheet": "$.dataset.s3|/config/pipeline_samplesheet.csv",
+  "container": "quay.io/sangerpathogens/kneaddata:0.12.0",
   "db": "$.dataset.params.reference.db",
   "outdir": "$.dataset.dataPath",
   "sequencer_source": "$.dataset.params.input_options.sequencer_source",

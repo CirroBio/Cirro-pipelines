@@ -1,10 +1,8 @@
 {
   "custom": "$.inputs[0].dataPath|/**",
-  "genome_name": "custom_SpaceRanger_reference",
   "genome_dir": "$.dataset.params.genome_dir",
   "probes": "$.dataset.params.probes",
   "fasta": "$.dataset.params.genome_dir|/fasta/genome.fa",
   "genes": "$.dataset.params.genome_dir|/genes/genes.gtf",
-  "spaceranger_version": "$.dataset.params.spaceranger_version",
   "output": "$.dataset.dataPath"
 }

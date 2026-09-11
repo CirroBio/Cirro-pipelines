@@ -72,3 +72,6 @@ ds.samplesheet.to_csv(ds.params["samples"], index=None)
 # Log the parameters present
 for k, v in ds.params.items():
     ds.logger.info(f"{k}: {v}")
+
+# Consumed above; not a parameter the workflow declares.
+ds.remove_param("reference", force=True)

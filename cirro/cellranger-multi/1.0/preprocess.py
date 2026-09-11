@@ -97,3 +97,7 @@ if probe_barcodes is None:
 # Log the parameters present
 for k, v in ds.params.items():
     ds.logger.info(f"{k}: {v}")
+
+# Consumed above; not parameters the workflow declares.
+for param in ("frp_samples", "is_frp"):
+    ds.remove_param(param, force=True)

@@ -112,6 +112,9 @@ if __name__ == "__main__":
     # log
     ds.logger.info(ds.params)
 
+    # Consumed above; not a parameter the workflow declares.
+    ds.remove_param("merge_on", force=True)
+
     # Force params.json to be written: the HealthOmics pre-process Lambda fails the run
     # when the file is absent, and the SDK writes it only when a parameter changes.
     ds.keep_params(list(ds.params.keys()))

@@ -4,7 +4,7 @@ import json
 import urllib.request
 
 import boto3
-from cirro.api.models.s3_path import S3Path
+from cirro.models.s3_path import S3Path
 from cirro.helpers.preprocess_dataset import PreprocessDataset
 
 

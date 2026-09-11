@@ -6,7 +6,6 @@
   "control_fastq": "$.dataset.params.control_fastq",
   "library": "$.dataset.params.library",
   "output": "$.dataset.dataPath",
-  "output_prefix": "mf",
   "organism": "hsa",
   "adapter_5_prime": "$.dataset.params.adapter",
   "insert_length": "$.dataset.params.insert_length",
