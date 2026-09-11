@@ -26,3 +26,7 @@ if __name__ == "__main__":
     for param in ds.params:
         if param.endswith("_args"):
             validate_extra_args(ds, param)
+
+    # Force params.json to be written: the HealthOmics pre-process Lambda fails the run
+    # when the file is absent, and the SDK writes it only when a parameter changes.
+    ds.keep_params(list(ds.params.keys()))
