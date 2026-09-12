@@ -14,6 +14,9 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
     manifest = (
         ds.files
         .reindex(columns=["sampleIndex", "libraryIndex", "sample", "dataset", "readType", "read", "file"])
+        # A row with no read number cannot be paired, and would pivot
+        # into a column the rename below cannot name.
+        .loc[lambda d: d["read"].notna()]
         .assign(
             fastq_cname_ix=lambda df: df.apply(
                 lambda r: r["read"] + (2 if r.get("readType", "R") == "I" else 0),

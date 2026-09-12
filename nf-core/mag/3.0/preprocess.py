@@ -48,6 +48,9 @@ samplesheet = (
         )
     )
     .query("readType == 'R'")
+    # A row with no read number cannot be paired, and would pivot
+    # into a column the rename below cannot name.
+    .loc[lambda d: d["read"].notna()]
     .pivot(
         index=["sampleIndex", "sample", "dataset"],
         columns="read",

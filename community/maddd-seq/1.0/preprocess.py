@@ -20,6 +20,9 @@ ds.files = ds.files.loc[
 samplesheet = (
     ds.files
     .reindex(columns=["dataset", "sampleIndex", "sample", "lane", "read", "file"])
+    # A row with no read number cannot be paired, and would pivot
+    # into a column the rename below cannot name.
+    .loc[lambda d: d["read"].notna()]
     .pivot(
         index=["dataset", "sampleIndex", "sample", "lane"],
         columns="read",
