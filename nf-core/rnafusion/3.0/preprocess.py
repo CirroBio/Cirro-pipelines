@@ -56,7 +56,7 @@ def form_handling(ds: PreprocessDataset):
     # rnafusion will never connect to iGenomes for its ref files. 
     genome = params.get('genome')
     if genome == 'GRCh38':
-        genome_base = f"{ref_bucket}"
+        genome_base = f"{ref_bucket}/"
         fasta = f"{ref_bucket}/ensembl/Homo_sapiens.GRCh38.102.all.fa"
         ds.add_param('genomes_base', genome_base, overwrite=True)
         ds.add_param('fasta', fasta, overwrite=True)
