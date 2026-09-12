@@ -62,6 +62,17 @@ def form_handling(ds: PreprocessDataset):
         ds.add_param('fasta', fasta, overwrite=True)
         ds.remove_param('genome')
 
+        # workflows/rnafusion.nf opens these four at the top of the file, so every
+        # run stages them whichever tools were picked. Each names a directory, and
+        # HealthOmics reads an S3 value without a trailing separator as an object.
+        for name, subdir in [
+            ('ensembl_ref', 'ensembl'),
+            ('starindex_ref', 'star'),
+            ('starfusion_ref', 'starfusion/ctat_genome_lib_build_dir'),
+            ('fusionreport_ref', 'fusion_report_db'),
+        ]:
+            ds.add_param(name, f"{ref_bucket}/{subdir}/", overwrite=True)
+
 
     ## parse tools list and replace with boolean params
     tools = params.get('tools')
@@ -72,6 +83,11 @@ def form_handling(ds: PreprocessDataset):
 
     # workflow cannot access files within container. 
     # unpack latest github release, upl s3 and point to paths below. 
+    if 'fusioncatcher' in tools:
+        ds.add_param(
+            'fusioncatcher_ref', f"{ref_bucket}/fusioncatcher/human_v102/", overwrite=True
+        )
+
     if 'arriba' in tools:
         # arriba_ref names a directory and no process reads it -- nextflow.config
         # derives it from genomes_base and only the two files below are consumed.

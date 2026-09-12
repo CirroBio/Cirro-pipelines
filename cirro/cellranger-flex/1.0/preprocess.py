@@ -16,7 +16,7 @@ ds.add_param(
         "Mus musculus (mm10-2020)": "refdata-gex-mm10-2020-A"
     }[
         ds.params["reference"]
-    ]
+    ] + "/"   # a reference directory, which HealthOmics reads as an object without it
 )
 
 # If the user did not select a custom probe set
