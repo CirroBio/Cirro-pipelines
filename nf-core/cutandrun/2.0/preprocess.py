@@ -98,6 +98,13 @@ if __name__ == "__main__":
     # Write to the dataset's config/ folder (mapped in process-input.json)
     manifest.to_csv(ds.params["input"], index=None)
 
+    # macs_gsize is around 2.7e9. A whole number that large is a Long by the time
+    # Cirro builds the HealthOmics parameter list, and only String, Integer, Double
+    # and Boolean are handled there. A float is a Double either way.
+    gsize = ds.params.get("macs_gsize")
+    if gsize is not None:
+        ds.add_param("macs_gsize", float(gsize), overwrite=True)
+
     # log
     ds.logger.info(ds.params)
 

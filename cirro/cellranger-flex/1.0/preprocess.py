@@ -39,7 +39,8 @@ probe_barcodes = pd.DataFrame([
         sample_id=sample,
         barcode=barcode.upper()
     )
-    for barcode, sample in ds.params.items()
+    # The form groups these under samples, and ds.params keeps that nesting
+    for barcode, sample in ds.params.get("samples", {}).items()
     if barcode.startswith("bc0")
 ])
 msg = "User must specify at least one sample barcode used"

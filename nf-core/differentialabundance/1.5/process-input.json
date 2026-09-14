@@ -8,7 +8,6 @@
   "transcript_length_matrix": "$.inputs[0].s3|/data/salmon/salmon.merged.gene_lengths.tsv",
   "contrasts": "$.dataset.s3|/config/contrasts.csv",
   "shinyngs_build_app": "$.dataset.params.shiny_app_settings.shinyngs_build_app",
-  "igenomes_base": "$.referencesBucketUri|/igenomes/",
   "differential_fc_column": "log2FoldChange",
   "differential_feature_id_column": "gene_id",
   "differential_max_pval": 1.0,
@@ -29,5 +28,8 @@
   "observations_type": "sample",
   "study_abundance_type": "counts",
   "study_name": "study",
-  "study_type": "rnaseq"
+  "study_type": "rnaseq",
+  "css_file": "$.referencesBucketUri|/differentialabundance/1.5.0/nf-core_style.css",
+  "logo_file": "$.referencesBucketUri|/differentialabundance/1.5.0/nf-core-differentialabundance_logo_light.png",
+  "report_file": "$.referencesBucketUri|/differentialabundance/1.5.0/differentialabundance_report.Rmd"
 }
