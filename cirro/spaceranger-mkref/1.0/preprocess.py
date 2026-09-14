@@ -27,7 +27,7 @@ if __name__ == "__main__":
     # from the resolved value. genome_dir is mapped only so this script can see it.
     genome_dir = ds.params["genome_dir"]
     ds.add_param("fasta", f"{genome_dir}/fasta/genome.fa", overwrite=True)
-    ds.add_param("genes", f"{genome_dir}/genes/genes.gtf.gz", overwrite=True)
+    ds.add_param("genes", f"{genome_dir}/genes/genes.gtf", overwrite=True)
     ds.remove_param("genome_dir")
 
     ds.logger.info(ds.params)
