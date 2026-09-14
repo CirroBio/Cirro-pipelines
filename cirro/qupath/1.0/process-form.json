@@ -27,36 +27,6 @@
         "title": "Optional Arguments",
         "description": "If provided, arguments will be provided as 'QuPath script --args {}'",
         "default": ""
-      },
-      "memory": {
-        "type": "string",
-        "title": "Memory (RAM)",
-        "description": "Amount of memory provided for analysis",
-        "default": "32.GB",
-        "enum": [
-          "4.GB",
-          "8.GB",
-          "16.GB",
-          "32.GB",
-          "64.GB",
-          "128.GB",
-          "256.GB"
-        ]
-      },
-      "time": {
-        "type": "string",
-        "title": "Maximum Runtime (hours)",
-        "description": "Analysis will be automatically stopped after running for this long",
-        "default": "4h",
-        "enum": [
-          "1h",
-          "2h",
-          "4h",
-          "8h",
-          "24h",
-          "48h",
-          "168h"
-        ]
       }
     }
   },
