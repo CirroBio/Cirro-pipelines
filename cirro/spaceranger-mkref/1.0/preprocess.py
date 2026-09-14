@@ -23,9 +23,8 @@ if __name__ == "__main__":
 
     resolve_references(ds, "genome_dir", "probes")
 
-    # process-input.json derives fasta and genes from the raw form value, which is
-    # relative, so both are rebuilt here from the resolved directory. The workflow
-    # takes those two paths and not the directory itself.
+    # The workflow reads fasta and genes, not the directory, so they are built here
+    # from the resolved value. genome_dir is mapped only so this script can see it.
     genome_dir = ds.params["genome_dir"]
     ds.add_param("fasta", f"{genome_dir}/fasta/genome.fa", overwrite=True)
     ds.add_param("genes", f"{genome_dir}/genes/genes.gtf.gz", overwrite=True)
