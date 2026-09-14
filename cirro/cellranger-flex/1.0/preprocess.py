@@ -33,15 +33,20 @@ if ds.params.get("probe_set") is None or ds.params.get("probe_set") == "":
         overwrite=True
     )
 
-# Get the sample names used for each barcode
+# Get the sample names used for each barcode. The form groups these under
+# samples, but process-input.json maps each to a flat bcNNN key, and that is the
+# name ds.params carries -- ds.params["samples"] is the samplesheet this script
+# writes. A barcode the user left blank names no sample.
+barcode_params = sorted(
+    param for param in ds.params if param.startswith("bc0")
+)
 probe_barcodes = pd.DataFrame([
     dict(
-        sample_id=sample,
+        sample_id=ds.params[barcode],
         barcode=barcode.upper()
     )
-    # The form groups these under samples, and ds.params keeps that nesting
-    for barcode, sample in ds.params.get("samples", {}).items()
-    if barcode.startswith("bc0")
+    for barcode in barcode_params
+    if ds.params[barcode]
 ])
 msg = "User must specify at least one sample barcode used"
 assert probe_barcodes.shape[0] > 0, msg
@@ -74,5 +79,6 @@ ds.samplesheet.to_csv(ds.params["samples"], index=None)
 for k, v in ds.params.items():
     ds.logger.info(f"{k}: {v}")
 
-# Consumed above; not a parameter the workflow declares.
-ds.remove_param("reference", force=True)
+# Consumed above; not parameters the workflow declares.
+for param in ["reference"] + barcode_params:
+    ds.remove_param(param, force=True)
