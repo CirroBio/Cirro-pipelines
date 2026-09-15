@@ -58,16 +58,17 @@ if __name__ == "__main__":
     # Make the samplesheet
     samplesheet = make_manifest(ds)
 
-    # Write out to a file
-    samplesheet.to_csv("samplesheet.tsv", index=None, sep="\t")
-
-    # Add the param for the samplesheet
-    ds.add_param("input", "samplesheet.tsv")
+    # Write to the dataset's config/ folder (mapped in process-input.json)
+    samplesheet.to_csv(ds.params["input"], index=None, sep="\t")
 
     # Format the unicycler_args based on the mode
     if ds.params.get("unicycler_mode", None) is not None:
-        ds.add_param("unicycler_args", f"--mode {ds.params['unicycler_mode']}"),
+        ds.add_param("unicycler_args", f"--mode {ds.params['unicycler_mode']}")
         ds.remove_param("unicycler_mode")
 
     # log
     ds.logger.info(ds.params)
+
+    # Force params.json to be written: the HealthOmics pre-process Lambda fails the run
+    # when the file is absent, and the SDK writes it only when a parameter changes.
+    ds.keep_params(list(ds.params.keys()))

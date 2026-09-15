@@ -46,19 +46,13 @@ if __name__ == "__main__":
     # Make the samplesheet
     samplesheet = make_samplesheet(ds)
 
-    # Write out the sample sheet
+    # Write to the dataset's config/ folder (mapped in process-input.json)
     ds.logger.info(
-        f"Writing out {samplesheet.shape[0]:,} lines to samplesheet.csv"
+        f"Writing out {samplesheet.shape[0]:,} lines to {ds.params['samplesheet']}"
     )
     samplesheet.to_csv(
-        "samplesheet.csv",
+        ds.params["samplesheet"],
         index=None
-    )
-
-    # Add it to the params
-    ds.add_param(
-        "samplesheet",
-        "samplesheet.csv"
     )
 
     #########
@@ -73,3 +67,7 @@ if __name__ == "__main__":
     else:
         assert len(ds.params["genes"]) > 0, "Must specify at least 1 gene"
         ds.add_param("genes", ",".join(ds.params["genes"]), overwrite=True)
+
+    # Force params.json to be written: the HealthOmics pre-process Lambda fails the run
+    # when the file is absent, and the SDK writes it only when a parameter changes.
+    ds.keep_params(list(ds.params.keys()))

@@ -8,6 +8,7 @@
   "name": "Build Genome Index (Cell Ranger V(D)J)",
   "desc": "Build a 10X Genomics Cell Ranger V(D)J immune-profiling reference with cellranger mkvdjref by extracting IG/TR gene segments from the annotation.",
   "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "category": "Reference Data",
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-reference/#genome-index-cellranger-vdj",
   "code": {

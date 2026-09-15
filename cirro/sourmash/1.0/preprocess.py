@@ -5,10 +5,10 @@ from cirro.helpers.preprocess_dataset import PreprocessDataset
 
 ds = PreprocessDataset.from_running()
 
-# Write out the list of files
+# Write the list of files to the dataset's config/ folder
+# (mapped in process-input.json)
 ds.logger.info(ds.files.to_csv(index=None))
-ds.files.to_csv("samplesheet.csv", index=None)
-ds.add_param("samplesheet", "samplesheet.csv")
+ds.files.to_csv(ds.params["samplesheet"], index=None)
 
 # Map the user-selected databases to their corresponding paths
 db_map = {
@@ -29,7 +29,7 @@ def format_db(
     protozoa_db: str,
     fungi_db: str,
     ksize: int,
-    prefix: str = "s3://pubweb-references/",
+    prefix: str,
     suffix: str = ".zip",
     **kwargs
 ) -> str:
@@ -44,7 +44,7 @@ def format_db(
 
 ds.add_param(
     "db",
-    format_db(**ds.params)
+    format_db(**ds.params, prefix=f"{ds.references_base}/")
 )
 
 # Make sure that the user does not select a negative threshold value
@@ -52,3 +52,7 @@ msg = f"Minimum threshold cannot be negative ({ds.params['threshold_bp']})"
 assert ds.params["threshold_bp"] > 0
 
 ds.logger.info(json.dumps(ds.params, indent=4))
+
+# Consumed above; not parameters the workflow declares.
+for param in ("archaea_db", "bact_db", "fungi_db", "protozoa_db", "viral_db"):
+    ds.remove_param(param, force=True)

@@ -1,6 +1,19 @@
 #!/usr/bin/env python3
 
+import boto3
 from cirro.helpers.preprocess_dataset import PreprocessDataset
+from cirro.models.s3_path import S3Path
+
+
+def write_text(uri: str, content: str):
+    """Write a text file to the S3 location given by uri."""
+    path = S3Path(uri)
+    assert path.valid, f"Not an S3 URI: {uri}"
+    boto3.client("s3").put_object(
+        Bucket=path.bucket,
+        Key=path.key,
+        Body=content.encode()
+    )
 
 
 def build_samplesheet(ds: PreprocessDataset):
@@ -57,20 +70,18 @@ authors:
     ds.logger.info("YAML - submol")
     ds.logger.info(submol)
 
-    # Write out the YAML
-    with open("submol.yaml", "w") as handle:
-        handle.write(submol)
+    # Write the YAML alongside the sample sheet, in the dataset's config/
+    # folder (mapped in process-input.json)
+    submol_uri = ds.params["sample_sheet"].rsplit("/", 1)[0] + "/submol.yaml"
+    write_text(submol_uri, submol)
 
     # Make the samplesheet
     sample_sheet = f"""fasta,yaml
-{ds.params['genome']},submol.yaml
+{ds.params['genome']},{submol_uri}
 """
     ds.logger.info("Sample sheet")
     ds.logger.info(sample_sheet)
-    with open("sample_sheet.csv", "w") as handle:
-        handle.write(sample_sheet)
-
-    ds.add_param("sample_sheet", "sample_sheet.csv")
+    write_text(ds.params["sample_sheet"], sample_sheet)
 
 
 if __name__ == "__main__":

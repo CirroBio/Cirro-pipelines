@@ -20,4 +20,5 @@ assert manifest.shape[0] > 0, "No files detected -- there may be an error with d
 comprehensive = bool(ds.params.get('comprehensive'))
 ds.add_param('comprehensive', comprehensive, overwrite=True)
 
-manifest.to_csv("samplesheet.csv", index=None)
+# Write to the dataset's config/ folder (mapped in process-input.json)
+manifest.to_csv(ds.params["input"], index=None)

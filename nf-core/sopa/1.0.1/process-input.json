@@ -1,6 +1,6 @@
 {
   "spatial_data": "$.inputs[0].dataPath",
-  "input": "$.dataset.s3|/config/samplesheet.csv",
+  "input": "$.dataset.s3|/config/pipeline_samplesheet.csv",
   "outdir": "$.dataset.dataPath",
   "technology": "$.dataset.params.reader.technology",
   "use_cellpose": "$.dataset.params.cellpose.use_cellpose",

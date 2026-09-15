@@ -5,6 +5,7 @@
   "name": "CellRanger Fixed RNA (Flex)",
   "desc": "Analysis of 10X single-cell sequencing of fixed RNA samples",
   "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "pipelineTypeOverride": "10X",
   "category": "Single-Cell Analysis",
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-single-cell/#cellranger-flex",

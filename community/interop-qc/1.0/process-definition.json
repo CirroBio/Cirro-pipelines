@@ -4,6 +4,7 @@
   "name": "InterOp QC",
   "desc": "InterOp QC Reporting - Generate QC metrics from Illumina Sequencing run",
   "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "category": "Quality Control",
   "documentationUrl": "https://github.com/FredHutch/interop-nf",
   "code": {

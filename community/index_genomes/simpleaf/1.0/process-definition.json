@@ -8,6 +8,7 @@
   "name": "Build Genome Index (Alevin-fry / simpleaf)",
   "desc": "Build a spliced+intron (splici) decoy-aware single-cell reference with simpleaf index (piscem or salmon) for alevin-fry USA-mode quantification. Emits a transcript-to-gene map.",
   "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "category": "Reference Data",
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-reference/#genome-index-simpleaf",
   "code": {

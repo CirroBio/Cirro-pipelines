@@ -1,6 +1,6 @@
 {
   "outdir": "$.dataset.dataPath",
-  "input": "manifest.csv",
+  "input": "$.dataset.s3|/config/manifest.csv",
   "samplesheet": "$.dataset.params.samplesheet",
   "flowcell_id": "$.dataset.params.flowcell_id",
   "lane": "$.dataset.params.lane",

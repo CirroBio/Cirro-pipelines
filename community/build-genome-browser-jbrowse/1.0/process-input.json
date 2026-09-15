@@ -1,5 +1,5 @@
 {
-  "inputs": "inputs.json",
+  "inputs": "$.dataset.s3|/config/inputs.json",
   "outdir": "$.dataset.dataPath",
   "assembly_name": "$.dataset.params.assembly_name",
   "fasta": "$.dataset.params.fasta",

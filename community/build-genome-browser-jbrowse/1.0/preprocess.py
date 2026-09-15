@@ -197,5 +197,6 @@ if __name__ == "__main__":
     inputs_data = {"assembly": assembly, "tracks": tracks}
     ds.logger.info("inputs.json:\n" + json.dumps(inputs_data, indent=2))
 
-    with open("inputs.json", "w") as fh:
-        json.dump(inputs_data, fh, indent=2)
+    # Write to the dataset's config/ folder (mapped in process-input.json)
+    bucket, key = parse_s3_uri(ds.params["inputs"])
+    s3.put_object(Bucket=bucket, Key=key, Body=json.dumps(inputs_data, indent=2))

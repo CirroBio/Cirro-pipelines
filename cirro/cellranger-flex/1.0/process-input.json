@@ -1,4 +1,6 @@
 {
+  "probe_barcodes": "$.dataset.s3|/config/probe_barcodes.csv",
+  "samples": "$.dataset.s3|/config/samples.csv",
   "fastq_dir": "$.inputs[0].dataPath",
   "reference": "$.dataset.params.reference",
   "probe_set": "$.dataset.params.probe_set",

@@ -35,8 +35,9 @@ if 'fcs_input' in ds.params and isinstance(ds.params['fcs_input'], str) and len(
 
     assert samplesheet.shape[0] == len(fcs_input)
 
+# Write to the dataset's config/ folder (mapped in process-input.json)
 samplesheet.to_csv(
-    "samplesheet.csv",
+    ds.params["samplesheet"],
     index=False
 )
 
@@ -45,3 +46,10 @@ ds.logger.info(samplesheet.to_csv(index=None))
 
 # log
 ds.logger.info(ds.params)
+
+# Consumed above; not a parameter the workflow declares.
+ds.remove_param("fcs_input", force=True)
+
+# Force params.json to be written: the HealthOmics pre-process Lambda fails the run
+# when the file is absent, and the SDK writes it only when a parameter changes.
+ds.keep_params(list(ds.params.keys()))

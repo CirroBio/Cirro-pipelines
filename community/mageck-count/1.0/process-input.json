@@ -1,8 +1,7 @@
 {
   "fastq": "$.dataset.params.fastq",
   "library": "$.dataset.params.library",
-  "output": "$.dataset.params.dataPath|/",
-  "output_prefix": "mageck_count",
+  "output": "$.dataset.dataPath",
   "adapter_5_prime": "$.dataset.params.adapter",
   "insert_length": "$.dataset.params.insert_length"
 }

@@ -4,6 +4,7 @@
   "name": "ATAC-seq (nf-core/atacseq)",
   "desc": "ATAC-seq: peak-calling, QC, and differential analysis (v2.0)",
   "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "pipelineTypeOverride": "nf-core",
   "category": "DNA Sequencing",
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-dna-sequencing/#atac-seq-nf-coreatacseq",

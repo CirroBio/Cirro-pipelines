@@ -1,4 +1,5 @@
 {
+    "samplesheet": "$.dataset.s3|/config/pipeline_samplesheet.csv",
     "bact_db": "$.dataset.params.bact_db",
     "viral_db": "$.dataset.params.viral_db",
     "archaea_db": "$.dataset.params.archaea_db",
@@ -7,5 +8,5 @@
     "ksize": "$.dataset.params.k",
     "threshold_bp": "$.dataset.params.threshold_bp",
     "output": "$.dataset.dataPath",
-    "tax_db": "s3://pubweb-references/genbank/genbank-2022.03-gtdb-rs214-tax.db"
+    "tax_db": "$.referencesBucketUri|/genbank/genbank-2022.03-gtdb-rs214-tax.db"
 }

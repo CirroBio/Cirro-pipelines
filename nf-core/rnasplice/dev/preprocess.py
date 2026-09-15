@@ -568,12 +568,13 @@ if __name__ == "__main__":
 
     contrasts = make_contrasts(manifest)
 
-    # Write out the manifest and contrasts
-    manifest.to_csv("manifest.csv", index=None)
-    print(f"Wrote out {manifest.shape[0]:,} lines to manifest.csv")
+    # Write the manifest and contrasts to the dataset's config/ folder
+    # (mapped in process-input.json)
+    manifest.to_csv(ds.params["input"], index=None)
+    print(f"Wrote out {manifest.shape[0]:,} lines to {ds.params['input']}")
 
-    contrasts.to_csv("contrasts.csv", index=None)
-    print(f"Wrote out {contrasts.shape[0]:,} lines to contrasts.csv")
+    contrasts.to_csv(ds.params["contrasts"], index=None)
+    print(f"Wrote out {contrasts.shape[0]:,} lines to {ds.params['contrasts']}")
 
     # Format the reference paths
     format_reference_paths(ds)

@@ -20,6 +20,9 @@ ds.files = ds.files.loc[
 samplesheet = (
     ds.files
     .reindex(columns=["dataset", "sampleIndex", "sample", "lane", "read", "file"])
+    # A row with no read number cannot be paired, and would pivot
+    # into a column the rename below cannot name.
+    .loc[lambda d: d["read"].notna()]
     .pivot(
         index=["dataset", "sampleIndex", "sample", "lane"],
         columns="read",
@@ -35,8 +38,12 @@ ds.logger.info("Formatted samplesheet:")
 ds.logger.info(samplesheet.to_csv(index=None))
 assert samplesheet.shape[0] > 0, "No files detected -- there may be an error with data ingest"
 
-# Write out to a file
-samplesheet.to_csv("samplesheet.csv", index=None)
+# Write to the dataset's config/ folder (mapped in process-input.json)
+samplesheet.to_csv(ds.params["sample_sheet"], index=None)
 
 # log
 ds.logger.info(ds.params)
+
+# Force params.json to be written: the HealthOmics pre-process Lambda fails the run
+# when the file is absent, and the SDK writes it only when a parameter changes.
+ds.keep_params(list(ds.params.keys()))

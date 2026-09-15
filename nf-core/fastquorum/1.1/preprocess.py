@@ -14,6 +14,9 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
     manifest = (
         ds.files
         .reindex(columns=["sampleIndex", "libraryIndex", "sample", "dataset", "readType", "read", "file"])
+        # A row with no read number cannot be paired, and would pivot
+        # into a column the rename below cannot name.
+        .loc[lambda d: d["read"].notna()]
         .assign(
             fastq_cname_ix=lambda df: df.apply(
                 lambda r: r["read"] + (2 if r.get("readType", "R") == "I" else 0),
@@ -75,6 +78,6 @@ if __name__ == "__main__":
 
     manifest = make_manifest(ds)
 
-    # Write out the manifest
-    manifest.to_csv("manifest.csv", index=None)
-    ds.logger.info(f"Wrote out {manifest.shape[0]:,} lines to manifest.csv")
+    # Write to the dataset's config/ folder (mapped in process-input.json)
+    manifest.to_csv(ds.params["input"], index=None)
+    ds.logger.info(f"Wrote out {manifest.shape[0]:,} lines to {ds.params['input']}")

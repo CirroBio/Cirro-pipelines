@@ -6,11 +6,11 @@
         "title": "Genome",
         "description": "Reference genome used for alignment of V(D)J data",
         "type": "string",
-        "default": "s3://pubweb-references/cellranger/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.1.0",
+        "default": "cellranger/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.1.0",
         "enum": [
-          "s3://pubweb-references/cellranger/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.1.0",
-          "s3://pubweb-references/cellranger/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.0.0",
-          "s3://pubweb-references/cellranger/refdata-cellranger-vdj-GRCm38-alts-ensembl-7.0.0"
+          "cellranger/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.1.0",
+          "cellranger/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.0.0",
+          "cellranger/refdata-cellranger-vdj-GRCm38-alts-ensembl-7.0.0"
         ],
         "enumNames": [
           "Homo sapiens (7.1.0)",

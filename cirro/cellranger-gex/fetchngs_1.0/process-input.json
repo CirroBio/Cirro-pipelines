@@ -1,4 +1,5 @@
 {
+  "samplesheet": "$.dataset.s3|/config/pipeline_samplesheet.csv",
   "transcriptome_dir": "$.dataset.params.transcriptome_dir",
   "include_introns": "$.dataset.params.include_introns",
   "cellranger_version": "$.dataset.params.cellranger_version",
