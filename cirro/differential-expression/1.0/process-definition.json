@@ -11,7 +11,6 @@
   "dataType": "Differential Expression Analysis",
   "desc": "Identification of differentially expressed genes (RNAseq Input)",
   "executor": "NEXTFLOW",
-  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "pipelineTypeOverride": "Community",
   "category": "Statistical Analysis",
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-statistical-analysis/#differential-expression-analysis",
