@@ -31,34 +31,34 @@ def normalize_sex(value) -> str:
     return _SEX_ALIASES.get(str(value).strip().lower(), 'NA')
 
 
-# Sarek publishes alignments at several stages under preprocessing/<stage>/<sample>/,
-# and only the last stage a run reached carries every correction -- duplicate flags
-# from MarkDuplicates, recalibrated base qualities from ApplyBQSR. Which stages exist
-# varies by run: mapped/ appears only with --save_mapped or when markduplicates is
-# skipped, and recalibrated/ is absent whenever baserecalibrator is in --skip_tools.
-# Ranked most-processed first; equal rank means the stages are mutually exclusive.
-_STAGE_RANK = {
-    "recalibrated": 0,
-    "markduplicates": 1,
-    "sentieon_dedup": 1,
-    "mapped": 2,
+# Alignment stages in tiers, most processed first; stages sharing a tier are
+# alternatives sarek never emits together. Sarek writes each to
+# preprocessing/<stage>/<sample>/, and only the last stage a run reached carries every
+# correction -- duplicate flags from MarkDuplicates, recalibrated base qualities from
+# ApplyBQSR. Which stages exist varies by run: mapped/ appears only with --save_mapped
+# or when markduplicates is skipped, and recalibrated/ is absent whenever
+# baserecalibrator is in --skip_tools.
+_STAGE_TIERS = (
+    ("recalibrated",),
+    ("markduplicates", "sentieon_dedup"),
+    ("mapped",),
+)
+_STAGES = tuple(stage for tier in _STAGE_TIERS for stage in tier)
+
+# Anything written outside those directories -- converted/, parabricks/, or a flat
+# dataset from the aligned_bam intake -- sorts last.
+_UNKNOWN_STAGE = "unknown"
+
+# The filename suffix sarek gives each stage, the only signal left where the
+# preprocessing/<stage>/ path is absent.
+_STAGE_SUFFIXES = {
+    "recalibrated": ".recal.",
+    "markduplicates": ".md.",
+    "sentieon_dedup": ".dedup.",
+    "mapped": ".sorted.",
 }
 
-# Anything sarek did not write under a recognized preprocessing/ stage (converted/,
-# parabricks/, or a flat dataset from the aligned_bam intake) sorts last.
-_UNRANKED_STAGE = "unknown"
-_UNRANKED_RANK = max(_STAGE_RANK.values()) + 1
-
-# Filename suffixes are the only stage signal left for datasets that carry no
-# preprocessing/<stage>/ path -- alignments uploaded through the aligned_bam intake.
-_SUFFIX_STAGES = (
-    (".recal.", "recalibrated"),
-    (".md.", "markduplicates"),
-    (".dedup.", "sentieon_dedup"),
-    (".sorted.", "mapped"),
-)
-
-# Directories the form's Alignment Stage values accept.
+# The stages each Alignment Stage value in the form accepts.
 _REQUESTED_STAGES = {
     "recalibrated": ("recalibrated",),
     "markduplicates": ("markduplicates", "sentieon_dedup"),
@@ -71,13 +71,22 @@ _INDEX_SUFFIX = {"bam": "bai", "cram": "crai"}
 def alignment_stage(path: str) -> str:
     """Name the processing stage an alignment file came from."""
     match = re.search(r"(?:^|/)preprocessing/([^/]+)/", path)
-    if match and match.group(1) in _STAGE_RANK:
+    if match and match.group(1) in _STAGES:
         return match.group(1)
+
     name = path.rsplit("/", 1)[-1]
-    for suffix, stage in _SUFFIX_STAGES:
+    for stage, suffix in _STAGE_SUFFIXES.items():
         if suffix in name:
             return stage
-    return _UNRANKED_STAGE
+    return _UNKNOWN_STAGE
+
+
+def stage_rank(stage: str) -> int:
+    """Sort key placing the most processed tier first and unknown stages last."""
+    for rank, tier in enumerate(_STAGE_TIERS):
+        if stage in tier:
+            return rank
+    return len(_STAGE_TIERS)
 
 
 def alignment_candidates(ds: PreprocessDataset) -> pd.DataFrame:
@@ -87,18 +96,24 @@ def alignment_candidates(ds: PreprocessDataset) -> pd.DataFrame:
     bam+bai or cram+crai.
     """
     paths = set(ds.files["file"])
-    rows = [
-        dict(
+
+    rows = []
+    for record in ds.files.to_dict("records"):
+        path = record["file"]
+        fmt = path.rsplit(".", 1)[-1]
+        if fmt not in _INDEX_SUFFIX:
+            continue
+        index = f"{path}.{_INDEX_SUFFIX[fmt]}"
+        if index not in paths:
+            continue
+        rows.append(dict(
             sample=record["sample"],
-            stage=alignment_stage(record["file"]),
+            stage=alignment_stage(path),
             fmt=fmt,
-            data=record["file"],
-            index=f"{record['file']}.{idx}",
-        )
-        for record in ds.files.to_dict("records")
-        for fmt, idx in _INDEX_SUFFIX.items()
-        if record["file"].endswith(f".{fmt}") and f"{record['file']}.{idx}" in paths
-    ]
+            data=path,
+            index=index,
+        ))
+
     return pd.DataFrame(rows, columns=["sample", "stage", "fmt", "data", "index"])
 
 
@@ -108,8 +123,7 @@ def select_alignments(ds: PreprocessDataset, requested: str) -> tuple[pd.DataFra
     Sarek's samplesheet cannot mix bam and cram columns, so the format is a
     dataset-wide decision and has to be made together with the stage rather than
     ahead of it -- picking the format first is what let raw mapped BAMs win over
-    duplicate-marked CRAMs. Ties between formats go to BAM, so BAM-only datasets
-    behave exactly as they did before.
+    duplicate-marked CRAMs.
     """
     candidates = alignment_candidates(ds)
     if candidates.empty:
@@ -134,24 +148,25 @@ def select_alignments(ds: PreprocessDataset, requested: str) -> tuple[pd.DataFra
                 f"contains no {' or '.join(wanted)} alignments."
             )
 
-    options = sorted(
-        set(zip(candidates["stage"], candidates["fmt"])),
-        key=lambda option: (_STAGE_RANK.get(option[0], _UNRANKED_RANK), option[1] != "bam")
-    )
+    def preference(option):
+        # BAM ahead of CRAM leaves BAM-only datasets behaving as they did before.
+        stage, fmt = option
+        return stage_rank(stage), fmt != "bam"
 
-    for stage, fmt in options:
+    for stage, fmt in sorted(set(zip(candidates["stage"], candidates["fmt"])), key=preference):
         subset = candidates.loc[(candidates["stage"] == stage) & (candidates["fmt"] == fmt)]
         if set(subset["sample"]) == samples:
             return subset, stage, fmt
 
-    available = {
-        sample: sorted({f"{stage} ({fmt.upper()})" for stage, fmt in zip(group["stage"], group["fmt"])})
+    found = "\n".join(
+        f"  {sample}: " + ", ".join(sorted(set(
+            f"{stage} ({fmt.upper()})" for stage, fmt in zip(group["stage"], group["fmt"])
+        )))
         for sample, group in candidates.groupby("sample")
-    }
+    )
     raise ValueError(
         "No single alignment stage and format covers every sample, so no valid sarek "
-        "samplesheet can be built. Available per sample:\n"
-        + "\n".join(f"  {sample}: {', '.join(stages)}" for sample, stages in available.items())
+        "samplesheet can be built. Available per sample:\n" + found
     )
 
 
