@@ -10,6 +10,7 @@
   "vep_spliceai": "$.dataset.params.annotation.vep_spliceai",
   "vep_spliceregion": "$.dataset.params.annotation.vep_spliceregion",
   "wes": "$.dataset.params.analysis_type.wes",
+  "alignment_stage": "$.dataset.params.analysis_type.alignment_stage",
   "genome_source": "$.dataset.params.analysis_type.genome_selection.genome_source",
   "genome": "$.dataset.params.analysis_type.genome_selection.igenomes.genome",
   "bwa_index": "$.dataset.params.analysis_type.genome_selection.bwa_cirro_reference.genome_index|/data",

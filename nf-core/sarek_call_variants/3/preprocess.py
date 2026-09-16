@@ -4,6 +4,7 @@ from cirro.helpers.preprocess_dataset import PreprocessDataset
 from cirro.models.s3_path import S3Path
 import boto3
 import pandas as pd
+import re
 import urllib.request
 import urllib.error
 import json
@@ -30,6 +31,130 @@ def normalize_sex(value) -> str:
     return _SEX_ALIASES.get(str(value).strip().lower(), 'NA')
 
 
+# Sarek publishes alignments at several stages under preprocessing/<stage>/<sample>/,
+# and only the last stage a run reached carries every correction -- duplicate flags
+# from MarkDuplicates, recalibrated base qualities from ApplyBQSR. Which stages exist
+# varies by run: mapped/ appears only with --save_mapped or when markduplicates is
+# skipped, and recalibrated/ is absent whenever baserecalibrator is in --skip_tools.
+# Ranked most-processed first; equal rank means the stages are mutually exclusive.
+_STAGE_RANK = {
+    "recalibrated": 0,
+    "markduplicates": 1,
+    "sentieon_dedup": 1,
+    "mapped": 2,
+}
+
+# Anything sarek did not write under a recognized preprocessing/ stage (converted/,
+# parabricks/, or a flat dataset from the aligned_bam intake) sorts last.
+_UNRANKED_STAGE = "unknown"
+_UNRANKED_RANK = max(_STAGE_RANK.values()) + 1
+
+# Filename suffixes are the only stage signal left for datasets that carry no
+# preprocessing/<stage>/ path -- alignments uploaded through the aligned_bam intake.
+_SUFFIX_STAGES = (
+    (".recal.", "recalibrated"),
+    (".md.", "markduplicates"),
+    (".dedup.", "sentieon_dedup"),
+    (".sorted.", "mapped"),
+)
+
+# Directories the form's Alignment Stage values accept.
+_REQUESTED_STAGES = {
+    "recalibrated": ("recalibrated",),
+    "markduplicates": ("markduplicates", "sentieon_dedup"),
+    "mapped": ("mapped",),
+}
+
+_INDEX_SUFFIX = {"bam": "bai", "cram": "crai"}
+
+
+def alignment_stage(path: str) -> str:
+    """Name the processing stage an alignment file came from."""
+    match = re.search(r"(?:^|/)preprocessing/([^/]+)/", path)
+    if match and match.group(1) in _STAGE_RANK:
+        return match.group(1)
+    name = path.rsplit("/", 1)[-1]
+    for suffix, stage in _SUFFIX_STAGES:
+        if suffix in name:
+            return stage
+    return _UNRANKED_STAGE
+
+
+def alignment_candidates(ds: PreprocessDataset) -> pd.DataFrame:
+    """Every indexed alignment in the input dataset, labelled by stage and format.
+
+    An alignment with no index next to it is dropped: sarek's samplesheet requires
+    bam+bai or cram+crai.
+    """
+    paths = set(ds.files["file"])
+    rows = [
+        dict(
+            sample=record["sample"],
+            stage=alignment_stage(record["file"]),
+            fmt=fmt,
+            data=record["file"],
+            index=f"{record['file']}.{idx}",
+        )
+        for record in ds.files.to_dict("records")
+        for fmt, idx in _INDEX_SUFFIX.items()
+        if record["file"].endswith(f".{fmt}") and f"{record['file']}.{idx}" in paths
+    ]
+    return pd.DataFrame(rows, columns=["sample", "stage", "fmt", "data", "index"])
+
+
+def select_alignments(ds: PreprocessDataset, requested: str) -> tuple[pd.DataFrame, str, str]:
+    """Pick one (stage, format) combination covering every sample in the dataset.
+
+    Sarek's samplesheet cannot mix bam and cram columns, so the format is a
+    dataset-wide decision and has to be made together with the stage rather than
+    ahead of it -- picking the format first is what let raw mapped BAMs win over
+    duplicate-marked CRAMs. Ties between formats go to BAM, so BAM-only datasets
+    behave exactly as they did before.
+    """
+    candidates = alignment_candidates(ds)
+    if candidates.empty:
+        raise ValueError(
+            "No indexed BAM or CRAM alignments found in the input dataset. Each "
+            "alignment must be accompanied by its .bai/.crai index."
+        )
+
+    samples = set(candidates["sample"])
+
+    if requested != "best":
+        wanted = _REQUESTED_STAGES.get(requested)
+        if wanted is None:
+            raise ValueError(
+                f"Unrecognized Alignment Stage {requested!r}; expected one of "
+                f"'best', {', '.join(map(repr, _REQUESTED_STAGES))}."
+            )
+        candidates = candidates.loc[candidates["stage"].isin(wanted)]
+        if candidates.empty:
+            raise ValueError(
+                f"Alignment Stage '{requested}' was requested, but the input dataset "
+                f"contains no {' or '.join(wanted)} alignments."
+            )
+
+    options = sorted(
+        set(zip(candidates["stage"], candidates["fmt"])),
+        key=lambda option: (_STAGE_RANK.get(option[0], _UNRANKED_RANK), option[1] != "bam")
+    )
+
+    for stage, fmt in options:
+        subset = candidates.loc[(candidates["stage"] == stage) & (candidates["fmt"] == fmt)]
+        if set(subset["sample"]) == samples:
+            return subset, stage, fmt
+
+    available = {
+        sample: sorted({f"{stage} ({fmt.upper()})" for stage, fmt in zip(group["stage"], group["fmt"])})
+        for sample, group in candidates.groupby("sample")
+    }
+    raise ValueError(
+        "No single alignment stage and format covers every sample, so no valid sarek "
+        "samplesheet can be built. Available per sample:\n"
+        + "\n".join(f"  {sample}: {', '.join(stages)}" for sample, stages in available.items())
+    )
+
+
 def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
 
     ds.logger.info("Input Files:")
@@ -37,50 +162,22 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
 
     assert ds.files.shape[0] > 0, "No files detected -- error with data ingest"
 
-    # sarek emits alignments as BAM (default) or CRAM. Detect which the input
-    # dataset contains and build the matching samplesheet columns (sarek accepts
-    # bam+bai or cram+crai, never mixed). BAM is checked first so existing BAM
-    # datasets behave exactly as before.
-    files = ds.files["file"]
-    if files.str.contains(r'\.bam(\.bai)?$', regex=True).any():
-        data_ext, idx_suffix = "bam", "bai"
-    elif files.str.contains(r'\.cram(\.crai)?$', regex=True).any():
-        data_ext, idx_suffix = "cram", "crai"
-    else:
-        raise ValueError("No BAM or CRAM alignment files found in the input dataset")
-    ds.logger.info(f"Detected {data_ext.upper()} alignments")
+    requested_stage = ds.params.get("alignment_stage") or "best"
+    ds.remove_param("alignment_stage", force=True)
 
-    index_ext = f"{data_ext}.{idx_suffix}"
-
-    # Format a wide sample sheet
-    def _aln_pref(filename: str) -> int:
-        if filename.endswith(f'.recal.{data_ext}'):
-            return 0
-        elif filename.endswith(f'.sorted.{data_ext}'):
-            return 1
-        else:
-            return 2
-
-    manifest = (
-        ds.files
-        .loc[files.str.contains(rf'\.{data_ext}(\.{idx_suffix})?$', regex=True)]
-        .assign(
-            stem=lambda df: df["file"].str.replace(rf'\.{data_ext}(\.{idx_suffix})?$', '', regex=True),
-            ext=lambda df: df["file"].str.extract(rf'\.({data_ext}(?:\.{idx_suffix})?)$')[0]
-        )
-        .pivot(index=["sample", "stem"], columns="ext", values="file")
-        .rename_axis(columns=None)
-        .dropna(subset=[data_ext, index_ext])
-        .assign(_pref=lambda df: df[data_ext].apply(_aln_pref))
-        .groupby(level="sample", group_keys=False)
-        .apply(lambda g: g[g["_pref"] == g["_pref"].min()])
-        .drop(columns=["_pref"])
-        .reset_index()
-        .rename(columns={index_ext: idx_suffix})
-        .drop(columns=["stem"])
+    selected, stage, data_ext = select_alignments(ds, requested_stage)
+    idx_suffix = _INDEX_SUFFIX[data_ext]
+    ds.logger.info(
+        f"Alignment Stage {requested_stage!r} resolved to {stage} alignments "
+        f"in {data_ext.upper()} format"
     )
 
-    assert manifest.shape[0] > 0, "No files detected -- error with data ingest"
+    manifest = (
+        selected
+        .drop(columns=["stage", "fmt"])
+        .rename(columns={"data": data_ext, "index": idx_suffix})
+        .reset_index(drop=True)
+    )
 
     ds.logger.info(f"{data_ext.upper()}/{idx_suffix.upper()} pairs:")
     ds.logger.info(manifest.to_csv(index=None))
@@ -389,6 +486,7 @@ _PROTECTED_PARAMS = frozenset({
     "compute_multiplier",  # computed from wes
     "wes",              # consumed to compute compute_multiplier before extra JSON is applied
     "intervals",        # consumed to set no_intervals before extra JSON is applied
+    "alignment_stage",  # consumed by make_manifest; not a sarek parameter
 })
 
 # compute_multiplier and optical_duplicate_pixel_distance are consumed by process-compute.config

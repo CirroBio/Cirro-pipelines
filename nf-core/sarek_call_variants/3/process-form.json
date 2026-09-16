@@ -104,6 +104,19 @@
             "type": "boolean",
             "default": false
           },
+          "alignment_stage": {
+            "title": "Alignment Stage",
+            "description": "Which stage of the input alignment dataset to call variants from. 'Best available' uses the most processed alignments the run produced: recalibrated, else duplicate-marked, else mapped. Mapped reads carry no duplicate flags and unrecalibrated base qualities, so select them only for benchmarking.",
+            "type": "string",
+            "enum": ["best", "recalibrated", "markduplicates", "mapped"],
+            "enumNames": [
+              "Best available (recommended)",
+              "Recalibrated (BQSR applied)",
+              "Duplicate-marked",
+              "Mapped (no duplicate marking or BQSR)"
+            ],
+            "default": "best"
+          },
           "intervals": {
             "title": "Genomic intervals",
             "description": "Target bed file in case of whole exome or targeted sequencing or intervals file for parallelization.",
