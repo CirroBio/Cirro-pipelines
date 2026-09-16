@@ -17,6 +17,7 @@
       "probe_set": {
         "title": "(optional) Custom Probe Set",
         "description": "The Chromium Probe Set v1.0.1 will be used by default",
+        "type": "string",
         "file": "**/cellranger_probe_set/**/cellranger_probe_set.csv",
         "pathType": "references",
         "default": ""
