@@ -47,13 +47,27 @@ preprocess = _load_preprocess()
 PREFIX = "s3://bucket/dataset/data"
 
 
-class FakeDataset:
-    """The slice of PreprocessDataset that select_alignments touches."""
+class FakeLogger:
+    def info(self, *args):
+        pass
 
-    def __init__(self, files):
+
+class FakeDataset:
+    """The slice of PreprocessDataset that make_manifest touches."""
+
+    def __init__(self, files, params=None):
         self.files = pd.DataFrame(
             [dict(sample=sample, file=f"{PREFIX}/{path}") for sample, path in files]
         )
+        self.samplesheet = pd.DataFrame(
+            [dict(sample=sample, patient=sample, sex="XX", status="Normal")
+             for sample in sorted(set(self.files["sample"]))]
+        )
+        self.params = dict(analysis_type="Germline Variant Calling", **(params or {}))
+        self.logger = FakeLogger()
+
+    def remove_param(self, name, force=False):
+        self.params.pop(name, None)
 
 
 def sarek_outputs(sample, stage, suffix, fmt):
@@ -170,6 +184,26 @@ class SelectAlignmentsTests(unittest.TestCase):
         files = sarek_outputs("S1", "markduplicates", "md", "bam")
         with self.assertRaisesRegex(ValueError, "no recalibrated alignments"):
             self.select(files, requested="recalibrated")
+
+
+class ManifestColumnTests(unittest.TestCase):
+    """sarek's schema_input.json allows `lane` only alongside fastq_1/spring_1/bam."""
+
+    def test_cram_manifest_omits_lane(self):
+        files = sarek_outputs("S1", "recalibrated", "recal", "cram")
+        manifest = preprocess.make_manifest(FakeDataset(files))
+        self.assertEqual(
+            list(manifest.columns), ["patient", "sex", "status", "sample", "cram", "crai"]
+        )
+
+    def test_bam_manifest_keeps_lane(self):
+        files = sarek_outputs("S1", "recalibrated", "recal", "bam")
+        manifest = preprocess.make_manifest(FakeDataset(files))
+        self.assertEqual(
+            list(manifest.columns),
+            ["patient", "sex", "status", "sample", "lane", "bam", "bai"],
+        )
+        self.assertEqual(list(manifest["lane"]), ["0"])
 
 
 if __name__ == "__main__":

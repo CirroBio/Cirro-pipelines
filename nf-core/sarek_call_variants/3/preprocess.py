@@ -189,15 +189,22 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
         for k, v in samples.items()
     })
 
-    ordering = ['patient', 'sex', 'status', 'sample', 'lane', data_ext, idx_suffix]
+    # sarek's samplesheet schema (assets/schema_input.json) makes `lane` conditional:
+    # anyOf dependentRequired {lane: [fastq_1]} / [spring_1] / [bam]. A CRAM row that
+    # carries a lane matches no branch and the run aborts in parameter validation.
+    ordering = ['patient', 'sex', 'status', 'sample']
+    if data_ext == 'bam':
+        ordering.append('lane')
+    ordering += [data_ext, idx_suffix]
     manifest: pd.DataFrame = manifest.reindex(columns=ordering)
 
     # Overwrite the 'lane' column to provide a unique value per-row
     # This is necessary to account for datasets which merge multiple flowcells
-    manifest = manifest.assign(lane=[
-        str(i)
-        for i in range(manifest.shape[0])
-    ])
+    if 'lane' in manifest.columns:
+        manifest = manifest.assign(lane=[
+            str(i)
+            for i in range(manifest.shape[0])
+        ])
 
     # Normalize 'sex' to the XX/XY/NA encoding sarek requires, defaulting to NA
     manifest = manifest.assign(sex=manifest["sex"].apply(normalize_sex))
