@@ -54,6 +54,16 @@
           "exampleName": "preprocessing/mapped/SampleName.bam.bai",
           "description": "Aligned reads (BAM/CRAM Index)",
           "sampleMatchingPattern": "preprocessing/(?P<bamType>[\\S ]*)/(?P<sampleName>[\\S ]*)/.*\\.(bam.bai|cram.crai)"
+        },
+        {
+          "exampleName": "preprocessing/recalibrated/SampleName.recal.cram",
+          "description": "Recalibrated aligned reads (CRAM)",
+          "sampleMatchingPattern": "preprocessing/(?P<bamType>recalibrated)/(?P<sampleName>[\\S ]*)\\.recal\\.cram"
+        },
+        {
+          "exampleName": "preprocessing/recalibrated/SampleName.recal.cram.crai",
+          "description": "Recalibrated aligned reads (CRAM Index)",
+          "sampleMatchingPattern": "preprocessing/(?P<bamType>recalibrated)/(?P<sampleName>[\\S ]*)\\.recal\\.cram\\.crai"
         }
       ]
     }
