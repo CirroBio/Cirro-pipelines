@@ -1,4 +1,4 @@
-import csv
+import pandas as pd
 from cirro.helpers.preprocess_dataset import PreprocessDataset
 import json
 
@@ -12,10 +12,8 @@ def make_samplesheet(ds: PreprocessDataset):
     if variable not in samplesheet:
         raise ValueError(f"Column {variable} not found in samplesheet")
 
-    # Save to a file
-    samplesheet.to_csv("samplesheet.csv", index=None)
-
-    # Set up a workflow param pointing to that file (e.g., for nf-core/rnaseq)
+    # Write to the dataset's config/ folder (mapped in process-input.json)
+    samplesheet.to_csv(ds.params["input"], index=None)
     ds.logger.info(samplesheet.to_csv(index=None))
 
 
@@ -28,13 +26,16 @@ def make_contrasts(ds: PreprocessDataset):
     ds.remove_param("target")
     ds.remove_param("variable")
 
-    with open("contrasts.csv", "w") as f:
-        csv.writer(f).writerow(["id", "variable", "reference", "target"])
-        csv.writer(f).writerow(
-            [f"{reference}_vs_{target}", variable, reference, target]
-        )
-    with open("contrasts.csv", "r") as f:
-        ds.logger.info(f.readlines())
+    contrasts = pd.DataFrame([dict(
+        id=f"{reference}_vs_{target}",
+        variable=variable,
+        reference=reference,
+        target=target
+    )])
+
+    # Write to the dataset's config/ folder (mapped in process-input.json)
+    contrasts.to_csv(ds.params["contrasts"], index=None)
+    ds.logger.info(contrasts.to_csv(index=None))
 
 
 def set_genome(ds: PreprocessDataset):

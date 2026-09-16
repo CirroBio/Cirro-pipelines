@@ -7,5 +7,5 @@
   "group_cols": "$.dataset.params.group_cols",
   "filter": "$.dataset.params.filter",
   "output_folder": "$.dataset.dataPath",
-  "web_folder": "$.dataset.s3|/web"
+  "web_folder": "$.dataset.s3|/web/"
 }

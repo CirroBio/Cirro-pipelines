@@ -8,6 +8,7 @@
   "name": "Build Genome Index (Cell Ranger)",
   "desc": "Build a 10X Genomics Cell Ranger gene-expression reference with cellranger mkref (runs STAR genomeGenerate internally); optionally pre-filter the GTF with cellranger mkgtf.",
   "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "category": "Reference Data",
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-reference/#genome-index-cellranger",
   "code": {

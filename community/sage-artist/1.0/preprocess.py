@@ -39,5 +39,6 @@ assert samplesheet.shape[0] > 0, "No images selected -- stopping"
 
 ds.logger.info("Samplesheet:")
 ds.logger.info(samplesheet.to_csv(index=None))
-ds.logger.info("Writing samplesheet to input.csv")
-samplesheet.to_csv("input.csv", index=False)
+# Write to the dataset's config/ folder (mapped in process-input.json)
+ds.logger.info(f"Writing samplesheet to {ds.params['input']}")
+samplesheet.to_csv(ds.params["input"], index=False)

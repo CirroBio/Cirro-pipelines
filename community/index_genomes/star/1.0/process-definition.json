@@ -8,6 +8,7 @@
   "name": "Build Genome Index (STAR)",
   "desc": "Build a STAR genome index from a reference genome FASTA and GTF annotation using the appropriate nf-core module.",
   "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "category": "Reference Data",
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-reference/#genome-index-star",
   "code": {

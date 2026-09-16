@@ -2,7 +2,9 @@
   "form": {
     "type": "object",
     "description": "Custom probe sequences will be combined with the human or mouse reference genome",
-    "required": ["ref"],
+    "required": [
+      "ref"
+    ],
     "properties": {
       "ref": {
         "title": "Reference Transcriptome",
@@ -41,19 +43,6 @@
         "description": "Enable or disable BAM file generation. Disabling this will speed up the pipeline.",
         "type": "boolean",
         "default": true
-      },
-      "spaceranger_version": {
-        "title": "SpaceRanger Version",
-        "type": "string",
-        "default": "3.1.2",
-        "enum": [
-          "3.1.2",
-          "3.0.1",
-          "3.0.0",
-          "2.1.1",
-          "2.0.1",
-          "2.0.0"
-        ]
       }
     }
   },

@@ -8,6 +8,7 @@
   "name": "Build Genome Index (kallisto|bustools)",
   "desc": "Build a kallisto|bustools single-cell reference with kb-python (kb ref): kallisto index, transcript-to-gene map, and cDNA FASTA; nac/lamanno modes add intron references for RNA velocity.",
   "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "category": "Reference Data",
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-reference/#genome-index-kb",
   "code": {

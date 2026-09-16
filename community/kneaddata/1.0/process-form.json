@@ -10,12 +10,12 @@
             "title": "Decontamination Database",
             "description": "Database of reference genome used for host decontamination",
             "type": "string",
-            "default": "s3://pubweb-references/kneaddata/human_genome",
+            "default": "kneaddata/human_genome",
             "enum": [
-              "s3://pubweb-references/kneaddata/human_genome/bowtie2/",
-              "s3://pubweb-references/kneaddata/human_transcriptome/bowtie2/",
-              "s3://pubweb-references/kneaddata/mouse_C57BL/bowtie2/",
-              "s3://pubweb-references/kneaddata/ribosomal_RNA/bowtie2/"
+              "kneaddata/human_genome/bowtie2/",
+              "kneaddata/human_transcriptome/bowtie2/",
+              "kneaddata/mouse_C57BL/bowtie2/",
+              "kneaddata/ribosomal_RNA/bowtie2/"
             ],
             "enumNames": [
               "Human Genome",

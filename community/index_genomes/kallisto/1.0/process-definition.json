@@ -8,6 +8,7 @@
   "name": "Build Genome Index (Kallisto)",
   "desc": "Build a Kallisto index from a reference transcriptome FASTA using the appropriate nf-core module.",
   "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "category": "Reference Data",
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-reference/#genome-index-kallisto",
   "code": {

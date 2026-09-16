@@ -4,7 +4,7 @@ import pandas as pd
 from cirro.helpers.preprocess_dataset import PreprocessDataset
 
 
-ref_bucket = "s3://pubweb-references/rnafusion/3.0.2"
+REF_SUBDIR = "rnafusion/3.0.2"
 
 def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
 
@@ -49,17 +49,29 @@ def update_params(ds, list, avail):
 def form_handling(ds: PreprocessDataset):
     """Process form handling"""
 
+    ref_bucket = f"{ds.references_base}/{REF_SUBDIR}"
     params = ds.params
 
     # remember that genome is a placeholder pointing to pre-made s3 bucket.
     # rnafusion will never connect to iGenomes for its ref files. 
     genome = params.get('genome')
     if genome == 'GRCh38':
-        genome_base = f"{ref_bucket}"
+        genome_base = f"{ref_bucket}/"
         fasta = f"{ref_bucket}/ensembl/Homo_sapiens.GRCh38.102.all.fa"
         ds.add_param('genomes_base', genome_base, overwrite=True)
         ds.add_param('fasta', fasta, overwrite=True)
         ds.remove_param('genome')
+
+        # workflows/rnafusion.nf opens these four at the top of the file, so every
+        # run stages them whichever tools were picked. Each names a directory, and
+        # HealthOmics reads an S3 value without a trailing separator as an object.
+        for name, subdir in [
+            ('ensembl_ref', 'ensembl'),
+            ('starindex_ref', 'star'),
+            ('starfusion_ref', 'starfusion/ctat_genome_lib_build_dir'),
+            ('fusionreport_ref', 'fusion_report_db'),
+        ]:
+            ds.add_param(name, f"{ref_bucket}/{subdir}/", overwrite=True)
 
 
     ## parse tools list and replace with boolean params
@@ -71,13 +83,19 @@ def form_handling(ds: PreprocessDataset):
 
     # workflow cannot access files within container. 
     # unpack latest github release, upl s3 and point to paths below. 
+    if 'fusioncatcher' in tools:
+        ds.add_param(
+            'fusioncatcher_ref', f"{ref_bucket}/fusioncatcher/human_v102/", overwrite=True
+        )
+
     if 'arriba' in tools:
-        arriba_ref = f"{ref_bucket}/arriba"
+        # arriba_ref names a directory and no process reads it -- nextflow.config
+        # derives it from genomes_base and only the two files below are consumed.
+        # Passing it would hand HealthOmics an S3 folder with no trailing separator.
         arriba_ref_blacklist = f"{ref_bucket}/arriba/blacklist_hg38_GRCh38_v2.4.0.tsv.gz"
-        arriba_ref_protein_domain = f"{ref_bucket}/arriba/protein_domains_hg38_GRCh38_v2.4.0.gff3"
-        ds.add_param('arriba_ref', arriba_ref, overwrite=True)
+        arriba_ref_protein_domains = f"{ref_bucket}/arriba/protein_domains_hg38_GRCh38_v2.4.0.gff3"
         ds.add_param('arriba_ref_blacklist', arriba_ref_blacklist, overwrite=True)
-        ds.add_param('arriba_ref_protein_domain', arriba_ref_protein_domain, overwrite=True)
+        ds.add_param('arriba_ref_protein_domains', arriba_ref_protein_domains, overwrite=True)
 
     # separate handling for report generation, boolean param. 
     report_generation = params.get('report')
@@ -101,8 +119,8 @@ if __name__ == "__main__":
 
     manifest = make_manifest(ds)
 
-    # Write manifest
-    manifest.to_csv("manifest.csv", index=None)
+    # Write to the dataset's config/ folder (mapped in process-input.json)
+    manifest.to_csv(ds.params["input"], index=None)
 
     ######### Process form handling ##########
     form_handling(ds)

@@ -95,11 +95,19 @@ if __name__ == "__main__":
     ds = PreprocessDataset.from_running()
     manifest = make_manifest(ds)
 
-    # Write out the table
-    manifest.to_csv("samplesheet.csv", index=None)
+    # Write to the dataset's config/ folder (mapped in process-input.json)
+    manifest.to_csv(ds.params["input"], index=None)
 
-    # Add the param
-    ds.add_param("input", "samplesheet.csv")
+    # macs_gsize is around 2.7e9. A whole number that large is a Long by the time
+    # Cirro builds the HealthOmics parameter list, and only String, Integer, Double
+    # and Boolean are handled there. A float is a Double either way.
+    gsize = ds.params.get("macs_gsize")
+    if gsize is not None:
+        ds.add_param("macs_gsize", float(gsize), overwrite=True)
 
     # log
     ds.logger.info(ds.params)
+
+    # Force params.json to be written: the HealthOmics pre-process Lambda fails the run
+    # when the file is absent, and the SDK writes it only when a parameter changes.
+    ds.keep_params(list(ds.params.keys()))

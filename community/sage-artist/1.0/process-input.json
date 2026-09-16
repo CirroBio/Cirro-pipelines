@@ -7,5 +7,5 @@
     "colormap": "$.dataset.params.colormap",
     "n_components": "$.dataset.params.n_components",
     "outdir": "$.dataset.dataPath",
-    "input": "input.csv"
+    "input": "$.dataset.s3|/config/input.csv"
 }

@@ -61,11 +61,8 @@ if __name__ == "__main__":
     ds = PreprocessDataset.from_running()
     manifest = make_manifest(ds)
 
-    # Save the manifest
-    manifest.to_csv("design.csv", index=False)
-
-    # Add the param for the manifest
-    ds.add_param("input", "design.csv")
+    # Write to the dataset's config/ folder (mapped in process-input.json)
+    manifest.to_csv(ds.params["input"], index=False)
 
     # log
     ds.logger.info(ds.params)

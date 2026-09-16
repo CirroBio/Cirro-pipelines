@@ -353,8 +353,9 @@ if __name__ == "__main__":
 
     manifest = make_manifest(ds)
     ds.logger.info(manifest.to_csv(index=None))
-    manifest.to_csv("manifest.csv", index=None)
-    ds.logger.info(f"Wrote {manifest.shape[0]} row(s) to manifest.csv")
+    # Write to the dataset's config/ folder (mapped in process-input.json)
+    manifest.to_csv(ds.params["input"], index=None)
+    ds.logger.info(f"Wrote {manifest.shape[0]} row(s) to {ds.params['input']}")
 
     # Warn about custom-genome limitations while genome_source is still present.
     warn_custom_genome_limitations(ds)

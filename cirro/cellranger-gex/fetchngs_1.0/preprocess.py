@@ -6,6 +6,20 @@ from typing import Union
 import pandas as pd
 
 
+def resolve_references(ds: PreprocessDataset, *params: str):
+    """Make reference params absolute against the references bucket.
+
+    Form values name a path under that bucket rather than a full URI, so the
+    configuration is not tied to one deployment. A value that is already absolute
+    is left alone, which keeps datasets created before that change re-runnable.
+    """
+    for param in params:
+        value = ds.params.get(param)
+        if not isinstance(value, str) or not value or value.startswith("s3://"):
+            continue
+        ds.add_param(param, f"{ds.references_base}/{value}", overwrite=True)
+
+
 def read_input_dataset(data_path: str, logger: Logger) -> list[dict]:
 
     # Get the list of files in the dataset
@@ -50,6 +64,8 @@ def main():
     # Instantiate the Cirro dataset object
     ds = PreprocessDataset.from_running()
 
+    resolve_references(ds, "transcriptome_dir")
+
     # Read the list of files from all input datasets
     all_files = []
     for dataset in ds.metadata['inputs']:
@@ -68,15 +84,16 @@ def main():
     # and use that information to format a samplesheet
     samplesheet = format_samplesheet(files, ds.logger)
 
-    # Write to disk
-    samplesheet.to_csv("samplesheet.csv", index=None)
-
-    # Point the workflow to the spreadsheet
-    ds.add_param("samplesheet", "samplesheet.csv")
+    # Write to the dataset's config/ folder (mapped in process-input.json)
+    samplesheet.to_csv(ds.params["samplesheet"], index=None)
 
     # Log the parameters present
     for k, v in ds.params.items():
         ds.logger.info(f"{k}: {v}")
+
+    # Force params.json to be written: the HealthOmics pre-process Lambda fails the run
+    # when the file is absent, and the SDK writes it only when a parameter changes.
+    ds.keep_params(list(ds.params.keys()))
 
 
 def format_samplesheet(files: pd.DataFrame, logger: Logger) -> pd.DataFrame:

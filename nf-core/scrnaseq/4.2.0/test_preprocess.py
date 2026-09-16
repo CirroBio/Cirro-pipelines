@@ -182,7 +182,7 @@ class CellRangerRoute(unittest.TestCase):
         self.assertNotIn("gtf", ds.params)
 
     def test_prebuilt_source_uses_the_10X_package_verbatim(self):
-        package = "s3://pubweb-references/cellranger/refdata-gex-GRCh38-2024-A"
+        package = "s3://test-references/cellranger/refdata-gex-GRCh38-2024-A"
         ds, _ = resolve("cellranger", {
             "cellranger_genome_source": "prebuilt",
             "cellranger_prebuilt": package})
@@ -247,9 +247,9 @@ class IgenomesRoute(unittest.TestCase):
     def test_promotes_genome_and_keeps_igenomes_base(self):
         ds, kept = resolve("star", {
             "star_genome_source": "igenomes", "star_genome": "GRCm38",
-            "igenomes_base": "s3://pubweb-references/igenomes/"})
+            "igenomes_base": "s3://test-references/igenomes/"})
         self.assertEqual(ds.params["genome"], "GRCm38")
-        self.assertEqual(ds.params["igenomes_base"], "s3://pubweb-references/igenomes/")
+        self.assertEqual(ds.params["igenomes_base"], "s3://test-references/igenomes/")
         self.assertEqual(kept, [])
 
     def test_no_index_params_are_passed(self):

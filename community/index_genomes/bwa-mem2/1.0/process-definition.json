@@ -8,6 +8,7 @@
   "name": "Build Genome Index (BWA-MEM2)",
   "desc": "Build a BWA-MEM2 index from a reference genome FASTA using the appropriate nf-core module.",
   "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "category": "Reference Data",
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-reference/#genome-index-bwa-mem2",
   "code": {

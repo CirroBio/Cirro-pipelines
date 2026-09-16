@@ -8,6 +8,7 @@
   "name": "Build Genome Index (Bismark)",
   "desc": "Build a Bismark bisulfite index from a reference genome FASTA using the appropriate nf-core module.",
   "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "category": "Reference Data",
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-reference/#genome-index-bismark",
   "code": {
