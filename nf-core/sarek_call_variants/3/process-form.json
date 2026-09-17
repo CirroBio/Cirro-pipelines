@@ -150,9 +150,9 @@
               "properties": {
                 "tools": {
                   "title": "Germline variant calling tool(s)",
-                  "description": "Please select one or more variant callers for your analysis.",
+                  "description": "Please select one or more variant callers for your analysis. Parabricks HaplotypeCaller is GPU-accelerated and requires a compute environment with GPU instances available.",
                   "type": "array",
-                  "pattern": "^((cnvkit|deepvariant|freebayes|haplotypecaller|manta|mpileup|strelka|tiddit)*,?)*$",
+                  "pattern": "^((cnvkit|deepvariant|freebayes|haplotypecaller|manta|mpileup|parabricks_haplotypecaller|strelka|tiddit)*,?)*$",
                   "items": {
                     "type": "string",
                     "enum": [
@@ -162,6 +162,7 @@
                       "haplotypecaller",
                       "manta",
                       "mpileup",
+                      "parabricks_haplotypecaller",
                       "strelka",
                       "tiddit"
                     ],
@@ -172,6 +173,7 @@
                       "HaplotypeCaller",
                       "Manta",
                       "mpileup",
+                      "Parabricks HaplotypeCaller (GPU)",
                       "Strelka",
                       "TIDDIT"
                     ]
