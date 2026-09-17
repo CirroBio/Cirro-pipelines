@@ -154,12 +154,10 @@ if __name__ == "__main__":
 
     # Per-aligner form params to clean up — these are never passed to the pipeline directly
     aligner_specific_params = [
-        "star_salmon_genome_source", "star_salmon_genome", "star_salmon_index",
-        "star_salmon_salmon_index", "star_salmon_salmon_index_dir",
+        "star_salmon_genome_source", "star_salmon_genome", "star_salmon_index", "star_salmon_salmon_index",
         "star_rsem_genome_source", "star_rsem_genome", "star_rsem_star_index",
         "hisat2_genome_source", "hisat2_genome",
-        "bowtie2_salmon_genome_source", "bowtie2_salmon_genome",
-        "bowtie2_salmon_salmon_index", "bowtie2_salmon_salmon_index_dir",
+        "bowtie2_salmon_genome_source", "bowtie2_salmon_genome", "bowtie2_salmon_salmon_index",
     ]
     # Pipeline index params — only the active aligner's is kept
     index_params_to_remove = ["rsem_index", "hisat2_index", "bowtie2_index", "salmon_index"]
@@ -176,16 +174,11 @@ if __name__ == "__main__":
         if aligner == "star_salmon":
             index_path = ds.params.get("star_salmon_index")
             ds.add_param("star_index", index_path)
-            # salmon_index is the dataset root: the Salmon genome-index builder
-            # (community/index_genomes/salmon) nests the actual index files under
-            # a "salmon_index/" subfolder rather than at the dataset root, while
-            # publishing transcriptome.fasta.gz as a sibling of that subfolder —
-            # so the pipeline's --salmon_index needs the nested dir, but
-            # transcript_fasta is still derived from the root.
             salmon_index = ds.params.get("star_salmon_salmon_index")
-            salmon_index_dir = ds.params.get("star_salmon_salmon_index_dir")
-            if salmon_index and salmon_index_dir:
-                ds.add_param("salmon_index", salmon_index_dir)
+            if salmon_index:
+                # The Salmon genome-index builder nests the index under a salmon_index/
+                # subfolder and publishes transcriptome.fasta.gz beside it at the root.
+                ds.add_param("salmon_index", f"{salmon_index}/salmon_index")
                 ds.add_param("transcript_fasta", f"{salmon_index}/transcriptome.fasta.gz")
                 index_params_to_remove.remove("salmon_index")
             else:
@@ -205,13 +198,10 @@ if __name__ == "__main__":
         elif aligner == "bowtie2_salmon":
             index_path = ds.params.get("bowtie2_index")
             index_params_to_remove.remove("bowtie2_index")
-            # See the star_salmon branch above: salmon_index is the dataset root
-            # (used for the transcript_fasta sibling), salmon_index_dir is the
-            # nested "salmon_index/" subfolder the pipeline actually needs.
             salmon_index = ds.params.get("bowtie2_salmon_salmon_index")
-            salmon_index_dir = ds.params.get("bowtie2_salmon_salmon_index_dir")
-            if salmon_index and salmon_index_dir:
-                ds.add_param("salmon_index", salmon_index_dir)
+            if salmon_index:
+                # See the star_salmon branch above.
+                ds.add_param("salmon_index", f"{salmon_index}/salmon_index")
                 ds.add_param("transcript_fasta", f"{salmon_index}/transcriptome.fasta.gz")
                 index_params_to_remove.remove("salmon_index")
             else:
