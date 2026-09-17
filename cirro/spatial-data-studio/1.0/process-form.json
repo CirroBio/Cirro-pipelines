@@ -1,0 +1,152 @@
+{
+  "ui": {
+    "discovery": {
+      "data_types": {
+        "ui:widget": "checkboxes"
+      }
+    }
+  },
+  "form": {
+    "type": "object",
+    "properties": {
+      "input_output": {
+        "type": "object",
+        "title": "Input and output",
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "default": "Spatial data analysis",
+            "description": "Names the viewer collection and the MultiQC report."
+          }
+        }
+      },
+      "discovery": {
+        "type": "object",
+        "title": "Discovery",
+        "properties": {
+          "data_types": {
+            "type": "array",
+            "title": "Data types",
+            "description": "Data types to look for. Select none to look for every type in the catalog.",
+            "items": {
+              "type": "string",
+              "enum": [
+                "xenium",
+                "visium_hd",
+                "visium",
+                "merscope",
+                "cosmx",
+                "curio",
+                "steinbock",
+                "mcmicro"
+              ],
+              "enumNames": [
+                "10x Xenium",
+                "10x Visium HD",
+                "10x Visium",
+                "Vizgen MERSCOPE",
+                "NanoString CosMx",
+                "Curio Seeker",
+                "Steinbock (imaging mass cytometry)",
+                "MCMICRO (multiplexed tissue imaging)"
+              ]
+            },
+            "uniqueItems": true
+          },
+          "recurse": {
+            "type": "boolean",
+            "title": "Recurse into subfolders",
+            "default": true,
+            "description": "Walk into subfolders looking for datasets. A folder recognized as a dataset is not descended into. Off means each input dataset is itself expected to be a single spatial dataset."
+          },
+          "preprocess": {
+            "type": "boolean",
+            "title": "Run preprocessing recipes",
+            "default": true,
+            "description": "Run each data type's preprocessing recipes after loading. Off loads and publishes the data unanalyzed."
+          }
+        }
+      },
+      "analysis": {
+        "type": "object",
+        "title": "Analysis",
+        "properties": {
+          "min_reads_per_cell": {
+            "type": "integer",
+            "title": "Min reads per cell",
+            "default": 10,
+            "description": "Drop cells/spots with fewer than this many total transcripts. (Xenium, MERSCOPE, CosMx, Visium, Visium HD, Curio Seeker)"
+          },
+          "max_reads_per_cell": {
+            "type": "integer",
+            "title": "Max reads per cell",
+            "default": 35000,
+            "description": "Drop spots with more than this many total counts (doublet/artefact ceiling); whole-transcriptome recipes only. (Visium, Visium HD, Curio Seeker)"
+          },
+          "min_cells_per_gene": {
+            "type": "integer",
+            "title": "Min cells per gene",
+            "default": 5,
+            "description": "Drop genes detected in fewer than this many cells. (Xenium, MERSCOPE, CosMx)"
+          },
+          "n_top_genes": {
+            "type": "integer",
+            "title": "Highly variable genes",
+            "default": 2000,
+            "description": "Highly variable genes kept for PCA; whole-transcriptome data only. (Visium, Visium HD, Curio Seeker)"
+          },
+          "cluster_key": {
+            "type": "string",
+            "title": "Cluster key",
+            "default": "leiden",
+            "description": "obs column the clustering writes, and the labels the neighborhood analysis groups by. (all types)"
+          },
+          "resolution": {
+            "type": "number",
+            "title": "Leiden resolution",
+            "default": 1.0,
+            "description": "Leiden resolution; higher gives more, smaller clusters. (Xenium, MERSCOPE, CosMx, Steinbock, MCMICRO)"
+          },
+          "marker_method": {
+            "type": "string",
+            "title": "Marker-gene test",
+            "default": "wilcoxon",
+            "enum": ["wilcoxon", "t-test", "t-test_overestim_var", "logreg"],
+            "description": "Differential-expression test used to rank marker genes per cluster. (Xenium, MERSCOPE, CosMx, Visium, Visium HD, Curio Seeker)"
+          },
+          "n_marker_genes": {
+            "type": "integer",
+            "title": "Marker genes per cluster",
+            "default": 5,
+            "description": "Top marker genes per cluster shown in the marker dotplot. (Xenium, MERSCOPE, CosMx)"
+          },
+          "neighborhood_resolution": {
+            "type": "number",
+            "title": "Neighborhood resolution",
+            "default": 0.1,
+            "description": "Leiden resolution for cellular neighborhoods; higher gives more, smaller niches. (all types)"
+          },
+          "neighborhood_key": {
+            "type": "string",
+            "title": "Neighborhood key",
+            "default": "cellular_neighborhood",
+            "description": "obs column the neighborhood labels are written to. (all types)"
+          }
+        }
+      },
+      "advanced": {
+        "type": "object",
+        "title": "Advanced",
+        "properties": {
+          "lowres_max_image_mb": {
+            "type": "number",
+            "title": "Low-res image budget (MB)",
+            "default": 10,
+            "description": "Image budget for the low-resolution copy written beside every checkpoint; the finest pyramid levels are dropped until the images fit."
+          }
+        }
+      }
+    }
+  }
+}
