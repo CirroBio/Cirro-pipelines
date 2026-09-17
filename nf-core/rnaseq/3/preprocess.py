@@ -176,7 +176,9 @@ if __name__ == "__main__":
             ds.add_param("star_index", index_path)
             salmon_index = ds.params.get("star_salmon_salmon_index")
             if salmon_index:
-                ds.add_param("salmon_index", salmon_index)
+                # The Salmon genome-index builder nests the index under a salmon_index/
+                # subfolder and publishes transcriptome.fasta.gz beside it at the root.
+                ds.add_param("salmon_index", f"{salmon_index}/salmon_index")
                 ds.add_param("transcript_fasta", f"{salmon_index}/transcriptome.fasta.gz")
                 index_params_to_remove.remove("salmon_index")
             else:
@@ -198,7 +200,8 @@ if __name__ == "__main__":
             index_params_to_remove.remove("bowtie2_index")
             salmon_index = ds.params.get("bowtie2_salmon_salmon_index")
             if salmon_index:
-                ds.add_param("salmon_index", salmon_index)
+                # See the star_salmon branch above.
+                ds.add_param("salmon_index", f"{salmon_index}/salmon_index")
                 ds.add_param("transcript_fasta", f"{salmon_index}/transcriptome.fasta.gz")
                 index_params_to_remove.remove("salmon_index")
             else:

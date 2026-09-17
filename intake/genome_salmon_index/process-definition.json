@@ -22,7 +22,7 @@
         {
           "exampleName": "salmon_index/seq.bin",
           "description": "Salmon index binary file",
-          "sampleMatchingPattern": "[\\S ]*seq.bin"
+          "sampleMatchingPattern": "salmon_index/[\\S ]*seq.bin"
         }
       ]
     }
