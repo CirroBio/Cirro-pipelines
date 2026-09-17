@@ -18,7 +18,7 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
 
     # Make a wide manifest
     manifest = ds.wide_samplesheet(
-        index=["sampleIndex", "sample", "lane"],
+        index=["sampleIndex", "sample", "lane", "dataset"],
         columns="read",
         values="file",
         column_prefix="fastq_"
