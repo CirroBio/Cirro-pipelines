@@ -15,7 +15,7 @@
   "desc": "Find the spatial datasets in the input data (Xenium, Visium, Visium HD, MERSCOPE, CosMx, Curio Seeker, Steinbock, MCMICRO), analyze each with the recipe for its data type, and publish SpatialData checkpoints, plots, a MultiQC report, and a browsable viewer over the whole run.",
   "executor": "NEXTFLOW",
   "category": "Spatial Transcriptomics",
-  "documentationUrl": "https://cirrobio.github.io/spatial-data-studio/",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-spatial-analysis/#spatial-data-studio",
   "code": {
     "repository": "GITHUBPUBLIC",
     "uri": "CirroBio/spatial-data-studio",
