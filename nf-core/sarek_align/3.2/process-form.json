@@ -73,9 +73,9 @@
                       "aligner": {
                         "type": "string",
                         "title": "Aligner",
-                        "description": "Aligner used to build the custom genome index dataset. Must match the index type selected below. Parabricks is GPU-accelerated and requires a compute environment with GPU instances available.",
+                        "description": "Aligner used to build the custom genome index dataset. Must match the index type selected below. IMPORTANT: Parabricks is GPU-accelerated, and GPU instances are NOT enabled by default in every Cirro environment. Check with your Cirro administrator to confirm GPU capacity is available before selecting Parabricks -- otherwise the run will stall indefinitely at this step instead of failing with an error.",
                         "enum": ["bwa-mem", "bwa-mem2", "parabricks"],
-                        "enumNames": ["BWA", "BWA-MEM2", "Parabricks (GPU-accelerated BWA)"],
+                        "enumNames": ["BWA", "BWA-MEM2", "Parabricks (requires GPU -- confirm with admin)"],
                         "default": "bwa-mem"
                       }
                     },
