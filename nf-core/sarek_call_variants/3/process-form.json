@@ -150,9 +150,9 @@
               "properties": {
                 "tools": {
                   "title": "Germline variant calling tool(s)",
-                  "description": "Please select one or more variant callers for your analysis.",
+                  "description": "Please select one or more variant callers for your analysis. IMPORTANT: Parabricks HaplotypeCaller is GPU-accelerated, and GPU instances are NOT enabled by default in every Cirro environment. Check with your Cirro administrator to confirm GPU capacity is available before selecting Parabricks HaplotypeCaller -- otherwise the run will stall indefinitely at this step instead of failing with an error.",
                   "type": "array",
-                  "pattern": "^((cnvkit|deepvariant|freebayes|haplotypecaller|manta|mpileup|strelka|tiddit)*,?)*$",
+                  "pattern": "^((cnvkit|deepvariant|freebayes|haplotypecaller|manta|mpileup|parabricks_haplotypecaller|strelka|tiddit)*,?)*$",
                   "items": {
                     "type": "string",
                     "enum": [
@@ -162,6 +162,7 @@
                       "haplotypecaller",
                       "manta",
                       "mpileup",
+                      "parabricks_haplotypecaller",
                       "strelka",
                       "tiddit"
                     ],
@@ -172,6 +173,7 @@
                       "HaplotypeCaller",
                       "Manta",
                       "mpileup",
+                      "Parabricks HaplotypeCaller (requires GPU -- confirm with admin)",
                       "Strelka",
                       "TIDDIT"
                     ]
