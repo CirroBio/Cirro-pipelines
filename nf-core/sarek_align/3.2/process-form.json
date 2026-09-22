@@ -68,7 +68,7 @@
                       "aligner": {
                         "type": "string",
                         "title": "Aligner",
-                        "description": "Aligner used to map reads to the reference genome. iGenomes provides pre-built indices for these aligners; sarek builds one from the FASTA if it isn't already available. IMPORTANT: Parabricks is GPU-accelerated, and GPU instances are NOT enabled by default in every Cirro environment. Check with your Cirro administrator to confirm GPU capacity is available before selecting Parabricks -- otherwise the run will stall indefinitely at this step instead of failing with an error.",
+                        "description": "Aligner used to map reads to the reference genome. iGenomes provides pre-built indices for these aligners; sarek builds one from the FASTA if it isn't already available. IMPORTANT: Parabricks is GPU-accelerated, requesting a 4-GPU instance with up to 64 vCPUs, and GPU instances are NOT enabled by default in every Cirro environment. Check with your Cirro administrator to confirm GPU capacity is available AND that the compute environment's maxvCpus is at least 64 before selecting Parabricks -- enabling the right instance family alone is not enough; a maxvCpus ceiling below what a single GPU instance requires (every 4-GPU size needs at least 48 vCPUs) hits the same failure mode: the run stalls indefinitely at this step instead of failing with an error.",
                         "enum": ["bwa-mem", "bwa-mem2", "parabricks"],
                         "enumNames": ["BWA", "BWA-MEM2", "Parabricks (requires GPU -- confirm with admin)"],
                         "default": "bwa-mem"
@@ -81,7 +81,7 @@
                       "aligner": {
                         "type": "string",
                         "title": "Aligner",
-                        "description": "Aligner used to build the custom genome index dataset. Must match the index type selected below. IMPORTANT: Parabricks is GPU-accelerated, and GPU instances are NOT enabled by default in every Cirro environment. Check with your Cirro administrator to confirm GPU capacity is available before selecting Parabricks -- otherwise the run will stall indefinitely at this step instead of failing with an error.",
+                        "description": "Aligner used to build the custom genome index dataset. Must match the index type selected below. IMPORTANT: Parabricks is GPU-accelerated, requesting a 4-GPU instance with up to 64 vCPUs, and GPU instances are NOT enabled by default in every Cirro environment. Check with your Cirro administrator to confirm GPU capacity is available AND that the compute environment's maxvCpus is at least 64 before selecting Parabricks -- enabling the right instance family alone is not enough; a maxvCpus ceiling below what a single GPU instance requires (every 4-GPU size needs at least 48 vCPUs) hits the same failure mode: the run stalls indefinitely at this step instead of failing with an error.",
                         "enum": ["bwa-mem", "bwa-mem2", "parabricks"],
                         "enumNames": ["BWA", "BWA-MEM2", "Parabricks (requires GPU -- confirm with admin)"],
                         "default": "bwa-mem"
