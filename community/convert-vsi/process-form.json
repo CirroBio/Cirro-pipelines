@@ -1,13 +1,13 @@
 {
   "form": {
     "type": "object",
-    "name": "Convert VSI to OME-TIFF",
+    "name": "Convert Image to OME-TIFF",
     "required": ["image_format", "compression"],
     "properties": {
       "image_format": {
         "type": "string",
         "title": "Image Format",
-        "description": "Select the image format to convert to OME-TIFF. Any file with this suffix will be converted.",
+        "description": "File suffix of the images to convert. Every file with this suffix is converted, at any depth below the input dataset.",
         "enum": [
           "czi",
           "dcm",
@@ -17,23 +17,25 @@
           "nd2",
           "svs",
           "scn",
+          "tif",
+          "tiff",
           "vsi"
         ]
       },
       "compression": {
         "type": "string",
         "title": "Image Compression",
-        "description": "Select the algorithm used for compressing image data, if needed.",
+        "description": "JPEG for images from brightfield slide scanners, which already hold lossy JPEG tiles written by the scanner; a lossless codec inflates the output substantially without recovering fidelity that was lost before the file was written. Prefer a lossless option (ZLIB, LZW, J2K, UNCOMPRESSED) for acquisitions that were never lossily compressed. JPEG needs an RGB or 8-bit image and J2K needs 8- or 16-bit; DEFAULT lets QuPath choose from the image itself.",
         "enum": [
-          "UNCOMPRESSED",
-          "DEFAULT",
           "JPEG",
-          "J2K,",
-          "J2K_LOSSY",
+          "ZLIB",
           "LZW",
-          "ZLIB"
+          "J2K",
+          "J2K_LOSSY",
+          "UNCOMPRESSED",
+          "DEFAULT"
         ],
-        "default": "ZLIB"
+        "default": "JPEG"
       }
     }
   },
