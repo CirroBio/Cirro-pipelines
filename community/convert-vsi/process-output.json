@@ -5,7 +5,7 @@
         "params": {
           "url": "<DOCS_SITE>",
           "source": "$data_directory/[baseName]",
-          "target": "{baseName}.ome.tiff",
+          "target": "{baseName}.ome.tif",
           "name": "{baseName}",
           "desc": "Image",
           "filetype": "bioformats",

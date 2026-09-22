@@ -14,11 +14,11 @@
   "desc": "Convert images to the OME-TIFF format using QuPath.",
   "executor": "NEXTFLOW",
   "category": "Image Analysis",
-  "documentationUrl": "https://github.com/mfitzgib/img2tiff",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-image-analysis/#convert-image-to-ome-tiff",
   "code": {
     "repository": "GITHUBPUBLIC",
     "script": "main.nf",
-    "uri": "mfitzgib/img2tiff",
+    "uri": "CirroBio/img2tiff",
     "version": "main"
   },
   "allowMultipleSources": false,
