@@ -127,7 +127,10 @@ def skip_baserecalibration_without_known_sites(ds: PreprocessDataset, is_custom_
 def resolve_reference_genome(ds: PreprocessDataset):
     """Wire up the reference based on the iGenomes vs Custom Genome selection.
 
-    For iGenomes the curated ``genome`` key is passed through unchanged. For a
+    For iGenomes the curated ``genome`` key is passed through unchanged, and
+    ``aligner`` (bwa-mem/bwa-mem2/parabricks) is restored after the blanket
+    removal below -- without this, iGenomes runs always fell back to sarek's
+    default aligner regardless of what was selected in the form. For a
     custom genome the user selects a pre-built BWA or BWA-MEM2 index dataset
     (mutually exclusive in the form, keyed off ``aligner``); we point
     ``--fasta``/``--bwa``-or-``--bwamem2`` at that dataset and drop
@@ -179,7 +182,11 @@ def resolve_reference_genome(ds: PreprocessDataset):
         ds.remove_param("genome", force=True)
         ds.remove_param("igenomes_base", force=True)
     else:
-        ds.logger.info(f"genome_source=igenomes: genome={ds.params.get('genome')!r}")
+        ds.add_param("aligner", aligner or "bwa-mem", overwrite=True)
+        ds.logger.info(
+            f"genome_source=igenomes: genome={ds.params.get('genome')!r}, "
+            f"aligner={aligner or 'bwa-mem'!r}"
+        )
 
 
 def require_analysis_type_binding(ds: PreprocessDataset):
