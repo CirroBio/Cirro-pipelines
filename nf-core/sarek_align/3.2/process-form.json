@@ -90,7 +90,6 @@
                         "title": "dbSNP / Known Sites (VCF)",
                         "type": "string",
                         "pathType": "dataset",
-                        "process": ["vcf"],
                         "file": "**/*.vcf.gz",
                         "description": "Optional: a VCF of known variant sites (e.g. dbSNP, or a species-appropriate known-sites resource) from a Cirro VCF dataset. Combined with Known Indels below to enable base quality score recalibration (BQSR) -- providing either field is enough; BQSR is otherwise skipped automatically for custom genomes."
                       },
@@ -98,7 +97,6 @@
                         "title": "Known Indels (VCF)",
                         "type": "string",
                         "pathType": "dataset",
-                        "process": ["vcf"],
                         "file": "**/*.vcf.gz",
                         "description": "Optional: a VCF of known indel sites from a Cirro VCF dataset. Combined with dbSNP / Known Sites above to enable base quality score recalibration (BQSR) -- providing either field is enough; BQSR is otherwise skipped automatically for custom genomes."
                       }
