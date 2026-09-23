@@ -1,0 +1,18 @@
+{
+  "outdir": "$.dataset.dataPath",
+  "title": "$.dataset.params.input_output.title",
+  "data_types": "$.dataset.params.discovery.data_types",
+  "recurse": "$.dataset.params.discovery.recurse",
+  "preprocess": "$.dataset.params.discovery.preprocess",
+  "min_reads_per_cell": "$.dataset.params.analysis.min_reads_per_cell",
+  "max_reads_per_cell": "$.dataset.params.analysis.max_reads_per_cell",
+  "min_cells_per_gene": "$.dataset.params.analysis.min_cells_per_gene",
+  "n_top_genes": "$.dataset.params.analysis.n_top_genes",
+  "cluster_key": "$.dataset.params.analysis.cluster_key",
+  "resolution": "$.dataset.params.analysis.resolution",
+  "marker_method": "$.dataset.params.analysis.marker_method",
+  "n_marker_genes": "$.dataset.params.analysis.n_marker_genes",
+  "neighborhood_resolution": "$.dataset.params.analysis.neighborhood_resolution",
+  "neighborhood_key": "$.dataset.params.analysis.neighborhood_key",
+  "lowres_max_image_mb": "$.dataset.params.advanced.lowres_max_image_mb"
+}
