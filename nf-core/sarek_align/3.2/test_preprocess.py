@@ -113,5 +113,33 @@ class ResolveReferenceGenomeTests(unittest.TestCase):
             preprocess.resolve_reference_genome(ds)
 
 
+class SkipBaserecalibrationWithoutKnownSitesTests(unittest.TestCase):
+
+    def test_custom_genome_without_known_sites_skips_baserecalibrator(self):
+        ds = FakeDataset({})
+        preprocess.skip_baserecalibration_without_known_sites(ds, is_custom_genome=True)
+        self.assertEqual(ds.params.get("skip_tools"), "baserecalibrator")
+
+    def test_custom_genome_with_dbsnp_does_not_skip(self):
+        ds = FakeDataset({"dbsnp": "s3://bucket/dbsnp.vcf.gz"})
+        preprocess.skip_baserecalibration_without_known_sites(ds, is_custom_genome=True)
+        self.assertNotIn("skip_tools", ds.params)
+
+    def test_custom_genome_with_known_indels_does_not_skip(self):
+        ds = FakeDataset({"known_indels": "s3://bucket/known_indels.vcf.gz"})
+        preprocess.skip_baserecalibration_without_known_sites(ds, is_custom_genome=True)
+        self.assertNotIn("skip_tools", ds.params)
+
+    def test_igenomes_is_a_no_op(self):
+        ds = FakeDataset({})
+        preprocess.skip_baserecalibration_without_known_sites(ds, is_custom_genome=False)
+        self.assertNotIn("skip_tools", ds.params)
+
+    def test_preserves_existing_skip_tools(self):
+        ds = FakeDataset({"skip_tools": "fastqc"})
+        preprocess.skip_baserecalibration_without_known_sites(ds, is_custom_genome=True)
+        self.assertEqual(ds.params.get("skip_tools"), "fastqc,baserecalibrator")
+
+
 if __name__ == "__main__":
     unittest.main()
