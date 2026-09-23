@@ -20,7 +20,7 @@
     "repository": "GITHUBPUBLIC",
     "uri": "CirroBio/spatial-data-studio",
     "script": "nextflow/main.nf",
-    "version": "v0.1.10"
+    "version": "v1.0.1"
   },
   "allowMultipleSources": true,
   "usesSampleSheet": false,
