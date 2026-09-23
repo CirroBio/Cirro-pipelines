@@ -78,7 +78,7 @@
                       "bwa_cirro_reference": {
                         "type": "object",
                         "title": "Custom Genome Index (BWA)",
-                        "description": "Select a pre-built BWA genome index dataset from Cirro. Variant annotation (VEP/snpEff) and GATK known-sites/germline resources are not available for custom genomes.",
+                        "description": "Select a pre-built BWA genome index dataset from Cirro. Variant annotation (VEP/snpEff) is not available for custom genomes. Provide dbSNP / Known Indels below to enable known-sites-aware variant calling.",
                         "properties": {
                           "genome_index": {
                             "title": "BWA Genome Index",
@@ -91,6 +91,22 @@
                             "description": "Pre-built BWA genome index dataset"
                           }
                         }
+                      },
+                      "dbsnp": {
+                        "title": "dbSNP / Known Sites (VCF)",
+                        "type": "string",
+                        "pathType": "dataset",
+                        "process": ["vcf"],
+                        "file": "**/*.vcf.gz",
+                        "description": "Optional: a VCF of known variant sites (e.g. dbSNP, or a species-appropriate known-sites resource) from a Cirro VCF dataset. Used for known-sites-aware germline/tumor-only/somatic calling and ID annotation."
+                      },
+                      "known_indels": {
+                        "title": "Known Indels (VCF)",
+                        "type": "string",
+                        "pathType": "dataset",
+                        "process": ["vcf"],
+                        "file": "**/*.vcf.gz",
+                        "description": "Optional: a VCF of known indel sites from a Cirro VCF dataset. Combined with dbSNP / Known Sites above for known-sites-aware germline variant calling."
                       }
                     }
                   }

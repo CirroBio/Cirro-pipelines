@@ -14,6 +14,8 @@
   "genome_source": "$.dataset.params.analysis_type.genome_selection.genome_source",
   "genome": "$.dataset.params.analysis_type.genome_selection.igenomes.genome",
   "bwa_index": "$.dataset.params.analysis_type.genome_selection.bwa_cirro_reference.genome_index|/data",
+  "dbsnp": "$.dataset.params.analysis_type.genome_selection.dbsnp",
+  "known_indels": "$.dataset.params.analysis_type.genome_selection.known_indels",
   "intervals": "$.dataset.params.analysis_type.intervals",
   "outdir": "$.dataset.dataPath",
   "input": "$.dataset.s3|/config/manifest.csv",
