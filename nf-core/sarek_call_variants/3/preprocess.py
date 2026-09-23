@@ -398,13 +398,16 @@ def resolve_reference_genome(ds: PreprocessDataset):
         ds.logger.info(f"genome_source=igenomes: genome={ds.params.get('genome')!r}")
 
 
-# VCF params handed to Mutect2, each paired with the index param that must accompany
-# it. Both entries can resolve to files with the same name — the Cirro reference
-# library only offers germline_resource.vcf.gz as a VCF, so selecting it for the panel
-# of normals as well makes --pon and --germline_resource collide.
+# VCF-valued params sourced from the references library, each paired with the index
+# param that must accompany it. All four can resolve to files with the same name —
+# the Cirro reference library only offers germline_resource.vcf.gz as a VCF, so
+# dbsnp/known_indels reuse that same reference type (see resolve_reference_genome),
+# making any two of these collide whenever both are set to different entries.
 _VCF_PARAM_PAIRS = (
     ("germline_resource", "germline_resource_tbi"),
     ("pon", "pon_tbi"),
+    ("dbsnp", "dbsnp_tbi"),
+    ("known_indels", "known_indels_tbi"),
 )
 
 

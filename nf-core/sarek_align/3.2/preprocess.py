@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 from cirro.helpers.preprocess_dataset import PreprocessDataset
+from cirro.models.s3_path import S3Path
+import boto3
 import pandas as pd
 import urllib.request
 import urllib.error
@@ -186,6 +188,74 @@ def resolve_reference_genome(ds: PreprocessDataset):
         ds.logger.info(
             f"genome_source=igenomes: genome={ds.params.get('genome')!r}, aligner={aligner!r}"
         )
+
+
+# dbsnp/known_indels are both sourced from the references library's germline_resource
+# reference type (Cirro offers no other VCF reference type), so they can resolve to
+# files with the same name (germline_resource.vcf.gz) whenever both are set to
+# different entries. Same mechanism as sarek_call_variants/preprocess.py.
+_VCF_PARAM_PAIRS = (
+    ("dbsnp", "dbsnp_tbi"),
+    ("known_indels", "known_indels_tbi"),
+)
+
+
+def stage_colliding_vcf_params(ds: PreprocessDataset):
+    """Stage uniquely named copies of VCF params whose file names collide.
+
+    Nextflow stages every input of a process into a single work directory, so two
+    params pointing at files with the same name abort the run (e.g. both dbsnp and
+    known_indels resolving to a same-named germline_resource.vcf.gz from different
+    references-library entries). Copy each offending VCF into the dataset's config/
+    folder under a name prefixed with its param key and repoint the param at that
+    copy. The index is staged as ``<staged_vcf>.tbi`` because GATK requires it to sit
+    next to the VCF under a matching name; where no index param is set, sarek indexes
+    the staged copy itself.
+    """
+    paths = {
+        vcf_param: ds.params[vcf_param]
+        for vcf_param, _ in _VCF_PARAM_PAIRS
+        if ds.params.get(vcf_param)
+    }
+
+    by_name = {}
+    for vcf_param, path in paths.items():
+        by_name.setdefault(path.rsplit("/", 1)[-1], []).append(vcf_param)
+
+    colliding = {
+        vcf_param
+        for vcf_params in by_name.values() if len(vcf_params) > 1
+        for vcf_param in vcf_params
+    }
+    if not colliding:
+        ds.logger.info("VCF inputs: no file name collisions to resolve")
+        return
+
+    ds.logger.info(f"VCF inputs: resolving file name collision between {sorted(colliding)}")
+
+    s3 = boto3.client("s3")
+    config_dir = ds.params["input"].rsplit("/", 1)[0]
+    for vcf_param, tbi_param in _VCF_PARAM_PAIRS:
+        if vcf_param not in colliding:
+            continue
+
+        staged_vcf = f"{vcf_param}_{paths[vcf_param].rsplit('/', 1)[-1]}"
+        to_stage = [(vcf_param, paths[vcf_param], staged_vcf)]
+        if ds.params.get(tbi_param):
+            to_stage.append((tbi_param, ds.params[tbi_param], f"{staged_vcf}.tbi"))
+
+        for param, uri, staged_name in to_stage:
+            source = S3Path(uri)
+            assert source.valid, f"Cannot stage a copy of --{param}: {uri} is not an S3 path"
+            staged_uri = f"{config_dir}/{staged_name}"
+            dest = S3Path(staged_uri)
+            ds.logger.info(f"VCF inputs: staging {uri} as {staged_uri}")
+            s3.copy(
+                {"Bucket": source.bucket, "Key": source.key},
+                dest.bucket,
+                dest.key
+            )
+            ds.add_param(param, staged_uri, overwrite=True)
 
 
 def require_analysis_type_binding(ds: PreprocessDataset):
@@ -384,6 +454,11 @@ if __name__ == "__main__":
         ds.logger.info("No intervals file selected — adding --no_intervals flag")
 
     apply_extra_json_params(ds)
+
+    # Give dbsnp/known_indels distinct file names, now that every source of a value
+    # (form, extra JSON) has been applied.
+    stage_colliding_vcf_params(ds)
+
     filter_params_by_schema(ds)
 
     # With all params populated, skip base recalibration for custom genomes that

@@ -11,16 +11,40 @@ import sys
 import types
 import unittest
 from pathlib import Path
+from unittest.mock import patch
+
+
+class FakeS3Client:
+    def __init__(self):
+        self.copies = []
+
+    def copy(self, copy_source, bucket, key):
+        self.copies.append((copy_source["Bucket"], copy_source["Key"], bucket, key))
 
 
 def _load_preprocess():
     helpers = types.ModuleType("cirro.helpers.preprocess_dataset")
     helpers.PreprocessDataset = object
 
-    for name in ["cirro", "cirro.helpers"]:
+    s3_path_mod = types.ModuleType("cirro.models.s3_path")
+
+    class S3Path:
+        def __init__(self, path):
+            self.valid = path.startswith("s3://")
+            rest = path.replace("s3://", "", 1)
+            self.bucket, _, self.key = rest.partition("/")
+
+    s3_path_mod.S3Path = S3Path
+
+    for name in ["cirro", "cirro.helpers", "cirro.models"]:
         sys.modules.setdefault(name, types.ModuleType(name))
     sys.modules["cirro.helpers.preprocess_dataset"] = helpers
+    sys.modules["cirro.models.s3_path"] = s3_path_mod
     sys.modules.setdefault("pandas", types.ModuleType("pandas"))
+
+    boto3_stub = types.ModuleType("boto3")
+    boto3_stub.client = lambda service: FakeS3Client()
+    sys.modules.setdefault("boto3", boto3_stub)
 
     import importlib.util
     path = Path(__file__).with_name("preprocess.py")
@@ -139,6 +163,59 @@ class SkipBaserecalibrationWithoutKnownSitesTests(unittest.TestCase):
         ds = FakeDataset({"skip_tools": "fastqc"})
         preprocess.skip_baserecalibration_without_known_sites(ds, is_custom_genome=True)
         self.assertEqual(ds.params.get("skip_tools"), "fastqc,baserecalibrator")
+
+
+class StageCollidingVcfParamsTests(unittest.TestCase):
+
+    def _run(self, params):
+        ds = FakeDataset(params)
+        fake_client = FakeS3Client()
+        with patch.object(preprocess.boto3, "client", return_value=fake_client):
+            preprocess.stage_colliding_vcf_params(ds)
+        return ds, fake_client
+
+    def test_no_collision_when_basenames_differ(self):
+        ds, client = self._run({
+            "input": "s3://bucket/dataset/config/manifest.csv",
+            "dbsnp": "s3://bucket/refs/dbsnp/dbsnp.vcf.gz",
+            "known_indels": "s3://bucket/refs/indels/known_indels.vcf.gz",
+        })
+        self.assertEqual(ds.params["dbsnp"], "s3://bucket/refs/dbsnp/dbsnp.vcf.gz")
+        self.assertEqual(ds.params["known_indels"], "s3://bucket/refs/indels/known_indels.vcf.gz")
+        self.assertEqual(client.copies, [])
+
+    def test_collision_stages_unique_copies(self):
+        # Both resolve through the references library's shared germline_resource
+        # reference type, so both land on a file literally named
+        # germline_resource.vcf.gz -- exactly the scenario this exists to handle.
+        ds, client = self._run({
+            "input": "s3://bucket/dataset/config/manifest.csv",
+            "dbsnp": "s3://bucket/refs/dog10k-af/germline_resource.vcf.gz",
+            "known_indels": "s3://bucket/refs/dog10k-indels/germline_resource.vcf.gz",
+        })
+        self.assertEqual(
+            ds.params["dbsnp"],
+            "s3://bucket/dataset/config/dbsnp_germline_resource.vcf.gz",
+        )
+        self.assertEqual(
+            ds.params["known_indels"],
+            "s3://bucket/dataset/config/known_indels_germline_resource.vcf.gz",
+        )
+        self.assertEqual(len(client.copies), 2)
+
+    def test_only_one_param_set_is_a_no_op(self):
+        ds, client = self._run({
+            "input": "s3://bucket/dataset/config/manifest.csv",
+            "dbsnp": "s3://bucket/refs/dog10k-af/germline_resource.vcf.gz",
+        })
+        self.assertEqual(ds.params["dbsnp"], "s3://bucket/refs/dog10k-af/germline_resource.vcf.gz")
+        self.assertEqual(client.copies, [])
+
+    def test_neither_param_set_is_a_no_op(self):
+        ds, client = self._run({"input": "s3://bucket/dataset/config/manifest.csv"})
+        self.assertEqual(client.copies, [])
+        self.assertNotIn("dbsnp", ds.params)
+        self.assertNotIn("known_indels", ds.params)
 
 
 if __name__ == "__main__":

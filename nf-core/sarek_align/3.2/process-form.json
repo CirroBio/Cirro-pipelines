@@ -89,16 +89,18 @@
                       "dbsnp": {
                         "title": "dbSNP / Known Sites (VCF)",
                         "type": "string",
-                        "pathType": "dataset",
-                        "file": "**/*.vcf.gz",
-                        "description": "Optional: a VCF of known variant sites (e.g. dbSNP, or a species-appropriate known-sites resource) from a Cirro VCF dataset. Combined with Known Indels below to enable base quality score recalibration (BQSR) -- providing either field is enough; BQSR is otherwise skipped automatically for custom genomes."
+                        "pathType": "references",
+                        "file": "**/germline_resource/**/germline_resource.vcf.gz",
+                        "useS3Path": true,
+                        "description": "Optional: a VCF of known variant sites (e.g. dbSNP, or a species-appropriate known-sites resource), published to the project's references library. Cirro's references library only supports VCFs under the germline_resource reference type, so publish it there (or paste its S3 path directly). Combined with Known Indels below to enable base quality score recalibration (BQSR) -- providing either field is enough; BQSR is otherwise skipped automatically for custom genomes."
                       },
                       "known_indels": {
                         "title": "Known Indels (VCF)",
                         "type": "string",
-                        "pathType": "dataset",
-                        "file": "**/*.vcf.gz",
-                        "description": "Optional: a VCF of known indel sites from a Cirro VCF dataset. Combined with dbSNP / Known Sites above to enable base quality score recalibration (BQSR) -- providing either field is enough; BQSR is otherwise skipped automatically for custom genomes."
+                        "pathType": "references",
+                        "file": "**/germline_resource/**/germline_resource.vcf.gz",
+                        "useS3Path": true,
+                        "description": "Optional: a VCF of known indel sites, published to the project's references library (same germline_resource reference type as above -- pick a different entry than dbSNP, or paste its S3 path directly). Combined with dbSNP / Known Sites above to enable base quality score recalibration (BQSR) -- providing either field is enough; BQSR is otherwise skipped automatically for custom genomes."
                       }
                     },
                     "dependencies": {
