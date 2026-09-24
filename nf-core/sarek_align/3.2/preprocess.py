@@ -440,8 +440,6 @@ if __name__ == "__main__":
 
     apply_extra_json_params(ds)
 
-    # Give dbsnp/known_indels distinct file names, now that every source of a value
-    # (form, extra JSON) has been applied.
     stage_colliding_vcf_params(ds)
 
     filter_params_by_schema(ds)
