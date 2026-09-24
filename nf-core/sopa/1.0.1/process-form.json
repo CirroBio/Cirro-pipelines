@@ -20,8 +20,7 @@
               "macsima",
               "phenocycler",
               "hyperion",
-              "ome_tif",
-              "toy_dataset"
+              "ome_tif"
             ],
             "enumNames": [
               "10X Xenium",
@@ -31,11 +30,68 @@
               "Miltenyi MACSima",
               "Akoya PhenoCycler",
               "Standard BioTools Hyperion",
-              "Generic OME-TIFF",
-              "Toy dataset (generated in-workflow, for testing)"
+              "Generic OME-TIFF"
             ],
             "default": "xenium",
-            "help_text": "Xenium, MERSCOPE, CosMx, Molecular Cartography, MACSima and Hyperion read a machine-output directory. PhenoCycler and OME-TIFF read a single all-channel image file, which must be the only such file in the input dataset. Visium HD is not available here: it needs a Space Ranger reference and a different samplesheet."
+            "help_text": "Xenium, MERSCOPE, CosMx, Molecular Cartography, MACSima and Hyperion read a machine-output directory. PhenoCycler and OME-TIFF read a single all-channel image file, which is selected below. Visium HD is not available here: it needs a Space Ranger reference and a different samplesheet."
+          }
+        },
+        "dependencies": {
+          "technology": {
+            "oneOf": [
+              {
+                "properties": {
+                  "technology": {
+                    "enum": [
+                      "ome_tif"
+                    ]
+                  },
+                  "image_file": {
+                    "type": "string",
+                    "title": "OME-TIFF image",
+                    "description": "All-channel OME-TIFF image to analyze.",
+                    "pathType": "dataset",
+                    "file": "**/*.{tif,tiff}"
+                  }
+                },
+                "required": [
+                  "image_file"
+                ]
+              },
+              {
+                "properties": {
+                  "technology": {
+                    "enum": [
+                      "phenocycler"
+                    ]
+                  },
+                  "image_file": {
+                    "type": "string",
+                    "title": "PhenoCycler image",
+                    "description": "All-channel PhenoCycler image to analyze.",
+                    "pathType": "dataset",
+                    "file": "**/*.{qptiff,tif,tiff}"
+                  }
+                },
+                "required": [
+                  "image_file"
+                ]
+              },
+              {
+                "properties": {
+                  "technology": {
+                    "enum": [
+                      "xenium",
+                      "merscope",
+                      "cosmx",
+                      "molecular_cartography",
+                      "macsima",
+                      "hyperion"
+                    ]
+                  }
+                }
+              }
+            ]
           }
         },
         "required": [

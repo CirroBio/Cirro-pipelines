@@ -3,6 +3,7 @@
   "input": "$.dataset.s3|/config/pipeline_samplesheet.csv",
   "outdir": "$.dataset.dataPath",
   "technology": "$.dataset.params.reader.technology",
+  "image_file": "$.dataset.params.reader.image_file",
   "use_cellpose": "$.dataset.params.cellpose.use_cellpose",
   "cellpose_diameter": "$.dataset.params.cellpose.cellpose_diameter",
   "cellpose_channels": "$.dataset.params.cellpose.cellpose_channels",
