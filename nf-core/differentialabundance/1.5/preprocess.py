@@ -1,6 +1,16 @@
+from typing import Optional
+
 import pandas as pd
 from cirro.helpers.preprocess_dataset import PreprocessDataset
 import json
+
+# The genome selection nf-core/rnaseq 3 stores for each of its aligners
+RNASEQ_GENOME_SELECTIONS = {
+    "star_salmon": "star_salmon_genome_selection",
+    "star_rsem": "star_rsem_genome_selection",
+    "hisat2": "hisat2_genome_selection",
+    "bowtie2_salmon": "bowtie2_salmon_genome_selection",
+}
 
 
 def make_samplesheet(ds: PreprocessDataset):
@@ -38,6 +48,27 @@ def make_contrasts(ds: PreprocessDataset):
     ds.logger.info(contrasts.to_csv(index=None))
 
 
+def find_igenomes_genome(input_params: dict) -> Optional[str]:
+    """
+    Find the iGenomes genome an input dataset was run against, if there was one.
+    """
+
+    # nf-core/rnaseq 3 keeps a separate genome selection per aligner, so the
+    # branch to read depends on the aligner that was chosen
+    reference_genome = (
+        input_params
+        .get("aligner_and_reference_genome", {})
+        .get("reference_genome", {})
+    )
+    aligner = reference_genome.get("aligner")
+    if aligner in RNASEQ_GENOME_SELECTIONS:
+        selection = reference_genome.get(RNASEQ_GENOME_SELECTIONS[aligner], {})
+        # No igenomes entry when the run used a Cirro genome index instead
+        return selection.get("igenomes", {}).get("genome")
+
+    return input_params.get("igenomes", {}).get("genome")
+
+
 def set_genome(ds: PreprocessDataset):
     """
     Use the genome parameter which was selected for the input dataset.
@@ -45,9 +76,22 @@ def set_genome(ds: PreprocessDataset):
 
     # Get the metadata set up for this dataset, which
     # includes the params of the input dataset
-    input_params = ds.metadata["inputs"][0]["params"]
+    input_dataset = ds.metadata["inputs"][0]
 
-    ds.add_param("genome", input_params["igenomes"]["genome"])
+    genome = find_igenomes_genome(input_dataset.get("params") or {})
+
+    if genome is None:
+        # Without a genome the pipeline annotates features from the count
+        # matrix instead of a GTF, which is a usable if less detailed report
+        ds.logger.warning(
+            "No iGenomes reference found in the params of input dataset "
+            f"{input_dataset.get('name')} ({input_dataset.get('id')}) - "
+            "leaving the genome unset, so features will be annotated from the "
+            "count matrix rather than a GTF"
+        )
+        return
+
+    ds.add_param("genome", genome)
 
 
 if __name__ == "__main__":
