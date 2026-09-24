@@ -3,9 +3,9 @@
 
 sopa's --input is a CSV with columns sample,data_path where data_path is the
 raw machine-output directory for one sample -- except for phenocycler and
-ome_tif, where data_path must be the single all-channel image file itself.
-Cirro selects a dataset rather than a samplesheet, so the CSV is written here
-from the selected dataset's data path.
+ome_tif, where data_path must be the all-channel image file itself, which the
+user picks in the form. Cirro selects a dataset rather than a samplesheet, so
+the CSV is written here from the selected dataset's data path.
 """
 
 from pathlib import PurePosixPath
@@ -13,42 +13,34 @@ from pathlib import PurePosixPath
 import pandas as pd
 from cirro.helpers.preprocess_dataset import PreprocessDataset
 
-# Technologies whose data_path is one image file rather than a directory
-SINGLE_FILE_TECHNOLOGIES = {
-    "phenocycler": (".qptiff", ".tif", ".tiff"),
-    "ome_tif": (".ome.tif", ".ome.tiff"),
-}
+# Technologies whose data_path is one image file picked in the form
+SINGLE_FILE_TECHNOLOGIES = ("phenocycler", "ome_tif")
 
 # Stripped off an image file name to get the sample name. '.ome' is part of the
 # extension of an OME-TIFF, so scan.ome.tif is sample 'scan', not 'scan.ome'.
 IMAGE_EXTENSIONS = (".qptiff", ".tiff", ".tif", ".ome")
 
 
-def build_samplesheet(data_path: str, technology: str, files: list[str]) -> pd.DataFrame:
+def build_samplesheet(
+    data_path: str,
+    technology: str,
+    image_file: str | None = None,
+) -> pd.DataFrame:
     """Return the one-row samplesheet for the selected dataset.
 
     data_path: the input dataset's data folder (no trailing slash required)
     technology: the sopa reader in use
-    files: paths of the files in the input dataset
+    image_file: the image file picked in the form, for the single-file technologies
     """
     data_path = data_path.rstrip("/")
 
     if technology in SINGLE_FILE_TECHNOLOGIES:
-        suffixes = SINGLE_FILE_TECHNOLOGIES[technology]
-        candidates = [f for f in files if f.lower().endswith(suffixes)]
-        if not candidates:
+        if not image_file:
             raise ValueError(
-                f"technology={technology} needs a {' or '.join(suffixes)} file "
-                f"in the dataset, but none was found among {len(files)} files"
+                f"technology={technology} needs an image file to be selected in the form"
             )
-        if len(candidates) > 1:
-            raise ValueError(
-                f"technology={technology} needs exactly one image file as its "
-                f"data_path, but the dataset has {len(candidates)}: "
-                + ", ".join(sorted(candidates)[:5])
-            )
-        target = candidates[0]
-        sample = PurePosixPath(target).name
+        target = image_file
+        sample = PurePosixPath(image_file).name
         while (ext := PurePosixPath(sample).suffix.lower()) in IMAGE_EXTENSIONS:
             sample = sample[:-len(ext)]
         sample = sample or "sample"
@@ -69,7 +61,7 @@ if __name__ == "__main__":
     samplesheet = build_samplesheet(
         ds.params["spatial_data"],
         ds.params.get("technology", "xenium"),
-        list(ds.files["file"]) if ds.files is not None else []
+        ds.params.get("image_file"),
     )
     ds.logger.info("samplesheet:")
     ds.logger.info(samplesheet.to_csv(index=None))
@@ -80,5 +72,6 @@ if __name__ == "__main__":
     # leaving it in the working directory this script runs in.
     samplesheet.to_csv(ds.params["input"], index=None)
 
-    # spatial_data exists only to carry the dataset path into this script
+    # These exist only to carry values into this script, and are not sopa params
     ds.remove_param("spatial_data", force=True)
+    ds.remove_param("image_file", force=True)
