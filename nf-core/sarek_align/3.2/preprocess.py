@@ -190,10 +190,6 @@ def resolve_reference_genome(ds: PreprocessDataset):
         )
 
 
-# dbsnp/known_indels are both sourced from the references library's germline_resource
-# reference type (Cirro offers no other VCF reference type), so they can resolve to
-# files with the same name (germline_resource.vcf.gz) whenever both are set to
-# different entries. Same mechanism as sarek_call_variants/preprocess.py.
 _VCF_PARAM_PAIRS = (
     ("dbsnp", "dbsnp_tbi"),
     ("known_indels", "known_indels_tbi"),
@@ -201,17 +197,6 @@ _VCF_PARAM_PAIRS = (
 
 
 def stage_colliding_vcf_params(ds: PreprocessDataset):
-    """Stage uniquely named copies of VCF params whose file names collide.
-
-    Nextflow stages every input of a process into a single work directory, so two
-    params pointing at files with the same name abort the run (e.g. both dbsnp and
-    known_indels resolving to a same-named germline_resource.vcf.gz from different
-    references-library entries). Copy each offending VCF into the dataset's config/
-    folder under a name prefixed with its param key and repoint the param at that
-    copy. The index is staged as ``<staged_vcf>.tbi`` because GATK requires it to sit
-    next to the VCF under a matching name; where no index param is set, sarek indexes
-    the staged copy itself.
-    """
     paths = {
         vcf_param: ds.params[vcf_param]
         for vcf_param, _ in _VCF_PARAM_PAIRS

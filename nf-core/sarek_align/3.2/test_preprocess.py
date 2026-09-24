@@ -185,9 +185,6 @@ class StageCollidingVcfParamsTests(unittest.TestCase):
         self.assertEqual(client.copies, [])
 
     def test_collision_stages_unique_copies(self):
-        # Both resolve through the references library's shared germline_resource
-        # reference type, so both land on a file literally named
-        # germline_resource.vcf.gz -- exactly the scenario this exists to handle.
         ds, client = self._run({
             "input": "s3://bucket/dataset/config/manifest.csv",
             "dbsnp": "s3://bucket/refs/dog10k-af/germline_resource.vcf.gz",
