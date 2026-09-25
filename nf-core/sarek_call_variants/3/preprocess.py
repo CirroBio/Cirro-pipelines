@@ -52,10 +52,10 @@ _UNKNOWN_STAGE = "unknown"
 # The filename suffix sarek gives each stage, the only signal left where the
 # preprocessing/<stage>/ path is absent.
 _STAGE_SUFFIXES = {
-    "recalibrated": ".recal.",
-    "markduplicates": ".md.",
-    "sentieon_dedup": ".dedup.",
-    "mapped": ".sorted.",
+    "recalibrated": (".recal.", ".bqsr."),
+    "markduplicates": (".md.",),
+    "sentieon_dedup": (".dedup.",),
+    "mapped": (".sorted.",),
 }
 
 # The stages each Alignment Stage value in the form accepts.
@@ -75,8 +75,8 @@ def alignment_stage(path: str) -> str:
         return match.group(1)
 
     name = path.rsplit("/", 1)[-1]
-    for stage, suffix in _STAGE_SUFFIXES.items():
-        if suffix in name:
+    for stage, suffixes in _STAGE_SUFFIXES.items():
+        if any(suffix in name for suffix in suffixes):
             return stage
     return _UNKNOWN_STAGE
 
@@ -398,13 +398,11 @@ def resolve_reference_genome(ds: PreprocessDataset):
         ds.logger.info(f"genome_source=igenomes: genome={ds.params.get('genome')!r}")
 
 
-# VCF params handed to Mutect2, each paired with the index param that must accompany
-# it. Both entries can resolve to files with the same name — the Cirro reference
-# library only offers germline_resource.vcf.gz as a VCF, so selecting it for the panel
-# of normals as well makes --pon and --germline_resource collide.
 _VCF_PARAM_PAIRS = (
     ("germline_resource", "germline_resource_tbi"),
     ("pon", "pon_tbi"),
+    ("dbsnp", "dbsnp_tbi"),
+    ("known_indels", "known_indels_tbi"),
 )
 
 
