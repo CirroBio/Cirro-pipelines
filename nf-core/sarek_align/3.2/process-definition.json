@@ -64,6 +64,11 @@
           "exampleName": "preprocessing/mapped/SampleName/SampleName.sorted.bam.bai",
           "description": "Aligned reads (BAM/CRAM Index)",
           "sampleMatchingPattern": "preprocessing/(?P<bamType>[^/]+)/(?P<sampleName>[^/]+)/[^/]+\\.(?:bam\\.bai|cram\\.crai)$"
+        },
+        {
+          "exampleName": "preprocessing/parabricks/SampleName/SampleName.table",
+          "description": "BQSR recalibration table",
+          "sampleMatchingPattern": "preprocessing/(?P<bamType>[^/]+)/(?P<sampleName>[^/]+)/[^/]+\\.table$"
         }
       ]
     }

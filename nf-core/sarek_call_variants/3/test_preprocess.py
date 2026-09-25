@@ -86,6 +86,7 @@ class AlignmentStageTests(unittest.TestCase):
     def test_stage_from_filename_when_no_preprocessing_path(self):
         cases = {
             "S1.recal.bam": "recalibrated",
+            "S1.bqsr.bam": "recalibrated",
             "S1.md.bam": "markduplicates",
             "S1.dedup.bam": "sentieon_dedup",
             "S1.sorted.bam": "mapped",
