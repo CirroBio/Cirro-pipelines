@@ -66,6 +66,17 @@
           "sampleMatchingPattern": "preprocessing/(?P<bamType>[^/]+)/(?P<sampleName>[^/]+)/[^/]+\\.(?:bam\\.bai|cram\\.crai)$"
         }
       ]
+    },
+    {
+      "description": "BQSR Recalibration Table",
+      "min": 0,
+      "fileNamePatterns": [
+        {
+          "exampleName": "preprocessing/parabricks/SampleName/SampleName.table",
+          "description": "BQSR recalibration table",
+          "sampleMatchingPattern": "preprocessing/(?P<bamType>[^/]+)/(?P<sampleName>[^/]+)/[^/]+\\.table$"
+        }
+      ]
     }
   ]
 }
