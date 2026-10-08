@@ -206,7 +206,7 @@
                   "cellpose_channels": {
                     "type": "string",
                     "title": "Channels",
-                    "description": "Channel name(s) to segment on, for example DAPI. Separate multiple names with a space, comma or pipe."
+                    "description": "Channel name(s) to segment on, for example DAPI. Separate multiple names with a space, comma or pipe. A channel whose name contains a space, such as DAPI (DAPI), cannot be selected."
                   },
                   "cellpose_model_type": {
                     "type": "string",
@@ -273,7 +273,7 @@
                   "stardist_channels": {
                     "type": "string",
                     "title": "Channels",
-                    "description": "Channel name(s) to segment on. Separate multiple names with a space, comma or pipe."
+                    "description": "Channel name(s) to segment on. Separate multiple names with a space, comma or pipe. A channel whose name contains a space, such as DAPI (DAPI), cannot be selected."
                   },
                   "prob_thresh": {
                     "type": "number",
@@ -499,7 +499,7 @@
           "patch_width_microns": {
             "type": "number",
             "title": "Patch width (microns)",
-            "description": "Width and height of each transcript patch, in microns. Use -1 for a single patch covering the whole slide, which Proseg requires."
+            "description": "Width and height of each transcript patch, in microns. Use -1 for a single patch covering the whole slide, which Proseg requires and which is used for Proseg when left empty."
           },
           "patch_overlap_microns": {
             "type": "number",
@@ -515,7 +515,7 @@
             "type": "string",
             "title": "Prior shapes key",
             "description": "Boundaries to use as a segmentation prior: either a column of the transcript dataframe or a shapes key of the SpatialData object.",
-            "help_text": "When Cellpose is combined with Proseg, Baysor or ComSeg this is set to cellpose_boundaries automatically."
+            "help_text": "When Cellpose is combined with Proseg, Baysor or ComSeg this is set to cellpose_boundaries automatically. Proseg without Cellpose uses auto, the segmentation shipped with the data, when this is left empty."
           },
           "unassigned_value": {
             "type": "string",

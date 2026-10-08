@@ -10,8 +10,13 @@ the CSV is written here from the selected dataset's data path.
 A dataset can hold several samples: a Xenium, MERSCOPE or CosMx run ingested
 whole has one output folder per region, found by the file its reader opens
 first, and the OME-TIFF picker accepts several images. Each becomes a row.
+
+sopa's samplesheet schema rejects whitespace in both columns, so sample names
+have it replaced, and a picked image whose path has a space is copied into the
+dataset's config/ folder under a name without one.
 """
 
+import re
 from fnmatch import fnmatch
 from pathlib import PurePosixPath
 
@@ -35,6 +40,12 @@ OUTPUT_MARKERS = {
     "merscope": ("detected_transcripts.csv",),
     "cosmx": ("*_fov_positions_file.csv", "*_fov_positions_file.csv.gz"),
 }
+
+# sopa's assets/schema_input.json requires sample and data_path to match ^\S+$
+WHITESPACE = re.compile(r"\s+")
+
+# Passing -1 makes sopa cut a single transcript patch covering the whole slide
+SINGLE_TRANSCRIPT_PATCH = -1
 
 
 def find_output_folders(data_path: str, technology: str) -> list[str]:
@@ -66,14 +77,48 @@ def folder_sample_name(folder: str) -> str:
     if sample == "data":
         # Cirro data folders are all named 'data'; use the parent (dataset id)
         sample = PurePosixPath(folder).parent.name or "sample"
-    return sample
+    return WHITESPACE.sub("_", sample)
 
 
 def image_sample_name(image_file: str) -> str:
     sample = PurePosixPath(image_file).name
     while (ext := PurePosixPath(sample).suffix.lower()) in IMAGE_EXTENSIONS:
         sample = sample[:-len(ext)]
-    return sample or "sample"
+    return WHITESPACE.sub("_", sample) or "sample"
+
+
+def stage_image(image_file: str, config_dir: str) -> str:
+    """Copy an image whose path has whitespace into config_dir, returning the copy's path."""
+    source = S3Path(image_file)
+    assert source.valid, f"Not an S3 URI: {image_file}"
+    target = S3Path(f"{config_dir}/images/{WHITESPACE.sub('_', PurePosixPath(source.key).name)}")
+    # client.copy is the managed transfer, so images past copy_object's 5 GB limit work
+    boto3.client("s3").copy(
+        {"Bucket": source.bucket, "Key": source.key},
+        target.bucket,
+        target.key,
+    )
+    return f"s3://{target.bucket}/{target.key}"
+
+
+def set_proseg_defaults(ds: PreprocessDataset):
+    """Fill in the patch settings Proseg cannot run without, when the form left them empty.
+
+    sopa runs Proseg on exactly one transcript patch and with a prior segmentation.
+    nf-core/sopa supplies that prior (cellpose_boundaries) only when Cellpose runs, so
+    otherwise the machine's own segmentation is used, which 'auto' selects.
+    """
+    width = ds.params.get("patch_width_microns")
+    if width is None:
+        ds.add_param("patch_width_microns", SINGLE_TRANSCRIPT_PATCH, overwrite=True)
+    elif width != SINGLE_TRANSCRIPT_PATCH:
+        raise ValueError(
+            f"Proseg segments the whole slide as one patch, so the transcript patch "
+            f"width must be {SINGLE_TRANSCRIPT_PATCH} or left empty, not {width}"
+        )
+
+    if ds.params.get("prior_shapes_key") is None and not ds.params.get("use_cellpose"):
+        ds.add_param("prior_shapes_key", "auto", overwrite=True)
 
 
 def build_samplesheet(
@@ -106,6 +151,13 @@ def build_samplesheet(
             for folder in (output_folders if technology in OUTPUT_MARKERS else [data_path])
         ])
 
+    spaced = samplesheet.loc[samplesheet["data_path"].str.contains(WHITESPACE)]
+    if not spaced.empty:
+        raise ValueError(
+            "sopa cannot read a data path containing whitespace; rename these "
+            "folders in the dataset:\n" + spaced.to_csv(index=None)
+        )
+
     duplicated = samplesheet.loc[samplesheet["sample"].duplicated(keep=False)]
     if not duplicated.empty:
         raise ValueError(
@@ -119,12 +171,21 @@ if __name__ == "__main__":
 
     ds = PreprocessDataset.from_running()
 
+    if ds.params.get("use_proseg"):
+        set_proseg_defaults(ds)
+
     technology = ds.params.get("technology", "xenium")
     # A multiple-file picker sends its selection as one comma-joined string
     image_files = [
         image_file.strip()
         for image_file in (ds.params.get("image_file") or "").split(",")
         if image_file.strip()
+    ]
+    # The mapped samplesheet path sits in this dataset's config/ folder
+    config_dir = ds.params["input"].rsplit("/", 1)[0]
+    image_files = [
+        stage_image(image_file, config_dir) if WHITESPACE.search(image_file) else image_file
+        for image_file in image_files
     ]
     output_folders = (
         find_output_folders(ds.params["spatial_data"], technology)
