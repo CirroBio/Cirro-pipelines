@@ -52,11 +52,12 @@ multiqc/multiqc_report.html        one report over the whole run
 Both `.zarr.zip` checkpoints open in the Spatial Data Studio app (New Session, then Load)
 when you want to compute on them further.
 
-**A dataset that fails to load does not fail the run.** Its log is published where its
-checkpoint would have gone, it shows in the MultiQC Datasets table as `failed`, and the
-other datasets carry on. Likewise a recipe step that fails is recorded in the checkpoint's
-history and the following steps still run, so the dataset is published with the part that
-worked.
+**A dataset that fails to load does not fail the run**, unless every dataset failed. Its
+log is published where its checkpoint would have gone, it shows in the MultiQC Datasets
+table as `failed`, and the other datasets carry on. A dataset that runs out of memory is
+retried with more, and fails the run if it still does. Likewise a recipe step that fails
+is recorded in the checkpoint's history and the following steps still run, so the dataset
+is published with the part that worked.
 
 ## Notes
 
