@@ -33,7 +33,7 @@
               "Generic OME-TIFF"
             ],
             "default": "xenium",
-            "help_text": "Xenium, MERSCOPE, CosMx, Molecular Cartography, MACSima and Hyperion read a machine-output directory. PhenoCycler and OME-TIFF read a single all-channel image file, which is selected below. Visium HD is not available here: it needs a Space Ranger reference and a different samplesheet."
+            "help_text": "Xenium, MERSCOPE, CosMx, Molecular Cartography, MACSima and Hyperion read a machine-output directory. A dataset holding several Xenium, MERSCOPE or CosMx output folders is analyzed as one sample per folder. PhenoCycler reads a single all-channel image file, and OME-TIFF one or more, which are selected below. Visium HD is not available here: it needs a Space Ranger reference and a different samplesheet."
           }
         },
         "dependencies": {
@@ -48,10 +48,11 @@
                   },
                   "image_file": {
                     "type": "string",
-                    "title": "OME-TIFF image",
-                    "description": "All-channel OME-TIFF image to analyze.",
+                    "title": "OME-TIFF images",
+                    "description": "All-channel OME-TIFF images to analyze. Each image is analyzed as its own sample.",
                     "pathType": "dataset",
-                    "file": "**/*.{tif,tiff}"
+                    "file": "**/*.{tif,tiff}",
+                    "multiple": true
                   }
                 },
                 "required": [
