@@ -197,11 +197,14 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
     ds.logger.info(f"{data_ext.upper()}/{idx_suffix.upper()} pairs:")
     ds.logger.info(manifest.to_csv(index=None))
 
-    # append metadata to file paths
+    # append metadata to file paths. Sample metadata can carry its own bam/bai
+    # columns (bare file names left by an upstream process), which must not replace
+    # the S3 paths selected above.
     samples = ds.samplesheet.set_index("sample")
     manifest = manifest.assign(**{
         k: manifest["sample"].apply(v.get)
         for k, v in samples.items()
+        if k not in manifest.columns
     })
 
     # sarek's samplesheet schema (assets/schema_input.json) makes `lane` conditional:
@@ -267,10 +270,11 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
             msg = msg + line_msg
             assert row["sex"] in ['XX', 'XY', 'NA'], msg
 
-            # Check that 'patient' 'sample' and 'lane' are unique
+            # Check that 'patient' 'sample' and 'lane' are unique. CRAM manifests
+            # carry no lane column.
             patient = str(row['patient'])
             sample = str(row['sample'])
-            lane = str(row['lane'])
+            lane = str(row.get('lane'))
             msg = "ERROR: patient, sample and lane must be unique."
             msg = msg + line_msg
             assert patient != sample and sample != lane, msg

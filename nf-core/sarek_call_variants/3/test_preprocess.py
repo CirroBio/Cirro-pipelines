@@ -55,15 +55,17 @@ class FakeLogger:
 class FakeDataset:
     """The slice of PreprocessDataset that make_manifest touches."""
 
-    def __init__(self, files, params=None):
+    def __init__(self, files, params=None, metadata=None):
         self.files = pd.DataFrame(
             [dict(sample=sample, file=f"{PREFIX}/{path}") for sample, path in files]
         )
         self.samplesheet = pd.DataFrame(
-            [dict(sample=sample, patient=sample, sex="XX", status="Normal")
+            [dict(sample=sample, patient=sample, sex="XX", status="Normal",
+                  **(metadata or {}).get(sample, {}))
              for sample in sorted(set(self.files["sample"]))]
         )
-        self.params = dict(analysis_type="Germline Variant Calling", **(params or {}))
+        self.params = dict(analysis_type="Germline Variant Calling")
+        self.params.update(params or {})
         self.logger = FakeLogger()
 
     def remove_param(self, name, force=False):
@@ -205,6 +207,29 @@ class ManifestColumnTests(unittest.TestCase):
             ["patient", "sex", "status", "sample", "lane", "bam", "bai"],
         )
         self.assertEqual(list(manifest["lane"]), ["0"])
+
+    def test_somatic_cram_manifest_without_lane(self):
+        files = (
+            sarek_outputs("T1", "recalibrated", "recal", "cram")
+            + sarek_outputs("N1", "recalibrated", "recal", "cram")
+        )
+        ds = FakeDataset(files, params=dict(analysis_type="Somatic Variant Calling"))
+        ds.samplesheet = ds.samplesheet.assign(patient="P1")
+        manifest = preprocess.make_manifest(ds)
+        self.assertNotIn("lane", manifest.columns)
+
+    def test_sample_metadata_does_not_replace_alignment_paths(self):
+        # An upstream process can leave bam/bai columns holding bare file names in
+        # the sample metadata; the selected S3 paths must win.
+        files = sarek_outputs("S1", "recalibrated", "recal", "bam")
+        metadata = {"S1": dict(bam="S1.recal.bam", bai="S1.recal.bam.bai")}
+        manifest = preprocess.make_manifest(FakeDataset(files, metadata=metadata))
+        self.assertEqual(
+            list(manifest["bam"]), [f"{PREFIX}/preprocessing/recalibrated/S1/S1.recal.bam"]
+        )
+        self.assertEqual(
+            list(manifest["bai"]), [f"{PREFIX}/preprocessing/recalibrated/S1/S1.recal.bam.bai"]
+        )
 
 
 if __name__ == "__main__":
