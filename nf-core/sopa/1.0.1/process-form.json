@@ -566,7 +566,7 @@
           "aggregate_channels": {
             "type": "boolean",
             "title": "Aggregate channels",
-            "description": "Average the intensity of each channel inside each cell."
+            "description": "Average the intensity of each channel inside each cell. Always on for PhenoCycler, OME-TIFF, MACSima and Hyperion, which have no transcripts to count."
           },
           "expand_radius_ratio": {
             "type": "string",

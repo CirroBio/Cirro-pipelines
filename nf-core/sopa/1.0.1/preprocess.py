@@ -44,6 +44,9 @@ OUTPUT_MARKERS = {
 # sopa's assets/schema_input.json requires sample and data_path to match ^\S+$
 WHITESPACE = re.compile(r"\s+")
 
+# Readers with no transcripts, so channel intensities are all there is to aggregate
+IMAGE_ONLY_TECHNOLOGIES = ("phenocycler", "ome_tif", "macsima", "hyperion")
+
 # Passing -1 makes sopa cut a single transcript patch covering the whole slide
 SINGLE_TRANSCRIPT_PATCH = -1
 
@@ -121,6 +124,16 @@ def set_proseg_defaults(ds: PreprocessDataset):
         ds.add_param("prior_shapes_key", "auto", overwrite=True)
 
 
+def set_image_aggregation(ds: PreprocessDataset):
+    """Turn on channel aggregation, which sopa requires when there are no genes to count.
+
+    Set even over an explicit false: sopa's aggregate step asserts without it, and a
+    checkbox ticked and then cleared in the form sends false rather than nothing.
+    """
+    if not ds.params.get("aggregate_channels"):
+        ds.add_param("aggregate_channels", True, overwrite=True)
+
+
 def build_samplesheet(
     data_path: str,
     technology: str,
@@ -175,6 +188,9 @@ if __name__ == "__main__":
         set_proseg_defaults(ds)
 
     technology = ds.params.get("technology", "xenium")
+    if technology in IMAGE_ONLY_TECHNOLOGIES:
+        set_image_aggregation(ds)
+
     # A multiple-file picker sends its selection as one comma-joined string
     image_files = [
         image_file.strip()
