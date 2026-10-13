@@ -117,7 +117,10 @@ def find_igenomes_genome(input_params: dict) -> Optional[str]:
     aligner = reference_genome.get("aligner")
     if aligner in RNASEQ_GENOME_SELECTIONS:
         selection = reference_genome.get(RNASEQ_GENOME_SELECTIONS[aligner], {})
-        # No igenomes entry when the run used a Cirro genome index instead
+        # The form keeps its default igenomes genome (GRCh38) even when the
+        # run used a Cirro genome index, so only trust it for igenomes runs
+        if selection.get("genome_source", "igenomes") != "igenomes":
+            return None
         return selection.get("igenomes", {}).get("genome")
 
     return input_params.get("igenomes", {}).get("genome")
