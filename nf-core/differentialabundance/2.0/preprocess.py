@@ -1,7 +1,9 @@
 from typing import Optional
 
+import boto3
 import pandas as pd
 from cirro.helpers.preprocess_dataset import PreprocessDataset
+from cirro.models.s3_path import S3Path
 import json
 
 # The genome selection nf-core/rnaseq 3 stores for each of its aligners
@@ -11,6 +13,18 @@ RNASEQ_GENOME_SELECTIONS = {
     "hisat2": "hisat2_genome_selection",
     "bowtie2_salmon": "bowtie2_salmon_genome_selection",
 }
+
+# Where nf-core/rnaseq publishes its merged gene matrices, relative to data/,
+# in order of preference: the Salmon pseudo-aligner first, then the
+# quantification that comes with each aligner. Each prefix is followed by
+# .merged.gene_counts.tsv and .merged.gene_lengths.tsv
+RNASEQ_MATRIX_PREFIXES = [
+    "salmon/salmon",
+    "star_salmon/salmon",
+    "bowtie2_salmon/salmon",
+    "star_rsem/rsem",
+    "kallisto/kallisto",
+]
 
 
 def make_samplesheet(ds: PreprocessDataset):
@@ -48,6 +62,46 @@ def make_contrasts(ds: PreprocessDataset):
     ds.logger.info(contrasts.to_csv(index=None))
 
 
+def s3_object_exists(s3, uri: str) -> bool:
+    path = S3Path(uri)
+    listing = s3.list_objects_v2(Bucket=path.bucket, Prefix=path.key, MaxKeys=1)
+    return any(obj["Key"] == path.key for obj in listing.get("Contents", []))
+
+
+def set_matrices(ds: PreprocessDataset):
+    """
+    Point the pipeline at whichever gene matrices the input dataset contains,
+    which depends on the aligner and pseudo-aligner nf-core/rnaseq ran with.
+    """
+
+    # process-input.json maps the matrix to data/salmon/salmon.merged.gene_counts.tsv
+    # of the input dataset; strip the last two parts to get its data/ folder
+    data_dir = ds.params["matrix"].rsplit("/", 2)[0]
+
+    s3 = boto3.client("s3")
+    for prefix in RNASEQ_MATRIX_PREFIXES:
+        matrix = f"{data_dir}/{prefix}.merged.gene_counts.tsv"
+        if not s3_object_exists(s3, matrix):
+            continue
+
+        ds.logger.info(f"Using count matrix {matrix}")
+        ds.add_param("matrix", matrix, overwrite=True)
+
+        lengths = f"{data_dir}/{prefix}.merged.gene_lengths.tsv"
+        if s3_object_exists(s3, lengths):
+            ds.add_param("feature_length_matrix", lengths, overwrite=True)
+        else:
+            ds.logger.warning(f"No gene lengths found at {lengths} - running without length normalization")
+            ds.remove_param("feature_length_matrix")
+        return
+
+    expected = ", ".join(f"{prefix}.merged.gene_counts.tsv" for prefix in RNASEQ_MATRIX_PREFIXES)
+    raise ValueError(
+        f"No gene count matrix found in {data_dir}/ of the input dataset (looked for {expected}). "
+        "The input must be an nf-core/rnaseq run that quantified gene expression."
+    )
+
+
 def find_igenomes_genome(input_params: dict) -> Optional[str]:
     """
     Find the iGenomes genome an input dataset was run against, if there was one.
@@ -63,7 +117,10 @@ def find_igenomes_genome(input_params: dict) -> Optional[str]:
     aligner = reference_genome.get("aligner")
     if aligner in RNASEQ_GENOME_SELECTIONS:
         selection = reference_genome.get(RNASEQ_GENOME_SELECTIONS[aligner], {})
-        # No igenomes entry when the run used a Cirro genome index instead
+        # The form keeps its default igenomes genome (GRCh38) even when the
+        # run used a Cirro genome index, so only trust it for igenomes runs
+        if selection.get("genome_source", "igenomes") != "igenomes":
+            return None
         return selection.get("igenomes", {}).get("genome")
 
     return input_params.get("igenomes", {}).get("genome")
@@ -98,4 +155,5 @@ if __name__ == "__main__":
     ds = PreprocessDataset.from_running()
     make_samplesheet(ds)
     make_contrasts(ds)
+    set_matrices(ds)
     set_genome(ds)

@@ -1,11 +1,10 @@
 {
-  "id": "process-nf-core-differentialabundance-1_5",
+  "id": "process-nf-core-differentialabundance-2_0",
   "childProcessIds": [],
   "dataType": "Differential Abundance Report (nf-core/differentialabundance)",
   "name": "Differential Abundance Analysis (nf-core/differentialabundance)",
-  "desc": "Differential abundance analysis for feature/ observation matrices from platforms such as RNA-seq (v1.5.0)",
+  "desc": "Differential abundance analysis for feature/ observation matrices from platforms such as RNA-seq (v2.0.0)",
   "executor": "NEXTFLOW",
-  "executionModes": ["STANDARD", "HEALTHOMICS"],
   "pipelineTypeOverride": "nf-core",
   "category": "Statistical Analysis",
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-statistical-analysis/#differential-expression-analysis",
@@ -13,7 +12,8 @@
     "repository": "GITHUBPUBLIC",
     "script": "main.nf",
     "uri": "nf-core/differentialabundance",
-    "version": "1.5.0"
+    "version": "2.0.0",
+    "executorVersion": "25.10.4"
   },
   "usesSampleSheet": true,
   "computeDefaults": [

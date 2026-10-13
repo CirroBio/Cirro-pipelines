@@ -2,7 +2,7 @@
   "id": "process-nf-core-rnaseq-3",
   "childProcessIds": [
     "process-hutch-bulk-rna-lymphocyctes-1_0",
-    "process-nf-core-differentialabundance-1_5"
+    "process-nf-core-differentialabundance-2_0"
   ],
   "dataType": "Gene Expression Summary (nf-core/rnaseq)",
   "name": "Quantify Gene Expression (nf-core/rnaseq)",
