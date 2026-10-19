@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from cirro.helpers.preprocess_dataset import PreprocessDataset
+from io import StringIO
 import pandas as pd
 
 # Instantiate the Cirro dataset object
@@ -40,14 +41,32 @@ if ds.params.get("probe_set") is None or ds.params.get("probe_set") == "":
 barcode_params = sorted(
     param for param in ds.params if param.startswith("bc0")
 )
-probe_barcodes = pd.DataFrame([
-    dict(
-        sample_id=ds.params[barcode],
-        barcode=barcode.upper()
-    )
-    for barcode in barcode_params
-    if ds.params[barcode]
-])
+
+# Datasets launched before the form offered a choice carry no barcode_source
+barcode_source = ds.params.get("barcode_source") or "manual"
+ds.logger.info(f"Probe barcode source: {barcode_source}")
+
+if barcode_source == "manual":
+    probe_barcodes = pd.DataFrame([
+        dict(
+            sample_id=ds.params[barcode],
+            probe_barcode_ids=barcode.upper()
+        )
+        for barcode in barcode_params
+        if ds.params.get(barcode)
+    ])
+else:
+    # A table pasted into the form, or a Spreadsheet (CSV) reference
+    if barcode_source == "table":
+        probe_barcodes = pd.read_csv(StringIO(ds.params["barcode_table"]), dtype=str, skipinitialspace=True)
+    else:
+        probe_barcodes = pd.read_csv(ds.params["barcode_reference"], dtype=str, skipinitialspace=True)
+
+    for cname in ["sample_id", "probe_barcode_ids"]:
+        msg = f"Barcode table must have a column named {cname} (found: {', '.join(probe_barcodes.columns)})"
+        assert cname in probe_barcodes.columns, msg
+    probe_barcodes = probe_barcodes[["sample_id", "probe_barcode_ids"]].dropna()
+
 msg = "User must specify at least one sample barcode used"
 assert probe_barcodes.shape[0] > 0, msg
 
@@ -57,7 +76,7 @@ probe_barcodes = pd.DataFrame(dict(
     probe_barcode_ids=probe_barcodes.groupby(
         'sample_id'
     ).apply(
-        lambda d: '|'.join(d['barcode'].tolist())
+        lambda d: '|'.join(d['probe_barcode_ids'].tolist())
     )
 )).reset_index()
 
@@ -80,5 +99,5 @@ for k, v in ds.params.items():
     ds.logger.info(f"{k}: {v}")
 
 # Consumed above; not parameters the workflow declares.
-for param in ["reference"] + barcode_params:
+for param in ["reference", "barcode_source", "barcode_table", "barcode_reference"] + barcode_params:
     ds.remove_param(param, force=True)
