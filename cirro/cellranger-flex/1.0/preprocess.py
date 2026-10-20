@@ -7,30 +7,38 @@ import pandas as pd
 # Instantiate the Cirro dataset object
 ds = PreprocessDataset.from_running()
 
-# Set up the GEX reference
+# The GEX reference and the 10X probe set built against it. CellRanger
+# refuses a probe set whose reference version differs from the GEX reference.
+transcriptome, default_probe_set = {
+    "Homo sapiens (GRCh38-2024)": (
+        "refdata-gex-GRCh38-2024-A",
+        "Chromium_Human_Transcriptome_Probe_Set_v1.1.0_GRCh38-2024-A.csv"
+    ),
+    "Homo sapiens (GRCh38-2020)": (
+        "refdata-gex-GRCh38-2020-A",
+        "Chromium_Human_Transcriptome_Probe_Set_v1.0.1_GRCh38-2020-A.csv"
+    ),
+    "Mus musculus (GRCm39-2024)": (
+        "refdata-gex-GRCm39-2024-A",
+        "Chromium_Mouse_Transcriptome_Probe_Set_v1.1.0_GRCm39-2024-A.csv"
+    ),
+    "Mus musculus (mm10-2020)": (
+        "refdata-gex-mm10-2020-A",
+        "Chromium_Mouse_Transcriptome_Probe_Set_v1.0.1_mm10-2020-A.csv"
+    )
+}[ds.params["reference"]]
+
 ds.add_param(
     "transcriptome_dir",
-    f"{ds.references_base}/cellranger/" + {
-        "Homo sapiens (GRCh38-2024)": "refdata-gex-GRCh38-2024-A",
-        "Homo sapiens (GRCh38-2020)": "refdata-gex-GRCh38-2020-A",
-        "Mus musculus (GRCm39-2024)": "refdata-gex-GRCm39-2024-A",
-        "Mus musculus (mm10-2020)": "refdata-gex-mm10-2020-A"
-    }[
-        ds.params["reference"]
-    ] + "/"   # a reference directory, which HealthOmics reads as an object without it
+    # a reference directory, which HealthOmics reads as an object without it
+    f"{ds.references_base}/cellranger/{transcriptome}/"
 )
 
 # If the user did not select a custom probe set
 if ds.params.get("probe_set") is None or ds.params.get("probe_set") == "":
-
-    # Use the default probes for the genome
     ds.add_param(
         "probe_set",
-        f"{ds.references_base}/cellranger/flex/" + (
-            "Chromium_Human_Transcriptome_Probe_Set_v1.0.1_GRCh38-2020-A.csv"
-            if ds.params["reference"].startswith("Homo sapiens")
-            else "Chromium_Mouse_Transcriptome_Probe_Set_v1.0.1_mm10-2020-A.csv" # noqa
-        ),
+        f"{ds.references_base}/cellranger/flex/{default_probe_set}",
         overwrite=True
     )
 
