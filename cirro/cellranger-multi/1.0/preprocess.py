@@ -65,19 +65,22 @@ probe_barcodes = None
 if ds.params.get("is_frp"):
     ds.logger.info("User indicated that this is fixed RNA profiling")
 
-    # Add the appropriate probe set
+    # Add the probe set built against the same reference version as the
+    # transcriptome -- CellRanger refuses a probe set whose version differs
+    is_2024 = "2024-A" in ds.params["transcriptome_dir"]
     if "GRCh38" in ds.params["transcriptome_dir"]:
         ds.logger.info("Adding human reference probe set")
-        ds.add_param(
-            "probes_csv",
-            f"{ds.references_base}/cellranger/flex/Chromium_Human_Transcriptome_Probe_Set_v1.0.1_GRCh38-2020-A.csv"
+        probe_set = (
+            "Chromium_Human_Transcriptome_Probe_Set_v1.1.0_GRCh38-2024-A.csv" if is_2024
+            else "Chromium_Human_Transcriptome_Probe_Set_v1.0.1_GRCh38-2020-A.csv"
         )
     else:
         ds.logger.info("Adding mouse reference probe set")
-        ds.add_param(
-            "probes_csv",
-            f"{ds.references_base}/cellranger/flex/Chromium_Mouse_Transcriptome_Probe_Set_v1.0.1_mm10-2020-A.csv"
+        probe_set = (
+            "Chromium_Mouse_Transcriptome_Probe_Set_v1.1.0_GRCm39-2024-A.csv" if is_2024
+            else "Chromium_Mouse_Transcriptome_Probe_Set_v1.0.1_mm10-2020-A.csv"
         )
+    ds.add_param("probes_csv", f"{ds.references_base}/cellranger/flex/{probe_set}")
 
     # Parse the samples table provided by the user
     if ds.params.get("frp_samples") is None or len(ds.params["frp_samples"]) == 0:

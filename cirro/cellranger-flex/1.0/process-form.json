@@ -16,7 +16,7 @@
       },
       "probe_set": {
         "title": "(optional) Custom Probe Set",
-        "description": "The Chromium Probe Set v1.0.1 will be used by default",
+        "description": "By default, the 10X Chromium probe set built for the selected reference genome is used",
         "type": "string",
         "file": "**/cellranger_probe_set/**/cellranger_probe_set.csv",
         "pathType": "references",
@@ -25,20 +25,75 @@
       "samples": {
         "type": "object",
         "title": "Samples",
-        "description": "List the samples used for each barcode",
+        "description": "Assign a sample to each probe barcode",
         "properties": {
-          "bc001": {"type": "string", "title": "BC001"},
-          "bc002": {"type": "string", "title": "BC002"},
-          "bc003": {"type": "string", "title": "BC003"},
-          "bc004": {"type": "string", "title": "BC004"},
-          "bc005": {"type": "string", "title": "BC005"},
-          "bc006": {"type": "string", "title": "BC006"},
-          "bc007": {"type": "string", "title": "BC007"},
-          "bc008": {"type": "string", "title": "BC008"},
-          "bc009": {"type": "string", "title": "BC009"},
-          "bc010": {"type": "string", "title": "BC010"},
-          "bc011": {"type": "string", "title": "BC011"},
-          "bc012": {"type": "string", "title": "BC012"}
+          "barcode_source": {
+            "title": "Barcode Assignment",
+            "type": "string",
+            "default": "manual",
+            "enum": [
+              "manual",
+              "table",
+              "reference"
+            ],
+            "enumNames": [
+              "Enter barcodes manually",
+              "Provide barcode table (CSV)",
+              "Use saved barcode table"
+            ]
+          }
+        },
+        "dependencies": {
+          "barcode_source": {
+            "oneOf": [
+              {
+                "properties": {
+                  "barcode_source": {
+                    "enum": ["manual"]
+                  },
+                  "bc001": {"type": "string", "title": "BC001"},
+                  "bc002": {"type": "string", "title": "BC002"},
+                  "bc003": {"type": "string", "title": "BC003"},
+                  "bc004": {"type": "string", "title": "BC004"},
+                  "bc005": {"type": "string", "title": "BC005"},
+                  "bc006": {"type": "string", "title": "BC006"},
+                  "bc007": {"type": "string", "title": "BC007"},
+                  "bc008": {"type": "string", "title": "BC008"},
+                  "bc009": {"type": "string", "title": "BC009"},
+                  "bc010": {"type": "string", "title": "BC010"},
+                  "bc011": {"type": "string", "title": "BC011"},
+                  "bc012": {"type": "string", "title": "BC012"}
+                }
+              },
+              {
+                "properties": {
+                  "barcode_source": {
+                    "enum": ["table"]
+                  },
+                  "barcode_table": {
+                    "type": "string",
+                    "title": "Barcode Table",
+                    "description": "CSV with columns sample_id and probe_barcode_ids. Separate multiple barcodes for one sample with a pipe (e.g. BC001|BC002)",
+                    "default": "sample_id,probe_barcode_ids\nsample1,BC001\nsample2,BC002"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "barcode_source": {
+                    "enum": ["reference"]
+                  },
+                  "barcode_reference": {
+                    "type": "string",
+                    "title": "Saved Barcode Table",
+                    "description": "CSV with columns sample_id and probe_barcode_ids. To add a table, go to Pipelines > Manage References > Add Reference and upload it as the Spreadsheet (CSV) reference type",
+                    "pathType": "references",
+                    "file": "**/spreadsheet_csv/**/spreadsheet.csv"
+                  }
+                }
+              }
+            ]
+          }
         }
       },
       "params": {
@@ -64,5 +119,14 @@
       }
     }
   },
-  "ui": {}
+  "ui": {
+    "samples": {
+      "barcode_source": {
+        "ui:widget": "radio"
+      },
+      "barcode_table": {
+        "ui:widget": "textarea"
+      }
+    }
+  }
 }
