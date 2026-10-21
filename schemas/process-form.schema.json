@@ -34,16 +34,16 @@
                 }
             }
         },
-        "inputFileRequirements": {
+        "structuredInputs": {
             "description": "Definitions of structured input files (e.g. sample sheets), keyed by name. Form fields reference an entry by setting `schema` to its key.",
             "type": "object",
             "additionalProperties": {
-                "$ref": "#/$defs/inputFileRequirement"
+                "$ref": "#/$defs/structuredInput"
             }
         }
     },
     "$defs": {
-        "inputFileRequirement": {
+        "structuredInput": {
             "type": "object",
             "required": [
                 "fileFormat",
