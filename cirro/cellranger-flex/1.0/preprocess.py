@@ -7,26 +7,45 @@ import pandas as pd
 # Instantiate the Cirro dataset object
 ds = PreprocessDataset.from_running()
 
-# The GEX reference and the 10X probe set built against it. CellRanger
-# refuses a probe set whose reference version differs from the GEX reference.
-transcriptome, default_probe_set = {
+# Datasets launched before the form offered a choice carry no flex_version
+flex_version = ds.params.get("flex_version") or "v1"
+ds.logger.info(f"Flex chemistry: {flex_version}")
+
+# Flex v2 chemistries were added in CellRanger 10.0
+if flex_version == "v2":
+    msg = f"Flex v2 requires CellRanger 10.0 or later (selected: {ds.params['cellranger_version']})"
+    assert int(ds.params["cellranger_version"].split(".")[0]) >= 10, msg
+
+# The GEX reference and the 10X probe sets built against it, by Flex version.
+# CellRanger refuses a probe set whose reference version differs from the GEX
+# reference, and the v2 probe sets exist for the 2024-A references only.
+transcriptome, probe_sets = {
     "Homo sapiens (GRCh38-2024)": (
         "refdata-gex-GRCh38-2024-A",
-        "Chromium_Human_Transcriptome_Probe_Set_v1.1.0_GRCh38-2024-A.csv"
+        {
+            "v1": "Chromium_Human_Transcriptome_Probe_Set_v1.1.0_GRCh38-2024-A.csv",
+            "v2": "Chromium_Human_Transcriptome_Probe_Set_v2.0.0_GRCh38-2024-A.csv"
+        }
     ),
     "Homo sapiens (GRCh38-2020)": (
         "refdata-gex-GRCh38-2020-A",
-        "Chromium_Human_Transcriptome_Probe_Set_v1.0.1_GRCh38-2020-A.csv"
+        {"v1": "Chromium_Human_Transcriptome_Probe_Set_v1.0.1_GRCh38-2020-A.csv"}
     ),
     "Mus musculus (GRCm39-2024)": (
         "refdata-gex-GRCm39-2024-A",
-        "Chromium_Mouse_Transcriptome_Probe_Set_v1.1.0_GRCm39-2024-A.csv"
+        {
+            "v1": "Chromium_Mouse_Transcriptome_Probe_Set_v1.1.0_GRCm39-2024-A.csv",
+            "v2": "Chromium_Mouse_Transcriptome_Probe_Set_v2.0.0_GRCm39-2024-A.csv"
+        }
     ),
     "Mus musculus (mm10-2020)": (
         "refdata-gex-mm10-2020-A",
-        "Chromium_Mouse_Transcriptome_Probe_Set_v1.0.1_mm10-2020-A.csv"
+        {"v1": "Chromium_Mouse_Transcriptome_Probe_Set_v1.0.1_mm10-2020-A.csv"}
     )
 }[ds.params["reference"]]
+msg = f"No Flex {flex_version} probe set is available for {ds.params['reference']}"
+assert flex_version in probe_sets, msg
+default_probe_set = probe_sets[flex_version]
 
 ds.add_param(
     "transcriptome_dir",
@@ -70,6 +89,10 @@ else:
     else:
         probe_barcodes = pd.read_csv(ds.params["barcode_reference"], dtype=str, skipinitialspace=True)
 
+    # CellRanger 10.1 also names this column sample_barcode_ids; 10.0 accepts only
+    # probe_barcode_ids, and so does the workflow's config builder
+    probe_barcodes = probe_barcodes.rename(columns={"sample_barcode_ids": "probe_barcode_ids"})
+
     for cname in ["sample_id", "probe_barcode_ids"]:
         msg = f"Barcode table must have a column named {cname} (found: {', '.join(probe_barcodes.columns)})"
         assert cname in probe_barcodes.columns, msg
@@ -107,5 +130,5 @@ for k, v in ds.params.items():
     ds.logger.info(f"{k}: {v}")
 
 # Consumed above; not parameters the workflow declares.
-for param in ["reference", "barcode_source", "barcode_table", "barcode_reference"] + barcode_params:
+for param in ["flex_version", "reference", "barcode_source", "barcode_table", "barcode_reference"] + barcode_params:
     ds.remove_param(param, force=True)

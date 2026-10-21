@@ -2,16 +2,18 @@
   "form": {
     "type": "object",
     "properties": {
-      "reference": {
-        "title": "Reference Genome",
-        "description": "Reference genome used for alignment of RNAseq data",
+      "flex_version": {
+        "title": "Flex Chemistry",
+        "description": "Flex v2 (Apex) uses a different probe set and plate-style probe barcodes, and requires CellRanger 10",
         "type": "string",
-        "default": "Homo sapiens (GRCh38-2024)",
+        "default": "v1",
         "enum": [
-          "Homo sapiens (GRCh38-2024)",
-          "Homo sapiens (GRCh38-2020)",
-          "Mus musculus (GRCm39-2024)",
-          "Mus musculus (mm10-2020)"
+          "v1",
+          "v2"
+        ],
+        "enumNames": [
+          "Flex v1 (probe barcodes BC001-BC016)",
+          "Flex v2 / Apex (probe barcodes A-A01 to D-H12)"
         ]
       },
       "probe_set": {
@@ -21,80 +23,6 @@
         "file": "**/cellranger_probe_set/**/cellranger_probe_set.csv",
         "pathType": "references",
         "default": ""
-      },
-      "samples": {
-        "type": "object",
-        "title": "Samples",
-        "description": "Assign a sample to each probe barcode",
-        "properties": {
-          "barcode_source": {
-            "title": "Barcode Assignment",
-            "type": "string",
-            "default": "manual",
-            "enum": [
-              "manual",
-              "table",
-              "reference"
-            ],
-            "enumNames": [
-              "Enter barcodes manually",
-              "Provide barcode table (CSV)",
-              "Use saved barcode table"
-            ]
-          }
-        },
-        "dependencies": {
-          "barcode_source": {
-            "oneOf": [
-              {
-                "properties": {
-                  "barcode_source": {
-                    "enum": ["manual"]
-                  },
-                  "bc001": {"type": "string", "title": "BC001"},
-                  "bc002": {"type": "string", "title": "BC002"},
-                  "bc003": {"type": "string", "title": "BC003"},
-                  "bc004": {"type": "string", "title": "BC004"},
-                  "bc005": {"type": "string", "title": "BC005"},
-                  "bc006": {"type": "string", "title": "BC006"},
-                  "bc007": {"type": "string", "title": "BC007"},
-                  "bc008": {"type": "string", "title": "BC008"},
-                  "bc009": {"type": "string", "title": "BC009"},
-                  "bc010": {"type": "string", "title": "BC010"},
-                  "bc011": {"type": "string", "title": "BC011"},
-                  "bc012": {"type": "string", "title": "BC012"}
-                }
-              },
-              {
-                "properties": {
-                  "barcode_source": {
-                    "enum": ["table"]
-                  },
-                  "barcode_table": {
-                    "type": "string",
-                    "title": "Barcode Table",
-                    "description": "CSV with columns sample_id and probe_barcode_ids. Separate multiple barcodes for one sample with a pipe (e.g. BC001|BC002)",
-                    "default": "sample_id,probe_barcode_ids\nsample1,BC001\nsample2,BC002"
-                  }
-                }
-              },
-              {
-                "properties": {
-                  "barcode_source": {
-                    "enum": ["reference"]
-                  },
-                  "barcode_reference": {
-                    "type": "string",
-                    "title": "Saved Barcode Table",
-                    "description": "CSV with columns sample_id and probe_barcode_ids. To add a table, go to Pipelines > Manage References > Add Reference and upload it as the Spreadsheet (CSV) reference type",
-                    "pathType": "references",
-                    "file": "**/spreadsheet_csv/**/spreadsheet.csv"
-                  }
-                }
-              }
-            ]
-          }
-        }
       },
       "params": {
         "type": "object",
@@ -117,9 +45,189 @@
           }
         }
       }
+    },
+    "dependencies": {
+      "flex_version": {
+        "oneOf": [
+          {
+            "properties": {
+              "flex_version": {
+                "enum": ["v1"]
+              },
+              "reference": {
+                "title": "Reference Genome",
+                "description": "Reference genome used for alignment of RNAseq data",
+                "type": "string",
+                "default": "Homo sapiens (GRCh38-2024)",
+                "enum": [
+                  "Homo sapiens (GRCh38-2024)",
+                  "Homo sapiens (GRCh38-2020)",
+                  "Mus musculus (GRCm39-2024)",
+                  "Mus musculus (mm10-2020)"
+                ]
+              },
+              "samples": {
+                "type": "object",
+                "title": "Samples",
+                "description": "Assign a sample to each probe barcode",
+                "properties": {
+                  "barcode_source": {
+                    "title": "Barcode Assignment",
+                    "type": "string",
+                    "default": "manual",
+                    "enum": [
+                      "manual",
+                      "table",
+                      "reference"
+                    ],
+                    "enumNames": [
+                      "Enter barcodes manually",
+                      "Provide barcode table (CSV)",
+                      "Use saved barcode table"
+                    ]
+                  }
+                },
+                "dependencies": {
+                  "barcode_source": {
+                    "oneOf": [
+                      {
+                        "properties": {
+                          "barcode_source": {
+                            "enum": ["manual"]
+                          },
+                          "bc001": {"type": "string", "title": "BC001"},
+                          "bc002": {"type": "string", "title": "BC002"},
+                          "bc003": {"type": "string", "title": "BC003"},
+                          "bc004": {"type": "string", "title": "BC004"},
+                          "bc005": {"type": "string", "title": "BC005"},
+                          "bc006": {"type": "string", "title": "BC006"},
+                          "bc007": {"type": "string", "title": "BC007"},
+                          "bc008": {"type": "string", "title": "BC008"},
+                          "bc009": {"type": "string", "title": "BC009"},
+                          "bc010": {"type": "string", "title": "BC010"},
+                          "bc011": {"type": "string", "title": "BC011"},
+                          "bc012": {"type": "string", "title": "BC012"},
+                          "bc013": {"type": "string", "title": "BC013"},
+                          "bc014": {"type": "string", "title": "BC014"},
+                          "bc015": {"type": "string", "title": "BC015"},
+                          "bc016": {"type": "string", "title": "BC016"}
+                        }
+                      },
+                      {
+                        "properties": {
+                          "barcode_source": {
+                            "enum": ["table"]
+                          },
+                          "barcode_table": {
+                            "type": "string",
+                            "title": "Barcode Table",
+                            "description": "CSV with columns sample_id and probe_barcode_ids (or sample_barcode_ids). Separate multiple barcodes for one sample with a pipe (e.g. BC001|BC002)",
+                            "default": "sample_id,probe_barcode_ids\nsample1,BC001\nsample2,BC002"
+                          }
+                        }
+                      },
+                      {
+                        "properties": {
+                          "barcode_source": {
+                            "enum": ["reference"]
+                          },
+                          "barcode_reference": {
+                            "type": "string",
+                            "title": "Saved Barcode Table",
+                            "description": "CSV with columns sample_id and probe_barcode_ids (or sample_barcode_ids). To add a table, go to Pipelines > Manage References > Add Reference and upload it as the Spreadsheet (CSV) reference type",
+                            "pathType": "references",
+                            "file": "**/spreadsheet_csv/**/spreadsheet.csv"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          {
+            "properties": {
+              "flex_version": {
+                "enum": ["v2"]
+              },
+              "reference": {
+                "title": "Reference Genome",
+                "description": "Flex v2 probe sets are built for the 2024-A references only",
+                "type": "string",
+                "default": "Homo sapiens (GRCh38-2024)",
+                "enum": [
+                  "Homo sapiens (GRCh38-2024)",
+                  "Mus musculus (GRCm39-2024)"
+                ]
+              },
+              "samples": {
+                "type": "object",
+                "title": "Samples",
+                "description": "Assign a sample to each probe barcode",
+                "properties": {
+                  "barcode_source": {
+                    "title": "Barcode Assignment",
+                    "type": "string",
+                    "default": "table",
+                    "enum": [
+                      "table",
+                      "reference"
+                    ],
+                    "enumNames": [
+                      "Provide barcode table (CSV)",
+                      "Use saved barcode table"
+                    ]
+                  }
+                },
+                "dependencies": {
+                  "barcode_source": {
+                    "oneOf": [
+                      {
+                        "properties": {
+                          "barcode_source": {
+                            "enum": ["table"]
+                          },
+                          "barcode_table": {
+                            "type": "string",
+                            "title": "Barcode Table",
+                            "description": "CSV with columns sample_id and probe_barcode_ids (or sample_barcode_ids). Separate multiple barcodes for one sample with a pipe (e.g. BC001|BC002)",
+                            "default": "sample_id,probe_barcode_ids\nsample1,A-A01\nsample2,A-B01"
+                          }
+                        }
+                      },
+                      {
+                        "properties": {
+                          "barcode_source": {
+                            "enum": ["reference"]
+                          },
+                          "barcode_reference": {
+                            "type": "string",
+                            "title": "Saved Barcode Table",
+                            "description": "CSV with columns sample_id and probe_barcode_ids (or sample_barcode_ids). To add a table, go to Pipelines > Manage References > Add Reference and upload it as the Spreadsheet (CSV) reference type",
+                            "pathType": "references",
+                            "file": "**/spreadsheet_csv/**/spreadsheet.csv"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
     }
   },
   "ui": {
+    "ui:order": [
+      "flex_version",
+      "reference",
+      "probe_set",
+      "samples",
+      "params"
+    ],
     "samples": {
       "barcode_source": {
         "ui:widget": "radio"
