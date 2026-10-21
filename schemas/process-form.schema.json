@@ -24,7 +24,7 @@
                 }
             },
             "patternProperties": {
-                ".*": {
+                "^(?!ui:order$)": {
                     "type": ["string", "object"]
                 }
             }
