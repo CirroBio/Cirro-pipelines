@@ -30,10 +30,7 @@
             },
             "patternProperties": {
                 "^(?!ui:order$)": {
-                    "type": [
-                        "string",
-                        "object"
-                    ]
+                    "type": ["string", "object"]
                 }
             }
         },
@@ -46,9 +43,6 @@
         }
     },
     "$defs": {
-        "pathFormat": {
-            "enum": ["file-path", "file-path-pattern", "directory-path", "path"]
-        },
         "inputFileRequirement": {
             "type": "object",
             "required": [
