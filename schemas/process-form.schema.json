@@ -1,5 +1,10 @@
 {
-    "title": "Used to render the UI form for the process in Cirro.",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Cirro process-form.json",
+    "description": "Defines the form shown to users before a pipeline is run",
+    "type": "object",
+    "required": ["form"],
+    "additionalProperties": false,
     "properties": {
         "form": {
             "description": "JSONSchema of the form inputs.",
@@ -16,16 +21,43 @@
                     }
                 },
                 "ui:field": {
-                    "type":"string"
+                    "type": "string"
                 },
                 "ui:options": {
-                    "type":"object",
+                    "type": "object",
                     "additionalProperties": true
                 }
             },
             "patternProperties": {
                 "^(?!ui:order$)": {
                     "type": ["string", "object"]
+                }
+            }
+        },
+        "structuredInputs": {
+            "description": "Definitions of structured input files (e.g. sample sheets), keyed by name. Form fields reference an entry by setting `schema` to its key.",
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/$defs/structuredInput"
+            }
+        }
+    },
+    "$defs": {
+        "structuredInput": {
+            "type": "object",
+            "required": [
+                "fileFormat",
+                "schema"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "fileFormat": {
+                    "description": "Format of the file passed to the workflow",
+                    "enum": ["CSV", "TSV", "JSON"]
+                },
+                "schema": {
+                    "description": "JSON Schema for the file contents: an array of row objects, one property per column",
+                    "$ref": "http://json-schema.org/draft-07/schema#"
                 }
             }
         }
