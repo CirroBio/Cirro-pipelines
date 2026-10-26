@@ -48,11 +48,8 @@ def find_index(file_uri, suffixes):
 
 
 def selected_paths(params, key):
-    """Return a list of S3 URIs from a comma-separated param value."""
-    value = params.get(key, "")
-    if not isinstance(value, str) or not value.strip():
-        return []
-    return [p.strip() for p in value.split(",") if p.strip()]
+    """Return the list of S3 URIs selected for a file param."""
+    return [p.strip() for p in params.get(key) or [] if p.strip()]
 
 
 def infer_name(s3_uri):

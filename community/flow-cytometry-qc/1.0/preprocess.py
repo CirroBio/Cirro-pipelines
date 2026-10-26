@@ -17,10 +17,9 @@ samplesheet = ds.files.rename(
 )
 
 # If a set of input files was selected
-if 'fcs_input' in ds.params and isinstance(ds.params['fcs_input'], str) and len(ds.params['fcs_input']) > 0:
+if len(ds.params.get('fcs_input') or []) > 0:
 
-    # fcs_input must be a list
-    fcs_input = ds.params['fcs_input'].split(",")
+    fcs_input = ds.params['fcs_input']
 
     # Make sure that each FCS file listed in `fcs_input` is valid
     assert all([fcs for fcs in fcs_input])
