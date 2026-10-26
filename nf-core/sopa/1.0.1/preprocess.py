@@ -191,10 +191,10 @@ if __name__ == "__main__":
     if technology in IMAGE_ONLY_TECHNOLOGIES:
         set_image_aggregation(ds)
 
-    # A multiple-file picker sends its selection as one comma-joined string
+    # A multiple-file picker sends its selection as a list
     image_files = [
         image_file.strip()
-        for image_file in (ds.params.get("image_file") or "").split(",")
+        for image_file in ds.params.get("image_file") or []
         if image_file.strip()
     ]
     # The mapped samplesheet path sits in this dataset's config/ folder

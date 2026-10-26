@@ -28,8 +28,8 @@ samplesheet = pd.DataFrame([
         "miniature": True
     }
     for img_list, he in [
-        (ds.params.get("images", "").split(","), False),
-        (ds.params.get("he_images", "").split(","), True)
+        (ds.params.get("images") or [], False),
+        (ds.params.get("he_images") or [], True)
     ]
     for img in img_list
     if img

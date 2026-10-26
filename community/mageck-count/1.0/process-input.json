@@ -1,5 +1,5 @@
 {
-  "fastq": "$.dataset.params.fastq",
+  "fastq": "$.dataset.params.fastq[*]",
   "library": "$.dataset.params.library",
   "output": "$.dataset.dataPath",
   "adapter_5_prime": "$.dataset.params.adapter",

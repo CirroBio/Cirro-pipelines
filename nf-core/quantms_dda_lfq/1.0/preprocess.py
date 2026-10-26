@@ -32,9 +32,9 @@ def parse_samplesheet(ds: PreprocessDataset) -> pd.DataFrame:
     log_table("Starting table", ds, samplesheet)
 
     # If a subset of files were selected
-    if len(ds.params.get("subset_files", "")) > 0:
+    if len(ds.params.get("subset_files") or []) > 0:
         samplesheet = samplesheet.loc[
-            samplesheet['file'].isin(ds.params["subset_files"].split(","))
+            samplesheet['file'].isin(ds.params["subset_files"])
         ]
         log_table("Subset of files selected", ds, samplesheet)
     else:
