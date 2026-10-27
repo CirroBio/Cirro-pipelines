@@ -1,0 +1,648 @@
+{
+  "commands": [
+    {
+      "command": "hot.Parquet",
+      "params": {
+        "url": "http://www.htslib.org/doc/samtools-stats.html",
+        "source": "$data_directory/multiqc/star_salmon/multiqc_data/multiqc_samtools_stats.txt",
+        "target": "multiqc_samtools_stats.parquet",
+        "name": "MultiQC Samtools Stats",
+        "desc": "Sequencing data quality control metrics",
+        "read_csv": {
+          "parse": {
+            "delimiter": "\t"
+          },
+          "read": {
+            "autogenerate_column_names": false
+          }
+        },
+        "cols": [
+          {
+            "col": "Sample",
+            "name": "Sample",
+            "desc": "Unique sample name"
+          },
+          {
+            "col": "raw_total_sequences",
+            "name": "Total Sequences",
+            "desc": "total number of reads in a file, excluding supplementary and secondary reads"
+          },
+          {
+            "col": "filtered_sequences",
+            "name": "Filtered Sequences",
+            "desc": "number of discarded reads when using -f or -F option"
+          },
+          {
+            "col": "sequences",
+            "name": "Sequences",
+            "desc": "number of processed reads"
+          },
+          {
+            "col": "is_sorted",
+            "name": "Is Sorted",
+            "desc": "flag indicating whether the file is coordinate sorted (1) or not (0)"
+          },
+          {
+            "col": "1st_fragments",
+            "name": "1st Fragments",
+            "desc": "Number of 1st fragment reads"
+          },
+          {
+            "col": "last_fragments",
+            "name": "Last Fragments",
+            "desc": "Number of last fragment reads"
+          },
+          {
+            "col": "reads_mapped",
+            "name": "Reads Mapped",
+            "desc": "number of reads, paired or single, that are mapped"
+          },
+          {
+            "col": "reads_mapped_and_paired",
+            "name": "Reads Mapped And Paired",
+            "desc": "number of mapped paired reads"
+          },
+          {
+            "col": "reads_unmapped",
+            "name": "Reads Unmapped",
+            "desc": "Number of unmapped reads"
+          },
+          {
+            "col": "reads_properly_paired",
+            "name": "Reads Properly Paired",
+            "desc": "number of mapped paired reads with flag 0x2 set"
+          },
+          {
+            "col": "reads_paired",
+            "name": "Reads Paired",
+            "desc": "number of paired reads, mapped or unmapped, that are neither secondary nor supplementary"
+          },
+          {
+            "col": "reads_duplicated",
+            "name": "Reads Duplicated",
+            "desc": "number of duplicate reads"
+          },
+          {
+            "col": "reads_MQ0",
+            "name": "Reads MQ0",
+            "desc": "Number of mapped reads with mapping quality 0"
+          },
+          {
+            "col": "reads_QC_failed",
+            "name": "Reads QC Failed",
+            "desc": "number of reads that failed the quality checks"
+          },
+          {
+            "col": "non-primary_alignments",
+            "name": "Non-Primary Alignments",
+            "desc": "number of secondary reads"
+          },
+          {
+            "col": "supplementary_alignments",
+            "name": "Supplementary Alignments",
+            "desc": "number of supplementary reads"
+          },
+          {
+            "col": "total_length",
+            "name": "Total Length",
+            "desc": "number of processed bases from reads that are neither secondary nor supplementary"
+          },
+          {
+            "col": "total_first_fragment_length",
+            "name": "Total First Fragment Length",
+            "desc": "number of processed bases that belong to first fragments"
+          },
+          {
+            "col": "total_last_fragment_length",
+            "name": "Total Last Fragment Length",
+            "desc": "number of processed bases that belong to last fragments"
+          },
+          {
+            "col": "bases_mapped",
+            "name": "Bases Mapped",
+            "desc": "number of processed bases that belong to reads mapped"
+          },
+          {
+            "col": "bases_mapped_(cigar)",
+            "name": "Bases Mapped (Cigar)",
+            "desc": "number of mapped bases filtered by the CIGAR string corresponding to the read they belong to"
+          },
+          {
+            "col": "bases_trimmed",
+            "name": "Bases Trimmed",
+            "desc": "number of bases trimmed by bwa, that belong to non secondary and non supplementary reads"
+          },
+          {
+            "col": "bases_duplicated",
+            "name": "Bases Duplicated",
+            "desc": "number of bases that belong to reads duplicated"
+          },
+          {
+            "col": "mismatches",
+            "name": "Mismatches",
+            "desc": "number of mismatched bases, as reported by the NM tag associated with a read, if present"
+          },
+          {
+            "col": "error_rate",
+            "name": "Error Rate",
+            "desc": "ratio between mismatches and bases mapped"
+          },
+          {
+            "col": "average_length",
+            "name": "Average Length",
+            "desc": "ratio between total length and sequences"
+          },
+          {
+            "col": "average_first_fragment_length",
+            "name": "Average First Fragment Length",
+            "desc": "ratio between total first fragment length and 1st fragments"
+          },
+          {
+            "col": "average_last_fragment_length",
+            "name": "Average Last Fragment Length",
+            "desc": "ratio between total last fragment length and last fragments"
+          },
+          {
+            "col": "maximum_length",
+            "name": "Maximum Length",
+            "desc": "length of the longest read (includes hard-clipped bases)"
+          },
+          {
+            "col": "maximum_first_fragment_length",
+            "name": "Maximum First Fragment Length",
+            "desc": "length of the longest first fragment read"
+          },
+          {
+            "col": "maximum_last_fragment_length",
+            "name": "Maximum Last Fragment Length",
+            "desc": "length of the longest last fragment read"
+          },
+          {
+            "col": "average_quality",
+            "name": "Average Quality",
+            "desc": "ratio between the sum of base qualities and total length"
+          },
+          {
+            "col": "insert_size_average",
+            "name": "Insert Size Average",
+            "desc": "the average absolute template length for paired and mapped reads"
+          },
+          {
+            "col": "insert_size_standard_deviation",
+            "name": "Insert Size Standard Deviation",
+            "desc": "standard deviation for the average template length distribution"
+          },
+          {
+            "col": "inward_oriented_pairs",
+            "name": "Inward Oriented Pairs",
+            "desc": "number of paired reads with flag 0x40 (64) set and flag 0x10 (16) not set or with flag 0x80 (128) set and flag 0x10 (16) set"
+          },
+          {
+            "col": "outward_oriented_pairs",
+            "name": "Outward Oriented Pairs",
+            "desc": "number of paired reads with flag 0x40 (64) set and flag 0x10 (16) set or with flag 0x80 (128) set and flag 0x10 (16) not set"
+          },
+          {
+            "col": "pairs_with_other_orientation",
+            "name": "Pairs With Other Orientation",
+            "desc": "number of paired reads that are not categorized as inward or outward oriented"
+          },
+          {
+            "col": "pairs_on_different_chromosomes",
+            "name": "Pairs On Different Chromosomes",
+            "desc": "number of pairs where one read is on one chromosome and the pair read is on a different chromosome"
+          },
+          {
+            "col": "percentage_of_properly_paired_reads_(%)",
+            "name": "Percentage Of Properly Paired Reads (%)",
+            "desc": "percentage of reads properly paired out of sequences"
+          },
+          {
+            "col": "reads_mapped_percent",
+            "name": "Reads Mapped Percent",
+            "desc": "Percentage of reads which are mapped"
+          },
+          {
+            "col": "reads_mapped_and_paired_percent",
+            "name": "Reads Mapped And Paired Percent",
+            "desc": "Percentage of reads which are mapped and paired"
+          },
+          {
+            "col": "reads_unmapped_percent",
+            "name": "Reads Unmapped Percent",
+            "desc": "Percentage of reads which are unmapped"
+          },
+          {
+            "col": "reads_properly_paired_percent",
+            "name": "Reads Properly Paired Percent",
+            "desc": "Percentage of reads which are properly paired"
+          },
+          {
+            "col": "reads_paired_percent",
+            "name": "Reads Paired Percent",
+            "desc": "Percentage of reads which are paired"
+          },
+          {
+            "col": "reads_duplicated_percent",
+            "name": "Reads Duplicated Percent",
+            "desc": "Percentage of reads which are duplicated"
+          },
+          {
+            "col": "reads_MQ0_percent",
+            "name": "Reads MQ0 Percent",
+            "desc": "Percentage of reads with mapping quality 0"
+          },
+          {
+            "col": "reads_QC_failed_percent",
+            "name": "Reads QC Failed Percent",
+            "desc": "Percentage of reads which failed quality control"
+          }
+        ]
+      }
+    },
+    {
+      "command": "hot.Parquet",
+      "params": {
+        "url": "https://nf-co.re/rnaseq/3.12.0/docs/output#alignment-and-quantification",
+        "source": "$data_directory/salmon/salmon.merged.gene_counts.tsv",
+        "target": "salmon.merged.gene_counts.parquet",
+        "name": "Gene Counts (Salmon)",
+        "desc": "Number of reads mapped at the gene-level by Salmon",
+        "read_csv": {
+          "parse": {
+            "delimiter": "\t"
+          },
+          "read": {
+            "autogenerate_column_names": false
+          }
+        },
+        "cols": [
+          {
+            "col": "gene_id",
+            "name": "Gene ID",
+            "desc": "Unique gene identifier"
+          },
+          {
+            "col": "gene_name",
+            "name": "Gene Name",
+            "desc": "Unique gene name"
+          }
+        ],
+        "melt": {
+          "key": {
+            "name": "Sample",
+            "desc": "Unique identifier or label for analyzed biological sample"
+          },
+          "value": {
+            "name": "Count",
+            "desc": "Gene-level raw counts"
+          }
+        }
+      }
+    },
+    {
+      "command": "hot.Parquet",
+      "params": {
+        "url": "https://nf-co.re/rnaseq/3.12.0/docs/output#alignment-and-quantification",
+        "source": "$data_directory/salmon/salmon.merged.gene_counts_length_scaled.tsv",
+        "target": "salmon.merged.gene_counts_length_scaled.parquet",
+        "name": "Length Scaled Gene Counts (Salmon)",
+        "desc": "Number of reads mapped at the gene-level by Salmon, scaled to the length of each gene",
+        "read_csv": {
+          "parse": {
+            "delimiter": "\t"
+          },
+          "read": {
+            "autogenerate_column_names": false
+          }
+        },
+        "cols": [
+          {
+            "col": "gene_id",
+            "name": "Gene ID",
+            "desc": "Unique gene identifier"
+          },
+          {
+            "col": "gene_name",
+            "name": "Gene Name",
+            "desc": "Unique gene name"
+          }
+        ],
+        "melt": {
+          "key": {
+            "name": "Sample",
+            "desc": "Unique identifier or label for analyzed biological sample"
+          },
+          "value": {
+            "name": "Count",
+            "desc": "Gene-level length-scaled counts"
+          }
+        }
+      }
+    },
+    {
+      "command": "hot.Parquet",
+      "params": {
+        "url": "https://nf-co.re/rnaseq/3.12.0/docs/output#alignment-and-quantification",
+        "source": "$data_directory/salmon/salmon.merged.gene_counts_scaled.tsv",
+        "target": "salmon.merged.gene_counts_scaled.parquet",
+        "name": "Scaled Gene Counts (Salmon)",
+        "desc": "Number of reads mapped at the gene-level by Salmon, scaled by library size",
+        "read_csv": {
+          "parse": {
+            "delimiter": "\t"
+          },
+          "read": {
+            "autogenerate_column_names": false
+          }
+        },
+        "cols": [
+          {
+            "col": "gene_id",
+            "name": "Gene ID",
+            "desc": "Unique gene identifier"
+          },
+          {
+            "col": "gene_name",
+            "name": "Gene Name",
+            "desc": "Unique gene name"
+          }
+        ],
+        "melt": {
+          "key": {
+            "name": "Sample",
+            "desc": "Unique identifier or label for analyzed biological sample"
+          },
+          "value": {
+            "name": "Count",
+            "desc": "Gene-level library size-scaled counts"
+          }
+        }
+      }
+    },
+    {
+      "command": "hot.Parquet",
+      "params": {
+        "url": "https://nf-co.re/rnaseq/3.12.0/docs/output#alignment-and-quantification",
+        "source": "$data_directory/salmon/salmon.merged.gene_tpm.tsv",
+        "target": "salmon.merged.gene_tpm.parquet",
+        "name": "Gene TPM (Salmon)",
+        "desc": "Esimated number of gene-level transcripts per million reads (TPM)",
+        "read_csv": {
+          "parse": {
+            "delimiter": "\t"
+          },
+          "read": {
+            "autogenerate_column_names": false
+          }
+        },
+        "cols": [
+          {
+            "col": "gene_id",
+            "name": "Gene ID",
+            "desc": "Unique gene identifier"
+          },
+          {
+            "col": "gene_name",
+            "name": "Gene Name",
+            "desc": "Unique gene name"
+          }
+        ],
+        "melt": {
+          "key": {
+            "name": "Sample",
+            "desc": "Unique identifier or label for analyzed biological sample"
+          },
+          "value": {
+            "name": "TPM",
+            "desc": "Estimated number of gene-level transcripts per million reads"
+          }
+        }
+      }
+    },
+    {
+      "command": "hot.Parquet",
+      "params": {
+        "url": "https://nf-co.re/rnaseq/3.12.0/docs/output#alignment-and-quantification",
+        "source": "$data_directory/salmon/salmon_tx2gene.tsv",
+        "target": "salmon_tx2gene.parquet",
+        "name": "Transcript-Gene Mapping (Salmon)",
+        "desc": "Association of transcripts with their encoding gene",
+        "read_csv": {
+          "parse": {
+            "delimiter": "\t"
+          },
+          "read": {
+            "autogenerate_column_names": true
+          }
+        },
+        "cols": [
+          {
+            "name": "Transcript ID",
+            "desc": "Unique transcript identifier"
+          },
+          {
+            "name": "Gene ID",
+            "desc": "Unique gene identifier"
+          },
+          {
+            "name": "Secondary Gene ID",
+            "desc": "Supplemental gene identifier"
+          }
+        ]
+      }
+    },
+    {
+      "command": "hot.Parquet",
+      "params": {
+        "url": "https://nf-co.re/rnaseq/3.12.0/docs/output#alignment-and-quantification",
+        "source": "$data_directory/star_salmon/salmon.merged.gene_counts.tsv",
+        "target": "star_salmon.merged.gene_counts.parquet",
+        "name": "Gene Counts (STAR-Salmon)",
+        "desc": "Number of reads mapped at the gene-level by STAR-Salmon",
+        "read_csv": {
+          "parse": {
+            "delimiter": "\t"
+          },
+          "read": {
+            "autogenerate_column_names": false
+          }
+        },
+        "cols": [
+          {
+            "col": "gene_id",
+            "name": "Gene ID",
+            "desc": "Unique gene identifier"
+          },
+          {
+            "col": "gene_name",
+            "name": "Gene Name",
+            "desc": "Unique gene name"
+          }
+        ],
+        "melt": {
+          "key": {
+            "name": "Sample",
+            "desc": "Unique identifier or label for analyzed biological sample"
+          },
+          "value": {
+            "name": "Count",
+            "desc": "Gene-level raw counts"
+          }
+        }
+      }
+    },
+    {
+      "command": "hot.Parquet",
+      "params": {
+        "url": "https://nf-co.re/rnaseq/3.12.0/docs/output#alignment-and-quantification",
+        "source": "$data_directory/star_salmon/salmon.merged.gene_counts_length_scaled.tsv",
+        "target": "star_salmon.merged.gene_counts_length_scaled.parquet",
+        "name": "Length Scaled Gene Counts (STAR-Salmon)",
+        "desc": "Number of reads mapped at the gene-level by STAR-Salmon, scaled to the length of each gene",
+        "read_csv": {
+          "parse": {
+            "delimiter": "\t"
+          },
+          "read": {
+            "autogenerate_column_names": false
+          }
+        },
+        "cols": [
+          {
+            "col": "gene_id",
+            "name": "Gene ID",
+            "desc": "Unique gene identifier"
+          },
+          {
+            "col": "gene_name",
+            "name": "Gene Name",
+            "desc": "Unique gene name"
+          }
+        ],
+        "melt": {
+          "key": {
+            "name": "Sample",
+            "desc": "Unique identifier or label for analyzed biological sample"
+          },
+          "value": {
+            "name": "Count",
+            "desc": "Gene-level length-scaled counts"
+          }
+        }
+      }
+    },
+    {
+      "command": "hot.Parquet",
+      "params": {
+        "url": "https://nf-co.re/rnaseq/3.12.0/docs/output#alignment-and-quantification",
+        "source": "$data_directory/star_salmon/salmon.merged.gene_counts_scaled.tsv",
+        "target": "star_salmon.merged.gene_counts_scaled.parquet",
+        "name": "Scaled Gene Counts (STAR-Salmon)",
+        "desc": "Number of reads mapped at the gene-level by STAR-Salmon, scaled by library size",
+        "read_csv": {
+          "parse": {
+            "delimiter": "\t"
+          },
+          "read": {
+            "autogenerate_column_names": false
+          }
+        },
+        "cols": [
+          {
+            "col": "gene_id",
+            "name": "Gene ID",
+            "desc": "Unique gene identifier"
+          },
+          {
+            "col": "gene_name",
+            "name": "Gene Name",
+            "desc": "Unique gene name"
+          }
+        ],
+        "melt": {
+          "key": {
+            "name": "Sample",
+            "desc": "Unique identifier or label for analyzed biological sample"
+          },
+          "value": {
+            "name": "Count",
+            "desc": "Gene-level library size-scaled counts"
+          }
+        }
+      }
+    },
+    {
+      "command": "hot.Parquet",
+      "params": {
+        "url": "https://nf-co.re/rnaseq/3.12.0/docs/output#alignment-and-quantification",
+        "source": "$data_directory/star_salmon/salmon.merged.gene_tpm.tsv",
+        "target": "star_salmon.merged.gene_tpm.parquet",
+        "name": "Gene TPM (STAR-Salmon)",
+        "desc": "Esimated number of gene-level transcripts per million reads (TPM)",
+        "read_csv": {
+          "parse": {
+            "delimiter": "\t"
+          },
+          "read": {
+            "autogenerate_column_names": false
+          }
+        },
+        "cols": [
+          {
+            "col": "gene_id",
+            "name": "Gene ID",
+            "desc": "Unique gene identifier"
+          },
+          {
+            "col": "gene_name",
+            "name": "Gene Name",
+            "desc": "Unique gene name"
+          }
+        ],
+        "melt": {
+          "key": {
+            "name": "Sample",
+            "desc": "Unique identifier or label for analyzed biological sample"
+          },
+          "value": {
+            "name": "TPM",
+            "desc": "Estimated number of gene-level transcripts per million reads"
+          }
+        }
+      }
+    },
+    {
+      "command": "hot.Parquet",
+      "params": {
+        "url": "https://nf-co.re/rnaseq/3.12.0/docs/output#alignment-and-quantification",
+        "source": "$data_directory/star_salmon/salmon_tx2gene.tsv",
+        "target": "star_salmon_tx2gene.parquet",
+        "name": "Transcript-Gene Mapping (STAR-Salmon)",
+        "desc": "Association of transcripts with their encoding gene",
+        "read_csv": {
+          "parse": {
+            "delimiter": "\t"
+          },
+          "read": {
+            "autogenerate_column_names": true
+          }
+        },
+        "cols": [
+          {
+            "name": "Transcript ID",
+            "desc": "Unique transcript identifier"
+          },
+          {
+            "name": "Gene ID",
+            "desc": "Unique gene identifier"
+          },
+          {
+            "name": "Secondary Gene ID",
+            "desc": "Supplemental gene identifier"
+          }
+        ]
+      }
+    }
+  ]
+}

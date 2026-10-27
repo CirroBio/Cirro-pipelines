@@ -1,0 +1,109 @@
+{
+  "form": {
+    "type": "object",
+    "properties": {
+      "samplesheet": {
+        "type": "string",
+        "schema": "pipeline_samplesheet"
+      },
+      "transcriptome_dir": {
+        "title": "Transcriptome",
+        "description": "Reference genome used for alignment of RNAseq data",
+        "type": "string",
+        "default": "cellranger/refdata-gex-GRCh38-2024-A/",
+        "enum": [
+          "cellranger/refdata-gex-GRCh38-2024-A/",
+          "cellranger/refdata-gex-GRCh38-2020-A/",
+          "cellranger/refdata-gex-GRCh38-and-GRCm39-2024-A/",
+          "cellranger/refdata-gex-GRCh38-and-mm10-2020-A/",
+          "cellranger/refdata-gex-GRCm39-2024-A/",
+          "cellranger/refdata-gex-mm10-2020-A/"
+        ],
+        "enumNames": [
+          "Homo sapiens (GRCh38-2024)",
+          "Homo sapiens (GRCh38-2020)",
+          "Homo sapiens (GRCh38-2024) and Mus musculus (GRCm39-2024)",
+          "Homo sapiens (GRCh38-2020) and Mus musculus (mm10-2020)",
+          "Mus musculus (GRCm39-2024)",
+          "Mus musculus (mm10-2020)"
+        ]
+      },
+      "include_introns": {
+        "title": "Include Introns",
+        "description": "Include reads which align to intronic regions",
+        "type": "boolean",
+        "default": true
+      },
+      "cellranger_version": {
+        "title": "CellRanger Version",
+        "type": "string",
+        "default": "10.0.0",
+        "enum": [
+          "10.0.0",
+          "9.0.1",
+          "9.0.0",
+          "8.0.0",
+          "7.2.0",
+          "7.1.0",
+          "7.0.1",
+          "7.0.0",
+          "6.1.2",
+          "6.1.1",
+          "6.0.2",
+          "6.0.1",
+          "6.0.0",
+          "5.0.1",
+          "5.0.0",
+          "4.0.0",
+          "3.1.0",
+          "3.0.2",
+          "2.2.0"
+        ]
+      }
+    },
+    "required": [
+      "samplesheet"
+    ]
+  },
+  "ui": {},
+  "structuredInputs": {
+    "pipeline_samplesheet": {
+      "fileFormat": "CSV",
+      "schema": {
+        "title": "Samplesheet",
+        "description": "One row per pair of R1 and R2 FASTQ files. Rows with the same sample name, such as one per sequencing lane, are combined into a single Cell Ranger run.",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "sample": {
+              "type": "string",
+              "title": "Sample",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "errorMessage": "Sample names can only contain letters, numbers, hyphens and underscores"
+            },
+            "fastq_1": {
+              "title": "FASTQ (R1)",
+              "type": "string",
+              "format": "file-path",
+              "pattern": "^(?![\\S\\s]*_I[12]_001\\.fastq\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+              "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+            },
+            "fastq_2": {
+              "title": "FASTQ (R2)",
+              "type": "string",
+              "format": "file-path",
+              "pattern": "^(?![\\S\\s]*_I[12]_001\\.fastq\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+              "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+            }
+          },
+          "required": [
+            "sample",
+            "fastq_1",
+            "fastq_2"
+          ]
+        }
+      }
+    }
+  }
+}

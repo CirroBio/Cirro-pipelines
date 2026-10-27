@@ -5,7 +5,7 @@
     "hutch-scanpy-qc-1_0"
   ],
   "dataType": "Single-Cell Data (GEX)",
-  "name": "CellRanger Gene Expression",
+  "name": "CellRanger Gene Expression (legacy)",
   "desc": "Analysis of 10X single-cell sequencing of gene expression",
   "executor": "NEXTFLOW",
   "executionModes": ["STANDARD", "HEALTHOMICS"],
