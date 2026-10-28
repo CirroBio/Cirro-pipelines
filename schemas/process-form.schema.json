@@ -53,7 +53,12 @@
             "properties": {
                 "fileFormat": {
                     "description": "Format of the file passed to the workflow",
-                    "enum": ["CSV", "TSV", "JSON"]
+                    "enum": ["CSV", "TSV", "JSON"],
+                    "type": "string"
+                },
+                "defaultSourceFile": {
+                    "description": "If defined, the default file to import from a dataset into this input",
+                    "type": "string"
                 },
                 "schema": {
                     "description": "JSON Schema for the file contents: an array of row objects, one property per column",
