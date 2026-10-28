@@ -1,7 +1,7 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "title": "Cirro process-form.json",
-    "description": "Defines the form shown to users before a pipeline is run",
+    "description": "Defines the form shown to users before a pipeline is run. See https://docs.cirro.bio/pipelines/configuring-pipeline/#manual-configuration",
     "type": "object",
     "required": ["form"],
     "additionalProperties": false,
