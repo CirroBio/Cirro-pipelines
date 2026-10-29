@@ -8,5 +8,7 @@
   "frp_samples": "$.dataset.params.frp.samples_table",
   "include_introns": "$.dataset.params.cellranger.include_introns",
   "cellranger_version": "$.dataset.params.cellranger.version",
+  "emptydrops_minimum_umis": "$.dataset.params.cellranger.emptydrops_minimum_umis",
+  "global_minimum_umis": "$.dataset.params.cellranger.global_minimum_umis",
   "output": "$.dataset.dataPath"
 }

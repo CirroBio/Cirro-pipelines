@@ -7,5 +7,7 @@
   "multiplexing": "$.dataset.params.multiplexing",
   "vdj_dir": "$.dataset.params.vdj_dir",
   "cellranger_version": "$.dataset.params.cellranger_version",
+  "emptydrops_minimum_umis": "$.dataset.params.emptydrops_minimum_umis",
+  "global_minimum_umis": "$.dataset.params.global_minimum_umis",
   "output": "$.dataset.dataPath"
 }
