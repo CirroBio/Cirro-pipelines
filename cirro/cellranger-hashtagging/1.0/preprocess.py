@@ -44,6 +44,16 @@ assert len(data_paths) > 0, "No input datasets found"
 ds.add_param("fastq_dir", ",".join(data_paths))
 ds.logger.info(f"fastq_dir: {ds.params['fastq_dir']}")
 
+# CellRanger added emptydrops-minimum-umis in 7.1 and global-minimum-umis in 8.0.
+# A threshold left blank is dropped so the CellRanger default applies.
+cellranger_version = tuple(int(n) for n in ds.params["cellranger_version"].split(".")[:2])
+for param, min_version in [("emptydrops_minimum_umis", (7, 1)), ("global_minimum_umis", (8, 0))]:
+    if ds.params.get(param) is None:
+        ds.remove_param(param, force=True)
+    else:
+        msg = f"{param} requires CellRanger {min_version[0]}.{min_version[1]} or later (selected: {ds.params['cellranger_version']})"
+        assert cellranger_version >= min_version, msg
+
 ds.logger.info("Sample sheet provided by the user:")
 ds.logger.info(ds.samplesheet)
 assert ds.samplesheet.shape[0] > 0, "No files detected -- there may be an error with data ingest"
