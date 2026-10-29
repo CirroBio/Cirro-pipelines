@@ -26,5 +26,7 @@
   "bc016": "$.dataset.params.samples.bc016",
   "include_introns": "$.dataset.params.params.include_introns",
   "cellranger_version": "$.dataset.params.params.cellranger_version",
+  "emptydrops_minimum_umis": "$.dataset.params.params.emptydrops_minimum_umis",
+  "global_minimum_umis": "$.dataset.params.params.global_minimum_umis",
   "output": "$.dataset.dataPath"
 }
