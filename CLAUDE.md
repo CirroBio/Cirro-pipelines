@@ -60,6 +60,11 @@ Convert a pipeline as a whole: replace every `file` glob with `format: file-path
 `pattern`, and set `usesSampleSheet` to `false`. Path mode loads no samples, so a pipeline
 that still requires them can never be run.
 
+A pipeline that reads a whole input dataset (`$.inputs[0].dataPath`) has nothing to pick in
+path mode, so the run gets no input dataset (and Run stays disabled when the pipeline has
+parent processes). Give it a required `format: directory-path` field for that folder and
+map the field instead.
+
 ---
 
 ### Legacy File Keywords
@@ -102,6 +107,7 @@ samplesheet in `preprocess.py` from `ds.files` and `ds.samplesheet`.
 "structuredInputs": {
   "pipeline_samplesheet": {
     "fileFormat": "CSV",
+    "defaultSourceFile": "samplesheet.csv",
     "schema": {
       "title": "Samplesheet",
       "type": "array",
@@ -136,6 +142,10 @@ Map the file's path in `process-input.json`; the form field itself never reaches
   `errorMessage` are checked against each row, and a file column's `pattern` sees the
   dataset-relative path. Column `default`, `enumNames` and `oneOf` labels are ignored, and
   array-level `minItems`/`maxItems` are not enforced.
+- **Default source** — `defaultSourceFile` names a CSV or Excel file, such as
+  `samplesheet.csv`. When a run is started from a dataset holding a file whose path is or
+  ends with that name, the table is filled from it straight away, columns matched by name,
+  so sample metadata such as `strandedness` carries over without a preprocess script.
 - **Auto-fill** — users can import rows from a project Sheet, a CSV in a dataset, or a
   dataset's file names. The generated rows are matched to columns by name: `sample` takes
   the sample name, and `fastq_1`/`fastq_2` take paired reads. When the dataset has I1/I2
@@ -317,6 +327,30 @@ submol_uri = ds.params["sample_sheet"].rsplit("/", 1)[0] + "/submol.yaml"
 Cromwell (`"executor": "CROMWELL"`) processes are the exception: `inputs.json` and
 `options.json` are picked up from the working directory by convention and have no
 `process-input.json` param to redirect.
+
+**Tests:** every `preprocess.py` ships with an offline `test_preprocess.py` beside it,
+because a preprocess bug only surfaces after a run has been submitted. Keep the logic in
+pure functions, import the SDK inside `__main__` (annotations through `TYPE_CHECKING`), and
+test the functions on in-memory fixtures. The test then needs pandas but not the Cirro SDK:
+`python test_preprocess.py` (see `nf-core/rnaseq/3.1/`). Older tests in this repo stub
+the SDK modules instead, which also works.
+
+---
+
+## Checking a Pipeline Folder
+
+- **`cirro-agent read check-config <folder>`** (Cirro Claude plugin, from
+  CirroBio/Cirro-claude-plugin#12) runs locally, with no sign-in. It reports:
+  - form keywords the portal does not understand;
+  - `process-input.json` mappings to fields the form lacks;
+  - `structuredInputs` entries Cirro cannot write;
+  - a literal `../` anywhere, which Cirro's WAF rejects;
+  - a `preprocess.py` with no `test_preprocess.py`.
+
+  It lists `process-definition.json` as an extra file, which is expected in this repo.
+- **Form Preview** renders a pasted `process-form.json` as people will see it, without
+  saving it: `/system/custom-pipelines/create/form-preview` on the tenant, or
+  `/project/<projectId>/custom-pipelines/create/form-preview` to offer that project's files.
 
 ---
 

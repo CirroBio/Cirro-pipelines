@@ -869,6 +869,7 @@
   "structuredInputs": {
     "pipeline_samplesheet": {
       "fileFormat": "CSV",
+      "defaultSourceFile": "samplesheet.csv",
       "schema": {
         "title": "Samplesheet",
         "description": "One row per FASTQ file (single-end) or pair of FASTQ files (paired-end). Rows with the same sample name are merged by the pipeline.",

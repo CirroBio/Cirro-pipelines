@@ -58,6 +58,11 @@
                 "schema": {
                     "description": "JSON Schema for the file contents: an array of row objects, one property per column",
                     "$ref": "http://json-schema.org/draft-07/schema#"
+                },
+                "defaultSourceFile": {
+                    "description": "Name of a CSV or Excel file (e.g. samplesheet.csv) that fills the rows when the pipeline is run from a dataset containing it",
+                    "type": "string",
+                    "minLength": 1
                 }
             }
         }

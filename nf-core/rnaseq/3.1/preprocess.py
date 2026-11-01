@@ -1,29 +1,41 @@
 #!/usr/bin/env python3
 
-from cirro.helpers.preprocess_dataset import PreprocessDataset
-import pandas as pd
+from __future__ import annotations
+
 import json
 import urllib.request
+from typing import TYPE_CHECKING
+
+import pandas as pd
+
+# The SDK is imported in __main__, so test_preprocess.py runs without it
+if TYPE_CHECKING:
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
 
 
-def load_samplesheet(ds: PreprocessDataset) -> pd.DataFrame:
-    """Read the samplesheet filled out in the form, inferring any blank strandedness."""
+def read_samplesheet(path) -> pd.DataFrame:
+    """Read the samplesheet filled out in the form, keeping every value as text."""
 
     # The form field is marked required, but an empty table can still be submitted,
     # in which case Cirro either omits the param or writes an empty file
-    if not ds.params.get("input"):
+    if not path:
         raise ValueError("No samplesheet was provided: add at least one row of FASTQ files")
     try:
         # Read every value as text, so that sample names like "01" are kept as-is
-        samplesheet = pd.read_csv(ds.params["input"], dtype=str, keep_default_na=False)
+        samplesheet = pd.read_csv(path, dtype=str, keep_default_na=False)
     except pd.errors.EmptyDataError:
+        samplesheet = pd.DataFrame()
+    if samplesheet.empty:
         raise ValueError("The samplesheet is empty: add at least one row of FASTQ files")
+    return samplesheet
+
+
+def fill_strandedness(samplesheet: pd.DataFrame) -> pd.DataFrame:
+    """Have the pipeline infer the strandedness of every row that leaves it blank."""
 
     if "strandedness" not in samplesheet.columns:
-        samplesheet["strandedness"] = ""
-    samplesheet["strandedness"] = samplesheet["strandedness"].replace("", "auto")
-
-    return samplesheet
+        samplesheet = samplesheet.assign(strandedness="")
+    return samplesheet.assign(strandedness=samplesheet["strandedness"].replace("", "auto"))
 
 
 def log_table(ds: PreprocessDataset, title: str, df: pd.DataFrame):
@@ -60,9 +72,11 @@ def filter_params_by_schema(ds: PreprocessDataset):
 
 if __name__ == "__main__":
 
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
+
     ds = PreprocessDataset.from_running()
 
-    samplesheet = load_samplesheet(ds)
+    samplesheet = fill_strandedness(read_samplesheet(ds.params.get("input")))
     log_table(ds, "Samplesheet", samplesheet)
 
     # Overwrite the file Cirro wrote to the dataset's config/ folder (mapped in process-input.json)

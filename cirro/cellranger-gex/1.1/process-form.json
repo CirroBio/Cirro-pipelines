@@ -69,6 +69,7 @@
   "structuredInputs": {
     "pipeline_samplesheet": {
       "fileFormat": "CSV",
+      "defaultSourceFile": "samplesheet.csv",
       "schema": {
         "title": "Samplesheet",
         "description": "One row per pair of R1 and R2 FASTQ files. Rows with the same sample name, such as one per sequencing lane, are combined into a single Cell Ranger run.",
