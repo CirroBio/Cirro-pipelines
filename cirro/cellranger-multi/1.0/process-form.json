@@ -126,8 +126,20 @@
               "3.0.2",
               "2.2.0"
             ]
+          },
+          "emptydrops_minimum_umis": {
+            "title": "Minimum UMIs for Cell Calling",
+            "description": "(optional) Barcodes with fewer UMIs are not considered in the second (EmptyDrops) step of cell calling. Leave blank for the CellRanger default of 500; 10X suggests starting at 100 to recover more cells. Requires CellRanger 7.1 or later",
+            "type": "integer",
+            "minimum": 0
+          },
+          "global_minimum_umis": {
+            "title": "Minimum UMIs per Cell",
+            "description": "(optional) Barcodes with fewer UMIs are not called as cells. Leave blank to keep every called cell (the CellRanger default). Requires CellRanger 8.0 or later",
+            "type": "integer",
+            "minimum": 0
           }
-        }    
+        }
       }
     }
   },

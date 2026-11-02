@@ -16,6 +16,16 @@ if flex_version == "v2":
     msg = f"Flex v2 requires CellRanger 10.0 or later (selected: {ds.params['cellranger_version']})"
     assert int(ds.params["cellranger_version"].split(".")[0]) >= 10, msg
 
+# CellRanger added emptydrops-minimum-umis in 7.1 and global-minimum-umis in 8.0.
+# A threshold left blank is dropped so the CellRanger default applies.
+cellranger_version = tuple(int(n) for n in ds.params["cellranger_version"].split(".")[:2])
+for param, min_version in [("emptydrops_minimum_umis", (7, 1)), ("global_minimum_umis", (8, 0))]:
+    if ds.params.get(param) is None:
+        ds.remove_param(param, force=True)
+    else:
+        msg = f"{param} requires CellRanger {min_version[0]}.{min_version[1]} or later (selected: {ds.params['cellranger_version']})"
+        assert cellranger_version >= min_version, msg
+
 # The GEX reference and the 10X probe sets built against it, by Flex version.
 # CellRanger refuses a probe set whose reference version differs from the GEX
 # reference, and the v2 probe sets exist for the 2024-A references only.

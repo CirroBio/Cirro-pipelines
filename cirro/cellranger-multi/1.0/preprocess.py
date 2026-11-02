@@ -49,6 +49,16 @@ data_paths = [dataset['dataPath'] for dataset in ds.metadata['inputs']]
 assert len(data_paths) > 0, "No input datasets found"
 ds.add_param("fastq_dir", ",".join(data_paths))
 
+# CellRanger added emptydrops-minimum-umis in 7.1 and global-minimum-umis in 8.0.
+# A threshold left blank is dropped so the CellRanger default applies.
+cellranger_version = tuple(int(n) for n in ds.params["cellranger_version"].split(".")[:2])
+for param, min_version in [("emptydrops_minimum_umis", (7, 1)), ("global_minimum_umis", (8, 0))]:
+    if ds.params.get(param) is None:
+        ds.remove_param(param, force=True)
+    else:
+        msg = f"{param} requires CellRanger {min_version[0]}.{min_version[1]} or later (selected: {ds.params['cellranger_version']})"
+        assert cellranger_version >= min_version, msg
+
 # If either the feature_csv was not provided
 for kw in ["feature_csv"]:
 
