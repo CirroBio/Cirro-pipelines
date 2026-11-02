@@ -4,16 +4,18 @@
             "images": {
                 "type": "string",
                 "title": "Non-H&E Image(s)",
-                "file": "**/*",
-                "pathType": "dataset",
+                "format": "file-path",
+                "pattern": "/[^\\s/]+\\.(tiff?|TIFF?|qptiff|svs|ndpi|scn|czi)$",
+                "errorMessage": "Must be a slide image (.tif, .tiff, .qptiff, .svs, .ndpi, .scn or .czi) with no spaces in its name",
                 "description": "Select any images to process (not H&E)",
                 "multiple": true
             },
             "he_images": {
                 "type": "string",
                 "title": "H&E Image(s)",
-                "file": "**/*",
-                "pathType": "dataset",
+                "format": "file-path",
+                "pattern": "/[^\\s/]+\\.(tiff?|TIFF?|qptiff|svs|ndpi|scn|czi)$",
+                "errorMessage": "Must be a slide image (.tif, .tiff, .qptiff, .svs, .ndpi, .scn or .czi) with no spaces in its name",
                 "description": "Select any H&E images to process",
                 "multiple": true
             },

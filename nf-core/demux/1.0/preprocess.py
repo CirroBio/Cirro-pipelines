@@ -1,8 +1,9 @@
+#!/usr/bin/env python3
+
 import pandas as pd
 
-from cirro.helpers.preprocess_dataset import PreprocessDataset
 
-def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
+def make_manifest(params: dict, dataset_name: str) -> pd.DataFrame:
     """
     nf-core/demux input requires this format:
 
@@ -18,26 +19,20 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
     a separate analysis job / dataset as well.
     """
 
-    flowcell_id = ds.params.get('flowcell_id') or ds.metadata['dataset']['name'].replace(" ", "")
-    lanes = (ds.params.get('lane') or '').split(',')
-    samplesheet_path = ds.params.get('samplesheet')
+    flowcell_id = params.get('flowcell_id') or dataset_name.replace(" ", "")
+    lanes = (params.get('lane') or '').split(',')
+    samplesheet_path = params.get('samplesheet')
 
-    # Try to find the correct run directory dataset
-    # Since Samplesheet can be provided in a secondary dataset
-    run_dir = next((
-        dataset['dataPath'] for dataset in ds.metadata['inputs']
-        if dataset['processId'] != 'files'
-    ), None)
-
-    if not run_dir:
-        raise ValueError("Please provide at least one dataset with the sequencing run type")
+    run_folder = params.get('run_folder')
+    if not run_folder:
+        raise ValueError("Please select the sequencing run folder")
 
     manifest = pd.DataFrame.from_records([
         {
             'id': flowcell_id,
             'samplesheet': samplesheet_path,
             'lane': lane,
-            'flowcell': run_dir
+            'flowcell': run_folder
         }
         for lane in lanes
     ])
@@ -45,8 +40,12 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
 
 
 if __name__ == '__main__':
+
+    # Imported here so that test_preprocess.py runs without the SDK
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
+
     ds = PreprocessDataset.from_running()
-    samplesheet = make_manifest(ds)
+    samplesheet = make_manifest(ds.params, ds.metadata['dataset']['name'])
     ds.logger.info(samplesheet.to_csv())
     # Write to the dataset's config/ folder (mapped in process-input.json)
     samplesheet.to_csv(ds.params["input"], index=False)

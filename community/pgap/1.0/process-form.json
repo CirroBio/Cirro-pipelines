@@ -15,8 +15,9 @@
           "fasta": {
             "type": "string",
             "title": "Genome",
-            "file": "**/*.f*",
-            "pathType": "dataset"
+            "format": "file-path",
+            "pattern": "\\.(fa|fasta|fna|fas|fsa)$",
+            "errorMessage": "Must be an uncompressed FASTA file (.fa, .fasta, .fna, .fas or .fsa)"
           },
           "genus_species": {
             "type": "string",

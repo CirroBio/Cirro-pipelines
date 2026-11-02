@@ -1,6 +1,5 @@
 {
     "enforce_connectivity": "$.dataset.params.enforce_connectivity",
-    "inputDir": "$.inputs[0].dataPath",
     "outputDir": "$.dataset.dataPath",
     "platform": "$.dataset.params.platform",
     "sampleID": "$.dataset.params.sample_ID",

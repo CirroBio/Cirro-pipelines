@@ -2,12 +2,19 @@
   "form": {
     "type": "object",
     "properties": {
+      "run_folder": {
+        "title": "Sequencing Run Folder",
+        "description": "Output folder of the sequencing run (one flow cell) to demultiplex",
+        "type": "string",
+        "format": "directory-path"
+      },
       "samplesheet": {
         "title": "Samplesheet",
         "description": "File containing the sample information and indexes",
         "type": "string",
-        "pathType": "dataset",
-        "file": "**/*.csv"
+        "format": "file-path",
+        "pattern": "\\.csv$",
+        "errorMessage": "Must be a CSV file (.csv)"
       },
       "flowcell_id": {
         "title": "Flow Cell ID",
@@ -124,6 +131,7 @@
       }
     },
     "required": [
+      "run_folder",
       "samplesheet",
       "demultiplexer"
     ]

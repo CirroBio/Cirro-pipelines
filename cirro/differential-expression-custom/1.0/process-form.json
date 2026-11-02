@@ -1,22 +1,26 @@
 {
   "form": {
     "type": "object",
+    "required": [
+      "counts",
+      "manifest"
+    ],
     "properties": {
       "counts": {
         "title": "Gene Counts",
         "description": "Table of gene expression values across all samples.",
         "type": "string",
-        "pathType": "dataset",
-        "mm": { "matchBase": true },
-        "file": "*.*"
+        "format": "file-path",
+        "pattern": "\\.(csv|tsv)(\\.gz)?$",
+        "errorMessage": "Must be a CSV or TSV table (.csv, .tsv, .csv.gz or .tsv.gz)"
       },
       "manifest": {
         "title": "Metadata Table",
         "description": "Table of sample annotations.",
         "type": "string",
-        "pathType": "dataset",
-        "mm": { "matchBase": true },
-        "file": "*.*"
+        "format": "file-path",
+        "pattern": "\\.csv$",
+        "errorMessage": "Must be an uncompressed CSV table (.csv)"
       },
       "algorithm": {
         "title": "Algorithm",
