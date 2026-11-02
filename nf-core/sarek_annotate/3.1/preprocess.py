@@ -1,105 +1,55 @@
 #!/usr/bin/env python3
 
-import pandas as pd
-from cirro.helpers.preprocess_dataset import PreprocessDataset
-import urllib.request
-import urllib.error
+from __future__ import annotations
+
 import json
+import urllib.error
+import urllib.request
+from typing import TYPE_CHECKING
+
+import pandas as pd
+
+# The SDK is imported in __main__, so test_preprocess.py runs without it
+if TYPE_CHECKING:
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
 
 
-def preprocess(ds):
+def read_samplesheet(path) -> pd.DataFrame:
+    """Read the samplesheet filled out in the form, keeping every value as text."""
 
-    # Make a manifest file as expected by nf-core/sarek:
-    # Columns: patient,sample,vcf
+    # The form field is marked required, but an empty table can still be submitted,
+    # in which case Cirro either omits the param or writes an empty file
+    if not path:
+        raise ValueError("No samplesheet was provided: add at least one row with a VCF file")
+    try:
+        samplesheet = pd.read_csv(path, dtype=str, keep_default_na=False)
+    except pd.errors.EmptyDataError:
+        samplesheet = pd.DataFrame()
+    if samplesheet.empty:
+        raise ValueError("The samplesheet is empty: add at least one row with a VCF file")
+    return samplesheet
 
-    # The logic we use for processing is:
-    #   1. Analyze any file which ends with .vcf;
-    #   2. The sample name will be used for 'patient';
-    #   3. If the filename starts with the sample name, remove it. Use any other text before .vcf.gz as 'sample';
-    #   4. If the filename does not start with the sample name, used everything before .vcf.gz as 'sample'.
 
-    def format_manifest(r: pd.Series):
+def check_unique_samples(samplesheet: pd.DataFrame):
+    """Fail when two rows share a patient and sample.
 
-        for cname in ['sample', 'file']:
-            assert cname in r.index.values, f"Column missing: {cname}"
+    sarek stops on such rows even when their variant callers differ (nf-core/sarek#2201,
+    in every release up to 3.11.0), so a variantcalled.csv listing several VCFs for one
+    sample has to be given distinct sample names first.
+    """
+    duplicated = samplesheet.loc[
+        samplesheet.duplicated(["patient", "sample"], keep=False), ["patient", "sample"]
+    ].drop_duplicates()
+    if not duplicated.empty:
+        listing = ", ".join(f"{patient}/{sample}" for patient, sample in duplicated.itertuples(index=False))
+        raise ValueError(
+            "Each VCF needs its own patient and sample, but these patient/sample pairs "
+            f"are on more than one row: {listing}. Give each of those VCFs a distinct sample "
+            "name, for example by adding the variant caller to it."
+        )
 
-        # Set up the values which will be returned
-        dat = dict(patient=None, sample=None, vcf=r['file'])
 
-        # Get the filename
-        fn = r['file'].rsplit("/", 1)[-1]
-
-        # If the file does not end with .vcf.gz
-        if not fn.endswith('.vcf.gz'):
-
-            # Return an empty value
-            # Rows with empty values will be filtered out in the next step
-            pass
-
-        # The file does indeed end with .vcf.gz
-        else:
-
-            # Make sure that there is a valid sample value
-            assert not pd.isnull(r['sample']), f"Null value for sample ({r.to_dict()})"
-
-            # Assign 'patient' with the value from 'sample' (removing any parent folders)
-            dat['patient'] = str(r['sample']).rsplit("/", 1)[-1]
-
-            # Make a sample name which is based on the file name (without the .vcf.gz)
-            sample_name = fn[:-len(".vcf.gz")]
-
-            # If the sample name and the patient name are the same
-            if dat['patient'] == sample_name:
-
-                # Use the same sample name as patient name
-                dat['sample'] = sample_name
-
-            # Otherwise, if the sample name starts with the patient name and has additional text
-            elif sample_name.startswith(dat['patient']):
-
-                # Make a sample name which does not include the patient ID
-                sample_name = sample_name[len(dat['patient']):]
-
-                # Remove any leading '.' or '_'
-                while sample_name.startswith(('.', '_')):
-                    sample_name = sample_name[1:]
-
-                # If there is no text left
-                if len(sample_name) == 0:
-
-                    # Use the patient name
-                    dat['sample'] = dat['patient']
-
-                # But if there is indeed text remaining
-                else:
-
-                    # Use that text as the sample name
-                    dat['sample'] = sample_name
-
-            # Lastly, if the file name does not start with the sample name
-            else:
-
-                # Just use the file name as the 'sample'
-                dat['sample'] = sample_name
-
-        return pd.Series(dat)
-
-    manifest = ds.files.apply(format_manifest, axis=1)
-    assert manifest.shape[0] > 0, "No files detected -- there may be an error with data ingest"
-
-    # Filter out any rows with null values
-    filtered_manifest = manifest.dropna()
-    assert filtered_manifest.shape[0] > 0, "No files found with the .vcf.gz extension"
-
-    print(f"{filtered_manifest.shape[0]:,} / {manifest.shape[0]:,} files passed the filter for *.vcf.gz")
-
-    # Write to the dataset's config/ folder (mapped in process-input.json)
-    filtered_manifest.reindex(
-        columns=["patient", "sample", "vcf"]
-    ).to_csv(
-        ds.params["input"],
-        index=None
-    )
+def set_annotation_params(ds: PreprocessDataset):
 
     # The annotate step requires at least one tool (sarek errors otherwise).
     annotation_tool = ds.params.get('annotation_tool') or []
@@ -154,55 +104,6 @@ def preprocess(ds):
             ds.add_param('spliceai_indel_tbi', spliceai_indel_tbi, overwrite=True)
             ds.logger.info(f"SpliceAI: enabled for {genome}")
 
-    # PON handling
-    if genome == 'GATK.GRCh37':
-        pon = f"{ds.references_base}/igenomes/Homo_sapiens/GATK/GRCh37/Annotation/GATKBundle/Mutect2-WGS-panel-b37.vcf.gz"
-        pon_tbi = f"{ds.references_base}/igenomes/Homo_sapiens/GATK/GRCh37/Annotation/GATKBundle/Mutect2-WGS-panel-b37.vcf.gz.tbi"
-        ds.add_param('pon', pon, overwrite=True)
-        ds.add_param('pon_tbi', pon_tbi, overwrite=True)
-        ds.logger.info("PON: added GRCh37 panel of normals")
-    if genome == "GATK.GRCh38":
-        pon = f"{ds.references_base}/igenomes/Homo_sapiens/GATK/GRCh38/Annotation/GATKBundle/1000g_pon.hg38.vcf.gz"
-        pon_tbi = f"{ds.references_base}/igenomes/Homo_sapiens/GATK/GRCh38/Annotation/GATKBundle/1000g_pon.hg38.vcf.gz.tbi"
-        ds.add_param('pon', pon, overwrite=True)
-        ds.add_param('pon_tbi', pon_tbi, overwrite=True)
-        ds.logger.info("PON: added GRCh38 panel of normals")
-
-    # Use the same approach for resource allocation, but simply use the lower-level value set up for WES
-    # concept for dynamic resource usage
-    # tuple makes use of 'multipliers' for [WGS,WES] respectively.
-    # the three letter codes are shorthand for processes in 'process-compute.config'
-    # i.e CPU_LOW, MEM_LOW, HRS_LOW ETC.
-    assay = 1
-
-    compute = {"LOW": [1,1],
-            "MED": [2,1],
-            "HGH": [4,2],
-            "ALN": [8,4],
-            "REC": [4,2],
-            "MKD": [16,8],
-            "FRB": [2,1]}
-
-    resources = ['CPU', 'MEM', 'HRS']
-
-    final = {}
-
-    for name, vals in compute.items():
-        for it in resources:
-            outname = str(it + '_' + name)
-            if 'CPU' in outname:
-                outval = vals[assay]*4
-            elif 'MEM' in outname:
-                outval = vals[assay]*30
-            elif 'HRS' in outname:
-                outval = vals[assay]*24/2 if 'MKD' not in outname else vals[0]*24/4
-
-            final[outname] = int(outval)
-
-    ## Produces a dict with a key-value for every PLACEHOLDER variable in process-compute.config.
-    for from_str, to_str in final.items():
-        ds.update_compute(from_str, str(to_str), 'nextflow-override.config')
-
 
 _DEFAULT_WORKFLOW_VERSION = "3.8.1"
 
@@ -217,9 +118,8 @@ _PROTECTED_PARAMS = frozenset({
     "step",  # hardcoded to "annotate" by process-input.json
 })
 
-# sarek_annotate uses update_compute (not add_param) for resource vars, so compute_multiplier
-# is not needed here. igenomes_base, vep_cache, snpeff_cache, and monochrome_logs are
-# Cirro-pinned S3 paths that must survive schema filtering regardless of sarek version.
+# igenomes_base, vep_cache, snpeff_cache, and monochrome_logs are Cirro-pinned S3 paths
+# that must survive schema filtering regardless of sarek version.
 _CIRRO_PASSTHROUGH_PARAMS = frozenset({
     "optical_duplicate_pixel_distance",
     "igenomes_base",
@@ -334,12 +234,19 @@ def filter_params_by_schema(ds: PreprocessDataset):
 
 if __name__ == "__main__":
 
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
+
     # Get the currently running dataset
     ds = PreprocessDataset.from_running()
 
     ds.logger.info(f"Starting sarek_annotate preprocess — workflow_version={ds.params.get('workflow_version', _DEFAULT_WORKFLOW_VERSION)!r}")
 
-    preprocess(ds)
+    samplesheet = read_samplesheet(ds.params.get("input"))
+    ds.logger.info("Samplesheet:")
+    ds.logger.info(samplesheet.to_csv(index=None))
+    check_unique_samples(samplesheet)
+
+    set_annotation_params(ds)
 
     apply_extra_json_params(ds)
     filter_params_by_schema(ds)

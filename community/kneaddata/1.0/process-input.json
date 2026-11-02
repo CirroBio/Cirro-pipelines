@@ -1,5 +1,5 @@
 {
-  "samplesheet": "$.dataset.s3|/config/pipeline_samplesheet.csv",
+  "samplesheet": "$.structuredInputs.pipeline_samplesheet.path",
   "container": "quay.io/sangerpathogens/kneaddata:0.12.0",
   "db": "$.dataset.params.reference.db",
   "outdir": "$.dataset.dataPath",

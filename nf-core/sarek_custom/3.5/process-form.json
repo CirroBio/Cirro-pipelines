@@ -19,7 +19,12 @@
       "title": "Variant Calling - Custom Genome (nf-core/sarek)",
       "description": "Perform variant calling on unaligned sequence reads using a custom reference FASTA",
       "type": "object",
+      "required": ["input"],
       "properties": {
+        "input": {
+          "type": "string",
+          "schema": "pipeline_samplesheet"
+        },
         "workflow_version": {
           "type": "string",
           "title": "Workflow Version",
@@ -193,14 +198,71 @@
                 ]
               }
             }
+        },
+        "extra_params_json": {
+          "type": "string",
+          "title": "Extra Parameters (JSON)",
+          "description": "Optional: provide additional workflow parameters as a JSON object (e.g. {\"skip_markduplicates\": true}). Parameters are validated against the nf-core/sarek schema for the selected workflow version — unrecognized keys are silently removed.",
+          "maxLength": 10000,
+          "default": ""
         }
-      },
-      "extra_params_json": {
-        "type": "string",
-        "title": "Extra Parameters (JSON)",
-        "description": "Optional: provide additional workflow parameters as a JSON object (e.g. {\"skip_markduplicates\": true}). Parameters are validated against the nf-core/sarek schema for the selected workflow version — unrecognized keys are silently removed.",
-        "maxLength": 10000,
-        "default": ""
+      }
+    },
+    "structuredInputs": {
+      "pipeline_samplesheet": {
+        "fileFormat": "CSV",
+        "defaultSourceFile": "samplesheet.csv",
+        "schema": {
+          "title": "Samplesheet",
+          "description": "One row per pair of R1 and R2 FASTQ files. Rows with the same sample, such as one per sequencing lane, are merged by the pipeline.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "patient": {
+                "type": "string",
+                "title": "Patient",
+                "description": "Leave blank to use the sample name",
+                "pattern": "^\\S+$",
+                "errorMessage": "Patient ID cannot contain spaces"
+              },
+              "sex": {
+                "type": "string",
+                "title": "Sex",
+                "description": "Leave blank if unknown (NA). Values such as male/female or M/F are converted to XY/XX",
+                "enum": ["XX", "XY", "NA"]
+              },
+              "sample": {
+                "type": "string",
+                "title": "Sample",
+                "pattern": "^\\S+$",
+                "errorMessage": "Sample ID must be provided and cannot contain spaces"
+              },
+              "lane": {
+                "type": "string",
+                "title": "Lane",
+                "description": "Leave blank to number the rows of each sample automatically",
+                "pattern": "^\\S+$",
+                "errorMessage": "Lane cannot contain spaces"
+              },
+              "fastq_1": {
+                "type": "string",
+                "format": "file-path",
+                "title": "FASTQ (R1)",
+                "pattern": "^(?![\\S\\s]*_I[12]_001\\.f(ast)?q\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+                "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+              },
+              "fastq_2": {
+                "type": "string",
+                "format": "file-path",
+                "title": "FASTQ (R2)",
+                "pattern": "^(?![\\S\\s]*_I[12]_001\\.f(ast)?q\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+                "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+              }
+            },
+            "required": ["sample", "fastq_1", "fastq_2"]
+          }
+        }
       }
     }
 }

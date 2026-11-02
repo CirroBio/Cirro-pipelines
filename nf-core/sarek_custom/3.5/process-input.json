@@ -16,7 +16,7 @@
     "fasta": "$.dataset.params.analysis_type.fasta",
     "intervals": "$.dataset.params.analysis_type.intervals",
     "outdir": "$.dataset.dataPath",
-    "input": "$.dataset.s3|/config/manifest.csv",
+    "input": "$.structuredInputs.pipeline_samplesheet.path",
     "igenomes_ignore": true,
     "skip_tools": "baserecalibrator",
     "vep_cache": "$.referencesBucketUri|/vep_cache/",

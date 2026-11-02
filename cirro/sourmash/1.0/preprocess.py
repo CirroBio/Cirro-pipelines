@@ -1,14 +1,8 @@
 #!/usr/bin/env python3
 
 import json
-from cirro.helpers.preprocess_dataset import PreprocessDataset
 
-ds = PreprocessDataset.from_running()
-
-# Write the list of files to the dataset's config/ folder
-# (mapped in process-input.json)
-ds.logger.info(ds.files.to_csv(index=None))
-ds.files.to_csv(ds.params["samplesheet"], index=None)
+import pandas as pd
 
 # Map the user-selected databases to their corresponding paths
 db_map = {
@@ -20,6 +14,22 @@ db_map = {
     "85k: GTDB R08-RS214 bacterial representatives": "sourmash/gtdb-rs214-reps.k",
     "403k: GTDB R08-RS214 all bacteria": "sourmash/gtdb-rs214-k",
 }
+
+
+def read_samplesheet(path) -> pd.DataFrame:
+    """Read the samplesheet filled out in the form, keeping every value as text."""
+
+    # The form field is marked required, but an empty table can still be submitted,
+    # in which case Cirro either omits the param or writes an empty file
+    if not path:
+        raise ValueError("No samplesheet was provided: add at least one row of sequence files")
+    try:
+        samplesheet = pd.read_csv(path, dtype=str, keep_default_na=False)
+    except pd.errors.EmptyDataError:
+        samplesheet = pd.DataFrame()
+    if samplesheet.empty:
+        raise ValueError("The samplesheet is empty: add at least one row of sequence files")
+    return samplesheet
 
 
 def format_db(
@@ -42,17 +52,33 @@ def format_db(
     return prefix + "{" + ",".join(dbs) + "}" + suffix
 
 
-ds.add_param(
-    "db",
-    format_db(**ds.params, prefix=f"{ds.references_base}/")
-)
+def check_threshold(threshold_bp: int):
+    """sourmash gather accepts a threshold of 0, which keeps every match."""
 
-# Make sure that the user does not select a negative threshold value
-msg = f"Minimum threshold cannot be negative ({ds.params['threshold_bp']})"
-assert ds.params["threshold_bp"] > 0
+    if threshold_bp < 0:
+        raise ValueError(f"Minimum threshold cannot be negative ({threshold_bp})")
 
-ds.logger.info(json.dumps(ds.params, indent=4))
 
-# Consumed above; not parameters the workflow declares.
-for param in ("archaea_db", "bact_db", "fungi_db", "protozoa_db", "viral_db"):
-    ds.remove_param(param, force=True)
+if __name__ == "__main__":
+
+    # Imported here so that test_preprocess.py runs without the SDK
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
+
+    ds = PreprocessDataset.from_running()
+
+    samplesheet = read_samplesheet(ds.params.get("samplesheet"))
+    ds.logger.info("Samplesheet:")
+    ds.logger.info(samplesheet.to_csv(index=None))
+
+    ds.add_param(
+        "db",
+        format_db(**ds.params, prefix=f"{ds.references_base}/")
+    )
+
+    check_threshold(ds.params["threshold_bp"])
+
+    ds.logger.info(json.dumps(ds.params, indent=4))
+
+    # Consumed above; not parameters the workflow declares.
+    for param in ("archaea_db", "bact_db", "fungi_db", "protozoa_db", "viral_db"):
+        ds.remove_param(param, force=True)

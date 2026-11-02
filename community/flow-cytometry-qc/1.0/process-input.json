@@ -1,6 +1,5 @@
 {
   "outdir": "$.dataset.dataPath",
-  "samplesheet": "$.dataset.s3|/config/pipeline_samplesheet.csv",
-  "n_clusters": "$.dataset.params.n_clusters",
-  "fcs_input": "$.dataset.params.fcs_input"
+  "samplesheet": "$.structuredInputs.pipeline_samplesheet.path",
+  "n_clusters": "$.dataset.params.n_clusters"
 }

@@ -1,0 +1,40 @@
+{
+    "commands": [
+        {
+            "command": "hot.Parquet",
+            "params": {
+                "cols": [
+                    {
+                        "col": "subject",
+                        "desc": "",
+                        "name": "subject"
+                    }
+                ],
+                "desc": "Predicted HLA genotypes from arcasHLA",
+                "name": "HLA Genotypes",
+                "read_csv": {
+                    "parse": {
+                        "delimiter": "\t"
+                    }
+                },
+                "source": "$data_directory/genotypes.tsv",
+                "target": "genotypes.parquet",
+                "melt": {
+                    "key": {
+                        "desc": "Region of HLA",
+                        "name": "Locus"
+                    },
+                    "value": {
+                        "desc": "Genotype detected by arcasHLA",
+                        "name": "Allele"
+                    }
+                },
+                "url": ""
+            }
+        },
+        {
+            "command": "hot.Manifest",
+            "params": {}
+        }
+    ]
+}

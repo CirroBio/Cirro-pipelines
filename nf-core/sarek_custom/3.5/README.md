@@ -1,6 +1,6 @@
 # Variant Calling from FASTQ - Custom Genome (nf-core/sarek)
 
-DNA variant calling based on GATK4 best practices (v3.5.0)
+DNA variant calling based on GATK4 best practices (nf-core/sarek 3.8.1 by default)
 This configuration uses a custom FASTA sequence instead of an iGenomes reference,
 with the goal of making it easy to align reads to small (microbial or plasmid) genomes.
 The drawbacks of this approach are:
@@ -20,7 +20,7 @@ Documentation: [https://docs.cirro.bio/pipelines/catalog-dna-sequencing/#dna-var
 Source: [nf-core/sarek](nf-core/sarek)
 
 
-Version: `3.5.0`
+Version: `3.8.1` by default; any nf-core/sarek release can be entered on the form
 
 
 Script: `main.nf`

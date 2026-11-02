@@ -1,10 +1,17 @@
 #!/usr/bin/env python3
 
-from cirro.helpers.preprocess_dataset import PreprocessDataset
-import pandas as pd
-import urllib.request
-import urllib.error
+from __future__ import annotations
+
 import json
+import urllib.error
+import urllib.request
+from typing import TYPE_CHECKING
+
+import pandas as pd
+
+# The SDK is imported in __main__, so test_preprocess.py runs without it
+if TYPE_CHECKING:
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
 
 
 # Spellings of sex seen in user samplesheets, mapped to the XX/XY encoding sarek
@@ -21,73 +28,80 @@ _SEX_ALIASES = {
 }
 
 
-def normalize_sex(value) -> str:
+def normalize_sex(value: str) -> str:
     """Map a samplesheet sex value to sarek's XX/XY/NA encoding."""
-    if pd.isna(value):
-        return 'NA'
-    return _SEX_ALIASES.get(str(value).strip().lower(), 'NA')
+    return _SEX_ALIASES.get(value.strip().lower(), 'NA')
 
 
-def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
+def read_samplesheet(path) -> pd.DataFrame:
+    """Read the samplesheet filled out in the form, keeping every value as text."""
 
-    # Filter out any index files that may have been uploaded
-    ds.files = ds.files.loc[
-        ds.files.apply(
-            lambda r: r.get('readType', 'R') == 'R',
-            axis=1
+    # The form field is marked required, but an empty table can still be submitted,
+    # in which case Cirro either omits the param or writes an empty file
+    if not path:
+        raise ValueError("No samplesheet was provided: add at least one row of FASTQ files")
+    try:
+        samplesheet = pd.read_csv(path, dtype=str, keep_default_na=False)
+    except pd.errors.EmptyDataError:
+        samplesheet = pd.DataFrame()
+    if samplesheet.empty:
+        raise ValueError("The samplesheet is empty: add at least one row of FASTQ files")
+    return samplesheet
+
+
+def number_blank_lanes(samplesheet: pd.DataFrame) -> pd.Series:
+    """Each row's lane, with blanks numbered 1, 2, ... past the lanes its sample already uses."""
+
+    lanes = samplesheet["lane"].copy()
+    for _, rows in samplesheet.groupby("sample", sort=False):
+        used = set(rows["lane"])
+        number = 0
+        for index in rows.index[rows["lane"] == ""]:
+            number += 1
+            while str(number) in used:
+                number += 1
+            lanes[index] = str(number)
+    return lanes
+
+
+def fill_samplesheet(samplesheet: pd.DataFrame) -> pd.DataFrame:
+    """Fill in the values sarek needs that the form lets the user leave blank."""
+
+    return samplesheet.assign(
+        patient=samplesheet["patient"].where(samplesheet["patient"] != "", samplesheet["sample"]),
+        sex=samplesheet["sex"].map(normalize_sex),
+        lane=number_blank_lanes(samplesheet),
+    )
+
+
+def check_one_patient_per_sample(samplesheet: pd.DataFrame):
+    """Fail when the rows of one sample name different patients, which sarek rejects."""
+
+    patients = samplesheet.groupby("sample", sort=False)["patient"].unique()
+    conflicts = patients[patients.map(len) > 1]
+    if not conflicts.empty:
+        listing = "; ".join(f"{sample} ({', '.join(names)})" for sample, names in conflicts.items())
+        raise ValueError(
+            f"Each sample must belong to a single patient, but these have several: {listing}. "
+            "A blank patient is filled with the sample name, so give every row of a sample "
+            "the same patient, or leave it blank on all of them."
         )
-    ]
 
-    # Make a wide manifest
-    manifest = ds.wide_samplesheet(
-        index=["sampleIndex", "sample", "lane", "dataset"],
-        columns="read",
-        values="file",
-        column_prefix="fastq_"
-    )
-    assert manifest.shape[0] > 0, "No files detected -- there may be an error with data ingest"
 
-    # append metadata to file paths
-    samples = ds.samplesheet.set_index("sample")
-    manifest: pd.DataFrame = manifest.assign(
-        **{k: manifest["sample"].apply(v.get) for k, v in samples.items()}
-    )
-    ordering = ['patient', 'sex', 'status', 'sample', 'lane', 'fastq_1', 'fastq_2']
-    manifest = manifest.reindex(columns=ordering)
+def check_unique_lanes(samplesheet: pd.DataFrame):
+    """Fail when two rows share a patient, sample and lane, which sarek rejects."""
 
-    # Overwrite the 'lane' column to provide a unique value per-row
-    # This is necessary to account for datasets which merge multiple flowcells
-    manifest = manifest.assign(lane=[
-        str(i+1)
-        for i in range(manifest.shape[0])
-    ])
-
-    # Normalize 'sex' to the XX/XY/NA encoding sarek requires, defaulting to NA
-    manifest = manifest.assign(sex=manifest["sex"].apply(normalize_sex))
-
-    # Transform status values "Normal" -> 0 and "Tumor" -> 1
-    manifest = manifest.replace(
-        to_replace=dict(
-            status=dict(
-                normal=0,
-                Normal=0,
-                tumor=1,
-                Tumor=1
-            )
+    key = ["patient", "sample", "lane"]
+    duplicated = samplesheet.loc[samplesheet.duplicated(key, keep=False), key].drop_duplicates()
+    if not duplicated.empty:
+        listing = "; ".join(
+            f"patient {patient}, sample {sample}, lane {lane}"
+            for patient, sample, lane in duplicated.itertuples(index=False)
         )
-    )
-
-    # Set the default status to 0
-    manifest = manifest.assign(
-        status=manifest["status"].fillna(0).apply(int)
-    )
-
-    # Set the default "patient" attribute as the sample
-    manifest = manifest.assign(
-        patient=manifest["patient"].fillna(manifest["sample"])
-    )
-
-    return manifest
+        raise ValueError(
+            f"Each row of a sample needs its own lane, but these are on more than one row: {listing}. "
+            "Correct the lanes, or leave them blank to have them numbered."
+        )
 
 
 _DEFAULT_WORKFLOW_VERSION = "3.8.1"
@@ -212,18 +226,25 @@ def filter_params_by_schema(ds: PreprocessDataset):
 
 if __name__ == "__main__":
 
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
+
     ds = PreprocessDataset.from_running()
 
     ds.logger.info(f"Starting sarek_custom preprocess — workflow_version={ds.params.get('workflow_version', _DEFAULT_WORKFLOW_VERSION)!r}")
 
-    manifest = make_manifest(ds)
+    samplesheet = read_samplesheet(ds.params.get("input"))
+    filled = fill_samplesheet(samplesheet)
 
-    for line in manifest.to_csv(index=None).split("\n"):
+    for line in filled.to_csv(index=None).split("\n"):
         ds.logger.info(line)
 
-    # Write to the dataset's config/ folder (mapped in process-input.json)
-    manifest.to_csv(ds.params["input"], index=None)
-    ds.logger.info(f"Wrote {manifest.shape[0]} row(s) to {ds.params['input']}")
+    check_one_patient_per_sample(filled)
+    check_unique_lanes(filled)
+
+    if not filled.equals(samplesheet):
+        # Overwrite the file Cirro wrote to the dataset's config/ folder (mapped in process-input.json)
+        filled.to_csv(ds.params["input"], index=None)
+        ds.logger.info(f"Wrote {filled.shape[0]} row(s) to {ds.params['input']}")
 
     tools = ds.params.get("tools")
     assert tools, "ERROR: You must select at least one variant calling tool."

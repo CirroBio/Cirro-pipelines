@@ -14,7 +14,12 @@
     "title": "nf-core/sarek",
     "description": "Sarek is a workflow for detecting and annotating germline/somatic variants in WGS, WES and gene panel data.",
     "type": "object",
+    "required": ["input"],
     "properties": {
+      "input": {
+        "type": "string",
+        "schema": "pipeline_samplesheet"
+      },
       "workflow_version": {
         "type": "string",
         "title": "Workflow Version",
@@ -131,6 +136,47 @@
         "description": "Optional: provide additional workflow parameters as a JSON object (e.g. {\"vep_fields\": \"Consequence,Codons\"}). Parameters are validated against the nf-core/sarek schema for the selected workflow version — unrecognized keys are silently removed.",
         "maxLength": 10000,
         "default": ""
+      }
+    }
+  },
+  "structuredInputs": {
+    "pipeline_samplesheet": {
+      "fileFormat": "CSV",
+      "defaultSourceFile": "variantcalled.csv",
+      "schema": {
+        "title": "Samplesheet",
+        "description": "One row per VCF file. Each row needs its own combination of patient and sample, even when the variant callers differ.",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "patient": {
+              "type": "string",
+              "title": "Patient",
+              "pattern": "^\\S+$",
+              "errorMessage": "Patient ID must be provided and cannot contain spaces"
+            },
+            "sample": {
+              "type": "string",
+              "title": "Sample",
+              "pattern": "^\\S+$",
+              "errorMessage": "Sample ID must be provided and cannot contain spaces"
+            },
+            "variantcaller": {
+              "type": "string",
+              "title": "Variant Caller",
+              "description": "Optional: the tool that produced the VCF (e.g. haplotypecaller)"
+            },
+            "vcf": {
+              "type": "string",
+              "format": "file-path",
+              "title": "VCF",
+              "pattern": "^\\S+\\.vcf(\\.gz)?$",
+              "errorMessage": "Must be a VCF (.vcf or .vcf.gz) with no spaces in its path"
+            }
+          },
+          "required": ["patient", "sample", "vcf"]
+        }
       }
     }
   }

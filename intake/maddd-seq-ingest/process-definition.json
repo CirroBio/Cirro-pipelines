@@ -2,6 +2,7 @@
   "id": "efd573d9-749b-473b-99a3-74ad82b84426",
   "childProcessIds": [
     "process-hutch-maddd-seq-1_0",
+    "process-hutch-maddd-seq-1_1",
     "process-hutch-fastqc-1_0"
   ],
   "name": "MADDD-seq (FASTQ)",

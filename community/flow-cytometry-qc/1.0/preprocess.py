@@ -1,54 +1,50 @@
 #!/usr/bin/env python3
 
-from cirro.helpers.preprocess_dataset import PreprocessDataset
+import pandas as pd
 
-ds = PreprocessDataset.from_running()
 
-ds.logger.info("Files annotated in the dataset:")
-ds.logger.info(ds.files.to_csv(index=None))
+def read_samplesheet(path) -> pd.DataFrame:
+    """Read the samplesheet filled out in the form, keeping every value as text."""
 
-# Make a simple table with each of the files listed on single row
-samplesheet = ds.files.rename(
-    columns=dict(
-        file="fcs"
-    )
-).reindex(
-    columns=["sample", "fcs"]
-)
+    # The form field is marked required, but an empty table can still be submitted,
+    # in which case Cirro either omits the param or writes an empty file
+    if not path:
+        raise ValueError("No samplesheet was provided: add one row per FCS file")
+    try:
+        samplesheet = pd.read_csv(path, dtype=str, keep_default_na=False)
+    except pd.errors.EmptyDataError:
+        samplesheet = pd.DataFrame()
+    if samplesheet.empty:
+        raise ValueError("The samplesheet is empty: add one row per FCS file")
+    return samplesheet
 
-# If a set of input files was selected
-if len(ds.params.get('fcs_input') or []) > 0:
 
-    fcs_input = ds.params['fcs_input']
+def check_unique(samplesheet: pd.DataFrame):
+    """The workflow rejects a samplesheet that repeats a sample name or an FCS file
+    (bin/parse_samplesheet.py), so fail here before it is launched."""
 
-    # Make sure that each FCS file listed in `fcs_input` is valid
-    assert all([fcs for fcs in fcs_input])
+    for column, label in (("sample", "sample name"), ("fcs", "FCS file")):
+        duplicated = samplesheet.loc[samplesheet[column].duplicated(), column].unique()
+        if len(duplicated) > 0:
+            raise ValueError(
+                f"Each {label} can be listed only once. Listed more than once: {', '.join(duplicated)}"
+            )
 
-    # Subset the list
-    ds.logger.info(f"Subsetting down to {len(fcs_input):,} FCS files")
-    samplesheet = samplesheet.loc[
-        samplesheet['fcs'].apply(
-            lambda fcs: fcs in fcs_input
-        )
-    ]
 
-    assert samplesheet.shape[0] == len(fcs_input)
+if __name__ == "__main__":
 
-# Write to the dataset's config/ folder (mapped in process-input.json)
-samplesheet.to_csv(
-    ds.params["samplesheet"],
-    index=False
-)
+    # Imported here so that test_preprocess.py runs without the SDK
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
 
-ds.logger.info("Samplesheet:")
-ds.logger.info(samplesheet.to_csv(index=None))
+    ds = PreprocessDataset.from_running()
 
-# log
-ds.logger.info(ds.params)
+    samplesheet = read_samplesheet(ds.params.get("samplesheet"))
+    ds.logger.info("Samplesheet:")
+    ds.logger.info(samplesheet.to_csv(index=None))
+    check_unique(samplesheet)
 
-# Consumed above; not a parameter the workflow declares.
-ds.remove_param("fcs_input", force=True)
+    ds.logger.info(ds.params)
 
-# Force params.json to be written: the HealthOmics pre-process Lambda fails the run
-# when the file is absent, and the SDK writes it only when a parameter changes.
-ds.keep_params(list(ds.params.keys()))
+    # Force params.json to be written: the HealthOmics pre-process Lambda fails the run
+    # when the file is absent, and the SDK writes it only when a parameter changes.
+    ds.keep_params(list(ds.params.keys()))

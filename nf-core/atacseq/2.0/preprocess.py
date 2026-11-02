@@ -1,59 +1,54 @@
 #!/usr/bin/env python3
 
-from cirro.helpers.preprocess_dataset import PreprocessDataset
 import pandas as pd
 
 
-def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
+def read_samplesheet(path) -> pd.DataFrame:
+    """Read the samplesheet filled out in the form, keeping every value as text."""
 
-    # Filter out any index files that may have been uploaded
-    ds.files = ds.files.loc[
-        ds.files.apply(
-            lambda r: r.get('readType', 'R') == 'R',
-            axis=1
+    # The form field is marked required, but an empty table can still be submitted,
+    # in which case Cirro either omits the param or writes an empty file
+    if not path:
+        raise ValueError("No samplesheet was provided: add at least one row of FASTQ files")
+    try:
+        # Read every value as text, so that sample names like "01" are kept as-is
+        samplesheet = pd.read_csv(path, dtype=str, keep_default_na=False)
+    except pd.errors.EmptyDataError:
+        samplesheet = pd.DataFrame()
+    if samplesheet.empty:
+        raise ValueError("The samplesheet is empty: add at least one row of FASTQ files")
+    return samplesheet
+
+
+def check_replicates(samplesheet: pd.DataFrame):
+    """Fail unless the replicates of each sample are numbered 1 to n, as the pipeline requires."""
+
+    not_numbered = samplesheet.loc[~samplesheet["replicate"].str.isdecimal(), "sample"]
+    if not not_numbered.empty:
+        raise ValueError(
+            f"Every row needs a whole-number replicate; check sample(s) {', '.join(not_numbered.unique())}"
         )
-    ]
 
-    # Make a wide manifest
-    manifest = ds.wide_samplesheet(
-        index=["sampleIndex", "sample", "lane"],
-        columns="read",
-        values="file",
-        column_prefix="fastq_"
-    ).sort_values(
-        by="sample"
-    )
-    assert manifest.shape[0] > 0, "No files detected -- there may be an error with data ingest"
-
-    # Add an arbitrary `replicate` label for each
-    ds.logger.info("Adding replicate column")
-    sample_vc = manifest["sample"].value_counts()
-    manifest = manifest.assign(
-        replicate=[
-            i + 1
-            for _, n_replicates in sample_vc.items()
-            for i in range(n_replicates)
-        ]
-    )
-    ds.logger.info(manifest.to_csv(index=None))
-
-    # Only keep the expected columns, setting sample -> group
-    ds.logger.info("Rearranging the columns")
-    manifest = manifest.reindex(
-        columns=["sample", "fastq_1", "fastq_2", "replicate"]
-    )
-    ds.logger.info(manifest.to_csv(index=None))
-
-    return manifest
+    for sample, replicates in samplesheet["replicate"].astype(int).groupby(samplesheet["sample"]):
+        numbers = sorted(replicates.unique())
+        if numbers != list(range(1, len(numbers) + 1)):
+            raise ValueError(
+                f"The replicates of sample {sample} must be numbered 1 to {len(numbers)}, "
+                f"not {', '.join(map(str, numbers))}"
+            )
 
 
 if __name__ == "__main__":
 
-    ds = PreprocessDataset.from_running()
-    manifest = make_manifest(ds)
+    # Imported here so that test_preprocess.py runs without the SDK
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
 
-    # Write to the dataset's config/ folder (mapped in process-input.json)
-    manifest.to_csv(ds.params["input"], index=None)
+    ds = PreprocessDataset.from_running()
+
+    samplesheet = read_samplesheet(ds.params.get("input"))
+    ds.logger.info("Samplesheet:")
+    ds.logger.info(samplesheet.to_csv(index=None))
+    check_replicates(samplesheet)
 
     # log
     ds.logger.info(ds.params)

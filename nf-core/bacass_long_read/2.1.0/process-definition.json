@@ -15,7 +15,7 @@
     "uri": "nf-core/bacass",
     "version": "2.1.0"
   },
-  "usesSampleSheet": true,
+  "usesSampleSheet": false,
   "computeDefaults": [
     {
       "executor": "NEXTFLOW",

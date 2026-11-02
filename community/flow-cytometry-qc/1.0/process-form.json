@@ -2,22 +2,51 @@
   "form": {
     "type": "object",
     "name": "Flow Cytometry Quality Control",
+    "required": ["samplesheet"],
     "properties": {
+      "samplesheet": {
+        "type": "string",
+        "schema": "pipeline_samplesheet"
+      },
       "n_clusters": {
         "title": "Number of Clusters",
         "description": "Automatically group cells into a fixed number of clusters using FlowSOM",
         "type": "integer",
         "default": 10
-      },
-      "fcs_input": {
-        "type": "string",
-        "title": "(optional) Select FCS Files to Analyze",
-        "description": "(default: analyze all files)",
-        "multiple": true,
-        "file": "**/*.fcs",
-        "pathType": "dataset"
       }
     }
   },
-  "ui": {}
+  "ui": {},
+  "structuredInputs": {
+    "pipeline_samplesheet": {
+      "fileFormat": "CSV",
+      "schema": {
+        "title": "Samplesheet",
+        "description": "One row per FCS file, each with a sample name of its own.",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "sample": {
+              "type": "string",
+              "title": "Sample",
+              "pattern": "^\\S+$",
+              "errorMessage": "Sample name must be provided and cannot contain spaces"
+            },
+            "fcs": {
+              "type": "string",
+              "format": "file-path",
+              "title": "FCS File",
+              "pattern": "\\.[Ff][Cc][Ss]$",
+              "errorMessage": "Must be a flow cytometry file (.fcs)"
+            }
+          },
+          "required": [
+            "sample",
+            "fcs"
+          ]
+        }
+      }
+    }
+  }
 }

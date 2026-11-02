@@ -3,8 +3,12 @@
   "form": {
     "title": "De novo bacterial assembly and annotation (nf-core/bacass)",
     "type": "object",
-    "required": ["mode"],
+    "required": ["input", "mode"],
     "properties": {
+      "input": {
+        "type": "string",
+        "schema": "pipeline_samplesheet"
+      },
       "mode": {
         "type": "string",
         "title": "Assembly mode",
@@ -38,6 +42,42 @@
         "title": "Skip Annotation",
         "description": "Skip annotating the assembly with Prokka",
         "default": false
+      }
+    }
+  },
+  "structuredInputs": {
+    "pipeline_samplesheet": {
+      "fileFormat": "TSV",
+      "schema": {
+        "title": "Samplesheet",
+        "description": "One row per sample, with its reads in a single pair of gzipped FASTQ files.",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "ID": {
+              "type": "string",
+              "title": "Sample",
+              "pattern": "^\\S+$",
+              "errorMessage": "Sample name must be provided and cannot contain spaces"
+            },
+            "R1": {
+              "type": "string",
+              "format": "file-path",
+              "title": "FASTQ (R1)",
+              "pattern": "^(?![\\S\\s]*_I[12]_001\\.f(ast)?q\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+              "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+            },
+            "R2": {
+              "type": "string",
+              "format": "file-path",
+              "title": "FASTQ (R2)",
+              "pattern": "^(?![\\S\\s]*_I[12]_001\\.f(ast)?q\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+              "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+            }
+          },
+          "required": ["ID", "R1", "R2"]
+        }
       }
     }
   }

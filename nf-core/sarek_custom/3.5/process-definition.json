@@ -14,7 +14,7 @@
       "version": "User Defined",
       "executorVersion": "25.10.4"
     },
-    "usesSampleSheet": true,
+    "usesSampleSheet": false,
     "fileMappingRules": [
       {
         "description": "Variant Calling VCF",
