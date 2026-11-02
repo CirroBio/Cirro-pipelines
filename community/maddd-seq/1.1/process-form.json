@@ -124,8 +124,8 @@
             "specimen": {
               "type": "string",
               "title": "Specimen",
-              "pattern": "^[A-Za-z0-9_]+$",
-              "errorMessage": "Specimen names can only contain letters, numbers and underscores"
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "errorMessage": "Specimen names can only contain letters, numbers, hyphens and underscores"
             },
             "R1": {
               "type": "string",
