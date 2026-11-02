@@ -83,6 +83,17 @@ def folder_sample_name(folder: str) -> str:
     return WHITESPACE.sub("_", sample)
 
 
+def picked_image_files(picked: str | list[str] | None) -> list[str]:
+    """The images picked in the form, as a list whichever picker sent them.
+
+    The OME-TIFF picker allows several files and sends a list, while the PhenoCycler
+    picker allows one and sends its path as a plain string.
+    """
+    if isinstance(picked, str):
+        picked = [picked]
+    return [image_file.strip() for image_file in picked or [] if image_file.strip()]
+
+
 def image_sample_name(image_file: str) -> str:
     sample = PurePosixPath(image_file).name
     while (ext := PurePosixPath(sample).suffix.lower()) in IMAGE_EXTENSIONS:
@@ -191,12 +202,7 @@ if __name__ == "__main__":
     if technology in IMAGE_ONLY_TECHNOLOGIES:
         set_image_aggregation(ds)
 
-    # A multiple-file picker sends its selection as a list
-    image_files = [
-        image_file.strip()
-        for image_file in ds.params.get("image_file") or []
-        if image_file.strip()
-    ]
+    image_files = picked_image_files(ds.params.get("image_file"))
     # The mapped samplesheet path sits in this dataset's config/ folder
     config_dir = ds.params["input"].rsplit("/", 1)[0]
     image_files = [
