@@ -51,25 +51,63 @@ class ReadSamplesheet(unittest.TestCase):
             preprocess.read_samplesheet(io.StringIO(HEADER))
 
 
-class CheckUniqueSamples(unittest.TestCase):
+class DistinguishRepeatedSamples(unittest.TestCase):
 
-    def test_distinct_samples_pass(self):
-        preprocess.check_unique_samples(pd.DataFrame({
+    def test_distinct_samples_are_unchanged(self):
+        samplesheet = pd.DataFrame({
             "patient": ["P1", "P1", "P2"],
             "sample": ["N", "T", "N"],
             "variantcaller": ["haplotypecaller", "haplotypecaller", "haplotypecaller"],
             "vcf": ["p1n.vcf.gz", "p1t.vcf.gz", "p2n.vcf.gz"],
-        }))
+        })
+        self.assertTrue(preprocess.distinguish_repeated_samples(samplesheet).equals(samplesheet))
 
-    def test_same_sample_from_two_callers_fails(self):
+    def test_same_sample_from_two_callers_gets_the_caller_added(self):
         samplesheet = pd.DataFrame({
             "patient": ["P1", "P1", "P2"],
             "sample": ["N", "N", "N"],
             "variantcaller": ["strelka", "manta", "strelka"],
             "vcf": ["a.vcf.gz", "b.vcf.gz", "c.vcf.gz"],
         })
-        with self.assertRaisesRegex(ValueError, r"on more than one row: P1/N\. Give"):
-            preprocess.check_unique_samples(samplesheet)
+        distinct = preprocess.distinguish_repeated_samples(samplesheet)
+        self.assertEqual(distinct["sample"].tolist(), ["N_strelka", "N_manta", "N"])
+        self.assertEqual(distinct["vcf"].tolist(), samplesheet["vcf"].tolist())
+
+    def test_same_caller_twice_is_named_after_the_vcf(self):
+        samplesheet = pd.DataFrame({
+            "patient": ["P1", "P1"],
+            "sample": ["T_vs_N", "T_vs_N"],
+            "variantcaller": ["strelka", "strelka"],
+            "vcf": [
+                "s3://bucket/strelka/T_vs_N/T_vs_N.strelka.somatic_snvs.vcf.gz",
+                "s3://bucket/strelka/T_vs_N/T_vs_N.strelka.somatic_indels.vcf.gz",
+            ],
+        })
+        distinct = preprocess.distinguish_repeated_samples(samplesheet)
+        self.assertEqual(
+            distinct["sample"].tolist(),
+            ["T_vs_N.strelka.somatic_snvs", "T_vs_N.strelka.somatic_indels"],
+        )
+
+    def test_blank_caller_is_named_after_the_vcf(self):
+        samplesheet = pd.DataFrame({
+            "patient": ["P1", "P1"],
+            "sample": ["N", "N"],
+            "variantcaller": ["", ""],
+            "vcf": ["s3://bucket/a/N.snv.vcf", "s3://bucket/b/N.sv.vcf.gz"],
+        })
+        distinct = preprocess.distinguish_repeated_samples(samplesheet)
+        self.assertEqual(distinct["sample"].tolist(), ["N.snv", "N.sv"])
+
+    def test_same_file_name_twice_fails(self):
+        samplesheet = pd.DataFrame({
+            "patient": ["P1", "P1"],
+            "sample": ["N", "N"],
+            "variantcaller": ["", ""],
+            "vcf": ["s3://bucket/run1/N.vcf.gz", "s3://bucket/run2/N.vcf.gz"],
+        })
+        with self.assertRaisesRegex(ValueError, "even after adding the variant caller and VCF file name: P1/N"):
+            preprocess.distinguish_repeated_samples(samplesheet)
 
 
 if __name__ == "__main__":

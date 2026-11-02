@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import json
+import re
 import urllib.error
 import urllib.request
+from pathlib import PurePosixPath
 from typing import TYPE_CHECKING
 
 import pandas as pd
@@ -30,23 +32,40 @@ def read_samplesheet(path) -> pd.DataFrame:
     return samplesheet
 
 
-def check_unique_samples(samplesheet: pd.DataFrame):
-    """Fail when two rows share a patient and sample.
+def vcf_stem(vcf: str) -> str:
+    """The VCF's file name without its .vcf or .vcf.gz extension."""
+    return re.sub(r"\.vcf(\.gz)?$", "", PurePosixPath(vcf).name)
 
-    sarek stops on such rows even when their variant callers differ (nf-core/sarek#2201,
-    in every release up to 3.11.0), so a variantcalled.csv listing several VCFs for one
-    sample has to be given distinct sample names first.
+
+def distinguish_repeated_samples(samplesheet: pd.DataFrame) -> pd.DataFrame:
+    """Give every row a patient and sample of its own.
+
+    sarek stops when two rows share a patient and sample, even when their variant callers
+    differ (nf-core/sarek#2201, in every release up to 3.11.0). sarek's variantcalled.csv
+    lists one row per VCF, so a sample called by several callers repeats, and so does one
+    whose caller writes separate SNV and indel files. Repeated rows get their variant
+    caller added to the sample name; rows that still repeat are named after their VCF.
     """
-    duplicated = samplesheet.loc[
-        samplesheet.duplicated(["patient", "sample"], keep=False), ["patient", "sample"]
-    ].drop_duplicates()
+    samplesheet = samplesheet.copy()
+
+    def repeated() -> pd.Series:
+        return samplesheet.duplicated(["patient", "sample"], keep=False)
+
+    with_caller = repeated() & (samplesheet["variantcaller"] != "")
+    samplesheet.loc[with_caller, "sample"] = (
+        samplesheet.loc[with_caller, "sample"] + "_" + samplesheet.loc[with_caller, "variantcaller"]
+    )
+    still_repeated = repeated()
+    samplesheet.loc[still_repeated, "sample"] = samplesheet.loc[still_repeated, "vcf"].map(vcf_stem)
+
+    duplicated = samplesheet.loc[repeated(), ["patient", "sample"]].drop_duplicates()
     if not duplicated.empty:
         listing = ", ".join(f"{patient}/{sample}" for patient, sample in duplicated.itertuples(index=False))
         raise ValueError(
-            "Each VCF needs its own patient and sample, but these patient/sample pairs "
-            f"are on more than one row: {listing}. Give each of those VCFs a distinct sample "
-            "name, for example by adding the variant caller to it."
+            "Each VCF needs its own patient and sample, but these patient/sample pairs are "
+            f"on more than one row even after adding the variant caller and VCF file name: {listing}"
         )
+    return samplesheet
 
 
 def set_annotation_params(ds: PreprocessDataset):
@@ -242,9 +261,12 @@ if __name__ == "__main__":
     ds.logger.info(f"Starting sarek_annotate preprocess — workflow_version={ds.params.get('workflow_version', _DEFAULT_WORKFLOW_VERSION)!r}")
 
     samplesheet = read_samplesheet(ds.params.get("input"))
+    distinct = distinguish_repeated_samples(samplesheet)
+    if not distinct.equals(samplesheet):
+        # Overwrite the file Cirro wrote to the dataset's config/ folder (mapped in process-input.json)
+        distinct.to_csv(ds.params["input"], index=None)
     ds.logger.info("Samplesheet:")
-    ds.logger.info(samplesheet.to_csv(index=None))
-    check_unique_samples(samplesheet)
+    ds.logger.info(distinct.to_csv(index=None))
 
     set_annotation_params(ds)
 

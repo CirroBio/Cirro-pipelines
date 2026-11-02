@@ -145,7 +145,7 @@
       "defaultSourceFile": "variantcalled.csv",
       "schema": {
         "title": "Samplesheet",
-        "description": "One row per VCF file. Each row needs its own combination of patient and sample, even when the variant callers differ.",
+        "description": "One row per VCF file. When a sample has several VCFs, its sample name gets the variant caller added (or else the VCF's file name), since sarek needs each row's patient and sample to differ.",
         "type": "array",
         "items": {
           "type": "object",
