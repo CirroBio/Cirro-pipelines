@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-# bacass 2.1.0 builds its input channel from all six columns, and tells an absent input
+# bacass 2.4.0 builds its input channel from all six columns, and tells an absent input
 # apart only by the literal "NA": a missing column or a blank cell reaches the workflow
 # as an empty list, which it treats as a file to process
 BACASS_COLUMNS = ["ID", "R1", "R2", "LongFastQ", "Fast5", "GenomeSize"]
@@ -24,17 +24,6 @@ def read_samplesheet(path) -> pd.DataFrame:
     return samplesheet
 
 
-def check_unique_ids(samplesheet: pd.DataFrame):
-    """Fail before the run on a repeated ID, which bacass's own samplesheet check rejects.
-
-    bacass 2.1.0 cannot combine several pairs of FASTQ files of one sample.
-    """
-
-    repeated = samplesheet.loc[samplesheet["ID"].duplicated(), "ID"].unique()
-    if len(repeated) > 0:
-        raise ValueError(f"Each sample can have only one row, but these are repeated: {', '.join(repeated)}")
-
-
 def to_bacass_samplesheet(samplesheet: pd.DataFrame) -> pd.DataFrame:
     """Add the columns the form does not ask for, and mark every empty cell NA."""
 
@@ -49,7 +38,6 @@ if __name__ == "__main__":
     ds = PreprocessDataset.from_running()
 
     samplesheet = read_samplesheet(ds.params.get("input"))
-    check_unique_ids(samplesheet)
     samplesheet = to_bacass_samplesheet(samplesheet)
     ds.logger.info("Samplesheet:")
     ds.logger.info(samplesheet.to_csv(index=None, sep="\t"))

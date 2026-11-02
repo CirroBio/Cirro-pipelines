@@ -50,7 +50,7 @@
       "fileFormat": "TSV",
       "schema": {
         "title": "Samplesheet",
-        "description": "One row per sample, with its reads in a single pair of gzipped FASTQ files.",
+        "description": "One row per pair of gzipped R1 and R2 FASTQ files. Rows with the same sample name, such as one per sequencing lane, are concatenated by the pipeline.",
         "type": "array",
         "items": {
           "type": "object",

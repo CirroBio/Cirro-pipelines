@@ -135,6 +135,13 @@
               "title": "Long-read FASTQ",
               "pattern": "^(?![\\S\\s]*_I[12]_001\\.f(ast)?q\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
               "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+            },
+            "GenomeSize": {
+              "type": "string",
+              "title": "Genome size",
+              "description": "Estimated genome size in megabases, such as 2.8m. Required when the assembler is Canu",
+              "pattern": "^\\d+\\.\\d+m$",
+              "errorMessage": "Must be a number of megabases with a decimal point, followed by m (such as 2.8m or 5.0m)"
             }
           },
           "required": ["ID", "LongFastQ"]

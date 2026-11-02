@@ -9,5 +9,6 @@
     "canu_mode": "$.dataset.params.assembler.canu_mode",
     "annotation_tool": "$.dataset.params.annotation.annotation_tool",
     "skip_kraken2": "$.dataset.params.skip_kraken2",
+    "skip_kmerfinder": true,
     "skip_annotation": "$.dataset.params.skip_annotation"
 }

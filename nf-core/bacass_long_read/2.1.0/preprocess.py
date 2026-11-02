@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-# bacass 2.1.0 builds its input channel from all six columns, and tells an absent input
+# bacass 2.4.0 builds its input channel from all six columns, and tells an absent input
 # apart only by the literal "NA": a missing column or a blank cell reaches the workflow
 # as an empty list, which it treats as a file to process
 BACASS_COLUMNS = ["ID", "R1", "R2", "LongFastQ", "Fast5", "GenomeSize"]
@@ -25,9 +25,10 @@ def read_samplesheet(path) -> pd.DataFrame:
 
 
 def check_unique_ids(samplesheet: pd.DataFrame):
-    """Fail before the run on a repeated ID, which bacass's own samplesheet check rejects.
+    """Fail before the run on a repeated ID.
 
-    bacass 2.1.0 cannot combine several FASTQ files of one sample.
+    bacass 2.4.0 concatenates only short reads: for a repeated ID it keeps the first
+    long-read FASTQ, and tries to concatenate the rows' "NA" short-read cells as files.
     """
 
     repeated = samplesheet.loc[samplesheet["ID"].duplicated(), "ID"].unique()
@@ -41,6 +42,20 @@ def to_bacass_samplesheet(samplesheet: pd.DataFrame) -> pd.DataFrame:
     return samplesheet.reindex(columns=BACASS_COLUMNS, fill_value="NA").replace("", "NA")
 
 
+def check_genome_sizes(samplesheet: pd.DataFrame, assembler: str):
+    """Fail before the run when Canu would be given no genome size.
+
+    bacass passes GenomeSize to Canu as genomeSize=, which Canu requires. The table can
+    only make the column required for every assembler, so Canu's need is checked here.
+    """
+
+    if assembler != "canu":
+        return
+    missing = samplesheet.loc[samplesheet["GenomeSize"] == "NA", "ID"]
+    if len(missing) > 0:
+        raise ValueError(f"Canu needs the genome size of every sample (such as 2.8m), but it is missing for: {', '.join(missing)}")
+
+
 if __name__ == "__main__":
 
     # Imported here so that test_preprocess.py runs without the SDK
@@ -51,6 +66,7 @@ if __name__ == "__main__":
     samplesheet = read_samplesheet(ds.params.get("input"))
     check_unique_ids(samplesheet)
     samplesheet = to_bacass_samplesheet(samplesheet)
+    check_genome_sizes(samplesheet, ds.params.get("assembler"))
     ds.logger.info("Samplesheet:")
     ds.logger.info(samplesheet.to_csv(index=None, sep="\t"))
 

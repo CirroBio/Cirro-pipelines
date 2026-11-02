@@ -3,7 +3,7 @@
   "childProcessIds": [],
   "dataType": "Assembled Genomes (nf-core/bacass)",
   "name": "De Novo Assembly - Short Reads (nf-core/bacass)",
-  "desc": "Simple bacterial genome assembly and annotation (v2.1.0)",
+  "desc": "Simple bacterial genome assembly and annotation (v2.4.0)",
   "executor": "NEXTFLOW",
   "executionModes": ["STANDARD", "HEALTHOMICS"],
   "pipelineTypeOverride": "nf-core",
@@ -13,7 +13,7 @@
     "repository": "GITHUBPUBLIC",
     "script": "main.nf",
     "uri": "nf-core/bacass",
-    "version": "2.1.0"
+    "version": "2.4.0"
   },
   "usesSampleSheet": false,
   "computeDefaults": [

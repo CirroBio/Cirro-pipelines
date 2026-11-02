@@ -1,10 +1,10 @@
-"""Offline tests for the nf-core/bacass 2.1.0 short-read preprocess script.
+"""Offline tests for the nf-core/bacass 2.4.0 short-read preprocess script.
 
 preprocess.py imports the Cirro SDK only when it runs, so this is a plain
 `python -m unittest` that needs pandas and nothing else.
 
 The samplesheet is the structured input Cirro writes from the run form: a TSV with
-CRLF line endings, a header from the form's columns, and one row per sample.
+CRLF line endings, a header from the form's columns, and one row per pair of FASTQ files.
 """
 import importlib.util
 import io
@@ -48,25 +48,6 @@ class ReadSamplesheet(unittest.TestCase):
     def test_header_without_rows_fails_clearly(self):
         with self.assertRaisesRegex(ValueError, "The samplesheet is empty"):
             preprocess.read_samplesheet(io.StringIO(HEADER))
-
-
-class CheckUniqueIds(unittest.TestCase):
-
-    def test_distinct_ids_pass(self):
-        preprocess.check_unique_ids(pd.DataFrame({
-            "ID": ["A", "B"],
-            "R1": ["a_R1.fq.gz", "b_R1.fq.gz"],
-            "R2": ["a_R2.fq.gz", "b_R2.fq.gz"],
-        }))
-
-    def test_repeated_id_is_named(self):
-        samplesheet = pd.DataFrame({
-            "ID": ["A", "A", "B"],
-            "R1": ["a_L1_R1.fq.gz", "a_L2_R1.fq.gz", "b_R1.fq.gz"],
-            "R2": ["a_L1_R2.fq.gz", "a_L2_R2.fq.gz", "b_R2.fq.gz"],
-        })
-        with self.assertRaisesRegex(ValueError, "repeated: A$"):
-            preprocess.check_unique_ids(samplesheet)
 
 
 class ToBacassSamplesheet(unittest.TestCase):
