@@ -29,8 +29,7 @@
         "description": "Select the specific version of nf-core/rnafusion to use",
         "type": "string",
         "enum": [
-            "3.0.2",
-            "4.0.0"
+            "3.0.2"
         ],
         "default": "3.0.2"
       },
