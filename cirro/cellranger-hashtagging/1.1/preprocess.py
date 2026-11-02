@@ -75,17 +75,14 @@ if __name__ == "__main__":
 
     samplesheet = read_table(ds.params.get("grouping"), "samplesheet", "one row per library")
     libraries = drop_repeated_rows(samplesheet)
-    ds.logger.info("Samplesheet:")
-    ds.logger.info(libraries.to_csv(index=None))
     if len(libraries) < len(samplesheet):
         # Overwrite the file Cirro wrote to the dataset's config/ folder (mapped in process-input.json)
         libraries.to_csv(ds.params["grouping"], index=None)
 
-    multiplexing = read_table(
+    # Read only to fail clearly when the table is missing or empty
+    read_table(
         ds.params.get("multiplexing"), "sample hashtag table", "one row per sample with its hashtag"
     )
-    ds.logger.info("Sample hashtags:")
-    ds.logger.info(multiplexing.to_csv(index=None))
 
     for param in unset_umi_thresholds(ds.params):
         ds.remove_param(param, force=True)

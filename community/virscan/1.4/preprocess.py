@@ -105,8 +105,6 @@ if __name__ == "__main__":
     samplesheet = samplesheet.assign(fastq_filepath=fastq_filepath)
     ds.add_param("reads_prefix", reads_prefix)
 
-    ds.logger.info("Sample table:")
-    ds.logger.info(samplesheet.to_csv(index=None))
 
     # Overwrite the file Cirro wrote to the dataset's config/ folder (mapped in process-input.json)
     samplesheet.to_csv(ds.params["sample_table"], index=None)

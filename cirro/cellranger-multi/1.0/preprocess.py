@@ -85,8 +85,6 @@ if __name__ == "__main__":
 
     samplesheet = read_samplesheet(ds.params.get("grouping"))
     libraries = drop_repeated_rows(samplesheet)
-    ds.logger.info("Samplesheet:")
-    ds.logger.info(libraries.to_csv(index=None))
     if len(libraries) < len(samplesheet):
         # Overwrite the file Cirro wrote to the dataset's config/ folder (mapped in process-input.json)
         libraries.to_csv(ds.params["grouping"], index=None)
@@ -123,7 +121,6 @@ if __name__ == "__main__":
 
         probe_barcodes = read_optional_table(ds.params.get("probe_barcodes"))
         ds.logger.info(f"Detected {probe_barcodes.shape[0]:,} samples in the probe barcode table")
-        ds.logger.info(probe_barcodes.to_csv(index=None))
 
     # Without rows the workflow's empty probe barcode table is used, as it is for
     # singleplex samples

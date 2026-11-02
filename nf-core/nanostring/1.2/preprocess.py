@@ -38,8 +38,6 @@ if __name__ == "__main__":
     ds = PreprocessDataset.from_running()
 
     samplesheet = fill_heatmap_ids(read_samplesheet(ds.params.get("input")))
-    ds.logger.info("Samplesheet:")
-    ds.logger.info(samplesheet.to_csv(index=False))
 
     # Overwrite the file Cirro wrote to the dataset's config/ folder (mapped in process-input.json)
     samplesheet.to_csv(ds.params["input"], index=False)

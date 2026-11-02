@@ -169,14 +169,10 @@ if __name__ == "__main__":
 
     # Save the sample barcode spreadsheet to the dataset's config/ folder
     # (mapped in process-input.json)
-    ds.logger.info("Sample probe barcodes specified:")
-    ds.logger.info(probe_barcodes.to_csv(index=None))
     probe_barcodes.to_csv(ds.params["probe_barcodes"], index=None)
 
     samplesheet = read_table(ds.params.get("samples"), "samplesheet", "one row per library")
     libraries = drop_repeated_rows(samplesheet)
-    ds.logger.info("Samplesheet:")
-    ds.logger.info(libraries.to_csv(index=None))
     if len(libraries) < len(samplesheet):
         # Overwrite the file Cirro wrote to the dataset's config/ folder (mapped in process-input.json)
         libraries.to_csv(ds.params["samples"], index=None)

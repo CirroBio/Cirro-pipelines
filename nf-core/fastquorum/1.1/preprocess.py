@@ -41,8 +41,6 @@ if __name__ == "__main__":
 
     samplesheet = read_samplesheet(ds.params.get("input"))
     filled = fill_read_structure(samplesheet, ds.params.get("read_structure"))
-    ds.logger.info("Samplesheet:")
-    ds.logger.info(filled.to_csv(index=None))
 
     if not filled.equals(samplesheet):
         # Overwrite the file Cirro wrote to the dataset's config/ folder (mapped in process-input.json)

@@ -103,8 +103,6 @@ if __name__ == "__main__":
     ds = PreprocessDataset.from_running()
 
     samplesheet = read_samplesheet(ds.params.get("input"))
-    ds.logger.info("Samplesheet:")
-    ds.logger.info(samplesheet.to_csv(index=None, sep="\t"))
     check_unique_sample_ids(samplesheet)
 
     if is_single_end(samplesheet, ds.params.get("only_use_forward_reads", False)):
