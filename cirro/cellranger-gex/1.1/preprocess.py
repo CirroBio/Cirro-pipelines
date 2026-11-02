@@ -42,9 +42,8 @@ if __name__ == "__main__":
     if resolved != transcriptome_dir:
         ds.add_param("transcriptome_dir", resolved, overwrite=True)
 
-    samplesheet = read_samplesheet(ds.params.get("samplesheet"))
-    ds.logger.info("Samplesheet:")
-    ds.logger.info(samplesheet.to_csv(index=None))
+    # Read only to fail clearly when the table is missing or empty
+    read_samplesheet(ds.params.get("samplesheet"))
 
     # Force params.json to be written: the HealthOmics pre-process Lambda fails the run
     # when the file is absent, and the SDK writes it only when a parameter changes.

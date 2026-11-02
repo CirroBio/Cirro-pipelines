@@ -265,8 +265,6 @@ if __name__ == "__main__":
     if not distinct.equals(samplesheet):
         # Overwrite the file Cirro wrote to the dataset's config/ folder (mapped in process-input.json)
         distinct.to_csv(ds.params["input"], index=None)
-    ds.logger.info("Samplesheet:")
-    ds.logger.info(distinct.to_csv(index=None))
 
     set_annotation_params(ds)
 
