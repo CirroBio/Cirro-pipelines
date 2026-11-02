@@ -15,6 +15,7 @@
     "uri": "nf-core/bacass",
     "version": "2.4.0"
   },
+  "allowMultipleSources": true,
   "usesSampleSheet": false,
   "computeDefaults": [
     {
