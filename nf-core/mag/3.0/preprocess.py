@@ -102,8 +102,6 @@ if __name__ == "__main__":
         ds.remove_param(run_param, force=True)
 
     samplesheet = fill_group(read_samplesheet(ds.params.get("input")))
-    ds.logger.info("Samplesheet:")
-    ds.logger.info(samplesheet.to_csv(index=None))
     check_unique_runs(samplesheet)
 
     # Overwrite the file Cirro wrote to the dataset's config/ folder (mapped in process-input.json)

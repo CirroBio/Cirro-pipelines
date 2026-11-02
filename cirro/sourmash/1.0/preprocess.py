@@ -66,9 +66,8 @@ if __name__ == "__main__":
 
     ds = PreprocessDataset.from_running()
 
-    samplesheet = read_samplesheet(ds.params.get("samplesheet"))
-    ds.logger.info("Samplesheet:")
-    ds.logger.info(samplesheet.to_csv(index=None))
+    # Read only to fail clearly when the table is missing or empty
+    read_samplesheet(ds.params.get("samplesheet"))
 
     ds.add_param(
         "db",

@@ -67,8 +67,6 @@ if __name__ == "__main__":
     check_unique_ids(samplesheet)
     samplesheet = to_bacass_samplesheet(samplesheet)
     check_genome_sizes(samplesheet, ds.params.get("assembler"))
-    ds.logger.info("Samplesheet:")
-    ds.logger.info(samplesheet.to_csv(index=None, sep="\t"))
 
     # Overwrite the file Cirro wrote to the dataset's config/ folder (mapped in process-input.json)
     samplesheet.to_csv(ds.params["input"], index=None, sep="\t")
