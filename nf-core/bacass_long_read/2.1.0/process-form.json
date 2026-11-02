@@ -58,14 +58,12 @@
                     "enum": [
                       "-nanopore",
                       "-pacbio",
-                      "-pacbio-hifi",
-                      "null"
+                      "-pacbio-hifi"
                     ],
                     "enumNames": [
                       "Nanopore",
                       "PacBio",
-                      "PacBio HiFi",
-                      "None"
+                      "PacBio HiFi"
                     ],
                     "default": "-nanopore"
                   }
