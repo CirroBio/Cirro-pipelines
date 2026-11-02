@@ -18,6 +18,7 @@
     "script": "main_cellranger.nf"
   },
   "allowMultipleSources": false,
+  "allowMultipleSources": true,
   "usesSampleSheet": false,
   "computeDefaults": [
     {
