@@ -13,6 +13,7 @@
     "version": "main",
     "script": "main.nf"
   },
+  "allowMultipleSources": true,
   "usesSampleSheet": false,
   "computeDefaults": [
     {

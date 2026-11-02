@@ -18,6 +18,7 @@
     "script": "main_bowtie2.nf"
   },
   "allowMultipleSources": false,
+  "allowMultipleSources": true,
   "usesSampleSheet": false,
   "computeDefaults": [
     {

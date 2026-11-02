@@ -15,6 +15,7 @@
     "version": "User Defined",
     "executorVersion": "25.10.4"
   },
+  "allowMultipleSources": true,
   "usesSampleSheet": false,
   "computeDefaults": [
     {
