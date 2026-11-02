@@ -155,8 +155,8 @@
               "type": "string",
               "format": "file-path",
               "title": "RCC file",
-              "pattern": "\\.RCC$",
-              "errorMessage": "Must be an nCounter RCC file (.RCC)"
+              "pattern": "\\.[Rr][Cc][Cc]$",
+              "errorMessage": "Must be an nCounter RCC file (.RCC or .rcc)"
             },
             "SAMPLE_ID": {
               "type": "string",
