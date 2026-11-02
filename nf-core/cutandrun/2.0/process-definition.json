@@ -14,7 +14,7 @@
     "uri": "nf-core/cutandrun",
     "version": "2.0"
   },
-  "usesSampleSheet": true,
+  "usesSampleSheet": false,
   "computeDefaults": [
     {
       "executor": "NEXTFLOW",

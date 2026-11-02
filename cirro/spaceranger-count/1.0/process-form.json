@@ -3,21 +3,30 @@
     "type": "object",
     "description": "Custom probe sequences will be combined with the human or mouse reference genome",
     "required": [
+      "samplesheet",
       "ref"
     ],
     "properties": {
+      "samplesheet": {
+        "type": "string",
+        "schema": "pipeline_samplesheet"
+      },
       "ref": {
         "title": "Reference Transcriptome",
         "description": "Custom probe set combined with reference genome",
         "pathType": "dataset",
-        "process": "process-hutch-spaceranger-mkref-1-0",
+        "process": [
+          "process-hutch-spaceranger-mkref-1-0"
+        ],
         "type": "string"
       },
       "images": {
         "title": "Image File(s)",
-        "description": "Images captured for each spatial dataset",
+        "description": "Dataset holding an image for each sample in the samplesheet, listed in the dataset's own samplesheet.csv under the columns sample and file (and optionally slide and area)",
         "pathType": "dataset",
-        "process": "images",
+        "process": [
+          "images"
+        ],
         "type": "string"
       },
       "image_type": {
@@ -46,5 +55,46 @@
       }
     }
   },
-  "ui": {}
+  "ui": {},
+  "structuredInputs": {
+    "pipeline_samplesheet": {
+      "fileFormat": "CSV",
+      "defaultSourceFile": "samplesheet.csv",
+      "schema": {
+        "title": "Samplesheet",
+        "description": "One row per pair of R1 and R2 FASTQ files. Rows with the same sample name, such as one per sequencing lane, are combined into a single Space Ranger run with the image listed for that sample in the image dataset.",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "sample": {
+              "type": "string",
+              "title": "Sample",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "errorMessage": "Sample names can only contain letters, numbers, hyphens and underscores"
+            },
+            "fastq_1": {
+              "title": "FASTQ (R1)",
+              "type": "string",
+              "format": "file-path",
+              "pattern": "^(?![\\S\\s]*_I[12]_001\\.fastq\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+              "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+            },
+            "fastq_2": {
+              "title": "FASTQ (R2)",
+              "type": "string",
+              "format": "file-path",
+              "pattern": "^(?![\\S\\s]*_I[12]_001\\.fastq\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+              "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+            }
+          },
+          "required": [
+            "sample",
+            "fastq_1",
+            "fastq_2"
+          ]
+        }
+      }
+    }
+  }
 }

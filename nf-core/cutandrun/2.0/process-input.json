@@ -1,6 +1,6 @@
 {
     "outdir": "$.dataset.dataPath",
-    "input": "$.dataset.s3|/config/pipeline_samplesheet.csv",
+    "input": "$.structuredInputs.pipeline_samplesheet.path",
     "igenomes_base": "$.referencesBucketUri|/igenomes/",
     "genome": "$.dataset.params.genome",
     "minimum_alignment_q_score": "$.dataset.params.minimum_alignment_q_score",

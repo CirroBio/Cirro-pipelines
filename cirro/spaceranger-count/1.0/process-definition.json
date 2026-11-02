@@ -14,7 +14,7 @@
     "version": "main",
     "script": "spaceranger_count.nf"
   },
-  "usesSampleSheet": true,
+  "usesSampleSheet": false,
   "computeDefaults": [
     {
       "executor": "NEXTFLOW",

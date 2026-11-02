@@ -1,123 +1,138 @@
 #!/usr/bin/env python3
 
 import pandas as pd
-from io import StringIO
-from cirro.helpers.preprocess_dataset import PreprocessDataset
 
 
-def resolve_references(ds: PreprocessDataset, *params: str):
-    """Make reference params absolute against the references bucket.
+def reference_dir(value, references_base: str):
+    """A CellRanger reference directory param, made absolute against the references bucket.
 
     Form values name a path under that bucket rather than a full URI, so the
     configuration is not tied to one deployment. A value that is already absolute
     is left alone, which keeps datasets created before that change re-runnable.
+    HealthOmics reads an S3 value with no trailing separator as an object key and
+    rejects the run, so the result always ends with one.
     """
-    for param in params:
-        value = ds.params.get(param)
-        if not isinstance(value, str) or not value or value.startswith("s3://"):
-            continue
-        ds.add_param(param, f"{ds.references_base}/{value}", overwrite=True)
+    if not value:
+        return value
+    if not value.startswith("s3://"):
+        value = f"{references_base}/{value}"
+    return value.rstrip("/") + "/"
 
-# Instantiate the Cirro dataset object
-ds = PreprocessDataset.from_running()
 
-resolve_references(ds, "transcriptome_dir", "vdj_dir")
+def read_optional_table(path) -> pd.DataFrame:
+    """Read a table filled out in the form, keeping every value as text.
 
-# These name CellRanger reference directories. HealthOmics reads an S3 value with no
-# trailing separator as an object key and rejects the run, so mark them as folders.
-for ref_dir in ("transcriptome_dir", "vdj_dir"):
-    ref_path = ds.params.get(ref_dir)
-    if ref_path:
-        ds.add_param(ref_dir, ref_path.rstrip("/") + "/", overwrite=True)
+    Cirro omits the param when the field was never touched, and writes an empty file
+    when it has no rows; both read as an empty table.
+    """
+    if not path:
+        return pd.DataFrame()
+    try:
+        return pd.read_csv(path, dtype=str, keep_default_na=False)
+    except pd.errors.EmptyDataError:
+        return pd.DataFrame()
 
-# The user must provide columns for `grouping` and `feature_types`
-for cname in ['grouping', 'feature_types']:
-    msg = f"The user must annotate the '{cname}' for each sample"
-    assert cname in ds.samplesheet.columns.values, msg
 
-groupings = ds.samplesheet[["sample", "grouping", "feature_types"]]
-ds.logger.info("Sample sheet provided by the user:")
-ds.logger.info(groupings)
-assert groupings.shape[0] > 0, "No files detected -- there may be an error with data ingest"
+def read_samplesheet(path) -> pd.DataFrame:
+    """Read the samplesheet filled out in the form, keeping every value as text."""
 
-# Write to the dataset's config/ folder (mapped in process-input.json)
-ds.logger.info(f"Writing out {groupings.shape[0]:,} lines to {ds.params['grouping']}")
-groupings.to_csv(ds.params["grouping"], index=None)
+    # The form field is marked required, but an empty table can still be submitted
+    if not path:
+        raise ValueError("No samplesheet was provided: add one row per library")
+    samplesheet = read_optional_table(path)
+    if samplesheet.empty:
+        raise ValueError("The samplesheet is empty: add one row per library")
+    return samplesheet
 
-# Build fastq_dir as a comma-delimited list of all input dataset paths
-data_paths = [dataset['dataPath'] for dataset in ds.metadata['inputs']]
-assert len(data_paths) > 0, "No input datasets found"
-ds.add_param("fastq_dir", ",".join(data_paths))
 
-# CellRanger added emptydrops-minimum-umis in 7.1 and global-minimum-umis in 8.0.
-# A threshold left blank is dropped so the CellRanger default applies.
-cellranger_version = tuple(int(n) for n in ds.params["cellranger_version"].split(".")[:2])
-for param, min_version in [("emptydrops_minimum_umis", (7, 1)), ("global_minimum_umis", (8, 0))]:
-    if ds.params.get(param) is None:
+def drop_repeated_rows(samplesheet: pd.DataFrame) -> pd.DataFrame:
+    """Rows filled from a dataset's file names repeat each library once per lane and
+    read, and each row becomes a library in the CellRanger config."""
+    return samplesheet.drop_duplicates(ignore_index=True)
+
+
+def unset_umi_thresholds(params: dict) -> list:
+    """The UMI thresholds left blank, which are dropped so the CellRanger default applies.
+
+    CellRanger added emptydrops-minimum-umis in 7.1 and global-minimum-umis in 8.0,
+    so a threshold that is set needs at least that version.
+    """
+    selected = params["cellranger_version"]
+    version = tuple(int(n) for n in selected.split(".")[:2])
+    unset = []
+    for param, min_version in [("emptydrops_minimum_umis", (7, 1)), ("global_minimum_umis", (8, 0))]:
+        if params.get(param) is None:
+            unset.append(param)
+        elif version < min_version:
+            raise ValueError(
+                f"{param} requires CellRanger {min_version[0]}.{min_version[1]} or later "
+                f"(selected: {selected})"
+            )
+    return unset
+
+
+if __name__ == "__main__":
+
+    # Imported here so that test_preprocess.py runs without the SDK
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
+
+    ds = PreprocessDataset.from_running()
+
+    for param in ("transcriptome_dir", "vdj_dir"):
+        resolved = reference_dir(ds.params.get(param), ds.references_base)
+        if resolved != ds.params.get(param):
+            ds.add_param(param, resolved, overwrite=True)
+
+    samplesheet = read_samplesheet(ds.params.get("grouping"))
+    libraries = drop_repeated_rows(samplesheet)
+    ds.logger.info("Samplesheet:")
+    ds.logger.info(libraries.to_csv(index=None))
+    if len(libraries) < len(samplesheet):
+        # Overwrite the file Cirro wrote to the dataset's config/ folder (mapped in process-input.json)
+        libraries.to_csv(ds.params["grouping"], index=None)
+
+    for param in unset_umi_thresholds(ds.params):
         ds.remove_param(param, force=True)
-    else:
-        msg = f"{param} requires CellRanger {min_version[0]}.{min_version[1]} or later (selected: {ds.params['cellranger_version']})"
-        assert cellranger_version >= min_version, msg
 
-# If either the feature_csv was not provided
-for kw in ["feature_csv"]:
+    # Left blank, the workflow's empty feature reference is used
+    if ds.params.get("feature_csv") is None:
+        ds.remove_param("feature_csv", force=True)
 
-    # If the user did not provide the keyword
-    if kw in ds.params and ds.params[kw] is None:
+    # Read below, only when the user indicates fixed RNA profiling
+    probe_barcodes = pd.DataFrame()
 
-        # Remove it from the dict (so that the workflow default is used)
-        ds.remove_param(kw)
+    if ds.params.get("is_frp"):
+        ds.logger.info("User indicated that this is fixed RNA profiling")
 
-# Set below, only when the user supplies a probe barcode table
-probe_barcodes = None
-
-# If the user indicated that this is fixed RNA profiling
-if ds.params.get("is_frp"):
-    ds.logger.info("User indicated that this is fixed RNA profiling")
-
-    # Add the probe set built against the same reference version as the
-    # transcriptome -- CellRanger refuses a probe set whose version differs
-    is_2024 = "2024-A" in ds.params["transcriptome_dir"]
-    if "GRCh38" in ds.params["transcriptome_dir"]:
-        ds.logger.info("Adding human reference probe set")
-        probe_set = (
-            "Chromium_Human_Transcriptome_Probe_Set_v1.1.0_GRCh38-2024-A.csv" if is_2024
-            else "Chromium_Human_Transcriptome_Probe_Set_v1.0.1_GRCh38-2020-A.csv"
-        )
-    else:
-        ds.logger.info("Adding mouse reference probe set")
-        probe_set = (
-            "Chromium_Mouse_Transcriptome_Probe_Set_v1.1.0_GRCm39-2024-A.csv" if is_2024
-            else "Chromium_Mouse_Transcriptome_Probe_Set_v1.0.1_mm10-2020-A.csv"
-        )
-    ds.add_param("probes_csv", f"{ds.references_base}/cellranger/flex/{probe_set}")
-
-    # Parse the samples table provided by the user
-    if ds.params.get("frp_samples") is None or len(ds.params["frp_samples"]) == 0:
-        ds.logger.info("User did not provide a FRP samples table")
-    else:
-        ds.logger.info("Parsing the FRP samples table provided by the user")
-        ds.logger.info(ds.params["frp_samples"])
-        probe_barcodes = pd.read_table(StringIO(ds.params["frp_samples"]), sep=",")
-        for line in probe_barcodes.to_csv(index=None).split("\n"):
-            ds.logger.info(line)
-
-        if probe_barcodes.shape[0] == 0:
-            ds.logger.info("No samples detected in the FRP samples table")
-            probe_barcodes = None
+        # Add the probe set built against the same reference version as the
+        # transcriptome -- CellRanger refuses a probe set whose version differs
+        is_2024 = "2024-A" in ds.params["transcriptome_dir"]
+        if "GRCh38" in ds.params["transcriptome_dir"]:
+            ds.logger.info("Adding human reference probe set")
+            probe_set = (
+                "Chromium_Human_Transcriptome_Probe_Set_v1.1.0_GRCh38-2024-A.csv" if is_2024
+                else "Chromium_Human_Transcriptome_Probe_Set_v1.0.1_GRCh38-2020-A.csv"
+            )
         else:
-            ds.logger.info(f"Detected {probe_barcodes.shape[0]:,} samples in the FRP samples table")
-            # Write to the dataset's config/ folder (mapped in process-input.json)
-            probe_barcodes.to_csv(ds.params["probe_barcodes"], index=None)
+            ds.logger.info("Adding mouse reference probe set")
+            probe_set = (
+                "Chromium_Mouse_Transcriptome_Probe_Set_v1.1.0_GRCm39-2024-A.csv" if is_2024
+                else "Chromium_Mouse_Transcriptome_Probe_Set_v1.0.1_mm10-2020-A.csv"
+            )
+        ds.add_param("probes_csv", f"{ds.references_base}/cellranger/flex/{probe_set}")
 
-# No table was written, so the mapped location holds no object
-if probe_barcodes is None:
-    ds.remove_param("probe_barcodes")
+        probe_barcodes = read_optional_table(ds.params.get("probe_barcodes"))
+        ds.logger.info(f"Detected {probe_barcodes.shape[0]:,} samples in the probe barcode table")
+        ds.logger.info(probe_barcodes.to_csv(index=None))
 
-# Log the parameters present
-for k, v in ds.params.items():
-    ds.logger.info(f"{k}: {v}")
+    # Without rows the workflow's empty probe barcode table is used, as it is for
+    # singleplex samples
+    if probe_barcodes.empty:
+        ds.remove_param("probe_barcodes", force=True)
 
-# Consumed above; not parameters the workflow declares.
-for param in ("frp_samples", "is_frp"):
-    ds.remove_param(param, force=True)
+    # Log the parameters present
+    for k, v in ds.params.items():
+        ds.logger.info(f"{k}: {v}")
+
+    # Consumed above; not a parameter the workflow declares.
+    ds.remove_param("is_frp", force=True)

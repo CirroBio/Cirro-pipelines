@@ -3,8 +3,12 @@
   "form": {
     "title": "RNA-Seq Analysis Pipeline",
     "type": "object",
-    "required": [],
+    "required": ["input"],
     "properties": {
+      "input": {
+        "type": "string",
+        "schema": "pipeline_samplesheet"
+      },
       "igenomes": {
         "type": "object",
         "title": "Reference Genome (iGenomes)",
@@ -98,19 +102,6 @@
           }
         }
       },
-      "processing_options": {
-        "type": "object",
-        "title": "Processing Options",
-        "description": "Define how the pipeline should process the data",
-        "properties": {
-          "heatmap_id_column": {
-            "type": "string",
-            "title": "Heatmap ID Column",
-            "description": "The column used for heatmap generation, specifying the rows. The values in this column have to be unique. Any columns included in a samplesheet.csv uploaded alongside the RCC files may be specified.",
-            "default": "SAMPLE_ID"
-          }
-        }
-      },
       "normalization_parameters": {
         "type": "object",
         "title": "Normalization Parameters",
@@ -146,6 +137,40 @@
               "sams"
             ]
           }
+        }
+      }
+    }
+  },
+  "structuredInputs": {
+    "pipeline_samplesheet": {
+      "fileFormat": "CSV",
+      "schema": {
+        "title": "Samplesheet",
+        "description": "One row per RCC file. Give repeated measurements of one sample the same sample name.",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "RCC_FILE": {
+              "type": "string",
+              "format": "file-path",
+              "title": "RCC file",
+              "pattern": "\\.RCC$",
+              "errorMessage": "Must be an nCounter RCC file (.RCC)"
+            },
+            "SAMPLE_ID": {
+              "type": "string",
+              "title": "Sample",
+              "pattern": "\\S",
+              "errorMessage": "Sample name must be provided"
+            },
+            "HEATMAP_ID": {
+              "type": "string",
+              "title": "Heatmap label",
+              "description": "Label for this file's row in the gene-count heatmaps. Leave blank to use the sample name"
+            }
+          },
+          "required": ["RCC_FILE", "SAMPLE_ID"]
         }
       }
     }

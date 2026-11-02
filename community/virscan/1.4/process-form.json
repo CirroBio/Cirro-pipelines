@@ -1,0 +1,112 @@
+{
+  "form": {
+    "type": "object",
+    "required": ["sample_table", "peptide_table"],
+    "properties": {
+      "sample_table": {
+        "type": "string",
+        "schema": "pipeline_samplesheet"
+      },
+      "peptide_table": {
+        "title": "Peptide Library",
+        "type": "string",
+        "pathType": "references",
+        "file": "**/virscan_libraries/**/library.csv"
+      },
+      "read_length": {
+        "title": "Read Length",
+        "description": "Read length used for alignment",
+        "type": "integer",
+        "default": 50
+      },
+      "peptide_tile_length": {
+        "title": "Peptide Length",
+        "description": "Peptide length used for alignment",
+        "type": "integer",
+        "default": 50
+      },
+      "n_mismatches": {
+        "title": "Num. Mismatches",
+        "description": "Number of mismatches allowed",
+        "type": "integer",
+        "default": 2
+      },
+      "zscore_threshold": {
+        "title": "Z-score threshold",
+        "description": "Minimum z-score used to determine if an epitope is detected",
+        "type": "string",
+        "default": "2.5"
+      },
+      "max_overlap": {
+        "title": "Maximum Peptide Overlap",
+        "description": "Maximum allowed overlap between detected peptides when summarizing results per-organism",
+        "type": "integer",
+        "default": 7
+      },
+      "run_cpm_enr_workflow": {
+        "title": "Run CPM Enrichment Analysis",
+        "type": "boolean",
+        "default": true
+      },
+      "run_edgeR": {
+        "title": "Run edgeR Enrichment Analysis",
+        "type": "boolean",
+        "default": false
+      },
+      "run_BEER": {
+        "title": "Run BEER Enrichment Analysis (Note: Experimental)",
+        "type": "boolean",
+        "default": false
+      }
+    }
+  },
+  "ui": {},
+  "structuredInputs": {
+    "pipeline_samplesheet": {
+      "fileFormat": "CSV",
+      "schema": {
+        "title": "Sample Table",
+        "description": "One row per FASTQ file, each a replicate of a sample. Mark at least two rows as beads_only controls. All FASTQ files must be in the same S3 bucket.",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "sample": {
+              "type": "string",
+              "title": "Sample",
+              "description": "Replicates with the same sample name are combined in the per-organism summary",
+              "pattern": "^[A-Za-z0-9_.-]+$",
+              "errorMessage": "Sample names can only contain letters, numbers, periods, hyphens and underscores"
+            },
+            "sample_name": {
+              "type": "string",
+              "title": "Replicate Name",
+              "description": "Leave blank to use the FASTQ file name"
+            },
+            "control_status": {
+              "type": "string",
+              "title": "Control Status",
+              "description": "beads_only for a negative control, library for an unselected library sample, or blank for an empirical sample",
+              "enum": [
+                "empirical",
+                "beads_only",
+                "library"
+              ]
+            },
+            "fastq_filepath": {
+              "type": "string",
+              "format": "file-path",
+              "title": "FASTQ",
+              "pattern": "^(?![\\S\\s]*(_I[12]_001|[._]I[12])\\.f(ast)?q\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+              "errorMessage": "Must be a gzipped read FASTQ (.fq.gz or .fastq.gz) with no spaces in its name, not an I1/I2 index read"
+            }
+          },
+          "required": [
+            "sample",
+            "fastq_filepath"
+          ]
+        }
+      }
+    }
+  }
+}

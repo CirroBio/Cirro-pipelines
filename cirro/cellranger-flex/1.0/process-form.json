@@ -1,7 +1,22 @@
 {
   "form": {
     "type": "object",
+    "required": [
+      "fastq_dir",
+      "samplesheet"
+    ],
     "properties": {
+      "fastq_dir": {
+        "title": "FASTQ Folders",
+        "description": "Datasets or folders holding the FASTQ files (.fastq.gz). Cell Ranger finds the files of each library in the samplesheet by its sample name",
+        "type": "string",
+        "format": "directory-path",
+        "multiple": true
+      },
+      "samplesheet": {
+        "type": "string",
+        "schema": "pipeline_samplesheet"
+      },
       "flex_version": {
         "title": "Flex Chemistry",
         "description": "Flex v2 (Apex) uses a different probe set and plate-style probe barcodes, and requires CellRanger 10",
@@ -94,7 +109,7 @@
                     ],
                     "enumNames": [
                       "Enter barcodes manually",
-                      "Provide barcode table (CSV)",
+                      "Fill out a barcode table",
                       "Use saved barcode table"
                     ]
                   }
@@ -130,11 +145,9 @@
                           "barcode_source": {
                             "enum": ["table"]
                           },
-                          "barcode_table": {
+                          "probe_barcodes": {
                             "type": "string",
-                            "title": "Barcode Table",
-                            "description": "CSV with columns sample_id and probe_barcode_ids (or sample_barcode_ids). Separate multiple barcodes for one sample with a pipe (e.g. BC001|BC002)",
-                            "default": "sample_id,probe_barcode_ids\nsample1,BC001\nsample2,BC002"
+                            "schema": "pipeline_probe_barcodes"
                           }
                         }
                       },
@@ -187,7 +200,7 @@
                       "reference"
                     ],
                     "enumNames": [
-                      "Provide barcode table (CSV)",
+                      "Fill out a barcode table",
                       "Use saved barcode table"
                     ]
                   }
@@ -200,11 +213,9 @@
                           "barcode_source": {
                             "enum": ["table"]
                           },
-                          "barcode_table": {
+                          "probe_barcodes": {
                             "type": "string",
-                            "title": "Barcode Table",
-                            "description": "CSV with columns sample_id and probe_barcode_ids (or sample_barcode_ids). Separate multiple barcodes for one sample with a pipe (e.g. BC001|BC002)",
-                            "default": "sample_id,probe_barcode_ids\nsample1,A-A01\nsample2,A-B01"
+                            "schema": "pipeline_probe_barcodes"
                           }
                         }
                       },
@@ -234,6 +245,8 @@
   },
   "ui": {
     "ui:order": [
+      "fastq_dir",
+      "samplesheet",
       "flex_version",
       "reference",
       "probe_set",
@@ -243,9 +256,59 @@
     "samples": {
       "barcode_source": {
         "ui:widget": "radio"
-      },
-      "barcode_table": {
-        "ui:widget": "textarea"
+      }
+    }
+  },
+  "structuredInputs": {
+    "pipeline_samplesheet": {
+      "fileFormat": "CSV",
+      "schema": {
+        "title": "Samplesheet",
+        "description": "One row per library: the sample name its FASTQ files start with (the part before _S1_L001_R1_001.fastq.gz). The libraries are analyzed together in one Cell Ranger run, which splits the cells into samples by probe barcode.",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "sample": {
+              "type": "string",
+              "title": "Sample",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "errorMessage": "Sample names can only contain letters, numbers, hyphens and underscores"
+            }
+          },
+          "required": [
+            "sample"
+          ]
+        }
+      }
+    },
+    "pipeline_probe_barcodes": {
+      "fileFormat": "CSV",
+      "schema": {
+        "title": "Probe Barcodes",
+        "description": "One row per sample, with the probe barcode used for it: BC001 to BC016 for Flex v1, A-A01 to D-H12 for Flex v2. List the barcodes of a sample that used several on separate rows, or in one cell separated by a pipe (e.g. BC001|BC002).",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "sample_id": {
+              "type": "string",
+              "title": "Sample",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "errorMessage": "Sample names can only contain letters, numbers, hyphens and underscores"
+            },
+            "probe_barcode_ids": {
+              "type": "string",
+              "title": "Probe Barcode IDs",
+              "pattern": "^(BC0(0[1-9]|1[0-6])|[A-D]-[A-H](0[1-9]|1[0-2]))(\\|(BC0(0[1-9]|1[0-6])|[A-D]-[A-H](0[1-9]|1[0-2])))*$",
+              "errorMessage": "Must be BC001 to BC016 (Flex v1) or A-A01 to D-H12 (Flex v2); separate several with a pipe (e.g. BC001|BC002)"
+            }
+          },
+          "required": [
+            "sample_id",
+            "probe_barcode_ids"
+          ]
+        }
       }
     }
   }

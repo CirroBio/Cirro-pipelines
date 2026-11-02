@@ -1,0 +1,51 @@
+{
+  "id": "process-nf-core-sarek-3-2",
+  "childProcessIds": [
+    "process-nf-core-sarek-annotate-3-1"
+  ],
+  "dataType": "Genomic Variants (VCF)",
+  "name": "Variant Calling from FASTQ (nf-core/sarek)",
+  "desc": "DNA variant calling based on GATK4 best practices",
+  "executor": "NEXTFLOW",
+  "pipelineTypeOverride": "nf-core",
+  "category": "DNA Sequencing",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-dna-sequencing/#dna-variant-calling-nf-coresarek",
+  "code": {
+    "repository": "GITHUBPUBLIC",
+    "script": "main.nf",
+    "uri": "nf-core/sarek",
+    "version": "User Defined",
+    "executorVersion": "25.10.4"
+  },
+  "allowMultipleSources": true,
+  "usesSampleSheet": false,
+  "fileMappingRules": [
+    {
+      "description": "Variant Calling VCF",
+      "min": 0,
+      "fileNamePatterns": [
+        {
+          "exampleName": "variant_calling/mutect2/sampleName/sampleName.mutect2.variants.vcf.gz",
+          "description": "VCF",
+          "sampleMatchingPattern": "variant_calling/[^/]+/[^/]+/(?P<sampleName>[\\S ]+?)\\.(?P<caller>[^.]+)\\.variants\\.vcf\\.gz$"
+        },
+        {
+          "exampleName": "variant_calling/mutect2/sampleName/sampleName.mutect2.variants.vcf.gz.tbi",
+          "description": "VCF index",
+          "sampleMatchingPattern": "variant_calling/[^/]+/[^/]+/(?P<sampleName>[\\S ]+?)\\.(?P<caller>[^.]+)\\.variants\\.vcf\\.gz\\.tbi$"
+        }
+      ]
+    }
+  ],
+  "computeDefaults": [
+    {
+      "executor": "NEXTFLOW",
+      "json": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-compute.config",
+      "name": "Default"
+    }
+  ],
+  "paramMapJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json",
+  "preProcessScript": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/preprocess.py",
+  "formJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-form.json",
+  "webOptimizationJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-output.json"
+}

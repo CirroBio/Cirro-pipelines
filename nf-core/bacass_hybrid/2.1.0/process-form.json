@@ -2,14 +2,12 @@
   "ui": {},
   "form": {
     "title": "De novo bacterial assembly and annotation (nf-core/bacass)",
-    "description": "Make sure to select both a short-read and a long-read dataset as input above.",
     "type": "object",
+    "required": ["input"],
     "properties": {
-      "merge_on": {
+      "input": {
         "type": "string",
-        "title": "Merge On",
-        "description": "Metadata field used to merge short and long reads (if more than one sample is provided)",
-        "default": "sample"
+        "schema": "pipeline_samplesheet"
       },
       "unicycler_mode": {
         "type": "string",
@@ -44,6 +42,49 @@
         "title": "Skip Annotation",
         "description": "Skip annotating the assembly with Prokka",
         "default": false
+      }
+    }
+  },
+  "structuredInputs": {
+    "pipeline_samplesheet": {
+      "fileFormat": "TSV",
+      "schema": {
+        "title": "Samplesheet",
+        "description": "One row per pair of gzipped short-read FASTQ files (R1 and R2), next to the sample's long reads in a single gzipped FASTQ file. Rows with the same sample name, such as one per sequencing lane, have their short reads concatenated by the pipeline, and must name the same long-read file.",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "ID": {
+              "type": "string",
+              "title": "Sample",
+              "pattern": "^\\S+$",
+              "errorMessage": "Sample name must be provided and cannot contain spaces"
+            },
+            "R1": {
+              "type": "string",
+              "format": "file-path",
+              "title": "Short-read FASTQ (R1)",
+              "pattern": "^(?![\\S\\s]*_I[12]_001\\.f(ast)?q\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+              "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+            },
+            "R2": {
+              "type": "string",
+              "format": "file-path",
+              "title": "Short-read FASTQ (R2)",
+              "pattern": "^(?![\\S\\s]*_I[12]_001\\.f(ast)?q\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+              "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+            },
+            "LongFastQ": {
+              "type": "string",
+              "format": "file-path",
+              "title": "Long-read FASTQ",
+              "pattern": "^(?![\\S\\s]*_I[12]_001\\.f(ast)?q\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+              "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+            }
+          },
+          "required": ["ID", "R1", "R2", "LongFastQ"]
+        }
       }
     }
   }

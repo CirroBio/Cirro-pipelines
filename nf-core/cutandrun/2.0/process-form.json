@@ -3,8 +3,12 @@
   "form": {
     "title": "CUT&RUN (CUT&Tag) Analysis Pipeline",
     "type": "object",
-    "required": ["genome"],
+    "required": ["input", "genome"],
     "properties": {
+      "input": {
+        "type": "string",
+        "schema": "pipeline_samplesheet"
+      },
       "genome": {
         "type": "string",
         "title": "Reference Genome",
@@ -137,7 +141,7 @@
         "type": "boolean",
         "default": true,
         "title": "Use Control (e.g. IgG)",
-        "description": "Specifies whether to use a control to normalise peak calls against (e.g. IgG)"
+        "description": "Specifies whether to use a control to normalise peak calls against (e.g. IgG). Name each group's control group in the samplesheet's Control column"
       },
       "igg_scale_factor": {
         "type": "number",
@@ -266,6 +270,56 @@
             "title": "Save Spike-In Genome Aligned BAM Files",
             "description": "Save the bam files aligned to the spike-in genome to the results directory?"
           }
+        }
+      }
+    }
+  },
+  "structuredInputs": {
+    "pipeline_samplesheet": {
+      "fileFormat": "CSV",
+      "schema": {
+        "title": "Samplesheet",
+        "description": "One row per pair of FASTQ files (paired-end) or FASTQ file (single-end); a run cannot mix the two. Number the biological replicates of each group 1, 2, 3 and so on. Rows with the same group and replicate are technical replicates, such as one per sequencing lane, and are merged by the pipeline. With Use Control on, name each target group's control group (e.g. IgG) in Control, and leave Control blank on the control group's own rows.",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "group": {
+              "type": "string",
+              "title": "Group",
+              "pattern": "^\\S+$",
+              "errorMessage": "Group must be provided and cannot contain spaces"
+            },
+            "replicate": {
+              "type": "integer",
+              "title": "Replicate",
+              "description": "Biological replicate number within the group, starting from 1",
+              "minimum": 1
+            },
+            "fastq_1": {
+              "type": "string",
+              "format": "file-path",
+              "title": "FASTQ (R1)",
+              "pattern": "^(?![\\S\\s]*_I[12]_001\\.f(ast)?q\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+              "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+            },
+            "fastq_2": {
+              "type": "string",
+              "format": "file-path",
+              "title": "FASTQ (R2)",
+              "description": "Leave blank for single-end reads",
+              "pattern": "^(?![\\S\\s]*_I[12]_001\\.f(ast)?q\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+              "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+            },
+            "control": {
+              "type": "string",
+              "title": "Control",
+              "description": "Group to normalise this group's peak calls against (e.g. IgG). Leave blank on the control group's own rows",
+              "pattern": "^\\S+$",
+              "errorMessage": "Control cannot contain spaces"
+            }
+          },
+          "required": ["group", "replicate", "fastq_1"]
         }
       }
     }

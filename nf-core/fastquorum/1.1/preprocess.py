@@ -1,83 +1,49 @@
 #!/usr/bin/env python3
 
-from cirro.helpers.preprocess_dataset import PreprocessDataset
 import pandas as pd
 
 
-def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
-    """Construct a manifest with the paired FASTQ files in the input"""
+def read_samplesheet(path) -> pd.DataFrame:
+    """Read the samplesheet filled out in the form, keeping every value as text."""
 
-    ds.logger.info(f"Number of files in dataset: {ds.files.shape[0]:,}")
-    ds.logger.info(f"Number of samples in dataset: {ds.samplesheet.shape[0]:,}")
+    # The form field is marked required, but an empty table can still be submitted,
+    # in which case Cirro either omits the param or writes an empty file
+    if not path:
+        raise ValueError("No samplesheet was provided: add at least one row of FASTQ files")
+    try:
+        # Read every value as text, so that sample names like "01" are kept as-is
+        samplesheet = pd.read_csv(path, dtype=str, keep_default_na=False)
+    except pd.errors.EmptyDataError:
+        samplesheet = pd.DataFrame()
+    if samplesheet.empty:
+        raise ValueError("The samplesheet is empty: add at least one row of FASTQ files")
+    return samplesheet
 
-    # Build the manifest
-    manifest = (
-        ds.files
-        .reindex(columns=["sampleIndex", "libraryIndex", "sample", "dataset", "readType", "read", "file"])
-        # A row with no read number cannot be paired, and would pivot
-        # into a column the rename below cannot name.
-        .loc[lambda d: d["read"].notna()]
-        .assign(
-            fastq_cname_ix=lambda df: df.apply(
-                lambda r: r["read"] + (2 if r.get("readType", "R") == "I" else 0),
-                axis=1
-            )
+
+def fill_read_structure(samplesheet: pd.DataFrame, read_structure) -> pd.DataFrame:
+    """Give every row that leaves read_structure blank the one set in the form."""
+
+    blank = samplesheet["read_structure"].str.strip() == ""
+    if blank.any() and not read_structure:
+        raise ValueError(
+            "Set a read structure in the form, or in every row of the samplesheet; "
+            f"missing for sample(s) {', '.join(samplesheet.loc[blank, 'sample'].unique())}"
         )
-        .pivot(
-            index=["sampleIndex", "libraryIndex", "sample", "dataset"],
-            columns="fastq_cname_ix",
-            values="file"
-        )
-        .rename(columns=lambda i: f"fastq_{int(i)}")
-        .sort_index()
-        .sort_index(axis=1)
-        .reset_index()
-        .drop(columns=["sampleIndex", "libraryIndex", "dataset"])
-    )
-
-    log_table(ds, "Manifest", manifest)
-
-    # Get the read_structure attribute for each sample (if any exists)
-    read_structure = ds.samplesheet.reindex(
-        columns=["sample", "read_structure"]
-    ).set_index(
-        "sample"
-    )["read_structure"].dropna()
-
-    # Log the number of samples which have read_structure defined
-    if read_structure.shape[0] == 0:
-        ds.logger.info("No samples have read_structure defined by the samplesheet")
-    else:
-        for sample, rs in read_structure.items():
-            ds.logger.info(f"Sample: {sample} - Read Structure: {rs}")
-
-    ds.logger.info(f"Any missing read_structures will be populated with {ds.params.get('read_structure', 'Missing')}")
-
-    # Add that information to the manifest, filling in the form value when missing
-    manifest = manifest.assign(
-        read_structure=manifest["sample"].apply(
-            read_structure.get
-        ).fillna(
-            ds.params.get("read_structure")
-        )
-    )
-    assert not manifest["read_structure"].isnull().any(), "Missing read structure information"
-    log_table(ds, "Manifest", manifest)
-
-    return manifest
-
-
-def log_table(ds: PreprocessDataset, title: str, df: pd.DataFrame):
-    ds.logger.info(f"{title}:")
-    for line in df.to_csv(index=None).split("\n"):
-        ds.logger.info(line)
+    return samplesheet.assign(read_structure=samplesheet["read_structure"].mask(blank, read_structure))
 
 
 if __name__ == "__main__":
+
+    # Imported here so that test_preprocess.py runs without the SDK
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
+
     ds = PreprocessDataset.from_running()
 
-    manifest = make_manifest(ds)
+    samplesheet = read_samplesheet(ds.params.get("input"))
+    filled = fill_read_structure(samplesheet, ds.params.get("read_structure"))
+    ds.logger.info("Samplesheet:")
+    ds.logger.info(filled.to_csv(index=None))
 
-    # Write to the dataset's config/ folder (mapped in process-input.json)
-    manifest.to_csv(ds.params["input"], index=None)
-    ds.logger.info(f"Wrote out {manifest.shape[0]:,} lines to {ds.params['input']}")
+    if not filled.equals(samplesheet):
+        # Overwrite the file Cirro wrote to the dataset's config/ folder (mapped in process-input.json)
+        filled.to_csv(ds.params["input"], index=None)

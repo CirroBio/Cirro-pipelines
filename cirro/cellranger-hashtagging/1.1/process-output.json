@@ -1,0 +1,19 @@
+{
+  "commands": [
+    {
+      "command": "hot.AnnDataZarr",
+      "params": {
+        "url": "https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/what-is-cell-ranger",
+        "source": "$data_directory/demultiplexed_samples/per_sample_outs/[sampleName]/count/sample_filtered_feature_bc_matrix.h5",
+        "target": "{sampleName}.filtered_feature_bc_matrix.zarr",
+        "name": "{sampleName} - Gene Expression",
+        "desc": "Summary of gene expressed in single cells for {sampleName}",
+        "filetype": "h5-10x"
+      }
+    },
+    {
+      "command": "hot.Manifest",
+      "params": {}
+    }
+  ]
+}

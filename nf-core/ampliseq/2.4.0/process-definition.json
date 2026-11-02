@@ -4,7 +4,7 @@
     "differential-abundance-ampliseq"
   ],
   "dataType": "Microbial 16S (nf-core/ampliseq)",
-  "name": "Amplicon Analysis (nf-core/ampliseq)",
+  "name": "Amplicon Analysis (nf-core/ampliseq, legacy)",
   "desc": "Microbial 16S amplicon sequencing analysis workflow using DADA2 and QIIME2",
   "executor": "NEXTFLOW",
   "pipelineTypeOverride": "nf-core",

@@ -2,7 +2,12 @@
     "ui": {},
     "form": {
       "type": "object",
+      "required": ["input"],
       "properties": {
+          "input": {
+              "type": "string",
+              "schema": "pipeline_samplesheet"
+          },
           "main_options": {
               "title": "Main options",
               "type": "object",
@@ -26,8 +31,7 @@
                   "read_structure": {
                     "type": "string",
                     "title": "Read structure",
-                    "description": "Specification of library structure used by fgbio. Note: can be specified on a per-sample basis with the `read_structure` samplesheet column.",
-                    "default": "Example: 6bp inline barcodes - 6M+T 6M+T"
+                    "description": "fgbio read structure for samplesheet rows that leave Read Structure blank, with one segment per FASTQ file, such as 6M+T 6M+T for 6 bp inline UMIs at the start of both reads. See https://github.com/fulcrumgenomics/fgbio/wiki/Read-Structures"
                   }
               }
           },
@@ -183,6 +187,65 @@
                   }
               }
           }
+      }
+    },
+    "structuredInputs": {
+      "pipeline_samplesheet": {
+        "fileFormat": "CSV",
+        "defaultSourceFile": "samplesheet.csv",
+        "schema": {
+          "title": "Samplesheet",
+          "description": "One row per sequencing run of a sample, with its FASTQ files in order. Put a UMI index read (I1 or I2) in FASTQ 3 or FASTQ 4. Rows with the same sample, such as one per lane, are merged by the pipeline, and must have the same number of FASTQ files and the same read structure.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "sample": {
+                "type": "string",
+                "title": "Sample",
+                "pattern": "^\\S+$",
+                "errorMessage": "Sample name must be provided and cannot contain spaces"
+              },
+              "fastq_1": {
+                "type": "string",
+                "format": "file-path",
+                "title": "FASTQ (R1)",
+                "pattern": "^(?![\\S\\s]*_I[12]_001\\.f(ast)?q(\\.gz)?$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q(\\.gz)?$",
+                "errorMessage": "Must be a read FASTQ (.fq, .fastq, .fq.gz or .fastq.gz) with no spaces in its name, not an I1/I2 index read"
+              },
+              "fastq_2": {
+                "type": "string",
+                "format": "file-path",
+                "title": "FASTQ (R2)",
+                "description": "Leave blank for single-end reads",
+                "pattern": "^(?![\\S\\s]*_I[12]_001\\.f(ast)?q(\\.gz)?$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q(\\.gz)?$",
+                "errorMessage": "Must be a read FASTQ (.fq, .fastq, .fq.gz or .fastq.gz) with no spaces in its name, not an I1/I2 index read"
+              },
+              "fastq_3": {
+                "type": "string",
+                "format": "file-path",
+                "title": "FASTQ 3 (e.g. I1)",
+                "description": "Third FASTQ file, such as an index read holding the UMI. Leave blank if there is none",
+                "pattern": "^([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q(\\.gz)?$",
+                "errorMessage": "Must be a FASTQ (.fq, .fastq, .fq.gz or .fastq.gz) with no spaces in its name"
+              },
+              "fastq_4": {
+                "type": "string",
+                "format": "file-path",
+                "title": "FASTQ 4 (e.g. I2)",
+                "description": "Fourth FASTQ file, such as a second index read. Leave blank if there is none",
+                "pattern": "^([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q(\\.gz)?$",
+                "errorMessage": "Must be a FASTQ (.fq, .fastq, .fq.gz or .fastq.gz) with no spaces in its name"
+              },
+              "read_structure": {
+                "type": "string",
+                "title": "Read Structure",
+                "description": "fgbio read structure with one segment per FASTQ file, in column order (e.g. 6M+T 6M+T, or +T +T 8M for a UMI in FASTQ 3). Leave blank to use the read structure set in the form"
+              }
+            },
+            "required": ["sample", "fastq_1"]
+          }
+        }
       }
     }
   }
