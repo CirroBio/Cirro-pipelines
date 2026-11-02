@@ -13,6 +13,7 @@
       "uri": "nf-core/fastquorum",
       "version": "1.1.0"
     },
+    "allowMultipleSources": true,
     "usesSampleSheet": false,
     "computeDefaults": [
       {
