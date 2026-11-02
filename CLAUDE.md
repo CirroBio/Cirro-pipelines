@@ -167,6 +167,8 @@ samplesheet = pd.read_csv(ds.params["input"], dtype=str, keep_default_na=False)
 samplesheet.to_csv(ds.params["input"], index=None)
 ```
 
+Don't log the table's contents in preprocess: it is already shown with the run's params.
+
 ---
 
 ### UI Object Properties
