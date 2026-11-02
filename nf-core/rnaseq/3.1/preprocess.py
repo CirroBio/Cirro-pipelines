@@ -38,12 +38,6 @@ def fill_strandedness(samplesheet: pd.DataFrame) -> pd.DataFrame:
     return samplesheet.assign(strandedness=samplesheet["strandedness"].replace("", "auto"))
 
 
-def log_table(ds: PreprocessDataset, title: str, df: pd.DataFrame):
-    ds.logger.info(f"{title}:")
-    for line in df.to_csv(index=None).split("\n"):
-        ds.logger.info(line)
-
-
 def filter_params_by_schema(ds: PreprocessDataset):
     """Remove any params not present in the nf-core/rnaseq nextflow_schema.json."""
 
@@ -77,7 +71,6 @@ if __name__ == "__main__":
     ds = PreprocessDataset.from_running()
 
     samplesheet = fill_strandedness(read_samplesheet(ds.params.get("input")))
-    log_table(ds, "Samplesheet", samplesheet)
 
     # Overwrite the file Cirro wrote to the dataset's config/ folder (mapped in process-input.json)
     samplesheet.to_csv(ds.params["input"], index=None)

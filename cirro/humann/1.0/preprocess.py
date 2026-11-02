@@ -57,8 +57,6 @@ if __name__ == "__main__":
         ds.add_param("translated_search_db", resolved, overwrite=True)
 
     samplesheet = read_samplesheet(ds.params.get("samplesheet"))
-    ds.logger.info("Samplesheet:")
-    ds.logger.info(samplesheet.to_csv(index=None))
     check_unique_samples(samplesheet)
 
     # log

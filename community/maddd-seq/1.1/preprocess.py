@@ -40,8 +40,6 @@ if __name__ == "__main__":
     ds = PreprocessDataset.from_running()
 
     samplesheet = read_samplesheet(ds.params.get("sample_sheet"))
-    ds.logger.info("Samplesheet:")
-    ds.logger.info(samplesheet.to_csv(index=None))
     check_unique_specimens(samplesheet)
 
     ds.logger.info(ds.params)

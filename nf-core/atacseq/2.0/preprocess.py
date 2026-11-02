@@ -46,8 +46,6 @@ if __name__ == "__main__":
     ds = PreprocessDataset.from_running()
 
     samplesheet = read_samplesheet(ds.params.get("input"))
-    ds.logger.info("Samplesheet:")
-    ds.logger.info(samplesheet.to_csv(index=None))
     check_replicates(samplesheet)
 
     # log

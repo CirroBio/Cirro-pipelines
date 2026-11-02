@@ -27,9 +27,8 @@ if __name__ == "__main__":
 
     ds = PreprocessDataset.from_running()
 
-    samplesheet = read_samplesheet(ds.params.get("input"))
-    ds.logger.info("Samplesheet:")
-    ds.logger.info(samplesheet.to_csv(index=None))
+    # Read only to fail clearly when the table is missing or empty
+    read_samplesheet(ds.params.get("input"))
 
     # Cast comprehensive from int 0/1 to boolean
     comprehensive = bool(ds.params.get('comprehensive'))

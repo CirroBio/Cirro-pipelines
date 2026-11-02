@@ -39,8 +39,6 @@ if __name__ == "__main__":
 
     samplesheet = read_samplesheet(ds.params.get("input"))
     samplesheet = to_bacass_samplesheet(samplesheet)
-    ds.logger.info("Samplesheet:")
-    ds.logger.info(samplesheet.to_csv(index=None, sep="\t"))
 
     # Overwrite the file Cirro wrote to the dataset's config/ folder (mapped in process-input.json)
     samplesheet.to_csv(ds.params["input"], index=None, sep="\t")
