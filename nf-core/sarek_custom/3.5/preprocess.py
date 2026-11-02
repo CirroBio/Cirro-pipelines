@@ -33,6 +33,28 @@ def normalize_sex(value: str) -> str:
     return _SEX_ALIASES.get(value.strip().lower(), 'NA')
 
 
+# Spellings of status mapped to sarek's encoding, 0 (normal) or 1 (tumor). A blank cell
+# is a normal sample, as in sarek.
+_STATUS_ALIASES = {
+    '': '0',
+    '0': '0',
+    'normal': '0',
+    '1': '1',
+    'tumor': '1',
+    'tumour': '1',
+}
+
+
+def normalize_status(value: str) -> str:
+    """Map a samplesheet status value to sarek's 0 (normal) / 1 (tumor) encoding."""
+    try:
+        return _STATUS_ALIASES[value.strip().lower()]
+    except KeyError:
+        raise ValueError(
+            f"Status must be 0 (normal), 1 (tumor) or blank (normal), not {value!r}"
+        ) from None
+
+
 def read_samplesheet(path) -> pd.DataFrame:
     """Read the samplesheet filled out in the form, keeping every value as text."""
 
@@ -70,6 +92,7 @@ def fill_samplesheet(samplesheet: pd.DataFrame) -> pd.DataFrame:
     return samplesheet.assign(
         patient=samplesheet["patient"].where(samplesheet["patient"] != "", samplesheet["sample"]),
         sex=samplesheet["sex"].map(normalize_sex),
+        status=samplesheet["status"].map(normalize_status),
         lane=number_blank_lanes(samplesheet),
     )
 
@@ -102,6 +125,118 @@ def check_unique_lanes(samplesheet: pd.DataFrame):
             f"Each row of a sample needs its own lane, but these are on more than one row: {listing}. "
             "Correct the lanes, or leave them blank to have them numbered."
         )
+
+
+def check_one_status_per_sample(samplesheet: pd.DataFrame):
+    """Fail when the rows of one sample disagree on whether it is a normal or a tumor."""
+
+    statuses = samplesheet.groupby("sample", sort=False)["status"].nunique()
+    mixed = statuses.index[statuses > 1].tolist()
+    if mixed:
+        raise ValueError(
+            f"Each sample must be either normal or tumor, but these have rows of both: {', '.join(mixed)}. "
+            "A blank status counts as normal (0), so set the status on every row of a tumor sample."
+        )
+
+
+def check_one_normal_per_tumor_patient(samplesheet: pd.DataFrame):
+    """Fail when a patient with a tumor has several normal samples, which sarek rejects."""
+
+    samples = samplesheet.drop_duplicates(["patient", "sample"])
+    tumor_patients = samples.loc[samples["status"] == "1", "patient"]
+    normals = samples.loc[(samples["status"] == "0") & samples["patient"].isin(tumor_patients)]
+    normals = normals.groupby("patient", sort=False)["sample"].unique()
+    conflicts = normals[normals.map(len) > 1]
+    if not conflicts.empty:
+        listing = "; ".join(f"{patient} ({', '.join(names)})" for patient, names in conflicts.items())
+        raise ValueError(
+            f"A tumor is paired with the one normal sample of its patient, but these patients have several: {listing}. "
+            "Give each extra normal sample a patient of its own."
+        )
+
+
+# The offered callers sarek 3.8.1 runs on a tumor: paired callers against the normal of
+# its patient, tumor-only callers when its patient has no normal
+# (subworkflows/local/bam_variant_calling_somatic_all and _tumor_only_all)
+_PAIRED_CALLERS = frozenset({"cnvkit", "freebayes", "manta", "mutect2", "strelka", "tiddit"})
+_TUMOR_ONLY_CALLERS = frozenset({"cnvkit", "freebayes", "lofreq", "manta", "mpileup", "mutect2", "tiddit"})
+
+# Tools sarek stops on when no sample has the status they need (samplesheet_to_channel)
+_TUMOR_REQUIRING_TOOLS = frozenset({"mutect2"})
+_NORMAL_REQUIRING_TOOLS = frozenset({"deepvariant", "haplotypecaller"})
+
+
+def check_status_requirements(samplesheet: pd.DataFrame, tools: list[str]):
+    """Fail when a selected tool needs a tumor or a normal sample and the samplesheet has none."""
+
+    statuses = set(samplesheet["status"])
+    for status, label, requiring in (
+        ("1", "tumor", _TUMOR_REQUIRING_TOOLS),
+        ("0", "normal", _NORMAL_REQUIRING_TOOLS),
+    ):
+        needing = sorted(requiring.intersection(tools))
+        if needing and status not in statuses:
+            raise ValueError(
+                f"{', '.join(needing)} needs at least one {label} sample (status {status}), "
+                "but the samplesheet has none."
+            )
+
+
+def check_tumors_are_called(samplesheet: pd.DataFrame, tools: list[str], has_intervals: bool):
+    """Fail when none of the selected callers would call some of the tumor samples."""
+
+    samples = samplesheet.drop_duplicates(["patient", "sample"])
+    tumors = samples.loc[samples["status"] == "1"]
+    paired = tumors["patient"].isin(samples.loc[samples["status"] == "0", "patient"])
+
+    # CNVkit builds its tumor-only reference from the intervals, and calls nothing without them
+    tumor_only_callers = _TUMOR_ONLY_CALLERS if has_intervals else _TUMOR_ONLY_CALLERS - {"cnvkit"}
+    if not paired.all() and not tumor_only_callers.intersection(tools):
+        raise ValueError(
+            "These tumor samples have no normal sample under the same patient, and none of the "
+            f"selected callers calls a tumor alone: {', '.join(tumors.loc[~paired, 'sample'])}. "
+            "Give each tumor the patient of its matched normal, or also select one of: "
+            f"{', '.join(sorted(tumor_only_callers))}."
+        )
+    if paired.any() and not _PAIRED_CALLERS.intersection(tools):
+        raise ValueError(
+            "None of the selected callers calls a tumor against its normal, so these tumor samples "
+            f"would not be called: {', '.join(tumors.loc[paired, 'sample'])}. Also select one of: "
+            f"{', '.join(sorted(_PAIRED_CALLERS))}."
+        )
+
+
+_MUTECT2_RESOURCE_PARAMS = ("germline_resource", "pon")
+
+
+def mutect2_resources(params: dict, tools: list[str]) -> dict:
+    """The germline resource and panel of normals picked for Mutect2, if it was selected.
+
+    The Germline Resource File reference type stores the VCF's index beside it, so the
+    index param points there. sarek indexes a panel of normals itself.
+    """
+    if "mutect2" not in tools:
+        return {}
+    resources = {param: params[param] for param in _MUTECT2_RESOURCE_PARAMS if params.get(param)}
+    if "germline_resource" in resources:
+        resources["germline_resource_tbi"] = f"{resources['germline_resource']}.tbi"
+    return resources
+
+
+def pon_copy_uri(params: dict) -> str | None:
+    """Where to copy the panel of normals when its file name is the germline resource's.
+
+    The references library saves every VCF as germline_resource.vcf.gz, and Nextflow
+    aborts a process given two inputs of the same name, so the panel of normals is
+    copied under its own name into the config/ folder that holds the samplesheet.
+    """
+    pon, germline_resource = params.get("pon"), params.get("germline_resource")
+    if not (pon and germline_resource):
+        return None
+    pon_name = pon.rsplit("/", 1)[-1]
+    if pon_name != germline_resource.rsplit("/", 1)[-1]:
+        return None
+    return f"{params['input'].rsplit('/', 1)[0]}/pon_{pon_name}"
 
 
 _DEFAULT_WORKFLOW_VERSION = "3.8.1"
@@ -226,11 +361,16 @@ def filter_params_by_schema(ds: PreprocessDataset):
 
 if __name__ == "__main__":
 
+    import boto3
     from cirro.helpers.preprocess_dataset import PreprocessDataset
+    from cirro.models.s3_path import S3Path
 
     ds = PreprocessDataset.from_running()
 
     ds.logger.info(f"Starting sarek_custom preprocess — workflow_version={ds.params.get('workflow_version', _DEFAULT_WORKFLOW_VERSION)!r}")
+
+    tools = ds.params.get("tools")
+    assert tools, "ERROR: You must select at least one variant calling tool."
 
     samplesheet = read_samplesheet(ds.params.get("input"))
     filled = fill_samplesheet(samplesheet)
@@ -239,19 +379,27 @@ if __name__ == "__main__":
         ds.logger.info(line)
 
     check_one_patient_per_sample(filled)
+    check_one_status_per_sample(filled)
     check_unique_lanes(filled)
+    check_one_normal_per_tumor_patient(filled)
+    check_status_requirements(filled, tools)
+    check_tumors_are_called(filled, tools, has_intervals=bool(ds.params.get("intervals")))
 
     if not filled.equals(samplesheet):
         # Overwrite the file Cirro wrote to the dataset's config/ folder (mapped in process-input.json)
         filled.to_csv(ds.params["input"], index=None)
         ds.logger.info(f"Wrote {filled.shape[0]} row(s) to {ds.params['input']}")
 
-    tools = ds.params.get("tools")
-    assert tools, "ERROR: You must select at least one variant calling tool."
-
     # Convert the tools parameter from a list to a comma delimited string
-    ds.add_param('tools', ",".join(ds.params.get("tools")), overwrite=True)
+    ds.add_param('tools', ",".join(tools), overwrite=True)
     ds.logger.info(f"tools: {ds.params.get('tools')!r}")
+
+    # The Mutect2 pickers keep their values while hidden, so pass only what Mutect2 uses
+    resources = mutect2_resources(ds.params, tools)
+    for param in _MUTECT2_RESOURCE_PARAMS:
+        ds.remove_param(param, force=True)
+    for param, uri in resources.items():
+        ds.add_param(param, uri, overwrite=True)
 
     # If an intervals file was not selected, use --no_intervals
     if not ds.params.get("intervals"):
@@ -264,6 +412,15 @@ if __name__ == "__main__":
     ds.remove_param("alignment_format", force=True)
 
     apply_extra_json_params(ds)
+
+    pon_copy = pon_copy_uri(ds.params)
+    if pon_copy:
+        source, dest = S3Path(ds.params["pon"]), S3Path(pon_copy)
+        assert source.valid, f"Cannot copy the panel of normals: {ds.params['pon']} is not an S3 path"
+        ds.logger.info(f"Copying the panel of normals to {pon_copy}, apart from the germline resource of the same name")
+        boto3.client("s3").copy({"Bucket": source.bucket, "Key": source.key}, dest.bucket, dest.key)
+        ds.add_param("pon", pon_copy, overwrite=True)
+
     filter_params_by_schema(ds)
 
     ds.logger.info(f"Final params ({len(ds.params)} total): {ds.params}")

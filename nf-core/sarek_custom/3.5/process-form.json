@@ -34,7 +34,7 @@
         },
         "analysis_type": {
           "title": "Experiment Design",
-          "description": "Indiciate the analysis type (germline/somatic) and select high level parameters for the workflow.",
+          "description": "Select the reference genome, the assay type and the variant callers. Normal samples get germline calls; a tumor is called against its patient's normal, or alone when its patient has none.",
           "type": "object",
           "required": ["fasta", "tools", "wes"],
           "properties": {
@@ -60,9 +60,9 @@
             },
             "tools": {
               "title": "Variant calling tool(s)",
-              "description": "Please select one or more (germline) variant callers for your analysis.",
+              "description": "Select one or more variant callers. Normal samples are called by CNVkit, DeepVariant, FreeBayes, HaplotypeCaller, Manta, mpileup, Strelka and TIDDIT. A tumor is called against its patient's normal by CNVkit, FreeBayes, Manta, Mutect2, Strelka and TIDDIT, or alone (no normal for that patient) by FreeBayes, LoFreq, Manta, mpileup, Mutect2, TIDDIT and, with a Genomic intervals file, CNVkit.",
               "type": "array",
-              "pattern": "^((cnvkit|deepvariant|freebayes|haplotypecaller|manta|mpileup|strelka|tiddit)*,?)*$",
+              "pattern": "^((cnvkit|deepvariant|freebayes|haplotypecaller|lofreq|manta|mpileup|mutect2|strelka|tiddit)*,?)*$",
               "items": {
                 "type": "string",
                 "enum": [
@@ -70,8 +70,10 @@
                   "deepvariant",
                   "freebayes",
                   "haplotypecaller",
+                  "lofreq",
                   "manta",
                   "mpileup",
+                  "mutect2",
                   "strelka",
                   "tiddit"
                 ],
@@ -80,15 +82,50 @@
                   "DeepVariant",
                   "FreeBayes",
                   "HaplotypeCaller",
+                  "LoFreq",
                   "Manta",
                   "mpileup",
+                  "Mutect2",
                   "Strelka",
                   "TIDDIT"
                 ]
               },
               "uniqueItems": true
             }
-          }
+          },
+          "allOf": [
+            {
+              "if": {
+                "required": ["tools"],
+                "properties": {
+                  "tools": {
+                    "contains": {
+                      "type": "string",
+                      "const": "mutect2"
+                    }
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "germline_resource": {
+                    "title": "Germline resource (Mutect2)",
+                    "description": "(optional) Population allele frequencies for this genome (bgzipped VCF with an AF field), which Mutect2 needs to filter its calls. Without it, Mutect2's calls are left unfiltered. Upload it as a Germline Resource File on the Manage References page.",
+                    "type": "string",
+                    "pathType": "references",
+                    "file": "**/germline_resource/**/germline_resource.vcf.gz"
+                  },
+                  "pon": {
+                    "title": "Panel of normals (Mutect2)",
+                    "description": "(optional) Panel-of-normals VCF (bgzipped) for this genome, used by Mutect2 to filter recurrent technical artifacts. Upload it as a Germline Resource File on the Manage References page.",
+                    "type": "string",
+                    "pathType": "references",
+                    "file": "**/*.vcf.gz"
+                  }
+                }
+              }
+            }
+          ]
         },
         "read_trimming_options": {
           "title": "Read Trimming Options",
@@ -214,7 +251,7 @@
         "defaultSourceFile": "samplesheet.csv",
         "schema": {
           "title": "Samplesheet",
-          "description": "One row per pair of R1 and R2 FASTQ files. Rows with the same sample, such as one per sequencing lane, are merged by the pipeline.",
+          "description": "One row per pair of R1 and R2 FASTQ files. Rows with the same sample, such as one per sequencing lane, are merged by the pipeline. Give a tumor and its matched normal the same patient to call them as a pair.",
           "type": "array",
           "items": {
             "type": "object",
@@ -222,7 +259,7 @@
               "patient": {
                 "type": "string",
                 "title": "Patient",
-                "description": "Leave blank to use the sample name",
+                "description": "Leave blank to use the sample name. A tumor is paired with the normal sample of the same patient",
                 "pattern": "^\\S+$",
                 "errorMessage": "Patient ID cannot contain spaces"
               },
@@ -231,6 +268,12 @@
                 "title": "Sex",
                 "description": "Leave blank if unknown (NA). Values such as male/female or M/F are converted to XY/XX",
                 "enum": ["XX", "XY", "NA"]
+              },
+              "status": {
+                "type": "string",
+                "title": "Status (0 = normal, 1 = tumor)",
+                "description": "0 for a normal sample, 1 for a tumor. Leave blank for normal. Values such as Normal/Tumor are converted to 0/1",
+                "enum": ["0", "1"]
               },
               "sample": {
                 "type": "string",
