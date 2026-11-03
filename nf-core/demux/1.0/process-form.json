@@ -18,7 +18,7 @@
       },
       "flowcell_id": {
         "title": "Flow Cell ID",
-        "description": "If not provided, uses dataset name. Should not contain spaces.",
+        "description": "If not provided, uses the dataset name. Only letters, numbers, - and _ are kept.",
         "type": "string",
         "pattern": "^\\S+$"
       },

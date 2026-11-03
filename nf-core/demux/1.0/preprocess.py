@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import re
+
 import pandas as pd
 
 
@@ -19,7 +21,11 @@ def make_manifest(params: dict, dataset_name: str) -> pd.DataFrame:
     a separate analysis job / dataset as well.
     """
 
-    flowcell_id = params.get('flowcell_id') or dataset_name.replace(" ", "")
+    # The ID reaches the demultiplexer's command line (and is Cell Ranger's --id), so
+    # keep only the characters Cell Ranger accepts
+    flowcell_id = re.sub(r'[^A-Za-z0-9_-]', '', params.get('flowcell_id') or dataset_name)
+    if not flowcell_id:
+        raise ValueError("Please provide a Flow Cell ID using letters, numbers, '-' or '_'")
     lanes = (params.get('lane') or '').split(',')
     samplesheet_path = params.get('samplesheet')
 

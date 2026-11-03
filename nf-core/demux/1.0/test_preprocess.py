@@ -48,6 +48,16 @@ class MakeManifest(unittest.TestCase):
             manifest = preprocess.make_manifest({**PARAMS, "flowcell_id": flowcell_id}, "My Run 1")
             self.assertEqual(manifest["id"].tolist(), ["MyRun1"])
 
+    def test_flowcell_id_keeps_only_characters_cellranger_accepts(self):
+        manifest = preprocess.make_manifest(PARAMS, "Wave 2 test - demux (skip samshee)")
+        self.assertEqual(manifest["id"].tolist(), ["Wave2test-demuxskipsamshee"])
+        manifest = preprocess.make_manifest({**PARAMS, "flowcell_id": "AH(XX)/1"}, "My Run")
+        self.assertEqual(manifest["id"].tolist(), ["AHXX1"])
+
+    def test_flowcell_id_with_no_usable_characters_fails_clearly(self):
+        with self.assertRaisesRegex(ValueError, "Flow Cell ID"):
+            preprocess.make_manifest(PARAMS, "()")
+
     def test_missing_run_folder_fails_clearly(self):
         for run_folder in (None, ""):
             with self.assertRaisesRegex(ValueError, "select the sequencing run folder"):
