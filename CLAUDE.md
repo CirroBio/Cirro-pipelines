@@ -29,6 +29,7 @@ project's datasets (the same values as nf-schema):
 |----------|---------|
 | `pattern` | Regex that filters the files offered, matched against `data/<path>`. Anchor it at the end (`"\\.bam$"`), never the start: the value the form stores is a `cirro::` URI, and the pattern is validated against it |
 | `multiple` | `true` allows several picks. The value is a JSON array, so map it with `[*]` (`"$.dataset.params.fastq[*]"`) to pass a comma-separated string |
+| `process` | Limits the picker to datasets produced by these processes: a process ID, a glob of IDs (`"process-nf-core-rnaseq-*"`), or a list of them. Pipeline and intake process IDs both work |
 
 The workflow receives the full S3 path; folders have no trailing slash. `default` does not
 pre-select anything in this picker.
@@ -67,16 +68,17 @@ map the field instead.
 
 ---
 
-### Legacy File Keywords
+### Deprecated File Keywords
 
 | Property | Values | Purpose |
 |----------|--------|---------|
 | `pathType` | `"dataset"`, `"reference"` (also spelled `"references"`) | `dataset` without `file` picks a whole dataset (its S3 path). `reference` picks a file from the project's references, filtered by the `file` glob |
-| `process` | array of process ID strings | Limits a `pathType: "dataset"` picker to datasets produced by these processes (pipeline or intake process IDs). The new picker has no equivalent, so dataset selectors stay on `pathType` |
 | `file` | glob pattern (e.g. `"**/*.f*"`) | Legacy file picker; use `format: file-path` instead |
 | `mm` | `{ "matchBase": true }` | Matching options for a `file` glob |
-| `multiple` | `true` / `false` | Allow several selections; the value is a JSON array |
 | `useS3Path` | `true` / `false` | Ignored by the portal; drop it when converting a form |
+
+`multiple` and `process` (above) apply to these pickers too: `process` limits a
+`pathType: "dataset"` selector to datasets produced by those processes.
 
 **Example:**
 ```json
@@ -96,6 +98,11 @@ A `structuredInputs` entry describes a file the user fills out as a table in the
 Cirro writes it to the dataset's `config/` folder at launch. This replaces building a
 samplesheet in `preprocess.py` from `ds.files` and `ds.samplesheet`.
 
+It is not limited to samplesheets: any input file whose rows fit a schema can be one, such
+as a contrasts table or a probe-barcode or hashtag table. Prefer a structured input over
+building such a file in `preprocess.py` or asking users to upload one, and migrate a
+pipeline's other CSV inputs when its form is converted.
+
 ```json
 "form": {
   "type": "object",
@@ -111,6 +118,7 @@ samplesheet in `preprocess.py` from `ds.files` and `ds.samplesheet`.
     "schema": {
       "title": "Samplesheet",
       "type": "array",
+      "minItems": 1,
       "items": {
         "type": "object",
         "properties": {
@@ -132,7 +140,8 @@ Map the file's path in `process-input.json`; the form field itself never reaches
 ```
 
 - **Naming** — the key becomes `config/<key>.csv` (or `.tsv`/`.json`), plus a raw copy at
-  `config/<key>.data.json` that "Copy parameters" reloads. Never use `samplesheet`, `files`,
+  `config/<key>.data.json` that "Copy parameters" reloads. A key may use only letters,
+  digits, `_` and `-`, up to 50 characters. Never use `samplesheet`, `files`,
   `params`, `metadata` or `transform-params`: nothing stops them from colliding with Cirro's
   own config files. Use `pipeline_samplesheet`.
 - **Columns** — one per property, in the order listed. A path `format` gives a file or folder
@@ -140,8 +149,7 @@ Map the file's path in `process-input.json`; the form field itself never reaches
   dropdown, and `integer`/`number`/`boolean` are checked. `object` and `array` columns are
   not supported. `pattern`, `minimum`/`maximum`, `minLength`/`maxLength` and a string
   `errorMessage` are checked against each row, and a file column's `pattern` sees the
-  dataset-relative path. Column `default`, `enumNames` and `oneOf` labels are ignored, and
-  array-level `minItems`/`maxItems` are not enforced.
+  dataset-relative path. Column `default`, `enumNames` and `oneOf` labels are ignored.
 - **Default source** — `defaultSourceFile` names a CSV or Excel file, such as
   `samplesheet.csv`. When a run is started from a dataset holding a file whose path is or
   ends with that name, the table is filled from it straight away, columns matched by name,
@@ -154,7 +162,9 @@ Map the file's path in `process-input.json`; the form field itself never reaches
 - **Validation is advisory** — invalid rows don't block Run, nothing re-checks them on the
   server, and `required` on the form field doesn't mean at least one row. With no rows, Cirro
   writes an empty file (no header), or omits the param if the field was never touched.
-  `preprocess.py` should fail clearly in both cases (see `cirro/cellranger-gex/1.1/preprocess.py`).
+  Give the table schema `"minItems": 1` all the same: the portal checks each row on its own,
+  so it is not enforced yet. `preprocess.py` should fail clearly in both cases (see
+  `cirro/cellranger-gex/1.1/preprocess.py`).
 - **File contents** — header row first, columns in schema order, blank cells empty, lines
   ending in `\r\n`. File and folder cells hold absolute S3 URIs (an access-point alias for
   datasets shared from another project).

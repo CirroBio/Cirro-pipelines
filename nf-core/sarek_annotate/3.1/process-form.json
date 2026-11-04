@@ -147,6 +147,7 @@
         "title": "Samplesheet",
         "description": "One row per VCF file. When a sample has several VCFs, its sample name gets the variant caller added (or else the VCF's file name), since sarek needs each row's patient and sample to differ.",
         "type": "array",
+        "minItems": 1,
         "items": {
           "type": "object",
           "properties": {

@@ -253,6 +253,7 @@
           "title": "Samplesheet",
           "description": "One row per pair of R1 and R2 FASTQ files. Rows with the same sample, such as one per sequencing lane, are merged by the pipeline. Give a tumor and its matched normal the same patient to call them as a pair.",
           "type": "array",
+          "minItems": 1,
           "items": {
             "type": "object",
             "properties": {

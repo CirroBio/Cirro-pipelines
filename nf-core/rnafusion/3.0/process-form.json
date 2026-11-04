@@ -139,6 +139,7 @@
         "title": "Samplesheet",
         "description": "One row per pair of FASTQ files. Rows with the same sample name, such as one per sequencing lane, are merged by the pipeline.",
         "type": "array",
+        "minItems": 1,
         "items": {
           "type": "object",
           "properties": {

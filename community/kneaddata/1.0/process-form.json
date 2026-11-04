@@ -80,6 +80,7 @@
         "title": "Samplesheet",
         "description": "One row per sample, with its pair of R1 and R2 FASTQ files. Each sample can be listed only once, so combine the FASTQ files of a sample sequenced on several lanes before running.",
         "type": "array",
+        "minItems": 1,
         "items": {
           "type": "object",
           "properties": {
