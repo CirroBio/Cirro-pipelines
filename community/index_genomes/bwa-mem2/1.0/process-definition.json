@@ -18,6 +18,7 @@
     "script": "main_bwamem2.nf"
   },
   "allowMultipleSources": false,
+  "allowMultipleSources": true,
   "usesSampleSheet": false,
   "computeDefaults": [
     {

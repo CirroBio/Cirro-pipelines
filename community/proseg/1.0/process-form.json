@@ -1,7 +1,8 @@
 {
     "form": {
         "required": [
-            "transcripts_file"
+            "transcripts_file",
+            "sample_ID"
         ],
         "properties": {
             "enforce_connectivity": {
@@ -30,16 +31,17 @@
                 "type": "string"
             },
             "sample_ID": {
-                "default": "",
                 "description": "Name of sample for output",
+                "errorMessage": "Sample names can only contain letters, numbers, hyphens and underscores",
+                "pattern": "^[A-Za-z0-9_-]+$",
                 "title": "sampleID",
                 "type": "string"
             },
             "transcripts_file": {
-                "default": "",
                 "description": "File with transcript info (gene ID, coordinates etc)",
-                "file": "**/*transcripts.parquet",
-                "pathType": "dataset",
+                "errorMessage": "Must be a Xenium transcripts file (transcripts.parquet)",
+                "format": "file-path",
+                "pattern": "transcripts\\.parquet$",
                 "title": "Transcripts File",
                 "type": "string"
             }

@@ -5,15 +5,17 @@
       "fasta": {
         "title": "Genome FASTA",
         "type": "string",
-        "pathType": "dataset",
-        "file": "**/*.f*",
+        "format": "file-path",
+        "pattern": "\\.(fa|fasta|fna)(\\.gz)?$",
+        "errorMessage": "Must be a FASTA file (.fa, .fasta or .fna), optionally gzipped",
         "description": "Reference genome FASTA used to build the Kallisto index."
       },
       "gtf": {
         "title": "GTF Annotation",
         "type": "string",
-        "pathType": "dataset",
-        "file": "**/*.gtf*",
+        "format": "file-path",
+        "pattern": "\\.gtf(\\.gz)?$",
+        "errorMessage": "Must be a GTF file (.gtf or .gtf.gz)",
         "description": "Gene annotation GTF for building a splice-aware Kallisto index."
       },
       "kallisto_version": {

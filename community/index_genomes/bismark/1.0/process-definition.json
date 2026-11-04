@@ -18,6 +18,7 @@
     "script": "main_bismark.nf"
   },
   "allowMultipleSources": false,
+  "allowMultipleSources": true,
   "usesSampleSheet": false,
   "computeDefaults": [
     {

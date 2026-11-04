@@ -1,11 +1,15 @@
 {
     "form": {
+        "required": [
+            "input"
+        ],
         "properties": {
             "input": {
                 "title": "Input Dataset",
-                "description": "Select one of .h5, .h5ad, .h5seurad, or .rds",
-                "file": "**/*.{h5,rds}*",
-                "pathType": "dataset",
+                "description": "Select one of .h5, .h5ad, .h5seurat, or .rds",
+                "format": "file-path",
+                "pattern": "\\.(h5|h5ad|h5[Ss]eurat|rds)$",
+                "errorMessage": "Must be a 10X H5 matrix (.h5), AnnData (.h5ad), h5Seurat (.h5seurat) or Seurat RDS (.rds) file",
                 "type": "string"
             },
             "reference": {
