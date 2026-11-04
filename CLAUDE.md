@@ -162,8 +162,9 @@ Map the file's path in `process-input.json`; the form field itself never reaches
 - **Validation is advisory** — invalid rows don't block Run, nothing re-checks them on the
   server, and `required` on the form field doesn't mean at least one row. With no rows, Cirro
   writes an empty file (no header), or omits the param if the field was never touched.
-  Give the table schema `"minItems": 1` all the same: the portal checks each row on its own,
-  so it is not enforced yet. `preprocess.py` should fail clearly in both cases (see
+  Give a table that needs rows `"minItems": 1` all the same, but not one that may be left
+  empty: the portal checks each row on its own, so it is not enforced yet. When the table
+  needs rows, `preprocess.py` should fail clearly in both cases (see
   `cirro/cellranger-gex/1.1/preprocess.py`).
 - **File contents** — header row first, columns in schema order, blank cells empty, lines
   ending in `\r\n`. File and folder cells hold absolute S3 URIs (an access-point alias for
