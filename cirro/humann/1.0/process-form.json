@@ -85,6 +85,7 @@
         "title": "Samplesheet",
         "description": "One row per sample: a single FASTQ file (single-end) or a pair of FASTQ files (paired-end).",
         "type": "array",
+        "minItems": 1,
         "items": {
           "type": "object",
           "properties": {
