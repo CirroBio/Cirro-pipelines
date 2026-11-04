@@ -95,6 +95,7 @@
                 "title": "Samplesheet",
                 "description": "One row per sample, with its reads aligned to the genome as a BAM file. Each sample can be listed only once.",
                 "type": "array",
+                "minItems": 1,
                 "items": {
                     "type": "object",
                     "properties": {

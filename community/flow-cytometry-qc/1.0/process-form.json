@@ -24,6 +24,7 @@
         "title": "Samplesheet",
         "description": "One row per FCS file, each with a sample name of its own.",
         "type": "array",
+        "minItems": 1,
         "items": {
           "type": "object",
           "properties": {

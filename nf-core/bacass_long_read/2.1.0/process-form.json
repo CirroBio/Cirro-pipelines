@@ -118,6 +118,7 @@
         "title": "Samplesheet",
         "description": "One row per sample, with all of its long reads in a single gzipped FASTQ file.",
         "type": "array",
+        "minItems": 1,
         "items": {
           "type": "object",
           "properties": {

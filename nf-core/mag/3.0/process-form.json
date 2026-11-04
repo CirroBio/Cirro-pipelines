@@ -1046,6 +1046,7 @@
                 "title": "Samplesheet",
                 "description": "One row per sequencing run of a sample. Rows with the same sample name are merged by the pipeline after read QC, so give each a different run ID. Use either single-end or paired-end short reads throughout.",
                 "type": "array",
+                "minItems": 1,
                 "items": {
                     "type": "object",
                     "properties": {

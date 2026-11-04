@@ -874,6 +874,7 @@
         "title": "Samplesheet",
         "description": "One row per FASTQ file (single-end) or pair of FASTQ files (paired-end). Rows with the same sample name are merged by the pipeline.",
         "type": "array",
+        "minItems": 1,
         "items": {
           "type": "object",
           "properties": {
