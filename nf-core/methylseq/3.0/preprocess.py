@@ -1,24 +1,35 @@
 #!/usr/bin/env python3
 
-from cirro.helpers.preprocess_dataset import PreprocessDataset
+import pandas as pd
 
-ds = PreprocessDataset.from_running()
 
-# Make a wide manifest
-manifest = ds.wide_samplesheet(
-    index=["sampleIndex", "sample", "lane"],
-    columns="read",
-    values="file",
-    column_prefix="fastq_"
-).sort_values(
-    by="sample"
-)
-ds.logger.info(manifest)
-assert manifest.shape[0] > 0, "No files detected -- there may be an error with data ingest"
+def read_samplesheet(path) -> pd.DataFrame:
+    """Read the samplesheet filled out in the form, keeping every value as text."""
 
-# Cast comprehensive from int 0/1 to boolean
-comprehensive = bool(ds.params.get('comprehensive'))
-ds.add_param('comprehensive', comprehensive, overwrite=True)
+    # The form field is marked required, but an empty table can still be submitted,
+    # in which case Cirro either omits the param or writes an empty file
+    if not path:
+        raise ValueError("No samplesheet was provided: add at least one row of FASTQ files")
+    try:
+        # Read every value as text, so that sample names like "01" are kept as-is
+        samplesheet = pd.read_csv(path, dtype=str, keep_default_na=False)
+    except pd.errors.EmptyDataError:
+        samplesheet = pd.DataFrame()
+    if samplesheet.empty:
+        raise ValueError("The samplesheet is empty: add at least one row of FASTQ files")
+    return samplesheet
 
-# Write to the dataset's config/ folder (mapped in process-input.json)
-manifest.to_csv(ds.params["input"], index=None)
+
+if __name__ == "__main__":
+
+    # Imported here so that test_preprocess.py runs without the SDK
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
+
+    ds = PreprocessDataset.from_running()
+
+    # Read only to fail clearly when the table is missing or empty
+    read_samplesheet(ds.params.get("input"))
+
+    # Cast comprehensive from int 0/1 to boolean
+    comprehensive = bool(ds.params.get('comprehensive'))
+    ds.add_param('comprehensive', comprehensive, overwrite=True)

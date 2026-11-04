@@ -18,14 +18,18 @@
     "title": "nf-core/rnafusion",
     "description": "A workflow for detecting and visualizing gene fusion events in RNA sequencing datasets.",
     "type": "object",
+    "required": ["input"],
     "properties": {
+      "input": {
+        "type": "string",
+        "schema": "pipeline_samplesheet"
+      },
       "workflow_version": {
         "title": "Workflow Version",
         "description": "Select the specific version of nf-core/rnafusion to use",
         "type": "string",
         "enum": [
-            "3.0.2",
-            "4.0.0"
+            "3.0.2"
         ],
         "default": "3.0.2"
       },
@@ -62,21 +66,17 @@
             "title": "Analysis Tools",
             "description": "Please select one or more fusion detection tools for your analysis.",
             "type": "array",
-            "pattern": "^((arriba|fusioncatcher|pizzly|squid|starfusion)*,?)*$",
+            "pattern": "^((arriba|fusioncatcher|starfusion)*,?)*$",
             "items": {
               "type": "string",
               "enum": [
                 "arriba",
                 "fusioncatcher",
-                "pizzly",
-                "squid",
                 "starfusion"
               ],
               "enumNames": [
                 "Arriba",
                 "FusionCatcher",
-                "Pizzly",
-                "SQUID",
                 "STAR-Fusion"
               ]
             },
@@ -97,11 +97,11 @@
       },
       "trimming":{
         "title": "Read Trimming",
-        "description": "Read trimming is performed using reformat.sh from BBMAP. Currently, there is no option to alter the parameters used.",
+        "description": "Read trimming is performed using fastp. Currently, there is no option to alter the parameters used.",
         "type": "object",
         "properties":{
           "bbmap": {
-            "title": "Trim reads using BBMAP",
+            "title": "Trim reads using fastp",
             "type": "boolean",
             "default": false,
             "enum": [
@@ -127,6 +127,50 @@
             "type": "integer",
             "default": 32
           }
+        }
+      }
+    }
+  },
+  "structuredInputs": {
+    "pipeline_samplesheet": {
+      "fileFormat": "CSV",
+      "defaultSourceFile": "samplesheet.csv",
+      "schema": {
+        "title": "Samplesheet",
+        "description": "One row per pair of FASTQ files. Rows with the same sample name, such as one per sequencing lane, are merged by the pipeline.",
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "properties": {
+            "sample": {
+              "type": "string",
+              "title": "Sample",
+              "pattern": "^\\S+$",
+              "errorMessage": "Sample name must be provided and cannot contain spaces"
+            },
+            "fastq_1": {
+              "type": "string",
+              "format": "file-path",
+              "title": "FASTQ (R1)",
+              "pattern": "^(?![\\S\\s]*_I[12]_001\\.f(ast)?q\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+              "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+            },
+            "fastq_2": {
+              "type": "string",
+              "format": "file-path",
+              "title": "FASTQ (R2)",
+              "pattern": "^(?![\\S\\s]*_I[12]_001\\.f(ast)?q\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+              "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+            },
+            "strandedness": {
+              "type": "string",
+              "title": "Strandedness",
+              "description": "Leave blank for unstranded",
+              "enum": ["forward", "reverse", "unstranded", "unknown"]
+            }
+          },
+          "required": ["sample", "fastq_1", "fastq_2"]
         }
       }
     }

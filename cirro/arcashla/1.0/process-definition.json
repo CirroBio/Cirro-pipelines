@@ -9,7 +9,7 @@
     ],
     "childProcessIds": [],
     "dataType": "Predicted HLA Types (arcasHLA)",
-    "name": "HLA Typing (arcasHLA)",
+    "name": "HLA Typing (arcasHLA, legacy)",
     "desc": "Perform HLA typing from raw sequence reads using the arcasHLA utility",
     "executor": "NEXTFLOW",
     "category": "RNA Sequencing",

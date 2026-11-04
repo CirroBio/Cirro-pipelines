@@ -1,43 +1,45 @@
 #!/usr/bin/env python3
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import pandas as pd
-from cirro.helpers.preprocess_dataset import PreprocessDataset
+
+# The SDK is imported in __main__, so test_preprocess.py runs without it
+if TYPE_CHECKING:
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
 
 
 REF_SUBDIR = "rnafusion/3.0.2"
 
-def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
 
-    # Filter out any index files that may have been uploaded
-    ds.files = ds.files.loc[
-        ds.files.apply(
-            lambda r: r.get('readType', 'R') == 'R',
-            axis=1
-        )
-    ]
+def read_samplesheet(path) -> pd.DataFrame:
+    """Read the samplesheet filled out in the form, keeping every value as text."""
 
-    # Make a wide manifest
-    manifest = ds.wide_samplesheet(
-        index=["sampleIndex", "sample", "lane", "dataset"],
-        columns="read",
-        values="file",
-        column_prefix="fastq_"
-    )
-    assert manifest.shape[0] > 0, "No files detected -- there may be an error with data ingest"
+    # The form field is marked required, but an empty table can still be submitted,
+    # in which case Cirro either omits the param or writes an empty file
+    if not path:
+        raise ValueError("No samplesheet was provided: add at least one row of FASTQ files")
+    try:
+        # Read every value as text, so that sample names like "01" are kept as-is
+        samplesheet = pd.read_csv(path, dtype=str, keep_default_na=False)
+    except pd.errors.EmptyDataError:
+        samplesheet = pd.DataFrame()
+    if samplesheet.empty:
+        raise ValueError("The samplesheet is empty: add at least one row of FASTQ files")
+    return samplesheet
 
-    # append metadata to file paths
-    samples = ds.samplesheet.set_index("sample")
-    manifest = manifest.assign(**{k: manifest["sample"].apply(v.get) for k, v in samples.items()})
-    ordering = ['sample', 'fastq_1', 'fastq_2', 'strandedness']
-    manifest = manifest.reindex(columns=ordering)
 
-    ## check values for strandedness
-    manifest = manifest.fillna({'strandedness':'unstranded'})
-    strandedness = manifest.strandedness
-    for i, row in strandedness.items():
-        assert row in ['forward', 'reverse', 'unstranded'], print(f"ERROR: The column 'strandedness' must contain 'forward', 'reverse' or 'unstranded'.\nOffending entry:\n {manifest.iloc[i].to_frame().T}")
+def fill_strandedness(samplesheet: pd.DataFrame) -> pd.DataFrame:
+    """Mark every row that leaves strandedness blank as unstranded.
 
-    return manifest
+    The pipeline's samplesheet schema requires a value in every row.
+    """
+
+    if "strandedness" not in samplesheet.columns:
+        samplesheet = samplesheet.assign(strandedness="")
+    return samplesheet.assign(strandedness=samplesheet["strandedness"].replace("", "unstranded"))
 
 
 def update_params(ds, list, avail):
@@ -77,7 +79,7 @@ def form_handling(ds: PreprocessDataset):
     ## parse tools list and replace with boolean params
     tools = params.get('tools')
     ds.remove_param('tools')
-    avail = ['arriba', 'pizzly', 'squid', 'fusioncatcher', 'starfusion']
+    avail = ['arriba', 'fusioncatcher', 'starfusion']
 
     update_params(ds, tools, avail)
 
@@ -110,17 +112,19 @@ def form_handling(ds: PreprocessDataset):
     trim = params.get('trim')
     ds.remove_param('trim')
     if trim:
-        ds.add_param('trimming', True, overwrite=True)
+        ds.add_param('fastp_trim', True, overwrite=True)
 
 
 if __name__ == "__main__":
 
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
+
     ds = PreprocessDataset.from_running()
 
-    manifest = make_manifest(ds)
+    samplesheet = fill_strandedness(read_samplesheet(ds.params.get("input")))
 
-    # Write to the dataset's config/ folder (mapped in process-input.json)
-    manifest.to_csv(ds.params["input"], index=None)
+    # Overwrite the file Cirro wrote to the dataset's config/ folder (mapped in process-input.json)
+    samplesheet.to_csv(ds.params["input"], index=None)
 
     ######### Process form handling ##########
     form_handling(ds)

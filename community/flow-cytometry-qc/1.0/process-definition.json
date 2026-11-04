@@ -13,7 +13,8 @@
     "version": "main",
     "script": "main.nf"
   },
-  "usesSampleSheet": true,
+  "allowMultipleSources": true,
+  "usesSampleSheet": false,
   "computeDefaults": [
     {
       "executor": "NEXTFLOW",

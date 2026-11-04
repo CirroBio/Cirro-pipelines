@@ -1,6 +1,11 @@
 {
     "form": {
+        "required": ["samplesheet"],
         "properties": {
+            "samplesheet": {
+                "type": "string",
+                "schema": "pipeline_samplesheet"
+            },
             "bact_db": {
                 "default": "85k: GTDB R08-RS214 bacterial representatives",
                 "description": "Number of genomes contained in the reference database used to search against",
@@ -68,5 +73,35 @@
             }
         }
     },
-    "ui": {}
+    "ui": {},
+    "structuredInputs": {
+        "pipeline_samplesheet": {
+            "fileFormat": "CSV",
+            "schema": {
+                "title": "Samplesheet",
+                "description": "One row per FASTQ or FASTA file. Rows with the same sample name are combined into a single sketch.",
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "sample": {
+                            "type": "string",
+                            "title": "Sample",
+                            "pattern": "^\\S+$",
+                            "errorMessage": "Sample name must be provided and cannot contain spaces"
+                        },
+                        "file": {
+                            "type": "string",
+                            "format": "file-path",
+                            "title": "Sequence File",
+                            "pattern": "^(?![\\S\\s]*_I[12]_001\\.f(ast)?q(\\.gz)?$)([\\S\\s]*\\/)?[^\\s\\/]+\\.(f(ast)?q|f(ast|n)?a)(\\.gz)?$",
+                            "errorMessage": "Must be a FASTQ or FASTA file (.fastq, .fq, .fasta, .fa or .fna, optionally gzipped) with no spaces in its name, not an I1/I2 index read"
+                        }
+                    },
+                    "required": ["sample", "file"]
+                }
+            }
+        }
+    }
 }

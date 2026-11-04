@@ -32,7 +32,7 @@
     "version": "main"
   },
   "allowMultipleSources": true,
-  "usesSampleSheet": true,
+  "usesSampleSheet": false,
   "computeDefaults": [
     {
       "executor": "NEXTFLOW",

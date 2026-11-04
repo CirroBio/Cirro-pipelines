@@ -1,6 +1,6 @@
 {
     "outdir": "$.dataset.dataPath",
-    "input": "$.dataset.s3|/config/pipeline_samplesheet.csv",
+    "input": "$.structuredInputs.pipeline_samplesheet.path",
     "igenomes_base": "$.referencesBucketUri|/igenomes/",
     "cat_db": "$.referencesBucketUri|/CAT/CAT_prepare_20210107.tar.gz",
     "checkm_db": "$.referencesBucketUri|/checkm/checkm_data_2015_01_16/",

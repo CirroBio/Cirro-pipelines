@@ -90,7 +90,7 @@
                       "delimiter": "\t"
                   }
               },
-              "source": "$data_directory/**QUAST/report.tsv",
+              "source": "$data_directory/**QUAST/report/report.tsv",
               "target": "QUAST_report.parquet",
               "url": "https://github.com/ablab/quast",
               "sourceDirectories": [

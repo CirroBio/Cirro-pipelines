@@ -4,7 +4,12 @@
         "title": "nf-core/mag pipeline parameters",
         "description": "Assembly, binning and annotation of metagenomes",
         "type": "object",
+        "required": ["input"],
         "properties": {
+            "input": {
+                "type": "string",
+                "schema": "pipeline_samplesheet"
+            },
             "quality_control_for_short_reads_options": {
                 "title": "Quality Control Options",
                 "type": "object",
@@ -1030,6 +1035,66 @@
                         "default": 1,
                         "description": "MetaBAT2 is run by default with a fixed seed within this pipeline, thus producing reproducible results. You can set it also to any other positive integer to ensure reproducibility. Set the parameter to 0 to use a random seed."
                     }
+                }
+            }
+        }
+    },
+    "structuredInputs": {
+        "pipeline_samplesheet": {
+            "fileFormat": "CSV",
+            "schema": {
+                "title": "Samplesheet",
+                "description": "One row per sequencing run of a sample. Rows with the same sample name are merged by the pipeline after read QC, so give each a different run ID. Use either single-end or paired-end short reads throughout.",
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "sample": {
+                            "type": "string",
+                            "title": "Sample",
+                            "pattern": "^\\S+$",
+                            "errorMessage": "Sample name must be provided and cannot contain spaces"
+                        },
+                        "run": {
+                            "type": "string",
+                            "title": "Run",
+                            "description": "Run or lane ID, unique within the sample. Leave blank when the sample has a single row",
+                            "pattern": "^\\S+$",
+                            "errorMessage": "Run ID cannot contain spaces"
+                        },
+                        "group": {
+                            "type": "string",
+                            "title": "Group",
+                            "description": "Used for co-abundance binning and group-wise co-assembly. Leave blank for group 0",
+                            "pattern": "^\\S+$",
+                            "errorMessage": "Group cannot contain spaces"
+                        },
+                        "short_reads_1": {
+                            "type": "string",
+                            "format": "file-path",
+                            "title": "Short reads (R1)",
+                            "pattern": "^(?![\\S\\s]*_I[12]_001\\.f(ast)?q\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+                            "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+                        },
+                        "short_reads_2": {
+                            "type": "string",
+                            "format": "file-path",
+                            "title": "Short reads (R2)",
+                            "description": "Leave blank for single-end reads",
+                            "pattern": "^(?![\\S\\s]*_I[12]_001\\.f(ast)?q\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+                            "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+                        },
+                        "long_reads": {
+                            "type": "string",
+                            "format": "file-path",
+                            "title": "Long reads",
+                            "description": "Optional, and only with paired-end short reads",
+                            "pattern": "^(?![\\S\\s]*_I[12]_001\\.f(ast)?q\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+                            "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+                        }
+                    },
+                    "required": ["sample", "short_reads_1"]
                 }
             }
         }
