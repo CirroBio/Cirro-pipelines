@@ -197,6 +197,7 @@
           "title": "Samplesheet",
           "description": "One row per sequencing run of a sample, with its FASTQ files in order. Put a UMI index read (I1 or I2) in FASTQ 3 or FASTQ 4. Rows with the same sample, such as one per lane, are merged by the pipeline, and must have the same number of FASTQ files and the same read structure.",
           "type": "array",
+          "minItems": 1,
           "items": {
             "type": "object",
             "properties": {

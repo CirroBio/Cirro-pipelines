@@ -291,6 +291,7 @@
         "title": "Samplesheet",
         "description": "One row per pair of R1 and R2 FASTQ files. Rows with the same sample, such as one per sequencing lane, are merged by the pipeline. Alignment does not use patient, sex or status, but sarek records them with the aligned reads for variant calling.",
         "type": "array",
+        "minItems": 1,
         "items": {
           "type": "object",
           "properties": {

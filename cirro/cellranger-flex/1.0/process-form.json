@@ -266,6 +266,7 @@
         "title": "Samplesheet",
         "description": "One row per library: the sample name its FASTQ files start with (the part before _S1_L001_R1_001.fastq.gz). The libraries are analyzed together in one Cell Ranger run, which splits the cells into samples by probe barcode.",
         "type": "array",
+        "minItems": 1,
         "items": {
           "type": "object",
           "properties": {
@@ -288,6 +289,7 @@
         "title": "Probe Barcodes",
         "description": "One row per sample, with the probe barcode used for it: BC001 to BC016 for Flex v1, A-A01 to D-H12 for Flex v2. List the barcodes of a sample that used several on separate rows, or in one cell separated by a pipe (e.g. BC001|BC002).",
         "type": "array",
+        "minItems": 1,
         "items": {
           "type": "object",
           "properties": {

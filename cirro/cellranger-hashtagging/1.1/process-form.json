@@ -114,6 +114,7 @@
         "title": "Samplesheet",
         "description": "One row per library: the sample name its FASTQ files start with (the part before _S1_L001_R1_001.fastq.gz) and its feature type. A Gene Expression and a Multiplexing Capture library are required; any other library is analyzed for each sample after demultiplexing.",
         "type": "array",
+        "minItems": 1,
         "items": {
           "type": "object",
           "properties": {
@@ -150,6 +151,7 @@
         "title": "Sample Hashtags",
         "description": "One row per sample, with the hashtag used to label its cells. Hashtag IDs are the ids in the Hashtagging Reference; separate several with a pipe (e.g. Hashtag1|Hashtag2).",
         "type": "array",
+        "minItems": 1,
         "items": {
           "type": "object",
           "properties": {

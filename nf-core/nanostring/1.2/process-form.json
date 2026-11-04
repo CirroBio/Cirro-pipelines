@@ -148,6 +148,7 @@
         "title": "Samplesheet",
         "description": "One row per RCC file. Give repeated measurements of one sample the same sample name.",
         "type": "array",
+        "minItems": 1,
         "items": {
           "type": "object",
           "properties": {

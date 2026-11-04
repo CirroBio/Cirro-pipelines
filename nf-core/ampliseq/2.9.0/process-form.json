@@ -353,6 +353,7 @@
         "title": "Samplesheet",
         "description": "One row per sample, with its forward reads and, for paired-end data, its reverse reads. If any row has no reverse reads, every sample is analyzed as single-end.",
         "type": "array",
+        "minItems": 1,
         "items": {
           "type": "object",
           "properties": {

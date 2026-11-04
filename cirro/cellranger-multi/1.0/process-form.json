@@ -164,6 +164,7 @@
         "title": "Samplesheet",
         "description": "One row per library: the sample name its FASTQ files start with (the part before _S1_L001_R1_001.fastq.gz), the grouping it belongs to, and its feature type. The libraries of a grouping, such as a sample's gene expression and V(D)J libraries, are analyzed together in one Cell Ranger run named after the grouping.",
         "type": "array",
+        "minItems": 1,
         "items": {
           "type": "object",
           "properties": {

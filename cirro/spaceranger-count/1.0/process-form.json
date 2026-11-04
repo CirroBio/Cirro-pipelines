@@ -64,6 +64,7 @@
         "title": "Samplesheet",
         "description": "One row per pair of R1 and R2 FASTQ files. Rows with the same sample name, such as one per sequencing lane, are combined into a single Space Ranger run with the image listed for that sample in the image dataset.",
         "type": "array",
+        "minItems": 1,
         "items": {
           "type": "object",
           "properties": {

@@ -354,6 +354,7 @@
                 "title": "Samplesheet",
                 "description": "One row per FASTQ file (single-end) or pair of FASTQ files (paired-end). Number the replicates of each sample 1, 2, 3 and so on. Rows with the same sample and replicate, such as one per sequencing lane, are merged by the pipeline. On ChIP rows, set the antibody and the input sample and replicate to call peaks against; leave all three blank on the input samples' own rows.",
                 "type": "array",
+                "minItems": 1,
                 "items": {
                     "type": "object",
                     "properties": {
