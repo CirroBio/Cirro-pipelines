@@ -1,0 +1,426 @@
+{
+    "commands": [
+        {
+            "command": "hot.Parquet",
+            "params": {
+                "cols": [
+                    {
+                        "col": "ASV_ID",
+                        "desc": "Unique identifier for the amplicon sequence variant (ASV), which is a distinct sequence unit within the 16S rRNA gene amplicon data",
+                        "name": "ASV ID"
+                    },
+                    {
+                        "col": "Kingdom",
+                        "desc": "The taxonomic kingdom to which the amplicon sequence variant (ASV) belongs",
+                        "name": "Kingdom"
+                    },
+                    {
+                        "col": "Phylum",
+                        "desc": "The taxonomic phylum to which the amplicon sequence variant (ASV) belongs",
+                        "name": "Phylum"
+                    },
+                    {
+                        "col": "Class",
+                        "desc": "The taxonomic class to which the amplicon sequence variant (ASV) belongs",
+                        "name": "Class"
+                    },
+                    {
+                        "col": "Order",
+                        "desc": "The taxonomic order to which the amplicon sequence variant (ASV) belongs",
+                        "name": "Order"
+                    },
+                    {
+                        "col": "Family",
+                        "desc": "The taxonomic family to which the amplicon sequence variant (ASV) belongs",
+                        "name": "Family"
+                    },
+                    {
+                        "col": "Genus",
+                        "desc": "The taxonomic genus to which the amplicon sequence variant (ASV) belongs",
+                        "name": "Genus"
+                    },
+                    {
+                        "col": "Species",
+                        "desc": "The taxonomic species to which the amplicon sequence variant (ASV) belongs",
+                        "name": "Species"
+                    },
+                    {
+                        "col": "confidence",
+                        "desc": "Confidence score reflecting the likelihood of the assigned taxonomy",
+                        "name": "Confidence Score"
+                    },
+                    {
+                        "col": "sequence",
+                        "desc": "Nucleotide sequence of the ASV",
+                        "name": "Sequence"
+                    }
+                ],
+                "desc": "Taxonomy assigned to each ASV using the Silva 138 database",
+                "name": "ASV Taxonomy (Silva 138)",
+                "read_csv": {
+                    "parse": {
+                        "delimiter": "\t"
+                    }
+                },
+                "source": "$data_directory/dada2/ASV_tax_species.tsv",
+                "target": "dada2_ASV_tax_species.parquet",
+                "url": ""
+            }
+        },
+        {
+            "command": "hot.Parquet",
+            "params": {
+                "cols": [
+                    {
+                        "col": "sample",
+                        "desc": "Unique identifier or label for analyzed sample",
+                        "name": "Sample"
+                    },
+                    {
+                        "col": "DADA2_input",
+                        "desc": "Number of reads input",
+                        "name": "Input"
+                    },
+                    {
+                        "col": "filtered",
+                        "desc": "Number of reads after filtering",
+                        "name": "Filtered"
+                    },
+                    {
+                        "col": "denoisedF",
+                        "desc": "Number of reads after denoising (forward)",
+                        "name": "Denoised (Forward)"
+                    },
+                    {
+                        "col": "denoisedR",
+                        "desc": "Number of reads after denoising (reverse)",
+                        "name": "Denoised (Reverse)"
+                    },
+                    {
+                        "col": "merged",
+                        "desc": "Number of reads after merging pairs",
+                        "name": "Merged"
+                    },
+                    {
+                        "col": "nonchim",
+                        "desc": "Number of reads after chimera filtering",
+                        "name": "Non-Chimeras"
+                    }
+                ],
+                "desc": "Summary metrics of sample processing by DADA2",
+                "name": "DADA2 Stats",
+                "read_csv": {
+                    "parse": {
+                        "delimiter": "\t"
+                    }
+                },
+                "source": "$data_directory/dada2/DADA2_stats.tsv",
+                "target": "dada2_DADA2_stats.parquet",
+                "url": ""
+            }
+        },
+        {
+            "command": "hot.Parquet",
+            "params": {
+                "cols": [
+                    {
+                        "col": "ASV_ID",
+                        "desc": "",
+                        "name": "ASV"
+                    },
+                    {
+                        "col": "sequence",
+                        "desc": "Nucleotide sequence of the ASV",
+                        "name": "Sequence"
+                    }
+                ],
+                "melt": {
+                    "key": {
+                        "desc": "Unique identifier or label for analyzed sample",
+                        "name": "Sample"
+                    },
+                    "value": {
+                        "desc": "Number of reads detected per ASV in each sample",
+                        "name": "Count"
+                    }
+                },
+                "desc": "dada2_DADA2_table.tsv",
+                "name": "ASV Counts",
+                "read_csv": {
+                    "parse": {
+                        "delimiter": "\t"
+                    }
+                },
+                "source": "$data_directory/dada2/DADA2_table.tsv",
+                "target": "dada2_DADA2_table.parquet",
+                "url": ""
+            }
+        },
+        {
+            "command": "hot.Parquet",
+            "params": {
+                "cols": [
+                    {
+                        "col": "sample",
+                        "desc": "Unique identifier or label for analyzed sample",
+                        "name": "Sample"
+                    },
+                    {
+                        "col": "cutadapt_total_processed",
+                        "desc": "Total number of reads processed by Cutadapt",
+                        "name": "Cutadapt - Total Processed"
+                    },
+                    {
+                        "col": "cutadapt_reverse_complemented",
+                        "desc": "Number of reads which were reverse complemented by Cutadapt",
+                        "name": "Cutadapt - Reverse Complemented"
+                    },
+                    {
+                        "col": "cutadapt_passing_filters",
+                        "desc": "Number of reads passing Cutadapt filters",
+                        "name": "Cutadapt - Passing Filters"
+                    },
+                    {
+                        "col": "cutadapt_passing_filters_percent",
+                        "desc": "Percentage of reads passing Cutadapt filters",
+                        "name": "Cutadapt - Passing Filters (%)",
+                        "strip": "%",
+                        "dtype": "float"
+                    },
+                    {
+                        "col": "DADA2_input",
+                        "desc": "Number of reads input to DADA2",
+                        "name": "DADA2 Input"
+                    },
+                    {
+                        "col": "filtered",
+                        "desc": "Number of reads passing DADA2 filters",
+                        "name": "DADA2 Filtered"
+                    },
+                    {
+                        "col": "denoisedF",
+                        "desc": "Number of forward reads denoised by DADA2",
+                        "name": "DADA2 Denoised Forward"
+                    },
+                    {
+                        "col": "denoisedR",
+                        "desc": "Number of reverse reads denoised by DADA2",
+                        "name": "DADA2 Denoised Reverse"
+                    },
+                    {
+                        "col": "merged",
+                        "desc": "Number of read pairs merged by DADA2 to form ASVs",
+                        "name": "DADA2 Merged"
+                    },
+                    {
+                        "col": "nonchim",
+                        "desc": "Number of ASVs passing the DADA2 chimera filter",
+                        "name": "DADA2 Nonchimeras"
+                    },
+                    {
+                        "col": "input_tax_filter",
+                        "desc": "Number of ASVs input to the taxonomic filter",
+                        "name": "Input Tax Filter"
+                    },
+                    {
+                        "col": "filtered_tax_filter",
+                        "desc": "Number of ASVs passing the taxonomic filter",
+                        "name": "Output Tax Filter"
+                    },
+                    {
+                        "col": "lost",
+                        "desc": "Number of reads lost",
+                        "name": "Lost"
+                    },
+                    {
+                        "col": "retained_percent",
+                        "desc": "Percentage of reads which were retained",
+                        "name": "Retained (%)"
+                    },
+                    {
+                        "col": "lost_percent",
+                        "desc": "Percentage of reads which were lost",
+                        "name": "Lost (%)"
+                    }
+                ],
+                "desc": "overall_summary.tsv",
+                "name": "overall_summary.tsv",
+                "read_csv": {
+                    "parse": {
+                        "delimiter": "\t"
+                    }
+                },
+                "source": "$data_directory/overall_summary.tsv",
+                "target": "overall_summary.parquet",
+                "url": ""
+            }
+        },
+        {
+            "command": "hot.Parquet",
+            "params": {
+                "cols": [
+                    {
+                        "col": "ID",
+                        "desc": "Unique identifier for the amplicon sequence variant (ASV), which is a distinct sequence unit within the 16S rRNA gene amplicon data",
+                        "name": "ASV ID"
+                    },
+                    {
+                        "col": "Kingdom",
+                        "desc": "The taxonomic kingdom to which the amplicon sequence variant (ASV) belongs",
+                        "name": "Kingdom"
+                    },
+                    {
+                        "col": "Phylum",
+                        "desc": "The taxonomic phylum to which the amplicon sequence variant (ASV) belongs",
+                        "name": "Phylum"
+                    },
+                    {
+                        "col": "Class",
+                        "desc": "The taxonomic class to which the amplicon sequence variant (ASV) belongs",
+                        "name": "Class"
+                    },
+                    {
+                        "col": "Order",
+                        "desc": "The taxonomic order to which the amplicon sequence variant (ASV) belongs",
+                        "name": "Order"
+                    },
+                    {
+                        "col": "Family",
+                        "desc": "The taxonomic family to which the amplicon sequence variant (ASV) belongs",
+                        "name": "Family"
+                    },
+                    {
+                        "col": "Genus",
+                        "desc": "The taxonomic genus to which the amplicon sequence variant (ASV) belongs",
+                        "name": "Genus"
+                    },
+                    {
+                        "col": "Species",
+                        "desc": "The taxonomic species to which the amplicon sequence variant (ASV) belongs",
+                        "name": "Species"
+                    },
+                    {
+                        "col": "Species_exact",
+                        "desc": "The 'exact' taxonomic species to which the amplicon sequence variant (ASV) belongs",
+                        "name": "Species (exact)"
+                    },
+                    {
+                        "col": "confidence",
+                        "desc": "Confidence score reflecting the likelihood of the assigned taxonomy",
+                        "name": "Confidence Score"
+                    },
+                    {
+                        "col": "sequence",
+                        "desc": "Nucleotide sequence of the ASV",
+                        "name": "Sequence"
+                    }
+                ],
+                "melt": {
+                    "key": {
+                        "desc": "Unique identifier or label for analyzed sample",
+                        "name": "Sample"
+                    },
+                    "value": {
+                        "desc": "Proportion of reads detected per ASV in each sample",
+                        "name": "Proportion"
+                    }
+                },
+                "desc": "qiime2_rel_abundance_tables_rel-table-ASV_with-DADA2-tax.tsv",
+                "name": "qiime2_rel_abundance_tables_rel-table-ASV_with-DADA2-tax.tsv",
+                "read_csv": {
+                    "parse": {
+                        "delimiter": "\t"
+                    }
+                },
+                "source": "$data_directory/qiime2/rel_abundance_tables/rel-table-ASV_with-[method]-tax.tsv",
+                "target": "qiime2_rel_abundance_tables_rel-table-ASV_with-tax.parquet",
+                "url": "",
+                "concat": [
+                    {
+                        "token": "method",
+                        "name": "Method",
+                        "desc": "Method used for taxonomic assignment"
+                    }
+                ]
+            }
+        },
+        {
+            "command": "hot.Parquet",
+            "params": {
+                "cols": [
+                    {
+                        "col": "ID",
+                        "desc": "Unique identifier for the amplicon sequence variant (ASV), which is a distinct sequence unit within the 16S rRNA gene amplicon data",
+                        "name": "ASV ID"
+                    },
+                    {
+                        "col": "Taxon",
+                        "desc": "Taxonomic label assigned to the ASV",
+                        "name": "Taxon"
+                    },
+                    {
+                        "col": "Confidence",
+                        "desc": "Confidence score reflecting the likelihood of the assigned taxonomy",
+                        "name": "Confidence Score"
+                    },
+                    {
+                        "col": "sequence",
+                        "desc": "Nucleotide sequence of the ASV",
+                        "name": "Sequence"
+                    }
+                ],
+                "melt": {
+                    "key": {
+                        "desc": "Unique identifier or label for analyzed sample",
+                        "name": "Sample"
+                    },
+                    "value": {
+                        "desc": "Proportion of reads detected per ASV in each sample",
+                        "name": "Proportion"
+                    }
+                },
+                "desc": "qiime2_rel_abundance_tables_rel-table-ASV_with-QIIME2-tax.tsv",
+                "name": "qiime2_rel_abundance_tables_rel-table-ASV_with-QIIME2-tax.tsv",
+                "read_csv": {
+                    "parse": {
+                        "delimiter": "\t"
+                    }
+                },
+                "source": "$data_directory/qiime2/rel_abundance_tables/rel-table-ASV_with-QIIME2-tax.tsv",
+                "target": "qiime2_rel_abundance_tables_rel-table-ASV_with-QIIME2-tax.parquet",
+                "url": ""
+            }
+        },
+        {
+            "command": "hot.Parquet",
+            "params": {
+                "cols": [
+                    {
+                        "col": "Statistic",
+                        "desc": "Descriptive statistic applied to the overall analysis",
+                        "name": "Statistic"
+                    },
+                    {
+                        "col": "Value",
+                        "desc": "Value associated with the descriptive statistic",
+                        "name": "Value"
+                    }
+                ],
+                "desc": "qiime2_representative_sequences_descriptive_stats.tsv",
+                "name": "qiime2_representative_sequences_descriptive_stats.tsv",
+                "read_csv": {
+                    "parse": {
+                        "delimiter": "\t"
+                    }
+                },
+                "source": "$data_directory/qiime2/representative_sequences/descriptive_stats.tsv",
+                "target": "qiime2_representative_sequences_descriptive_stats.parquet",
+                "url": ""
+            }
+        },
+        {
+            "command": "hot.Manifest",
+            "params": {}
+        }
+    ]
+}

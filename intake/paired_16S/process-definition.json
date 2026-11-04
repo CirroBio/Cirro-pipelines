@@ -2,6 +2,7 @@
   "id": "paired_16S",
   "childProcessIds": [
     "process-nf-core-ampliseq-2-4-0",
+    "process-nf-core-ampliseq-2-9-0",
     "process-hutch-fastqc-1_0"
   ],
   "name": "Paired 16S (FASTQ)",

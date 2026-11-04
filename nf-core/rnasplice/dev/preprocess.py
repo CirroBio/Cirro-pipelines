@@ -1,123 +1,61 @@
 #!/usr/bin/env python3
 
-from cirro.helpers.preprocess_dataset import PreprocessDataset
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import pandas as pd
 
+# The SDK is imported in __main__, so test_preprocess.py runs without it
+if TYPE_CHECKING:
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
 
-def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
-    """Construct a manifest with the paired FASTQ files in the input"""
 
-    ds.logger.info(f"Number of files in dataset: {ds.files.shape[0]:,}")
-    ds.logger.info(f"Number of samples in dataset: {ds.samplesheet.shape[0]:,}")
+def read_samplesheet(path) -> pd.DataFrame:
+    """Read the samplesheet filled out in the form, keeping every value as text."""
 
-    # Filter out any index files that may have been uploaded
-    ds.files = ds.files.loc[
-        ds.files.apply(
-            lambda r: r.get('readType', 'R') == 'R',
-            axis=1
-        )
-    ]
+    # The form field is marked required, but an empty table can still be submitted,
+    # in which case Cirro either omits the param or writes an empty file
+    if not path:
+        raise ValueError("No samplesheet was provided: add at least one row of FASTQ files")
+    try:
+        samplesheet = pd.read_csv(path, dtype=str, keep_default_na=False)
+    except pd.errors.EmptyDataError:
+        samplesheet = pd.DataFrame()
+    if samplesheet.empty:
+        raise ValueError("The samplesheet is empty: add at least one row of FASTQ files")
+    return samplesheet
 
-    # If the files were added with a samplesheet.csv, they will include
-    # an index indicating which line of the samplesheet.csv they were in
-    if "sampleIndex" in ds.files.columns.values:
 
-        # Reconstruct the manifest
-        manifest = ds.files.pivot(
-            index=["sampleIndex", "sample"],
-            columns="read",
-            values="file"
-        ).rename(
-            columns=lambda i: f"fastq_{int(i)}"
-        ).sort_index(
-        ).sort_index(
-            axis=1
-        ).reset_index(
-        ).drop(
-            columns=["sampleIndex"]
-        )
+def fill_strandedness(samplesheet: pd.DataFrame) -> pd.DataFrame:
+    """Have the pipeline infer the strandedness of every row that leaves it blank."""
 
-    # If the files weren't added with a samplesheet.csv, then we will
-    # use different logic to construct the sample sheet.
-    # This is intended to capture the scenario when there are multiple
-    # pairs of FASTQs for any samples.
-    else:
+    return samplesheet.assign(strandedness=samplesheet["strandedness"].replace("", "auto"))
 
-        manifest = []
 
-        # Iterate over each file
-        for sample_name, sample_files in ds.files.groupby("sample"):
+def check_conditions(samplesheet: pd.DataFrame):
+    """Fail before the run unless every sample has one condition, and there are two to compare.
 
-            # Make a sorted list of the files available for this sample
-            file_list = sample_files["file"].sort_values().tolist()
+    rnasplice takes the condition of a sample from its first row only.
+    """
 
-            # Add pairs of files to the manifest
-            while len(file_list) > 0:
-
-                assert len(file_list) >= 2, f"Unexpected odd number of files found for sample {sample_name}"
-
-                # Add the first two files to the manifest
-                manifest.append(
-                    dict(
-                        sample=sample_name,
-                        fastq_1=file_list[0],
-                        fastq_2=file_list[1]
-                    )
-                )
-
-                # Remove those files from the list
-                file_list = file_list[2:]
-
-        manifest = pd.DataFrame(manifest)
-
-    # Get the strandedness attribute for each sample (if any exists)
-    strandedness = ds.samplesheet.reindex(
-        columns=["sample", "strandedness"]
-    ).set_index(
-        "sample"
-    )["strandedness"]
-
-    # Add that information to the manifest, filling in "unstranded" when missing
-    manifest = manifest.assign(
-        strandedness=manifest["sample"].apply(
-            strandedness.get
-        ).fillna(
-            "unstranded"
-        )
-    )
-
-    # The user must have specified a 'condition' for each sample
-    msg = "ERROR: Must specify the 'condition' for each sample (e.g. treatment, control)"
-    assert 'condition' in ds.samplesheet.columns.values, msg
-
-    # Values must be provided for all samples
-    msg = "ERROR: Samples are missing 'condition' information"
-    missing = ds.samplesheet.loc[
-        ds.samplesheet['condition'].isnull()
-    ].index.values
+    missing = samplesheet.loc[samplesheet["condition"] == "", "sample"].unique()
     if len(missing) > 0:
-        ds.logger.info("Missing condition information for :")
-        ds.logger.info(", ".join(missing))
-    assert len(missing) == 0, msg
+        raise ValueError(f"Every sample needs a condition (such as treatment or control), but it is missing for: {', '.join(missing)}")
 
-    # Add the condition information to the samplesheet
-    manifest = manifest.assign(
-        condition=manifest["sample"].apply(
-            ds.samplesheet.set_index("sample")["condition"].get
-        )
-    )
+    conditions_per_sample = samplesheet.groupby("sample", sort=False)["condition"].nunique()
+    conflicting = conditions_per_sample.index[conditions_per_sample > 1]
+    if len(conflicting) > 0:
+        raise ValueError(f"Each sample can have only one condition, but these have several: {', '.join(conflicting)}")
 
-    return manifest
+    if samplesheet["condition"].nunique() < 2:
+        raise ValueError("Samples of at least two conditions are needed to compare, but every sample has the same one")
 
 
-def make_contrasts(manifest: pd.DataFrame):
-    """Make the contrasts table expected by rnasplice"""
+def make_contrasts(samplesheet: pd.DataFrame) -> pd.DataFrame:
+    """Make the contrasts table expected by rnasplice: one row per pair of conditions."""
 
-    # Get all of the unique values for 'condition'
-    conditions = manifest["condition"].drop_duplicates().to_list()
-
-    # Iterate over each unique combination of 'condition'
-    # and make a contrasts CSV
+    conditions = samplesheet["condition"].drop_duplicates().to_list()
 
     return pd.DataFrame([
         dict(
@@ -129,6 +67,12 @@ def make_contrasts(manifest: pd.DataFrame):
         for control in conditions
         if control < treatment
     ])
+
+
+def log_table(ds: PreprocessDataset, title: str, df: pd.DataFrame):
+    ds.logger.info(f"{title}:")
+    for line in df.to_csv(index=None).split("\n"):
+        ds.logger.info(line)
 
 
 def format_reference_paths(ds: PreprocessDataset):
@@ -562,19 +506,21 @@ def configure_miso(ds: PreprocessDataset):
 
 if __name__ == "__main__":
 
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
+
     ds = PreprocessDataset.from_running()
 
-    manifest = make_manifest(ds)
+    samplesheet = fill_strandedness(read_samplesheet(ds.params.get("input")))
+    check_conditions(samplesheet)
+    contrasts = make_contrasts(samplesheet)
+    log_table(ds, "Samplesheet", samplesheet)
+    log_table(ds, "Contrasts", contrasts)
 
-    contrasts = make_contrasts(manifest)
+    # Overwrite the file Cirro wrote to the dataset's config/ folder (mapped in process-input.json)
+    samplesheet.to_csv(ds.params["input"], index=None)
 
-    # Write the manifest and contrasts to the dataset's config/ folder
-    # (mapped in process-input.json)
-    manifest.to_csv(ds.params["input"], index=None)
-    print(f"Wrote out {manifest.shape[0]:,} lines to {ds.params['input']}")
-
+    # Write the contrasts to the dataset's config/ folder (mapped in process-input.json)
     contrasts.to_csv(ds.params["contrasts"], index=None)
-    print(f"Wrote out {contrasts.shape[0]:,} lines to {ds.params['contrasts']}")
 
     # Format the reference paths
     format_reference_paths(ds)

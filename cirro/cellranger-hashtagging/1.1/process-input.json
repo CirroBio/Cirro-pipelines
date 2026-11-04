@@ -1,0 +1,14 @@
+{
+  "grouping": "$.structuredInputs.pipeline_samplesheet.path",
+  "multiplexing": "$.structuredInputs.pipeline_multiplexing.path",
+  "fastq_dir": "$.dataset.params.fastq_dir[*]",
+  "transcriptome_dir": "$.dataset.params.transcriptome_dir",
+  "include_introns": "$.dataset.params.include_introns",
+  "hashtag_csv": "$.dataset.params.hashtag_csv",
+  "feature_csv": "$.dataset.params.feature_csv",
+  "vdj_dir": "$.dataset.params.vdj_dir",
+  "cellranger_version": "$.dataset.params.cellranger_version",
+  "emptydrops_minimum_umis": "$.dataset.params.emptydrops_minimum_umis",
+  "global_minimum_umis": "$.dataset.params.global_minimum_umis",
+  "output": "$.dataset.dataPath"
+}

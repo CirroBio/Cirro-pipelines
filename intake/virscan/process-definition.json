@@ -5,6 +5,7 @@
     "process-hutch-virscan-1_1",
     "process-hutch-virscan-1_2",
     "process-hutch-virscan-1_3",
+    "process-hutch-virscan-1_4",
     "process-hutch-fastqc-1_0"
   ],
   "name": "VirScan (FASTQ)",

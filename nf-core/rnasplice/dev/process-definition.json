@@ -13,7 +13,8 @@
     "uri": "nf-core/rnasplice",
     "version": "dev"
   },
-  "usesSampleSheet": true,
+  "allowMultipleSources": true,
+  "usesSampleSheet": false,
   "computeDefaults": [
     {
       "executor": "NEXTFLOW",
