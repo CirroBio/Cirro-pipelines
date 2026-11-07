@@ -1,7 +1,8 @@
 {
   "id": "ingest_aligned_bam",
   "childProcessIds": [
-    "process-nf-core-sarek-call-variants-3-2"
+    "process-nf-core-sarek-call-variants-3-2",
+    "process-nf-core-sarek-call-variants-3-3"
   ],
   "name": "Aligned BAM",
   "desc": "Aligned genomic sequences in BAM format",
