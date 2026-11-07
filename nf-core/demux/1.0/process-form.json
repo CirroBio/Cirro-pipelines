@@ -44,7 +44,7 @@
           "sgdemux (Singular Genomics)",
           "mkfastq (10X Genomics)"
         ],
-        "description": "",
+        "description": "For mkfastq with a 10X simple sample sheet (Lane,Sample,Index), also tick samshee under Skip Tools: it only accepts Illumina v2 sample sheets",
         "fa_icon": "fas fa-microscope",
         "default": "bclconvert",
         "title": "Demultiplexer to use"
