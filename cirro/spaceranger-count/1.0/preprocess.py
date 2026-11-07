@@ -63,7 +63,6 @@ if __name__ == "__main__":
         pd.read_csv(f"{images_dir}/samplesheet.csv", dtype=str, keep_default_na=False),
         images_dir
     )
-    ds.logger.info(images.to_csv(index=None))
 
     check_samples_match(samplesheet, images)
 
