@@ -1,4 +1,4 @@
-"""Offline tests for the nf-core/cutandrun 2.0 samplesheet handling.
+"""Offline tests for the nf-core/cutandrun samplesheet handling.
 
 preprocess.py imports the Cirro SDK only when it runs, so this is a plain
 `python -m unittest` that needs pandas and nothing else.
