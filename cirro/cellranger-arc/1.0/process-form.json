@@ -2,6 +2,10 @@
   "form": {
     "type": "object",
     "properties": {
+      "samplesheet": {
+        "type": "string",
+        "schema": "pipeline_samplesheet"
+      },
       "reference_dir": {
         "title": "Genome",
         "description": "Reference genome used for alignment of RNAseq and ATACseq data",
@@ -26,7 +30,67 @@
           "2.0.0"
         ]
       }
-    }
+    },
+    "required": [
+      "samplesheet"
+    ]
   },
-  "ui": {}
+  "ui": {},
+  "structuredInputs": {
+    "pipeline_samplesheet": {
+      "fileFormat": "CSV",
+      "schema": {
+        "title": "Samplesheet",
+        "description": "One row per lane of each library: gex for gene expression, or atac for chromatin accessibility. ATAC libraries have three reads, so their rows also need FASTQ (R3); R2 is the barcode read. Rows with the same sample name are analyzed together in one Cell Ranger ARC run, and each sample needs both gex and atac rows. FASTQ files need Illumina names with a lane, such as PBMC_ATAC_S1_L001_R1_001.fastq.gz.",
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "properties": {
+            "sample": {
+              "type": "string",
+              "title": "Sample",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "errorMessage": "Sample names can only contain letters, numbers, hyphens and underscores"
+            },
+            "fastq_type": {
+              "type": "string",
+              "title": "Library Type",
+              "enum": [
+                "gex",
+                "atac"
+              ]
+            },
+            "fastq_1": {
+              "title": "FASTQ (R1)",
+              "type": "string",
+              "format": "file-path",
+              "pattern": "^(?![\\S\\s]*_I[12]_001\\.fastq\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+              "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+            },
+            "fastq_2": {
+              "title": "FASTQ (R2)",
+              "type": "string",
+              "format": "file-path",
+              "pattern": "^(?![\\S\\s]*_I[12]_001\\.fastq\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+              "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+            },
+            "fastq_3": {
+              "title": "FASTQ (R3, ATAC only)",
+              "type": "string",
+              "format": "file-path",
+              "pattern": "^(?![\\S\\s]*_I[12]_001\\.fastq\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+              "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+            }
+          },
+          "required": [
+            "sample",
+            "fastq_type",
+            "fastq_1",
+            "fastq_2"
+          ]
+        }
+      }
+    }
+  }
 }

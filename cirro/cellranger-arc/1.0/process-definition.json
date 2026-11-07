@@ -15,7 +15,7 @@
     "script": "arc_count.nf"
   },
   "allowMultipleSources": true,
-  "usesSampleSheet": true,
+  "usesSampleSheet": false,
   "computeDefaults": [
     {
       "executor": "NEXTFLOW",
