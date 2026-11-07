@@ -34,15 +34,25 @@ project's datasets (the same values as nf-schema):
 The workflow receives the full S3 path; folders have no trailing slash. `default` does not
 pre-select anything in this picker.
 
-**Example:**
+**Examples:**
 ```json
 "gtf": {
   "title": "Annotation File",
   "type": "string",
   "format": "file-path",
   "pattern": "\\.gtf(\\.gz)?$"
+},
+"genome_index": {
+  "title": "STAR Index",
+  "type": "string",
+  "format": "directory-path",
+  "process": ["process-cirro-genome-index-star-1-0", "genome_star_index"]
 }
 ```
+
+A whole dataset picked in the folder picker yields its `data/` folder, so map such a field
+as it is (`"$.dataset.params.genome_index"`), not with the `|/data` suffix a `pathType`
+selector needed.
 
 ---
 
@@ -80,15 +90,11 @@ map the field instead.
 `multiple` and `process` (above) apply to these pickers too: `process` limits a
 `pathType: "dataset"` selector to datasets produced by those processes.
 
-**Example:**
-```json
-"genome_index": {
-  "title": "STAR Index",
-  "type": "string",
-  "pathType": "dataset",
-  "process": ["process-cirro-genome-index-star-1-0", "genome_star_index"]
-}
-```
+A `pathType: "dataset"` selector in a path-mode form becomes `format: "directory-path"` with
+the same `process` list (see the `genome_index` example above), and its mapping drops
+`/data`: `"<field>|/data"` becomes `"<field>"`, and `"<field>|/data/probes.csv"` becomes
+`"<field>|/probes.csv"`. A form still in dataset mode keeps `pathType`, since one `format`
+field would switch it to path mode.
 
 ---
 
