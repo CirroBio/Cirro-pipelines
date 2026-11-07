@@ -1,0 +1,977 @@
+{
+  "ui": {},
+  "form": {
+    "title": "Quantitative Mass Spectrometry (DDA-LFQ) (nf-core/quantms)",
+    "type": "object",
+    "required": ["samplesheet", "organism"],
+    "properties": {
+      "samplesheet": {
+        "type": "string",
+        "schema": "pipeline_samplesheet"
+      },
+      "organism": {
+        "title": "Organism",
+        "type": "string",
+        "description": "The organism that was analyzed in the experiment, for rows of the SDRF that leave Organism blank.",
+        "default": "Homo sapiens"
+      },
+      "protein_database": {
+        "title": "Protein database",
+        "type": "object",
+        "description": "Settings that relate to the mandatory protein database and the optional generation of decoy entries.",
+        "required": [
+          "database"
+        ],
+        "properties": {
+          "database": {
+            "title": "Protein Database",
+            "pathType": "references",
+            "type": "string",
+            "description": "Select a Reference Genome (FASTA) protein database to use during database search.",
+            "file": "**/genome_fasta/**/genome.fasta"
+          },
+          "customize_database_options": {
+            "description": "Customize Database Options",
+            "title": "Enabled",
+            "type": "boolean"
+          }
+        },
+        "dependencies": {
+          "customize_database_options": {
+            "oneOf": [
+              {
+                "properties": {
+                  "customize_database_options": {
+                    "enum": [true]
+                  },
+                  "add_decoys": {
+                    "type": "boolean",
+                    "description": "Add Decoys",
+                    "title": "Generate and append decoys to the given protein database",
+                    "help_text": "If decoys were not yet included in the input database, they have to be appended by OpenMS DecoyGenerator by adding this flag.",
+                    "default": false
+                  },
+                  "decoy_string": {
+                    "type": "string",
+                    "title": "Decoy String",
+                    "description": "Pre- or suffix of decoy proteins in their accession",
+                    "default": "DECOY_",
+                    "help_text": "If 'Add Decoys' was set, this setting is used during generation and passed to all tools that need decoy information. Typical values are 'rev', 'decoy', 'dec'. Look for them in your database."
+                  },
+                  "decoy_string_position": {
+                    "type": "string",
+                    "title": "Decoy String Position",
+                    "description": "Location of the decoy marker string in the fasta accession. Before (prefix) or after (suffix)",
+                    "default": "prefix",
+                    "enum": ["prefix", "suffix"],
+                    "help_text": "Prefix is highly recommended. Only in case an external tool marked decoys with a suffix, e.g. `sp|Q12345|ProteinA_DECOY` change this parameter to suffix."
+                  },
+                  "decoy_method": {
+                    "type": "string",
+                    "title": "Decoy Method",
+                    "description": "Choose the method to produce decoys from input target database.",
+                    "default": "reverse",
+                    "enum": [
+                      "reverse",
+                      "shuffle"
+                    ]
+                  },
+                  "shuffle_max_attempts": {
+                    "title": "Shuffle Max Attempts",
+                    "type": "integer",
+                    "description": "Maximum nr. of attempts to lower the amino acid sequence identity between target and decoy for the shuffle algorithm",
+                    "default": 30
+                  },
+                  "shuffle_sequence_identity_threshold": {
+                    "title": "Shuffle Sequence Identity Threshold",
+                    "type": "number",
+                    "description": "Target-decoy amino acid sequence identity threshold for the shuffle algorithm. if the sequence identity is above this threshold, shuffling is repeated. In case of repeated failure, individual amino acids are 'mutated' to produce a difference amino acid sequence.",
+                    "default": 0.5
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "customize_database_options": {
+                    "enum": [false]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "spectrum_preprocessing": {
+        "title": "Spectrum Preprocessing",
+        "type": "object",
+        "description": "In case you start from profile mode mzMLs or the internal preprocessing during conversion with the ThermoRawFileParser fails (e.g. due to new instrument types), preprocessing has to be performed with OpenMS.",
+        "properties": {
+          "customize_spectrum_preprocessing": {
+            "type": "boolean",
+            "description": "Customize Spectrum Preprocessing",
+            "title": "Enabled",
+            "default": false
+          }
+        },
+        "dependencies": {
+          "customize_spectrum_preprocessing": {
+            "oneOf": [
+              {
+                "properties": {
+                  "customize_spectrum_preprocessing": {
+                    "enum": [true]
+                  },
+                  "openms_peakpicking": {
+                    "type": "boolean",
+                    "description": "Activate OpenMS-internal peak picking",
+                    "title": "Activate OpenMS-internal peak picking with the tool PeakPickerHiRes. Skips already picked spectra.",
+                    "default": false
+                  },
+                  "peakpicking_inmemory": {
+                    "type": "boolean",
+                    "description": "Perform peakpicking in memory (use only if problems occur)",
+                    "title": "Enabled",
+                    "default": false
+                  },
+                  "peakpicking_ms_levels": {
+                    "type": "string",
+                    "title": "Peakpicking MS levels",
+                    "description": "Which MS levels to pick as comma separated list (e.g. 1,2). Leave empty for auto-detection.",
+                    "default": ""
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "customize_spectrum_preprocessing": {
+                    "enum": [false]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "database_search": {
+        "title": "Database Search",
+        "type": "object",
+        "properties": {
+          "search_engines": {
+            "title": "Database Search Engine(s)",
+            "type": "string",
+            "default": "comet, msgf",
+            "oneOf": [
+              {
+                "type": "string",
+                "title": "comet",
+                "enum": ["comet"]
+              },
+              {
+                "type": "string",
+                "title": "msgf",
+                "enum": ["msgf"]
+              },
+              {
+                "type": "string",
+                "title": "comet + msgf",
+                "enum": ["comet, msgf"]
+              }
+            ]
+          },
+          "enzyme": {
+            "type": "string",
+            "title": "Enzyme",
+            "description": "The enzyme used to digest the samples, recorded in the SDRF as their cleavage agent.",
+            "default": "Trypsin",
+            "enum": [
+              "Trypsin",
+              "Arg-C",
+              "Arg-C/P",
+              "Asp-N",
+              "Asp-N/B",
+              "Asp-N_ambic",
+              "Chymotrypsin",
+              "Chymotrypsin/P",
+              "CNBr",
+              "Formic_acid",
+              "Lys-C",
+              "Lys-N",
+              "PepsinA",
+              "Trypsin/P",
+              "V8-DE",
+              "V8-E",
+              "glutamyl endopeptidase",
+              "2-iodobenzoate",
+              "elastase-trypsin-chymotrypsin",
+              "no cleavage",
+              "unspecific cleavage"
+            ]
+          },
+          "fragment_mass_tolerance": {
+            "type": "number",
+            "title": "Fragment Mass Tolerance",
+            "description": "Fragment mass tolerance used for database search. The default of 0.03 Da is for high-resolution instruments.",
+            "default": 0.6,
+            "help_text": "Caution: for Comet we are estimating the `fragment_bin_tolerance` parameter based on this automatically."
+          },
+          "fragment_mass_tolerance_unit": {
+            "type": "string",
+            "title": "Fragment Mass Tolerance Unit",
+            "description": "Fragment mass tolerance unit used for database search.",
+            "default": "Da",
+            "help_text": "Caution: for Comet we are estimating the `fragment_bin_tolerance` parameter based on this automatically.",
+            "enum": [
+              "Da",
+              "ppm"
+            ]
+          },
+          "precursor_mass_tolerance": {
+            "type": "integer",
+            "title": "Precursor Mass Tolerance",
+            "description": "Precursor mass tolerance used for database search. For High-Resolution instruments a precursor mass tolerance value of 5 ppm is recommended (i.e. 5).",
+            "default": 10
+          },
+          "precursor_mass_tolerance_unit": {
+            "type": "string",
+            "title": "Precursor Mass Tolerance Unit",
+            "description": "Precursor mass tolerance unit used for database search.",
+            "default": "ppm",
+            "enum": [
+              "Da",
+              "ppm"
+            ]
+          },
+          "customize_database_search": {
+            "type": "boolean",
+            "title": "Enabled",
+            "description": "Customize Database Search"
+          }
+        },
+        "dependencies": {
+          "customize_database_search": {
+            "oneOf": [
+              {
+                "properties": {
+                  "customize_database_search": {
+                    "enum": [true]
+                  },
+                  "num_enzyme_termini": {
+                    "type": "string",
+                    "title": "Enzyme Termini Number",
+                    "description": "Specify the amount of termini matching the enzyme cutting rules for a peptide to be considered.",
+                    "default": "fully",
+                    "enum": [
+                      "fully",
+                      "semi",
+                      "none"
+                    ]
+                  },
+                  "allowed_missed_cleavages": {
+                    "type": "integer",
+                    "title": "Allowed Missed Cleavages",
+                    "description": "Specify the maximum number of allowed missed enzyme cleavages in a peptide. The parameter is not applied if `unspecific cleavage` is specified as enzyme.",
+                    "default": 2
+                  },
+                  "fixed_mods": {
+                    "type": "string",
+                    "title": "Fixed Modifications",
+                    "description": "A comma-separated list of fixed modifications with their Unimod name to be searched during database search",
+                    "default": "Carbamidomethyl (C)",
+                    "help_text": "Specify which fixed modifications should be applied to the database search (eg. '' or 'Carbamidomethyl (C)')."
+                  },
+                  "variable_mods": {
+                    "type": "string",
+                    "title": "Variable Modifications",
+                    "description": "A comma-separated list of variable modifications with their Unimod name to be searched during database search",
+                    "default": "Oxidation (M)",
+                    "help_text": "Specify which variable modifications should be applied to the database search (eg. '' or 'Oxidation (M)')."
+                  },
+                  "isotope_error_range": {
+                    "type": "string",
+                    "title": "Isotype Error Range",
+                    "description": "Comma-separated range of integers with allowed isotope peak errors for precursor tolerance (like MS-GF+ parameter '-ti'). E.g. -1,3",
+                    "default": "0,1",
+                    "help_text": "Range of integers with allowed isotope peak errors (like MS-GF+ parameter '-ti'). Takes into account the error introduced by choosing a non-monoisotopic peak for fragmentation. Combined with 'precursor_mass_tolerance'/'precursor_error_units', this determines the actual precursor mass tolerance. E.g. for experimental mass 'exp' and calculated mass 'calc', '-precursor_mass_tolerance 20 -precursor_error_units ppm -isotope_error_range -1,2' tests '|exp - calc - n * 1.00335 Da| < 20 ppm' for n = -1, 0, 1, 2."
+                  },
+                  "instrument": {
+                    "type": "string",
+                    "title": "Instrument Resolution",
+                    "description": "Type of instrument that generated the data.",
+                    "default": "high_res",
+                    "enum": ["low_res", "high_res"]
+                  },
+                  "protocol": {
+                    "type": "string",
+                    "title": "Protocol (MSGF)",
+                    "description": "MSGF only: Labeling or enrichment protocol used, if any.",
+                    "default": "automatic"
+                  },
+                  "min_precursor_charge": {
+                    "type": "integer",
+                    "title": "Minimum Precursor Ion Charge",
+                    "default": 2
+                  },
+                  "max_precursor_charge": {
+                    "type": "integer",
+                    "title": "Maximum Precursor Ion Charge",
+                    "default": 4
+                  },
+                  "min_peptide_length": {
+                    "type": "integer",
+                    "title": "Minimum Peptide Length",
+                    "default": 6
+                  },
+                  "max_peptide_length": {
+                    "type": "integer",
+                    "title": "Maximum Peptide Length",
+                    "default": 40
+                  },
+                  "num_hits": {
+                    "type": "integer",
+                    "title": "Number of Hits",
+                    "description": "Specify the maximum number of top peptide candidates per spectrum to be reported by the search engine. Default: 1",
+                    "default": 1
+                  },
+                  "max_mods": {
+                    "type": "integer",
+                    "title": "Maximum Modifications",
+                    "description": "Maximum number of modifications per peptide. If this value is large, the search may take very long.",
+                    "default": 3
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "customize_database_search": {
+                    "enum": [false]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "modification_localization": {
+        "title": "Modification localization",
+        "type": "object",
+        "description": "Settings for calculating a localization probability with LucXor for modifications with multiple candidate amino acids in a peptide.",
+        "properties": {
+          "enable_mod_localization": {
+            "type": "boolean",
+            "description": "Modification Localization Analysis",
+            "title": "Enabled"
+          }
+        },
+        "dependencies": {
+          "enable_mod_localization": {
+            "oneOf": [
+              {
+                "properties": {
+                  "enable_mod_localization": {
+                    "enum": [true]
+                  },
+                  "mod_localization": {
+                    "type": "string",
+                    "title": "Modification Localizations",
+                    "description": "Which variable modifications to use for scoring their localization.",
+                    "default": "Phospho (S),Phospho (T),Phospho (Y)"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "enable_mod_localization": {
+                    "enum": [false]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "peptide_psm_indexing": {
+        "title": "Peptide PSM Indexing",
+        "properties": {
+          "customize_peptide_psm_indexing": {
+            "type": "boolean",
+            "description": "Customize Peptide Indexing / PSM Scoring",
+            "title": "Enabled"
+          }
+        },
+        "dependencies": {
+          "customize_peptide_psm_indexing": {
+            "oneOf": [
+              {
+                "properties": {
+                  "customize_peptide_psm_indexing": {
+                    "enum": [true]
+                  },
+                  "peptide_re_indexing": {
+                    "title": "Peptide re-indexing",
+                    "type": "object",
+                    "description": "",
+                    "default": "",
+                    "properties": {
+                      "unmatched_action": {
+                        "type": "string",
+                        "title": "Unmatched Action",
+                        "description": "What to do when peptides are found that do not follow a unified set of rules (since search engines sometimes differ in their interpretation of them). ",
+                        "default": "warn",
+                        "enum": [
+                          "warn",
+                          "error",
+                          "remove"
+                        ]
+                      },
+                      "IL_equivalent": {
+                        "type": "boolean",
+                        "description": "IL Equivalent",
+                        "title": "Treat isoleucine and leucine interchangeably when mapping search engine hits to the database",
+                        "default": true
+                      }
+                    }
+                  },
+                  "psm_re_scoring_general": {
+                    "title": "PSM re-scoring (general)",
+                    "type": "object",
+                    "description": "Choose between different rescoring/posterior probability calculation methods and set them up.",
+                    "default": "",
+                    "properties": {
+                      "posterior_probabilities": {
+                        "type": "string",
+                        "title": "Posterior Probabilities",
+                        "description": "How to calculate posterior probabilities for PSMs: 'percolator' = Re-score based on PSM-feature-based SVM and transform distance to hyperplane for posteriors; 'fit_distributions' = Fit positive and negative distributions to scores (similar to PeptideProphet)",
+                        "default": "percolator",
+                        "enum": [
+                          "percolator",
+                          "fit_distributions"
+                        ]
+                      },
+                      "psm_pep_fdr_cutoff": {
+                        "type": "number",
+                        "title": "PSM PEP FDR Cutoff",
+                        "description": "FDR cutoff on PSM level (or potential peptide level; see Percolator options) before going into feature finding, map alignment and inference.",
+                        "default": 0.01
+                      }
+                    }
+                  },
+                  "psm_re_scoring_percolator": {
+                    "title": "PSM re-scoring (Percolator)",
+                    "type": "object",
+                    "description": "In the following you can find help for the Percolator specific options that are only used if Posterior Probabilities was set to 'percolator'.",
+                    "default": "",
+                    "properties": {
+                      "FDR_level": {
+                        "type": "string",
+                        "title": "FDR Level",
+                        "description": "Calculate FDR on PSM ('psm-level-fdrs') or peptide level ('peptide-level-fdrs')?",
+                        "default": "peptide-level-fdrs",
+                        "enum": [
+                          "peptide-level-fdrs",
+                          "psm-level-fdrs"
+                        ]
+                      },
+                      "train_FDR": {
+                        "type": "number",
+                        "title": "Training FDR",
+                        "description": "The FDR cutoff to be used during training of the SVM.",
+                        "default": 0.05
+                      },
+                      "test_FDR": {
+                        "type": "number",
+                        "title": "Testing FDR",
+                        "description": "The FDR cutoff to be used during testing of the SVM.",
+                        "default": 0.05
+                      },
+                      "subset_max_train": {
+                        "type": "integer",
+                        "title": "Training Subset Maximum",
+                        "description": "Only train an SVM on a subset of PSMs, and use the resulting score vector to evaluate the other PSMs. Recommended when analyzing huge numbers (>1 million) of PSMs. When set to 0, all PSMs are used for training as normal. This is a runtime vs. discriminability tradeoff. Default: 300,000",
+                        "default": 300000
+                      }
+                    }
+                  },
+                  "psm_re_scoring_distribution_fitting": {
+                    "title": "PSM re-scoring (distribution fitting)",
+                    "type": "object",
+                    "description": "Use this instead of Percolator if there are problems with Percolator (e.g. due to bad separation) or for performance",
+                    "default": "",
+                    "properties": {
+                      "outlier_handling": {
+                        "type": "string",
+                        "title": "Outlier Handling",
+                        "description": "How to handle outliers during fitting.",
+                        "default": "none",
+                        "enum": [
+                          "none",
+                          "ignore_iqr_outliers",
+                          "set_iqr_to_closest_valid",
+                          "ignore_extreme_percentiles"
+                        ],
+                        "enumNames": [
+                          "Use all values",
+                          "Ignore outliers outside of `3*IQR` from Q1/Q3 for fitting",
+                          "Set IQR-based outliers to the last valid value for fitting",
+                          "Ignore everything outside 99th and 1st percentile"
+                        ]
+                      },
+                      "protein": {
+                        "description": "Protein-Level FDR",
+                        "type": "boolean",
+                        "title": "Perform FDR calculation on protein level",
+                        "default": false
+                      }
+                    }
+                  },
+                  "consensus_id": {
+                    "title": "Consensus ID",
+                    "type": "object",
+                    "description": "",
+                    "default": "",
+                    "properties": {
+                      "consensusid_algorithm": {
+                        "type": "string",
+                        "title": "ConsensusID Algorithm",
+                        "description": "How to combine the probabilities from the single search engines: best, combine using a sequence similarity-matrix (PEPMatrix), combine using shared ion count of peptides (PEPIons). See help for further info.",
+                        "default": "best",
+                        "help_text": "Specifies how search engine results are combined: ConsensusID offers several algorithms that can aggregate results from multiple peptide identification engines ('search engines') into consensus identifications - typically one per MS2 spectrum. This works especially well for search engines that provide more than one peptide hit per spectrum, i.e. that report not just the best hit, but also a list of runner-up candidates with corresponding scores.\n\nThe available algorithms are:\n\n* PEPMatrix: Scoring based on posterior error probabilities (PEPs) and peptide sequence similarities. This algorithm uses a substitution matrix to score the similarity of sequences not listed by all search engines. It requires PEPs as the scores for all peptide hits.\n* PEPIons: Scoring based on posterior error probabilities (PEPs) and fragment ion similarities ('shared peak count'). This algorithm, too, requires PEPs as scores.\n* best: For each peptide ID, this uses the best score of any search engine as the consensus score.\n* worst: For each peptide ID, this uses the worst score of any search engine as the consensus score.\n* average: For each peptide ID, this uses the average score of all search engines as the consensus score.\n* ranks: Calculates a consensus score based on the ranks of peptide IDs in the results of different search engines. The final score is in the range (0, 1], with 1 being the best score.\n\nTo make scores comparable, for best, worst and average, PEPs are used as well. Peptide IDs are only considered the same if they map to exactly the same sequence (including modifications and their localization). Also isobaric aminoacids are (for now) only considered equal with the PEPMatrix/PEPIons algorithms.",
+                        "enum": [
+                          "best",
+                          "PEPMatrix",
+                          "PEPIons"
+                        ]
+                      },
+                      "consensusid_considered_top_hits": {
+                        "type": "integer",
+                        "title": "ConsensusID Top Hits",
+                        "description": "Only use the top N hits per search engine and spectrum for combination. Default: 0 = all",
+                        "help_text": "Limits the number of alternative peptide hits considered per spectrum/feature for each identification run. This helps to reduce runtime, especially for the PEPMatrix and PEPIons algorithms, which involve costly 'all vs. all' comparisons of peptide hits per spectrum across engines."
+                      },
+                      "min_consensus_support": {
+                        "type": "integer",
+                        "title": "ConsensusID Minimum Support",
+                        "description": "A threshold for the ratio of occurence/similarity scores of a peptide in other runs, to be reported.",
+                        "help_text": "This allows filtering of peptide hits based on agreement between search engines. Every peptide sequence in the analysis has been identified by at least one search run. This parameter defines which fraction (between 0 and 1) of the remaining search runs must 'support' a peptide identification that should be kept. The meaning of 'support' differs slightly between algorithms: For best, worst, average and rank, each search run supports peptides that it has also identified among its top `consensusid_considered_top_hits` candidates. So `min_consensus_support` simply gives the fraction of additional search engines that must have identified a peptide. (For example, if there are three search runs, and only peptides identified by at least two of them should be kept, set `min_support` to 0.5.) For the similarity-based algorithms PEPMatrix and PEPIons, the 'support' for a peptide is the average similarity of the most-similar peptide from each (other) search run. (In the context of the JPR publication, this is the average of the similarity scores used in the consensus score calculation for a peptide.) Note: For most of the subsequent algorithms, only the best identification per spectrum is used."
+                      }
+                    }
+                  },
+                  "protein_inference": {
+                    "title": "Protein inference",
+                    "type": "object",
+                    "description": "To group proteins, calculate scores on the protein (group) level and to potentially modify associations from peptides to proteins.",
+                    "default": "",
+                    "properties": {
+                      "protein_inference_method": {
+                        "type": "string",
+                        "title": "Protein Inference Method",
+                        "description": "The inference method to use. 'aggregation' (default) or 'bayesian'.",
+                        "default": "aggregation",
+                        "help_text": "Infer proteins through:\n\n* 'aggregation'  =  aggregates all peptide scores across a protein (by calculating the maximum) (default)\n* 'bayesian'        =  compute a posterior probability for every protein based on a Bayesian network (i.e. using Epifany)\n* ('percolator' not yet supported)\n\n**Note:** If protein grouping is performed also depends on the `protein_quant` parameter (i.e. if peptides have to be unique or unique to a group only)",
+                        "enum": [
+                          "aggregation",
+                          "bayesian"
+                        ]
+                      },
+                      "protein_level_fdr_cutoff": {
+                        "type": "number",
+                        "title": "Protein-Level FDR Cutoff",
+                        "description": "The experiment-wide protein (group)-level FDR cutoff. Default: 0.05",
+                        "default": 0.01,
+                        "help_text": "This can be protein level if 'strictly_unique_peptides' are used for protein quantification. See [`--protein_quant`](#params_protein_quant)"
+                      },
+                      "psm_level_fdr_cutoff": {
+                        "type": "number",
+                        "title": "PSM-Level FDR Cutoff",
+                        "description": "The experiment-wide PSM-level FDR cutoff. Default: 0.01",
+                        "default": 0.01,
+                        "help_text": "After applying protein-level FDR cutoff, this additionally filters PSMs to be used for quantification and reporting."
+                      },
+                      "picked_fdr": {
+                        "type": "boolean",
+                        "description": "Use picked protein FDRs",
+                        "title": "Enabled",
+                        "default": true
+                      },
+                      "protein_score": {
+                        "type": "string",
+                        "title": "Protein Scoring",
+                        "description": "[Ignored in Bayesian] How to aggregate scores of peptides matching to the same protein",
+                        "default": "best",
+                        "enum": [
+                          "best",
+                          "product",
+                          "sum"
+                        ]
+                      },
+                      "use_shared_peptides": {
+                        "type": "boolean",
+                        "description": "Use Shared peptides",
+                        "title": "[Ignored in Bayesian] Also use shared peptides during score aggregation to protein level",
+                        "default": true
+                      },
+                      "min_peptides_per_protein": {
+                        "type": "integer",
+                        "title": "Minimum Peptides Per Protein",
+                        "description": "[Ignored in Bayesian] Minimum number of peptides needed for a protein identification",
+                        "default": 1
+                      },
+                      "top_PSMs": {
+                        "type": "integer",
+                        "title": "Top PSMs",
+                        "description": "Consider only the top X PSMs per spectrum to find the best PSM per peptide. 0 considers all.",
+                        "default": 1
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "customize_peptide_psm_indexing": {
+                    "enum": [false]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "protein_quantification_dda": {
+        "title": "Protein Quantification (DDA)",
+        "type": "object",
+        "description": "General protein quantification settings.",
+        "default": "",
+        "properties": {
+          "show_options": {
+            "type": "boolean",
+            "title": "Enabled",
+            "description": "Show Advanced Options"
+          }
+        },
+        "dependencies": {
+          "show_options": {
+            "oneOf": [
+              {
+                "properties": {
+                  "show_options": {"enum": [true]},
+                  "top": {
+                    "type": "integer",
+                    "title": "Top N Peptides",
+                    "description": "Calculate protein abundance from this number of proteotypic peptides (most abundant first; '0' for all, Default 3)",
+                    "default": 3
+                  },
+                  "average": {
+                    "type": "string",
+                    "title": "Averaging Method",
+                    "description": "Averaging method used to compute protein abundances from peptide abundances.",
+                    "default": "median",
+                    "enum": [
+                      "median",
+                      "mean",
+                      "weighted_mean",
+                      "sum"
+                    ]
+                  },
+                  "best_charge_and_fraction": {
+                    "type": "boolean",
+                    "description": "Best Charge and Fraction",
+                    "title": "Distinguish between fraction and charge states of a peptide. (default: 'false')"
+                  },
+                  "ratios": {
+                    "type": "boolean",
+                    "description": "Add Log Ratios",
+                    "title": "Add the log2 ratios of the abundance values to the output.",
+                    "default": false
+                  },
+                  "normalize": {
+                    "type": "boolean",
+                    "description": "Normalize",
+                    "title": "Scale peptide abundances so that medians of all samples are equal.",
+                    "default": false
+                  },
+                  "fix_peptides": {
+                    "type": "boolean",
+                    "description": "Fix Peptides",
+                    "title": "Use the same peptides for protein quantification across all samples.",
+                    "default": false
+                  },
+                  "include_all": {
+                    "type": "boolean",
+                    "description": "Include All",
+                    "title": "Include results for proteins with fewer proteotypic peptide than indicated by top.",
+                    "default": true
+                  },
+                  "protein_quant": {
+                    "type": "string",
+                    "title": "Protein Quantification",
+                    "description": "Quantify proteins based on:",
+                    "default": "unique_peptides",
+                    "enum": [
+                      "unique_peptides",
+                      "strictly_unique_peptides",
+                      "shared_peptides"
+                    ],
+                    "enumNames": [
+                      "Use peptides mapping to single proteins or a group of indistinguishable proteins",
+                      "Use peptides mapping to a unique single protein only",
+                      "Use shared peptides, too, but only greedily for its best group (by inference score and nr. of peptides)"
+                    ]
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "show_options": {"enum": [false]}
+                }
+              }
+            ]
+          }
+        }
+      },
+      "protein_quantification_lfq": {
+        "title": "Protein Quantification (LFQ)",
+        "type": "object",
+        "description": "",
+        "default": "",
+        "properties": {
+          "quantification_method": {
+            "title": "Quantification Method",
+            "description": "Choose between feature-based quantification based on integrated MS1 signals ('feature_intensity'; default) or spectral counting of PSMs ('spectral_counting').",
+            "default": "feature_intensity",
+            "type": "string",
+            "enum": ["feature_intensity", "spectral_counting"],
+            "enumNames": ["Feature Intensity", "spectral_counting"]
+          },
+          "mass_recalibration": {
+            "type": "boolean",
+            "description": "Mass Recalibration",
+            "title": "Recalibrate masses based on precursor mass deviations to correct for instrument biases."
+          },
+          "transfer_ids": {
+            "title": "Transfer IDs",
+            "description": "Tries a targeted requantification in files where an ID is missing, based on aggregate properties (i.e. RT) of the features in other aligned files (e.g. 'mean' of RT).",
+            "default": "false",
+            "type": "string",
+            "oneOf": [
+              {
+                "type": "string",
+                "title": "False",
+                "enum": ["false"]
+              },
+              {
+                "type": "string",
+                "title": "Mean",
+                "enum": ["mean"]
+              }
+            ]
+          },
+          "targeted_only": {
+            "type": "boolean",
+            "description": "Targeted Only",
+            "title": "Only looks for quantifiable features at locations with an identified spectrum. Disable to include unidentified features so they can be linked and matched to identified ones (= match between runs).",
+            "default": true
+          },
+          "alignment_order": {
+            "title": "Alignment Order",
+            "description": "The order in which maps are aligned. Star = all vs. the reference with most IDs (default). TreeGuided = an alignment tree is calculated first based on similarity measures of the IDs in the maps.",
+            "default": "star",
+            "type": "string",
+            "oneOf": [
+              {
+                "type": "string",
+                "title": "star",
+                "enum": ["star"]
+              },
+              {
+                "type": "string",
+                "title": "treeguided",
+                "enum": ["treeguided"]
+              }
+            ]
+          },
+          "quantify_decoys": {
+            "type": "boolean",
+            "description": "Quantify Decoys",
+            "title": "Also quantify decoys?",
+            "default": false
+          }
+        }
+      },
+      "statistical_post_processing": {
+          "title": "Statistical post-processing",
+          "type": "object",
+          "description": "Parameters for the R script using MSstats for statistical post processing and quantification visualization.",
+          "properties": {
+              "skip_post_msstats": {
+                  "type": "boolean",
+                  "description": "Skip MSstats/MSstatsTMT",
+                  "title": "Skip MSstats/MSstatsTMT for statistical post-processing?"
+              },
+              "msstats_threshold": {
+                  "type": "number",
+                  "description": "The threshold value for differential expressed proteins in MSstats plots based on adjusted p-value",
+                  "title": "MSstats Threshold",
+                  "default": 0.05
+              },
+              "add_triqler_output": {
+                  "type": "boolean",
+                  "title": "Also create an output in Triqler's format for an alternative manual post-processing with that tool",
+                  "default": false,
+                  "description": "Add Triqler Output"
+              },
+              "msstatslfq_feature_subset_protein": {
+                  "type": "string",
+                  "title": "Which features to use for quantification per protein: 'top3' or 'highQuality' which removes outliers only",
+                  "default": "top3",
+                  "enum": ["top3", "highQuality"]
+              },
+              "msstatslfq_quant_summary_method": {
+                  "type": "string",
+                  "title": "which summary method to use: 'TMP' (Tukey's median polish) or 'linear' (linear mixed model)",
+                  "default": "TMP",
+                  "enum": ["TMP", "linear"]
+              },
+              "msstats_remove_one_feat_prot": {
+                  "type": "boolean",
+                  "title": "Enabled",
+                  "description": "Omit proteins with only one quantified feature?",
+                  "default": true
+              },
+              "msstatslfq_removeFewMeasurements": {
+                  "type": "boolean",
+                  "title": "Enabled",
+                  "description": "Keep features with only one or two measurements across runs?",
+                  "default": true
+              },
+              "msstatsiso_useunique_peptide": {
+                  "type": "boolean",
+                  "description": "Use unique peptide for each protein",
+                  "title": "Enabled",
+                  "default": true
+              },
+              "msstatsiso_rmpsm_withfewmea_withinrun": {
+                  "type": "boolean",
+                  "description": "Remove the features that have 1 or 2 measurements within each run",
+                  "title": "Enabled",
+                  "default": true
+              },
+              "msstatsiso_summaryformultiple_psm": {
+                  "type": "string",
+                  "title": "select the feature with the largest summmation or maximal value",
+                  "default": "sum",
+                  "enum": ["sum", "max"]
+              },
+              "msstatsiso_summarization_method": {
+                  "type": "string",
+                  "title": "summarization methods to protein-level can be perfomed",
+                  "default": "msstats",
+                  "enum": ["msstats", "MedianPolish", "Median", "LogSum"]
+              },
+              "msstatsiso_global_norm": {
+                  "type": "boolean",
+                  "description": "Reference channel based normalization between MS runs on protein level data?",
+                  "title": "Enabled",
+                  "default": true
+              },
+              "msstatsiso_remove_norm_channel": {
+                  "type": "boolean",
+                  "title": "Enabled",
+                  "description": "Remove 'Norm' channels from protein level data",
+                  "default": true
+              },
+              "msstatsiso_reference_normalization": {
+                  "type": "boolean",
+                  "description": "Reference channel based normalization between MS runs on protein level data",
+                  "title": "Enabled",
+                  "default": true
+              },
+              "msstats_plot_profile_qc": {
+                  "type": "boolean",
+                  "title": "Enabled",
+                  "description": "Export MSstats profile QC plots including all proteins",
+                  "default": false
+              }
+          },
+          "fa_icon": "fab fa-r-project"
+      }
+    }
+  },
+  "structuredInputs": {
+    "pipeline_samplesheet": {
+      "fileFormat": "TSV",
+      "schema": {
+        "title": "SDRF",
+        "description": "One row per data file, in the SDRF-Proteomics format that quantms reads. Blank optional cells are filled in before the run: Assay Name with the source name, Organism from the form, the other characteristics with \"not applicable\", Fraction Identifier with 1, and Technical Replicate by numbering the rows of each sample and fraction.",
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "properties": {
+            "source name": {
+              "type": "string",
+              "title": "Source Name (sample)",
+              "description": "The sample the file was measured from. Rows of the same sample share it"
+            },
+            "comment[file uri]": {
+              "type": "string",
+              "format": "file-path",
+              "title": "Data File",
+              "pattern": "\\.(raw|RAW|mzML|mzml)$",
+              "errorMessage": "Must be a Thermo RAW (.raw) or mzML (.mzML) file"
+            },
+            "factor value[condition]": {
+              "type": "string",
+              "title": "Condition",
+              "description": "The experimental condition of the sample, which MSstats compares. Fill in every row, or leave the column blank to take conditions from the characteristics"
+            },
+            "comment[fraction identifier]": {
+              "type": "string",
+              "title": "Fraction Identifier",
+              "description": "Leave blank for an unfractionated sample (1)",
+              "pattern": "^[1-9][0-9]*$",
+              "errorMessage": "Must be a whole number from 1"
+            },
+            "comment[technical replicate]": {
+              "type": "string",
+              "title": "Technical Replicate",
+              "description": "Leave blank to number the rows of each sample and fraction automatically",
+              "pattern": "^[1-9][0-9]*$",
+              "errorMessage": "Must be a whole number from 1"
+            },
+            "assay name": {
+              "type": "string",
+              "title": "Assay Name",
+              "description": "Leave blank to use the source name"
+            },
+            "characteristics[organism]": {
+              "type": "string",
+              "title": "Organism",
+              "description": "Scientific name as in NCBI Taxonomy, such as Homo sapiens. Leave blank to use the Organism set in the form"
+            },
+            "characteristics[organism part]": {
+              "type": "string",
+              "title": "Organism Part",
+              "description": "Leave blank for not applicable"
+            },
+            "characteristics[disease]": {
+              "type": "string",
+              "title": "Disease",
+              "description": "Leave blank for not applicable"
+            },
+            "characteristics[cell type]": {
+              "type": "string",
+              "title": "Cell Type",
+              "description": "Leave blank for not applicable"
+            },
+            "characteristics[biological replicate]": {
+              "type": "string",
+              "title": "Biological Replicate",
+              "description": "Leave blank for not applicable"
+            }
+          },
+          "required": ["source name", "comment[file uri]"]
+        }
+      }
+    }
+  }
+}
