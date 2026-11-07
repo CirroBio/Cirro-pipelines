@@ -35,7 +35,7 @@ def read_samplesheet(path) -> pd.DataFrame:
 
 
 def check_libraries(samplesheet: pd.DataFrame):
-    """Fail unless every sample has gex and atac rows, and every atac row its R3 FASTQ.
+    """Fail unless every sample has gex and atac rows, and only atac rows have an R3 FASTQ.
 
     arc_count.nf skips rows of any other type, and samples missing either library,
     without an error. Cell Ranger ARC needs all three reads of an ATAC library.
@@ -60,6 +60,13 @@ def check_libraries(samplesheet: pd.DataFrame):
     if not no_r3.empty:
         raise ValueError(
             f"ATAC rows need all three reads, with R3 as FASTQ (R3); check sample(s) {', '.join(no_r3.unique())}"
+        )
+
+    # It would be staged with the gene expression reads
+    gex_r3 = samplesheet.loc[(samplesheet["fastq_type"] == "gex") & (samplesheet["fastq_3"] != ""), "sample"]
+    if not gex_r3.empty:
+        raise ValueError(
+            f"Only ATAC rows have an R3 read; clear FASTQ (R3) on the gex rows of sample(s) {', '.join(gex_r3.unique())}"
         )
 
 

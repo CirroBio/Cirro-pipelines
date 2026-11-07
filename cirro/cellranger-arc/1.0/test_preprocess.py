@@ -96,6 +96,11 @@ class CheckLibraries(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "ATAC rows need all three reads.*check sample\\(s\\) 01"):
             preprocess.check_libraries(samplesheet(GEX, no_r3))
 
+    def test_gex_row_with_r3_fails_clearly(self):
+        gex_r3 = GEX.replace(",\r\n", ",s3://bucket/data/01_GEX_S1_L001_R3_001.fastq.gz\r\n")
+        with self.assertRaisesRegex(ValueError, "clear FASTQ \\(R3\\) on the gex rows of sample\\(s\\) 01"):
+            preprocess.check_libraries(samplesheet(gex_r3, ATAC))
+
 
 if __name__ == "__main__":
     unittest.main()

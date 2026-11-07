@@ -65,22 +65,22 @@
               "title": "FASTQ (R1)",
               "type": "string",
               "format": "file-path",
-              "pattern": "^(?![\\S\\s]*_I[12]_001\\.fastq\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
-              "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+              "pattern": "/[^\\s/]+_S\\d+_L0\\d{2}_R1_001\\.fastq\\.gz$",
+              "errorMessage": "Must be an R1 FASTQ with an Illumina name, such as PBMC_ATAC_S1_L001_R1_001.fastq.gz"
             },
             "fastq_2": {
               "title": "FASTQ (R2)",
               "type": "string",
               "format": "file-path",
-              "pattern": "^(?![\\S\\s]*_I[12]_001\\.fastq\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
-              "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+              "pattern": "/[^\\s/]+_S\\d+_L0\\d{2}_R2_001\\.fastq\\.gz$",
+              "errorMessage": "Must be an R2 FASTQ with an Illumina name, such as PBMC_ATAC_S1_L001_R2_001.fastq.gz"
             },
             "fastq_3": {
               "title": "FASTQ (R3, ATAC only)",
               "type": "string",
               "format": "file-path",
-              "pattern": "^(?![\\S\\s]*_I[12]_001\\.fastq\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
-              "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+              "pattern": "/[^\\s/]+_S\\d+_L0\\d{2}_R3_001\\.fastq\\.gz$",
+              "errorMessage": "Must be an R3 FASTQ with an Illumina name, such as PBMC_ATAC_S1_L001_R3_001.fastq.gz"
             }
           },
           "required": [
