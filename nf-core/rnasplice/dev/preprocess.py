@@ -10,6 +10,8 @@ import pandas as pd
 if TYPE_CHECKING:
     from cirro.helpers.preprocess_dataset import PreprocessDataset
 
+STRANDEDNESS = ["forward", "reverse", "unstranded"]
+
 
 def read_samplesheet(path) -> pd.DataFrame:
     """Read the samplesheet filled out in the form, keeping every value as text."""
@@ -27,10 +29,17 @@ def read_samplesheet(path) -> pd.DataFrame:
     return samplesheet
 
 
-def fill_strandedness(samplesheet: pd.DataFrame) -> pd.DataFrame:
-    """Have the pipeline infer the strandedness of every row that leaves it blank."""
+def check_strandedness(samplesheet: pd.DataFrame):
+    """Fail before the run unless every row sets a strandedness rnasplice 1.0.4 accepts.
 
-    return samplesheet.assign(strandedness=samplesheet["strandedness"].replace("", "auto"))
+    It cannot infer strandedness ("auto"), which only its later releases support.
+    """
+
+    unset = samplesheet.loc[~samplesheet["strandedness"].isin(STRANDEDNESS), "sample"]
+    if not unset.empty:
+        raise ValueError(
+            f"Set the strandedness ({', '.join(STRANDEDNESS)}) of: {', '.join(unset.unique())}"
+        )
 
 
 def check_conditions(samplesheet: pd.DataFrame):
@@ -510,14 +519,11 @@ if __name__ == "__main__":
 
     ds = PreprocessDataset.from_running()
 
-    samplesheet = fill_strandedness(read_samplesheet(ds.params.get("input")))
+    samplesheet = read_samplesheet(ds.params.get("input"))
+    check_strandedness(samplesheet)
     check_conditions(samplesheet)
     contrasts = make_contrasts(samplesheet)
-    log_table(ds, "Samplesheet", samplesheet)
     log_table(ds, "Contrasts", contrasts)
-
-    # Overwrite the file Cirro wrote to the dataset's config/ folder (mapped in process-input.json)
-    samplesheet.to_csv(ds.params["input"], index=None)
 
     # Write the contrasts to the dataset's config/ folder (mapped in process-input.json)
     contrasts.to_csv(ds.params["contrasts"], index=None)

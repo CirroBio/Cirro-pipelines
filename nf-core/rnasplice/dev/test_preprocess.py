@@ -32,7 +32,7 @@ def _samplesheet(samples, conditions):
         "sample": samples,
         "fastq_1": [f"{sample}_R1.fastq.gz" for sample in samples],
         "fastq_2": [f"{sample}_R2.fastq.gz" for sample in samples],
-        "strandedness": ["auto"] * len(samples),
+        "strandedness": ["unstranded"] * len(samples),
         "condition": conditions,
     })
 
@@ -61,11 +61,17 @@ class ReadSamplesheet(unittest.TestCase):
             preprocess.read_samplesheet(io.StringIO(HEADER))
 
 
-class FillStrandedness(unittest.TestCase):
+class CheckStrandedness(unittest.TestCase):
 
-    def test_blank_becomes_auto_and_set_values_are_kept(self):
-        samplesheet = _samplesheet(["A", "B"], ["ctrl", "trt"]).assign(strandedness=["", "reverse"])
-        self.assertEqual(preprocess.fill_strandedness(samplesheet)["strandedness"].tolist(), ["auto", "reverse"])
+    def test_set_values_pass(self):
+        preprocess.check_strandedness(
+            _samplesheet(["A", "B", "C"], ["ctrl", "trt", "trt"]).assign(strandedness=["forward", "reverse", "unstranded"])
+        )
+
+    def test_blank_or_auto_fails_naming_the_samples(self):
+        samplesheet = _samplesheet(["A", "B", "C"], ["ctrl", "trt", "trt"]).assign(strandedness=["", "auto", "reverse"])
+        with self.assertRaisesRegex(ValueError, "of: A, B$"):
+            preprocess.check_strandedness(samplesheet)
 
 
 class CheckConditions(unittest.TestCase):

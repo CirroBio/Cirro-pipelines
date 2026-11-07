@@ -604,9 +604,8 @@
             "strandedness": {
               "type": "string",
               "title": "Strandedness",
-              "description": "Leave blank to infer it from the reads (auto)",
+              "description": "The library's strandedness. rnasplice 1.0.4 cannot infer it",
               "enum": [
-                "auto",
                 "forward",
                 "reverse",
                 "unstranded"
@@ -623,6 +622,7 @@
           "required": [
             "sample",
             "fastq_1",
+            "strandedness",
             "condition"
           ]
         }
