@@ -645,9 +645,6 @@ if __name__ == "__main__":
     samplesheet = read_samplesheet(ds.params.get("input"))
     filled = fill_samplesheet(samplesheet)
 
-    for line in filled.to_csv(index=None).split("\n"):
-        ds.logger.info(line)
-
     check_one_patient_per_sample(filled)
     check_one_status_per_sample(filled)
     check_unique_lanes(filled)
