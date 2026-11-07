@@ -15,7 +15,8 @@
     "version": "User Defined",
     "executorVersion": "25.10.4"
   },
-  "usesSampleSheet": true,
+  "allowMultipleSources": true,
+  "usesSampleSheet": false,
   "computeDefaults": [
     {
       "executor": "NEXTFLOW",

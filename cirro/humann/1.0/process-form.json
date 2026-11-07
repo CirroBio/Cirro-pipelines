@@ -2,7 +2,12 @@
   "form": {
     "type": "object",
     "name": "Metagenomic Pathways (HUMAnN v3)",
+    "required": ["samplesheet"],
     "properties": {
+      "samplesheet": {
+        "type": "string",
+        "schema": "pipeline_samplesheet"
+      },
       "translated_search_db": {
         "title": "Protein Search Database",
         "description": "Collection of reference proteins used for alignment",
@@ -71,5 +76,44 @@
       }
     }
   },
-  "ui": {}
+  "ui": {},
+  "structuredInputs": {
+    "pipeline_samplesheet": {
+      "fileFormat": "CSV",
+      "defaultSourceFile": "samplesheet.csv",
+      "schema": {
+        "title": "Samplesheet",
+        "description": "One row per sample: a single FASTQ file (single-end) or a pair of FASTQ files (paired-end).",
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "properties": {
+            "sample": {
+              "type": "string",
+              "title": "Sample",
+              "pattern": "^\\S+$",
+              "errorMessage": "Sample name must be provided and cannot contain spaces"
+            },
+            "fastq_1": {
+              "type": "string",
+              "format": "file-path",
+              "title": "FASTQ (R1)",
+              "pattern": "^(?![\\S\\s]*_I[12]_001\\.f(ast)?q\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+              "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+            },
+            "fastq_2": {
+              "type": "string",
+              "format": "file-path",
+              "title": "FASTQ (R2)",
+              "description": "Leave blank for single-end reads",
+              "pattern": "^(?![\\S\\s]*_I[12]_001\\.f(ast)?q\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+              "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+            }
+          },
+          "required": ["sample", "fastq_1"]
+        }
+      }
+    }
+  }
 }

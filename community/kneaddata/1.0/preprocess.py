@@ -1,64 +1,66 @@
 #!/usr/bin/env python3
 
-from cirro.helpers.preprocess_dataset import PreprocessDataset
+import pandas as pd
 
 
-def resolve_references(ds: PreprocessDataset, *params: str):
-    """Make reference params absolute against the references bucket.
+def absolute_reference(value, references_base: str):
+    """A reference param's value, made absolute against the references bucket.
 
     Form values name a path under that bucket rather than a full URI, so the
     configuration is not tied to one deployment. A value that is already absolute
-    is left alone, which keeps datasets created before that change re-runnable.
+    is returned as is, which keeps datasets created before that change re-runnable.
     """
-    for param in params:
-        value = ds.params.get(param)
-        if not isinstance(value, str) or not value or value.startswith("s3://"):
-            continue
-        ds.add_param(param, f"{ds.references_base}/{value}", overwrite=True)
+    if not isinstance(value, str) or not value or value.startswith("s3://"):
+        return value
+    return f"{references_base}/{value}"
 
-ds = PreprocessDataset.from_running()
 
-resolve_references(ds, "db")
+def read_samplesheet(path) -> pd.DataFrame:
+    """Read the samplesheet filled out in the form, keeping every value as text."""
 
-ds.logger.info("Files annotated in the dataset:")
-ds.logger.info(ds.files.to_csv(index=None))
+    # The form field is marked required, but an empty table can still be submitted,
+    # in which case Cirro either omits the param or writes an empty file
+    if not path:
+        raise ValueError("No samplesheet was provided: add one row per sample")
+    try:
+        samplesheet = pd.read_csv(path, dtype=str, keep_default_na=False)
+    except pd.errors.EmptyDataError:
+        samplesheet = pd.DataFrame()
+    if samplesheet.empty:
+        raise ValueError("The samplesheet is empty: add one row per sample")
+    return samplesheet
 
-# Filter out any index files that may have been uploaded
-ds.files = ds.files.loc[
-    ds.files.apply(
-        lambda r: r.get('readType', 'R') == 'R',
-        axis=1
-    )
-]
 
-# Make a wide samplesheet with the columns
-# sample, fastq_1, fastq_1
-samplesheet = (
-    ds.files
-    .reindex(columns=["dataset", "sampleIndex", "sample", "lane", "read", "file"])
-    # A row with no read number cannot be paired, and would pivot
-    # into a column the rename below cannot name.
-    .loc[lambda d: d["read"].notna()]
-    .pivot(
-        index=["dataset", "sampleIndex", "sample", "lane"],
-        columns="read",
-        values="file"
-    )
-    .rename(columns=lambda i: f"fastq_{int(i)}")
-    .reset_index()
-    .reindex(columns=["sample", "fastq_1", "fastq_2"])
-)
+def check_unique_samples(samplesheet: pd.DataFrame):
+    """The workflow runs KneadData once per row and names its outputs after the sample,
+    so a repeated sample's outputs overwrite each other rather than being merged."""
 
-ds.logger.info("Formatted samplesheet:")
-ds.logger.info(samplesheet.to_csv(index=None))
-assert samplesheet.shape[0] > 0, "No files detected -- there may be an error with data ingest"
+    duplicated = samplesheet.loc[samplesheet["sample"].duplicated(), "sample"].unique()
+    if len(duplicated) > 0:
+        raise ValueError(
+            "Each sample can be listed only once, with a single pair of FASTQ files "
+            "(combine the files of a sample sequenced on several lanes first). "
+            f"Listed more than once: {', '.join(duplicated)}"
+        )
 
-# Write to the dataset's config/ folder (mapped in process-input.json)
-samplesheet.to_csv(ds.params["samplesheet"], index=None)
 
-# log
-ds.logger.info(ds.params)
+if __name__ == "__main__":
 
-# Force params.json to be written: the HealthOmics pre-process Lambda fails the run
-# when the file is absent, and the SDK writes it only when a parameter changes.
-ds.keep_params(list(ds.params.keys()))
+    # Imported here so that test_preprocess.py runs without the SDK
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
+
+    ds = PreprocessDataset.from_running()
+
+    db = ds.params.get("db")
+    resolved = absolute_reference(db, ds.references_base)
+    if resolved != db:
+        ds.add_param("db", resolved, overwrite=True)
+
+    samplesheet = read_samplesheet(ds.params.get("samplesheet"))
+    check_unique_samples(samplesheet)
+
+    ds.logger.info(ds.params)
+
+    # Force params.json to be written: the HealthOmics pre-process Lambda fails the run
+    # when the file is absent, and the SDK writes it only when a parameter changes.
+    ds.keep_params(list(ds.params.keys()))

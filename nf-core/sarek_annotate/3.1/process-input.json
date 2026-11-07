@@ -9,7 +9,7 @@
   "vep_spliceregion": "$.dataset.params.annotation.vep_spliceregion",
   "genome": "$.dataset.params.analysis_type.genome",
   "outdir": "$.dataset.dataPath",
-  "input": "$.dataset.s3|/config/manifest.csv",
+  "input": "$.structuredInputs.pipeline_samplesheet.path",
   "igenomes_base": "$.referencesBucketUri|/igenomes/",
   "vep_cache": "$.referencesBucketUri|/vep_cache/",
   "snpeff_cache": "$.referencesBucketUri|/snpeff_cache/",

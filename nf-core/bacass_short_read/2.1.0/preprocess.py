@@ -1,64 +1,46 @@
 #!/usr/bin/env python3
 
-from cirro.helpers.preprocess_dataset import PreprocessDataset
 import pandas as pd
 
+# bacass 2.4.0 builds its input channel from all six columns, and tells an absent input
+# apart only by the literal "NA": a missing column or a blank cell reaches the workflow
+# as an empty list, which it treats as a file to process
+BACASS_COLUMNS = ["ID", "R1", "R2", "LongFastQ", "Fast5", "GenomeSize"]
 
-def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
 
-    # Filter out any index files that may have been uploaded
-    ds.files = ds.files.loc[
-        ds.files.apply(
-            lambda r: r.get('readType', 'R') == 'R',
-            axis=1
-        )
-    ]
+def read_samplesheet(path) -> pd.DataFrame:
+    """Read the tab-separated samplesheet filled out in the form, keeping every value as text."""
 
-    ds.logger.info("Files annotated in the dataset:")
-    ds.logger.info(ds.files.to_csv(index=None))
-
-    # Make a wide samplesheet with the columns
-    # ID,R1,R2,LongFastQ,Fast5,GenomeSize
-    samplesheet = ds.files.pivot(
-        index=["sampleIndex", "sample"],
-        columns="read",
-        values="file"
-    ).rename(
-        columns=lambda i: f"R{int(i)}"
-    ).reset_index(
-    ).set_index(
-        "sampleIndex"
-    ).rename(
-        columns=dict(
-            sample="ID"
-        )
-    ).reindex(
-        columns=[
-            "ID",
-            "R1",
-            "R2",
-            "LongFastQ",
-            "Fast5",
-            "GenomeSize"
-        ]
-    ).fillna("NA")
-
-    ds.logger.info("Formatted samplesheet:")
-    ds.logger.info(samplesheet.to_csv(index=None, sep="\t"))
-    assert samplesheet.shape[0] > 0, "No files detected -- there may be an error with data ingest"
-
+    # The form field is marked required, but an empty table can still be submitted,
+    # in which case Cirro either omits the param or writes an empty file
+    if not path:
+        raise ValueError("No samplesheet was provided: add at least one sample")
+    try:
+        samplesheet = pd.read_csv(path, sep="\t", dtype=str, keep_default_na=False)
+    except pd.errors.EmptyDataError:
+        samplesheet = pd.DataFrame()
+    if samplesheet.empty:
+        raise ValueError("The samplesheet is empty: add at least one sample")
     return samplesheet
+
+
+def to_bacass_samplesheet(samplesheet: pd.DataFrame) -> pd.DataFrame:
+    """Add the columns the form does not ask for, and mark every empty cell NA."""
+
+    return samplesheet.reindex(columns=BACASS_COLUMNS, fill_value="NA").replace("", "NA")
 
 
 if __name__ == "__main__":
 
-    # Load the information for this dataset
+    # Imported here so that test_preprocess.py runs without the SDK
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
+
     ds = PreprocessDataset.from_running()
 
-    # Make the samplesheet
-    samplesheet = make_manifest(ds)
+    samplesheet = read_samplesheet(ds.params.get("input"))
+    samplesheet = to_bacass_samplesheet(samplesheet)
 
-    # Write to the dataset's config/ folder (mapped in process-input.json)
+    # Overwrite the file Cirro wrote to the dataset's config/ folder (mapped in process-input.json)
     samplesheet.to_csv(ds.params["input"], index=None, sep="\t")
 
     # Format the unicycler_args based on the mode
