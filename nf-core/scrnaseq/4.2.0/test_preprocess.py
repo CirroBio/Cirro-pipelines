@@ -1,43 +1,28 @@
-"""Offline tests for the nf-core/scrnaseq reference resolution.
+"""Offline tests for the nf-core/scrnaseq 4.2.0 preprocess script.
 
-Runs without the Cirro SDK or boto3: both are stubbed before preprocess is
-loaded, so this is a plain `python -m unittest`.
+preprocess.py imports the Cirro SDK and boto3 only when it runs, and takes the S3
+client as an argument, so this is a plain `python -m unittest` that needs pandas
+and nothing else.
 
-The point of these tests is the part that is easy to get wrong and expensive to
-discover on the platform -- that each aligner promotes the right index params,
-that no other branch's values leak through, and that a Cell Ranger reference is
-found by content rather than by an assumed directory name.
+The samplesheet is the structured input Cirro writes from the run form: a CSV with
+CRLF line endings, a header from the form's columns, and blank cells left empty. A
+reference param is the value of a folder picker: the S3 URI of the picked dataset's
+data/ folder, or of a folder inside it, with no trailing slash.
+
+Beyond the samplesheet, the point is the part that is easy to get wrong and
+expensive to discover on the platform -- that each aligner promotes the right
+index params, that no other branch's values leak through, and that a Cell Ranger
+reference is found by content rather than by an assumed directory name.
 """
-import sys
-import types
+import importlib.util
+import io
 import unittest
 from pathlib import Path
 
+import pandas as pd
+
 
 def _load_preprocess():
-    helpers = types.ModuleType("cirro.helpers.preprocess_dataset")
-    helpers.PreprocessDataset = object
-    s3_path_mod = types.ModuleType("cirro.api.models.s3_path")
-
-    class S3Path:
-        def __init__(self, path):
-            rest = path.replace("s3://", "", 1)
-            self.bucket, _, self.key = rest.partition("/")
-
-    s3_path_mod.S3Path = S3Path
-
-    for name, mod in [
-        ("cirro", types.ModuleType("cirro")),
-        ("cirro.helpers", types.ModuleType("cirro.helpers")),
-        ("cirro.api", types.ModuleType("cirro.api")),
-        ("cirro.api.models", types.ModuleType("cirro.api.models")),
-    ]:
-        sys.modules.setdefault(name, mod)
-    sys.modules["cirro.helpers.preprocess_dataset"] = helpers
-    sys.modules["cirro.api.models.s3_path"] = s3_path_mod
-    sys.modules.setdefault("boto3", types.ModuleType("boto3"))
-
-    import importlib.util
     path = Path(__file__).with_name("preprocess.py")
     spec = importlib.util.spec_from_file_location("scrnaseq_preprocess", path)
     module = importlib.util.module_from_spec(spec)
@@ -47,7 +32,16 @@ def _load_preprocess():
 
 preprocess = _load_preprocess()
 
+HEADER = "sample,fastq_1,fastq_2,fastq_barcode,expected_cells,seq_center,sample_type,feature_type\r\n"
+COLUMNS = HEADER.strip().split(",")
+
 REF = "s3://bucket/datasets/abc/data"
+VDJ_REF = "s3://bucket/datasets/vdj/data"
+
+
+def table(*rows):
+    """Rows as read_samplesheet returns them: every column present, blank cells as ''."""
+    return pd.DataFrame([{column: row.get(column, "") for column in COLUMNS} for row in rows])
 
 
 class FakeLogger:
@@ -73,10 +67,38 @@ class FakeDataset:
         self.params.pop(key, None)
 
 
-def resolve(aligner, params):
+class FakeS3:
+    """Holds the given objects and lists them the way boto3's list_objects_v2 paginator does."""
+
+    def __init__(self, *uris):
+        self.objects = [uri.removeprefix("s3://").split("/", 1) for uri in uris]
+
+    def get_paginator(self, operation):
+        assert operation == "list_objects_v2"
+        return self
+
+    def paginate(self, Bucket, Prefix):
+        contents = [
+            {"Key": key} for bucket, key in self.objects
+            if bucket == Bucket and key.startswith(Prefix)
+        ]
+        # S3 leaves Contents out of a page that has no objects
+        yield {"Contents": contents} if contents else {}
+
+
+def reference_package(folder, name="cellranger_reference"):
+    """The objects of a Cell Ranger reference package named `name` inside `folder`."""
+    return [
+        f"{folder}/{name}/reference.json",
+        f"{folder}/{name}/fasta/genome.fa",
+        f"{folder}/{name}/star/SA",
+    ]
+
+
+def resolve(aligner, params, s3=FakeS3()):
     """Run resolve_reference plus the cleanup the entrypoint does after it."""
     ds = FakeDataset(params)
-    kept = preprocess.resolve_reference(ds, aligner)
+    kept = preprocess.resolve_reference(ds, aligner, s3)
     for param in preprocess.INDEX_PARAMS:
         if param not in kept:
             ds.remove_param(param, force=True)
@@ -85,13 +107,70 @@ def resolve(aligner, params):
     return ds, kept
 
 
-def _stub_reference_scan(found="cellranger_reference"):
-    """Replace the S3 scan with one that reports a package at <base>/<found>."""
-    def fake(ds, base):
-        if found is None:
-            raise ValueError(f"No reference.json found under {base}")
-        return f"{base.rstrip('/')}/{found}"
-    return fake
+class ReadSamplesheet(unittest.TestCase):
+
+    def test_values_stay_text(self):
+        samplesheet = preprocess.read_samplesheet(io.StringIO(
+            HEADER + "01,s3://bucket/data/01_R1.fastq.gz,s3://bucket/data/01_R2.fastq.gz,,3000,,,\r\n"
+        ))
+        self.assertEqual(samplesheet["sample"].tolist(), ["01"])
+        self.assertEqual(samplesheet["expected_cells"].tolist(), ["3000"])
+        self.assertEqual(samplesheet["fastq_barcode"].tolist(), [""])
+        self.assertEqual(samplesheet["feature_type"].tolist(), [""])
+
+    def test_no_param_fails_clearly(self):
+        for path in (None, ""):
+            with self.assertRaisesRegex(ValueError, "No samplesheet was provided"):
+                preprocess.read_samplesheet(path)
+
+    def test_empty_file_fails_clearly(self):
+        with self.assertRaisesRegex(ValueError, "The samplesheet is empty"):
+            preprocess.read_samplesheet(io.StringIO(""))
+
+    def test_header_without_rows_fails_clearly(self):
+        with self.assertRaisesRegex(ValueError, "The samplesheet is empty"):
+            preprocess.read_samplesheet(io.StringIO(HEADER))
+
+
+class CheckLibraryTypes(unittest.TestCase):
+
+    def test_single_library_aligners_ignore_the_library_columns(self):
+        samplesheet = table({"sample": "Sample_X", "fastq_1": "x_R1.fastq.gz", "fastq_2": "x_R2.fastq.gz"})
+        for aligner in ("simpleaf", "kallisto", "star", "cellranger"):
+            preprocess.check_library_types(samplesheet, aligner)
+
+    def test_arc_rows_with_their_types_and_third_reads_pass(self):
+        preprocess.check_library_types(table(
+            {"sample": "PBMC", "sample_type": "gex"},
+            {"sample": "PBMC", "sample_type": "atac", "fastq_barcode": "atac_R3.fastq.gz"},
+        ), "cellrangerarc")
+
+    def test_arc_row_without_a_sample_type_fails_naming_its_sample(self):
+        with self.assertRaisesRegex(ValueError, "sample_type on every row; check sample\\(s\\) PBMC2"):
+            preprocess.check_library_types(table(
+                {"sample": "PBMC1", "sample_type": "gex"},
+                {"sample": "PBMC2"},
+            ), "cellrangerarc")
+
+    def test_atac_row_without_its_third_read_fails(self):
+        with self.assertRaisesRegex(ValueError, "third read \\(R3\\).*PBMC"):
+            preprocess.check_library_types(table(
+                {"sample": "PBMC", "sample_type": "atac"},
+            ), "cellrangerarc")
+
+    def test_multi_rows_with_their_feature_types_pass(self):
+        preprocess.check_library_types(table(
+            {"sample": "PBMC_10K", "feature_type": "gex"},
+            {"sample": "PBMC_10K", "feature_type": "vdj"},
+            {"sample": "PBMC_10K", "feature_type": "ab"},
+        ), "cellrangermulti")
+
+    def test_multi_row_without_a_feature_type_fails(self):
+        with self.assertRaisesRegex(ValueError, "feature_type on every row; check sample\\(s\\) PBMC_10K"):
+            preprocess.check_library_types(table(
+                {"sample": "PBMC_10K", "feature_type": "gex"},
+                {"sample": "PBMC_10K"},
+            ), "cellrangermulti")
 
 
 class SimpleafRoute(unittest.TestCase):
@@ -118,7 +197,7 @@ class SimpleafRoute(unittest.TestCase):
 class KallistoRoute(unittest.TestCase):
 
     def test_standard_workflow_omits_velocity_maps(self):
-        ds, kept = resolve("kallisto", {
+        ds, _ = resolve("kallisto", {
             "kallisto_genome_source": "dataset", "kb_ref": REF,
             "kb_workflow": "standard"})
         self.assertEqual(ds.params["kallisto_index"], f"{REF}/index.idx")
@@ -157,27 +236,29 @@ class StarRoute(unittest.TestCase):
 
 class CellRangerRoute(unittest.TestCase):
 
-    def setUp(self):
-        self._real = preprocess.find_reference_dir
-        preprocess.find_reference_dir = _stub_reference_scan()
-
-    def tearDown(self):
-        preprocess.find_reference_dir = self._real
-
     def test_reference_found_by_content(self):
         ds, _ = resolve("cellranger", {
-            "cellranger_genome_source": "dataset", "cellranger_ref": REF})
+            "cellranger_genome_source": "dataset", "cellranger_ref": REF},
+            FakeS3(*reference_package(REF)))
         self.assertEqual(ds.params["cellranger_index"], f"{REF}/cellranger_reference")
 
     def test_custom_directory_name_is_honoured(self):
-        preprocess.find_reference_dir = _stub_reference_scan("my_own_name")
         ds, _ = resolve("cellranger", {
-            "cellranger_genome_source": "dataset", "cellranger_ref": REF})
+            "cellranger_genome_source": "dataset", "cellranger_ref": REF},
+            FakeS3(*reference_package(REF, "my_own_name")))
         self.assertEqual(ds.params["cellranger_index"], f"{REF}/my_own_name")
+
+    def test_picking_the_package_folder_itself_works(self):
+        package = f"{REF}/my_own_name"
+        ds, _ = resolve("cellranger", {
+            "cellranger_genome_source": "dataset", "cellranger_ref": package},
+            FakeS3(*reference_package(REF, "my_own_name")))
+        self.assertEqual(ds.params["cellranger_index"], package)
 
     def test_fasta_and_gtf_not_passed_with_a_reference_package(self):
         ds, _ = resolve("cellranger", {
-            "cellranger_genome_source": "dataset", "cellranger_ref": REF})
+            "cellranger_genome_source": "dataset", "cellranger_ref": REF},
+            FakeS3(*reference_package(REF)))
         self.assertNotIn("fasta", ds.params)
         self.assertNotIn("gtf", ds.params)
 
@@ -192,21 +273,14 @@ class CellRangerRoute(unittest.TestCase):
 
 class CellRangerArcRoute(unittest.TestCase):
 
-    def setUp(self):
-        self._real = preprocess.find_reference_dir
-        preprocess.find_reference_dir = _stub_reference_scan("cellrangerarc_reference")
-
-    def tearDown(self):
-        preprocess.find_reference_dir = self._real
-
     def test_promotes_arc_reference_as_a_prebuilt_index(self):
         # cellrangerarc_reference names a genome in a mkref config, so a pre-built
         # package travels as cellranger_index. scrnaseq 4.2.0 cannot consume it -- see
         # the note in resolve_reference -- but that is the param to set.
         ds, kept = resolve("cellrangerarc", {
-            "cellrangerarc_genome_source": "dataset", "cellrangerarc_ref": REF})
-        self.assertEqual(ds.params["cellranger_index"],
-                         f"{REF}/cellrangerarc_reference")
+            "cellrangerarc_genome_source": "dataset", "cellrangerarc_ref": REF},
+            FakeS3(*reference_package(REF, "cellrangerarc_reference")))
+        self.assertEqual(ds.params["cellranger_index"], f"{REF}/cellrangerarc_reference")
         self.assertEqual(kept, ["cellranger_index"])
         self.assertNotIn("cellrangerarc_reference", ds.params)
         # The reference package carries the annotation, so no loose fasta/gtf is passed.
@@ -216,30 +290,25 @@ class CellRangerArcRoute(unittest.TestCase):
 
 class CellRangerMultiRoute(unittest.TestCase):
 
-    def setUp(self):
-        self._real = preprocess.find_reference_dir
-        preprocess.find_reference_dir = _stub_reference_scan()
-
-    def tearDown(self):
-        preprocess.find_reference_dir = self._real
-
     def test_both_references_promoted(self):
         ds, kept = resolve("cellrangermulti", {
             "cellrangermulti_genome_source": "dataset",
             "cellrangermulti_gex_ref": REF,
-            "cellrangermulti_vdj_ref": "s3://bucket/vdj/data"})
+            "cellrangermulti_vdj_ref": VDJ_REF},
+            FakeS3(*reference_package(REF), *reference_package(VDJ_REF)))
         self.assertEqual(ds.params["cellranger_index"], f"{REF}/cellranger_reference")
-        self.assertEqual(ds.params["cellranger_vdj_index"],
-                         "s3://bucket/vdj/data/cellranger_reference")
+        self.assertEqual(ds.params["cellranger_vdj_index"], f"{VDJ_REF}/cellranger_reference")
         self.assertIn("cellranger_vdj_index", kept)
 
     def test_vdj_is_optional(self):
-        ds, kept = resolve("cellrangermulti", {
-            "cellrangermulti_genome_source": "dataset",
-            "cellrangermulti_gex_ref": REF})
-        self.assertIn("cellranger_index", ds.params)
-        self.assertNotIn("cellranger_vdj_index", ds.params)
-        self.assertNotIn("cellranger_vdj_index", kept)
+        for unset in ({}, {"cellrangermulti_vdj_ref": None}):
+            ds, kept = resolve("cellrangermulti", {
+                "cellrangermulti_genome_source": "dataset",
+                "cellrangermulti_gex_ref": REF, **unset},
+                FakeS3(*reference_package(REF)))
+            self.assertIn("cellranger_index", ds.params)
+            self.assertNotIn("cellranger_vdj_index", ds.params)
+            self.assertNotIn("cellranger_vdj_index", kept)
 
 
 class IgenomesRoute(unittest.TestCase):
@@ -262,18 +331,16 @@ class IgenomesRoute(unittest.TestCase):
 class Failures(unittest.TestCase):
 
     def test_dataset_source_without_a_reference_raises(self):
-        with self.assertRaises(ValueError) as caught:
+        with self.assertRaisesRegex(ValueError, "simpleaf_ref"):
             resolve("simpleaf", {"simpleaf_genome_source": "dataset"})
-        self.assertIn("simpleaf_ref", str(caught.exception))
 
     def test_igenomes_without_a_genome_raises(self):
         with self.assertRaises(ValueError):
             resolve("star", {"star_genome_source": "igenomes"})
 
     def test_unknown_genome_source_raises(self):
-        with self.assertRaises(ValueError) as caught:
+        with self.assertRaisesRegex(ValueError, "somewhere_else"):
             resolve("star", {"star_genome_source": "somewhere_else"})
-        self.assertIn("somewhere_else", str(caught.exception))
 
     def test_unknown_aligner_raises(self):
         with self.assertRaises(ValueError):
@@ -297,169 +364,22 @@ class ScaffoldingCleanup(unittest.TestCase):
 
 
 class ReferenceScan(unittest.TestCase):
-    """find_reference_dir walks the real pagination shape boto3 returns."""
-
-    def _paginated(self, keys):
-        class Paginator:
-            def paginate(self, Bucket, Prefix):
-                yield {"Contents": [{"Key": k} for k in keys]}
-
-        class Client:
-            def get_paginator(self, _name):
-                return Paginator()
-
-        preprocess.boto3.client = lambda _service: Client()
 
     def test_finds_the_package_directory(self):
-        self._paginated([
-            "datasets/abc/data/genome.fasta",
-            "datasets/abc/data/my_ref/star/SAindex",
-            "datasets/abc/data/my_ref/reference.json",
-        ])
-        ds = FakeDataset({})
+        s3 = FakeS3(f"{REF}/genome.fasta", *reference_package(REF, "my_ref"))
         self.assertEqual(
-            preprocess.find_reference_dir(ds, "s3://bucket/datasets/abc/data"),
-            "s3://bucket/datasets/abc/data/my_ref")
+            preprocess.find_reference_dir(FakeDataset({}), s3, REF), f"{REF}/my_ref")
 
     def test_absent_reference_json_raises(self):
-        self._paginated(["datasets/abc/data/genome.fasta"])
-        ds = FakeDataset({})
-        with self.assertRaises(ValueError) as caught:
-            preprocess.find_reference_dir(ds, "s3://bucket/datasets/abc/data")
-        self.assertIn("No reference.json", str(caught.exception))
+        s3 = FakeS3(f"{REF}/genome.fasta")
+        with self.assertRaisesRegex(ValueError, "No reference.json"):
+            preprocess.find_reference_dir(FakeDataset({}), s3, REF)
+
+    def test_scan_stays_inside_the_picked_folder(self):
+        s3 = FakeS3(*reference_package(REF + "_old"))
+        with self.assertRaisesRegex(ValueError, "No reference.json"):
+            preprocess.find_reference_dir(FakeDataset({}), s3, REF)
 
 
 if __name__ == "__main__":
     unittest.main()
-
-
-class SamplesheetBuilder(unittest.TestCase):
-    """The multi-library aligners need per-row metadata Cirro holds per sample."""
-
-    def _dataset(self, params, metadata_rows, files_rows):
-        import pandas as pd
-
-        class Pivoting(FakeDataset):
-            """Stands in for the SDK: rows keyed on sample, metadata merged on sample."""
-
-            def __init__(self, params, samplesheet, files):
-                super().__init__(params)
-                self.samplesheet = samplesheet
-                self.files = files
-
-            def pivot_samplesheet(self, metadata_columns, file_filter_predicate):
-                wide = (
-                    self.files.query(file_filter_predicate)
-                    .pivot_table(index="sample", columns="read", values="file",
-                                 aggfunc="first")
-                    .rename(columns=lambda read: f"fastq_{read}")
-                    .reset_index()
-                )
-                combined = wide.merge(self.samplesheet, on="sample", how="inner")
-                keep = ["sample"] + [c for c in combined.columns
-                                     if c.startswith("fastq_")]
-                keep += [c for c in metadata_columns if c in combined.columns]
-                return combined[keep]
-
-        return Pivoting(params, pd.DataFrame(metadata_rows), pd.DataFrame(files_rows))
-
-    def _files(self, samples):
-        """samples maps a sample name to how many reads its library sequenced."""
-        return [
-            {"sample": s, "read": read, "readType": "R", "file": f"{s}_R{read}.fastq.gz"}
-            for s, n_reads in samples.items() for read in range(1, n_reads + 1)
-        ]
-
-    def test_arc_libraries_collapse_onto_the_grouping_column(self):
-        ds = self._dataset(
-            {},
-            [{"sample": "PBMC_gex", "sample_type": "gex", "sample_group": "PBMC"},
-             {"sample": "PBMC_atac", "sample_type": "atac", "sample_group": "PBMC"}],
-            self._files({"PBMC_gex": 2, "PBMC_atac": 3}),
-        )
-        sheet = preprocess.make_samplesheet(ds, "cellrangerarc")
-        self.assertEqual(set(sheet["sample"]), {"PBMC"})
-        self.assertEqual(set(sheet["sample_type"]), {"gex", "atac"})
-        self.assertNotIn("sample_group", sheet.columns)
-
-    def test_multi_libraries_keep_their_feature_types(self):
-        ds = self._dataset(
-            {},
-            [{"sample": "P_gex", "feature_type": "gex", "sample_group": "PBMC_10K"},
-             {"sample": "P_vdj", "feature_type": "vdj", "sample_group": "PBMC_10K"},
-             {"sample": "P_ab", "feature_type": "ab", "sample_group": "PBMC_10K"}],
-            self._files({"P_gex": 2, "P_vdj": 2, "P_ab": 2}),
-        )
-        sheet = preprocess.make_samplesheet(ds, "cellrangermulti")
-        self.assertEqual(set(sheet["sample"]), {"PBMC_10K"})
-        self.assertEqual(set(sheet["feature_type"]), {"gex", "vdj", "ab"})
-        self.assertEqual(len(sheet), 3)
-
-    def test_arc_without_the_metadata_raises_naming_both_columns(self):
-        ds = self._dataset({}, [{"sample": "PBMC_gex"}], self._files({"PBMC_gex": 3}))
-        with self.assertRaises(ValueError) as caught:
-            preprocess.make_samplesheet(ds, "cellrangerarc")
-        self.assertIn("sample_type", str(caught.exception))
-        self.assertIn("sample_group", str(caught.exception))
-
-    def test_multi_without_the_grouping_column_raises(self):
-        ds = self._dataset(
-            {}, [{"sample": "P_gex", "feature_type": "gex"}], self._files({"P_gex": 2}))
-        with self.assertRaises(ValueError) as caught:
-            preprocess.make_samplesheet(ds, "cellrangermulti")
-        self.assertIn("sample_group", str(caught.exception))
-
-    def test_single_library_aligner_needs_neither_column(self):
-        ds = self._dataset({}, [{"sample": "Sample_X"}], self._files({"Sample_X": 2}))
-        sheet = preprocess.make_samplesheet(ds, "simpleaf")
-        self.assertEqual(list(sheet["sample"]), ["Sample_X"])
-        self.assertEqual(sheet["fastq_1"].iloc[0], "Sample_X_R1.fastq.gz")
-
-    def test_optional_columns_match_the_pipeline_input_schema(self):
-        # assets/schema_input.json for 4.2.0; sub_sample is not among them.
-        self.assertEqual(
-            sorted(preprocess.OPTIONAL_SAMPLESHEET_COLUMNS),
-            sorted(["expected_cells", "seq_center", "feature_type",
-                    "sample_type", "fastq_barcode"]),
-        )
-
-    def test_atac_barcode_read_moves_out_of_fastq_2(self):
-        ds = self._dataset(
-            {},
-            [{"sample": "PBMC_atac", "sample_type": "atac", "sample_group": "PBMC"},
-             {"sample": "PBMC_gex", "sample_type": "gex", "sample_group": "PBMC"}],
-            self._files({"PBMC_atac": 3, "PBMC_gex": 2}),
-        )
-        sheet = preprocess.make_samplesheet(ds, "cellrangerarc").set_index("sample_type")
-
-        # ATAC: R1 and R3 are the genomic pair, R2 is the cell barcode.
-        self.assertEqual(sheet.loc["atac", "fastq_1"], "PBMC_atac_R1.fastq.gz")
-        self.assertEqual(sheet.loc["atac", "fastq_2"], "PBMC_atac_R3.fastq.gz")
-        self.assertEqual(sheet.loc["atac", "fastq_barcode"], "PBMC_atac_R2.fastq.gz")
-
-        # GEX sequenced two reads and carries no barcode file.
-        self.assertEqual(sheet.loc["gex", "fastq_1"], "PBMC_gex_R1.fastq.gz")
-        self.assertEqual(sheet.loc["gex", "fastq_2"], "PBMC_gex_R2.fastq.gz")
-        self.assertEqual(sheet.loc["gex", "fastq_barcode"], "")
-
-        self.assertNotIn("fastq_3", sheet.columns)
-
-    def test_arc_without_a_third_read_raises(self):
-        ds = self._dataset(
-            {},
-            [{"sample": "PBMC_atac", "sample_type": "atac", "sample_group": "PBMC"}],
-            self._files({"PBMC_atac": 2}),
-        )
-        with self.assertRaises(ValueError) as caught:
-            preprocess.make_samplesheet(ds, "cellrangerarc")
-        self.assertIn("three reads", str(caught.exception))
-
-    def test_multi_route_leaves_read_columns_alone(self):
-        ds = self._dataset(
-            {},
-            [{"sample": "P_gex", "feature_type": "gex", "sample_group": "PBMC_10K"}],
-            self._files({"P_gex": 2}),
-        )
-        sheet = preprocess.make_samplesheet(ds, "cellrangermulti")
-        self.assertEqual(sheet["fastq_2"].iloc[0], "P_gex_R2.fastq.gz")
-        self.assertNotIn("fastq_barcode", sheet.columns)

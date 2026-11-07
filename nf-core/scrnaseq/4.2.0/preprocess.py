@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
 
+from __future__ import annotations
+
 import json
 import urllib.request
+from typing import TYPE_CHECKING
 
-import boto3
-from cirro.models.s3_path import S3Path
-from cirro.helpers.preprocess_dataset import PreprocessDataset
+import pandas as pd
+
+# The SDK is imported in __main__, so test_preprocess.py runs without it
+if TYPE_CHECKING:
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
 
 
 def resolve_references(ds: PreprocessDataset, *params: str):
@@ -20,6 +25,7 @@ def resolve_references(ds: PreprocessDataset, *params: str):
         if not isinstance(value, str) or not value or value.startswith("s3://"):
             continue
         ds.add_param(param, f"{ds.references_base}/{value}", overwrite=True)
+
 
 # Form params that exist only to drive the reference picker. None of them are
 # nf-core/scrnaseq parameters, so every one is removed before launch.
@@ -41,117 +47,86 @@ INDEX_PARAMS = [
     "fasta", "gtf",
 ]
 
-# Samplesheet columns nf-core/scrnaseq accepts beyond sample/fastq_1/fastq_2
-# (assets/schema_input.json).
-OPTIONAL_SAMPLESHEET_COLUMNS = [
-    "expected_cells", "seq_center", "feature_type", "sample_type", "fastq_barcode",
-]
-
-# Cell Ranger ARC and Cell Ranger multi describe one biological sample with several
-# libraries, told apart per samplesheet row by sample_type / feature_type. Cirro carries
-# one metadata row per sample, so each library is uploaded as its own sample and this
-# column names the sample those libraries belong to.
-SAMPLE_GROUP_COLUMN = "sample_group"
-
-# The per-row column whose value distinguishes the libraries of one sample.
+# Cell Ranger ARC and Cell Ranger multi analyze the libraries of a sample together, and
+# tell them apart by this samplesheet column, which the form cannot require for these
+# aligners alone.
 LIBRARY_TYPE_COLUMN = {
     "cellrangerarc": "sample_type",
     "cellrangermulti": "feature_type",
 }
 
 
-def make_samplesheet(ds: PreprocessDataset, aligner: str):
-    """Pivot the dataset files into the samplesheet nf-core/scrnaseq expects."""
+def read_samplesheet(path) -> pd.DataFrame:
+    """Read the samplesheet filled out in the form, keeping every value as text."""
 
-    available = ds.samplesheet.columns.values
-    metadata_columns = [col for col in OPTIONAL_SAMPLESHEET_COLUMNS if col in available]
-
-    library_column = LIBRARY_TYPE_COLUMN.get(aligner)
-    if library_column:
-        missing = [
-            col for col in (library_column, SAMPLE_GROUP_COLUMN) if col not in available
-        ]
-        if missing:
-            raise ValueError(
-                f"aligner {aligner} needs every library to carry {missing} in its sample "
-                f"metadata: {library_column} says what kind of library it is, and "
-                f"{SAMPLE_GROUP_COLUMN} names the sample the libraries belong to. "
-                f"The samplesheet has {sorted(available)}"
-            )
-        metadata_columns.append(SAMPLE_GROUP_COLUMN)
-
-    ds.logger.info(f"Carrying metadata columns into the samplesheet: {metadata_columns}")
-
-    samplesheet = ds.pivot_samplesheet(
-        metadata_columns=metadata_columns,
-        file_filter_predicate='readType == "R"',
-    )
-
-    if library_column:
-        # One row per library, all naming the sample they are libraries of.
-        samplesheet["sample"] = samplesheet[SAMPLE_GROUP_COLUMN]
-        samplesheet = samplesheet.drop(columns=[SAMPLE_GROUP_COLUMN])
-
-    if aligner == "cellrangerarc":
-        samplesheet = place_atac_barcode_read(samplesheet)
-
-    ds.logger.info("Samplesheet:")
-    for line in samplesheet.to_csv(index=None).split("\n"):
-        ds.logger.info(line)
-
+    # The form field is marked required, but an empty table can still be submitted,
+    # in which case Cirro either omits the param or writes an empty file
+    if not path:
+        raise ValueError("No samplesheet was provided: add at least one row of FASTQ files")
+    try:
+        # Read every value as text, so that sample names like "01" are kept as-is
+        samplesheet = pd.read_csv(path, dtype=str, keep_default_na=False)
+    except pd.errors.EmptyDataError:
+        samplesheet = pd.DataFrame()
+    if samplesheet.empty:
+        raise ValueError("The samplesheet is empty: add at least one row of FASTQ files")
     return samplesheet
 
 
-def place_atac_barcode_read(samplesheet):
-    """Move ATAC rows onto the fastq_1/fastq_2/fastq_barcode layout ARC expects.
+def check_library_types(samplesheet: pd.DataFrame, aligner: str):
+    """Fail unless every row says what kind of library it is, when the aligner needs to know.
 
-    A 10X multiome ATAC library sequences R1 and R3 as the genomic pair and R2 as the
-    cell barcode, so a pivot ordered by read number leaves the barcode in fastq_2 and
-    the genomic mate in fastq_3. GEX libraries have only two reads and are already in
-    the right columns, keeping fastq_barcode empty.
+    nf-core/scrnaseq silently drops a Cell Ranger multi row that has no feature_type.
     """
 
-    if "fastq_3" not in samplesheet.columns:
+    column = LIBRARY_TYPE_COLUMN.get(aligner)
+    if column is None:
+        return
+
+    untyped = samplesheet.loc[samplesheet[column] == "", "sample"]
+    if not untyped.empty:
         raise ValueError(
-            "cellrangerarc needs three reads (R1, R2, R3) for each ATAC library, but "
-            "no library in this dataset has a third read"
+            f"Aligner {aligner} needs a {column} on every row; "
+            f"check sample(s) {', '.join(untyped.unique())}"
         )
 
-    is_atac = samplesheet["sample_type"] == "atac"
-    samplesheet["fastq_barcode"] = ""
-    samplesheet.loc[is_atac, "fastq_barcode"] = samplesheet.loc[is_atac, "fastq_2"]
-    samplesheet.loc[is_atac, "fastq_2"] = samplesheet.loc[is_atac, "fastq_3"]
+    if aligner == "cellrangerarc":
+        is_atac = samplesheet["sample_type"] == "atac"
+        no_third_read = samplesheet.loc[is_atac & (samplesheet["fastq_barcode"] == ""), "sample"]
+        if not no_third_read.empty:
+            raise ValueError(
+                "Every ATAC row needs its third read (R3) in fastq_barcode; "
+                f"check sample(s) {', '.join(no_third_read.unique())}"
+            )
 
-    return samplesheet.drop(columns=["fastq_3"])
 
-
-def find_reference_dir(ds: PreprocessDataset, base: str):
-    """Locate the Cell Ranger reference package inside a dataset.
+def find_reference_dir(ds: PreprocessDataset, s3, base: str):
+    """Locate the Cell Ranger reference package inside a folder.
 
     Cell Ranger reference directories are named at build time
     (--cellranger_reference_name), and an uploaded reference can use any name
     at all, so the directory is found by the reference.json every package
-    carries rather than by assuming a name.
+    carries rather than by assuming a name. The folder may be the whole dataset
+    or the package itself.
     """
 
-    s3_path = S3Path(base)
-    prefix = s3_path.key.rstrip("/") + "/"
-    paginator = boto3.client("s3").get_paginator("list_objects_v2")
+    bucket, _, key = base.removeprefix("s3://").partition("/")
+    prefix = key.rstrip("/") + "/"
 
-    for page in paginator.paginate(Bucket=s3_path.bucket, Prefix=prefix):
+    for page in s3.get_paginator("list_objects_v2").paginate(Bucket=bucket, Prefix=prefix):
         for obj in page.get("Contents", []):
             if obj["Key"].endswith("/reference.json"):
-                found = f"s3://{s3_path.bucket}/{obj['Key'][:-len('/reference.json')]}"
+                found = f"s3://{bucket}/{obj['Key'][:-len('/reference.json')]}"
                 ds.logger.info(f"Found Cell Ranger reference package at {found}")
                 return found
 
     raise ValueError(
-        f"No reference.json found under {base} - the dataset does not contain a "
+        f"No reference.json found under {base} - the folder does not contain a "
         "Cell Ranger reference package"
     )
 
 
-def resolve_reference(ds: PreprocessDataset, aligner: str):
+def resolve_reference(ds: PreprocessDataset, aligner: str, s3):
     """Promote the selected reference onto the params nf-core/scrnaseq reads."""
 
     source = ds.params.get(f"{aligner}_genome_source")
@@ -180,6 +155,8 @@ def resolve_reference(ds: PreprocessDataset, aligner: str):
     if source != "dataset":
         raise ValueError(f"Unrecognized genome_source {source!r} for aligner {aligner}")
 
+    # The simpleaf, kb and STAR paths below are relative to the root of the index
+    # dataset, which is what picking the whole dataset in the folder picker gives
     if aligner == "simpleaf":
         ref = require_ref(ds, "simpleaf_ref", aligner)
         ds.add_param("simpleaf_index", f"{ref}/simpleaf/index")
@@ -204,7 +181,7 @@ def resolve_reference(ds: PreprocessDataset, aligner: str):
 
     if aligner == "cellranger":
         ref = require_ref(ds, "cellranger_ref", aligner)
-        ds.add_param("cellranger_index", find_reference_dir(ds, ref))
+        ds.add_param("cellranger_index", find_reference_dir(ds, s3, ref))
         return ["cellranger_index"]
 
     if aligner == "cellrangerarc":
@@ -219,17 +196,17 @@ def resolve_reference(ds: PreprocessDataset, aligner: str):
         # output mkref rejects as invalid. The correct param is set here so the route
         # works as soon as the pipeline is fixed.
         ref = require_ref(ds, "cellrangerarc_ref", aligner)
-        ds.add_param("cellranger_index", find_reference_dir(ds, ref))
+        ds.add_param("cellranger_index", find_reference_dir(ds, s3, ref))
         return ["cellranger_index"]
 
     if aligner == "cellrangermulti":
         ref = require_ref(ds, "cellrangermulti_gex_ref", aligner)
-        ds.add_param("cellranger_index", find_reference_dir(ds, ref))
+        ds.add_param("cellranger_index", find_reference_dir(ds, s3, ref))
         kept = ["cellranger_index"]
 
         vdj = ds.params.get("cellrangermulti_vdj_ref")
         if vdj:
-            ds.add_param("cellranger_vdj_index", find_reference_dir(ds, vdj))
+            ds.add_param("cellranger_vdj_index", find_reference_dir(ds, s3, vdj))
             kept.append("cellranger_vdj_index")
         else:
             ds.logger.info("No V(D)J reference selected; the pipeline will build or skip its own")
@@ -280,16 +257,19 @@ def filter_params_by_schema(ds: PreprocessDataset):
 
 if __name__ == "__main__":
 
+    # Imported here so that test_preprocess.py runs without the SDK or boto3
+    import boto3
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
+
     ds = PreprocessDataset.from_running()
 
     aligner = ds.params["aligner"]
 
-    # Write to the dataset's config/ folder (mapped in process-input.json)
-    make_samplesheet(ds, aligner).to_csv(ds.params["input"], index=False)
+    check_library_types(read_samplesheet(ds.params.get("input")), aligner)
 
     resolve_references(ds, "cellranger_prebuilt", "cellrangermulti_prebuilt")
 
-    kept = resolve_reference(ds, aligner)
+    kept = resolve_reference(ds, aligner, boto3.client("s3"))
 
     for param in INDEX_PARAMS:
         if param not in kept:

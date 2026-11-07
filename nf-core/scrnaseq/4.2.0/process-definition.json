@@ -19,7 +19,7 @@
     "executorVersion": "25.10.4"
   },
   "allowMultipleSources": true,
-  "usesSampleSheet": true,
+  "usesSampleSheet": false,
   "computeDefaults": [
     {
       "executor": "NEXTFLOW",
