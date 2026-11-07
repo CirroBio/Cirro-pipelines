@@ -1,7 +1,8 @@
 {
   "id": "proteomics_thermo_raw",
   "childProcessIds": [
-    "process-nf-core-quantms-dda-lfq-1_0"
+    "process-nf-core-quantms-dda-lfq-1_0",
+    "process-nf-core-quantms-dda-lfq-1_1"
   ],
   "name": "Proteomics (Thermo Scientific RAW)",
   "desc": "Identification of protein fragments by mass spectrometry on the Thermo Scientific Orbitrap platform",

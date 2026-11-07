@@ -3,7 +3,7 @@
   "childProcessIds": [
     "hutch-quantms-qc-1-0"
   ],
-  "name": "Quantitative Mass Spectrometry - DDA-LFQ (nf-core/quantms)",
+  "name": "Quantitative Mass Spectrometry - DDA-LFQ (nf-core/quantms, legacy)",
   "desc": "Data Dependent Acquisition - Label Free Quantification.",
   "executor": "NEXTFLOW",
   "pipelineTypeOverride": "nf-core",

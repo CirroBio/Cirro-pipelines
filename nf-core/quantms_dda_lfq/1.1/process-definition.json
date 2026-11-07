@@ -1,0 +1,44 @@
+{
+  "id": "process-nf-core-quantms-dda-lfq-1_1",
+  "childProcessIds": [
+    "hutch-quantms-qc-1-0"
+  ],
+  "name": "Quantitative Mass Spectrometry - DDA-LFQ (nf-core/quantms)",
+  "desc": "Data Dependent Acquisition - Label Free Quantification.",
+  "executor": "NEXTFLOW",
+  "pipelineTypeOverride": "nf-core",
+  "category": "Proteomics",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-proteomics/#data-dependent-acquisition-label-free-quantitation-dda-lfq",
+  "code": {
+    "repository": "GITHUBPUBLIC",
+    "script": "main.nf",
+    "uri": "nf-core/quantms",
+    "version": "1.2.0"
+  },
+  "allowMultipleSources": true,
+  "usesSampleSheet": false,
+  "computeDefaults": [
+    {
+      "executor": "NEXTFLOW",
+      "json": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-compute.config",
+      "name": "Default"
+    }
+  ],
+  "paramMapJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json",
+  "preProcessScript": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/preprocess.py",
+  "formJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-form.json",
+  "webOptimizationJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-output.json",
+  "fileMappingRules": [
+    {
+      "description": "ProteomicsLFQ Results (idXML)",
+      "min": 1,
+      "fileNamePatterns": [
+        {
+          "exampleName": "consensusid/SampleName_consensus.idXML",
+          "description": "Consensus ID (idXML)",
+          "sampleMatchingPattern": "consensusid/(?P<sampleName>[\\S ]*)_consensus\\.idXML"
+        }
+      ]
+    }
+  ]
+}
