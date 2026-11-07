@@ -1,4 +1,4 @@
-"""Offline tests for the nf-core/ampliseq ASV-input 2.4.0 preprocess script.
+"""Offline tests for the nf-core/ampliseq ASV-input preprocess script.
 
 preprocess.py imports the Cirro SDK only when it runs, so this is a plain
 `python -m unittest` that needs nothing beyond the standard library.
