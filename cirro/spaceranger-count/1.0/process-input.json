@@ -1,8 +1,7 @@
 {
   "fastq_manifest": "$.structuredInputs.pipeline_samplesheet.path",
   "image_manifest": "$.dataset.s3|/config/image_manifest.csv",
-  "ref": "$.dataset.params.ref|/custom_SpaceRanger_reference/",
-  "probes": "$.dataset.params.ref|/probes.csv",
+  "ref": "$.dataset.params.ref",
   "images": "$.dataset.params.images",
   "image_type": "$.dataset.params.image_type",
   "create_bam": "$.dataset.params.create_bam",

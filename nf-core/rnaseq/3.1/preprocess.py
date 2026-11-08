@@ -101,6 +101,9 @@ if __name__ == "__main__":
             if salmon_index:
                 # The Salmon genome-index builder nests the index under a salmon_index/
                 # subfolder and publishes transcriptome.fasta.gz beside it at the root.
+                # A whole dataset picked in the folder picker ends in a slash, and
+                # Nextflow stages a folder whose path contains // as an empty one.
+                salmon_index = salmon_index.rstrip("/")
                 ds.add_param("salmon_index", f"{salmon_index}/salmon_index")
                 ds.add_param("transcript_fasta", f"{salmon_index}/transcriptome.fasta.gz")
                 index_params_to_remove.remove("salmon_index")
@@ -124,6 +127,7 @@ if __name__ == "__main__":
             salmon_index = ds.params.get("bowtie2_salmon_salmon_index")
             if salmon_index:
                 # See the star_salmon branch above.
+                salmon_index = salmon_index.rstrip("/")
                 ds.add_param("salmon_index", f"{salmon_index}/salmon_index")
                 ds.add_param("transcript_fasta", f"{salmon_index}/transcriptome.fasta.gz")
                 index_params_to_remove.remove("salmon_index")
@@ -136,6 +140,7 @@ if __name__ == "__main__":
             ds.remove_param(param, force=True)
 
         if index_path:
+            index_path = index_path.rstrip("/")
             ds.add_param("fasta", f"{index_path}/genome.fasta")
             ds.add_param("fasta_fai", f"{index_path}/genome.fasta.fai", overwrite=True)
             ds.add_param("gtf", f"{index_path}/genome.gtf")
