@@ -1,8 +1,32 @@
 #!/usr/bin/env python3
 
+import re
+
 import pandas as pd
 
 FACTOR = "factor value[condition]"
+MODIFICATION = "comment[modification parameters]"
+
+# The Unimod accession of each modification the form offers. sdrf-pipelines takes the
+# modification's name for the search from its accession, and validates the NT= name
+# against the Unimod ontology.
+UNIMOD_ACCESSIONS = {
+    "Acetyl": 1,
+    "Carbamidomethyl": 4,
+    "Carbamyl": 5,
+    "Deamidated": 7,
+    "Phospho": 21,
+    "Propionamide": 24,
+    "Pyro-carbamidomethyl": 26,
+    "Glu->pyro-Glu": 27,
+    "Gln->pyro-Glu": 28,
+    "Methyl": 34,
+    "Oxidation": 35,
+    "Dimethyl": 36,
+    "Trimethyl": 37,
+    "Methylthio": 39,
+    "GG": 121,
+}
 
 # Required by the SDRF schema that quantms validates. quantms reads them only as the
 # conditions to compare when there is no factor value column.
@@ -30,14 +54,49 @@ def read_samplesheet(path) -> pd.DataFrame:
     return samplesheet
 
 
+def split_modifications(value: str) -> list:
+    """The modifications picked in the form, which Cirro joins with commas."""
+
+    return [modification.strip() for modification in value.split(",") if modification.strip()]
+
+
+def sdrf_modification(modification: str, mod_type: str) -> str:
+    """
+    The SDRF modification parameters for a modification in OpenMS notation, such as
+    'Oxidation (M)' or 'Gln->pyro-Glu (N-term Q)'. sdrf-pipelines turns them back into
+    that notation for the search engines.
+    """
+
+    match = re.fullmatch(r"(.+) \((.+)\)", modification)
+    if match is None or match.group(1) not in UNIMOD_ACCESSIONS:
+        raise ValueError(f"Unsupported modification: {modification}")
+    name, site = match.groups()
+
+    if site in ("Protein N-term", "Protein C-term"):
+        position, target = site, site.split()[-1]
+    elif site.startswith(("N-term", "C-term")):
+        terminus, _, residue = site.partition(" ")
+        position, target = f"Any {terminus}", residue or terminus
+    else:
+        position, target = "Anywhere", site
+
+    return f"NT={name};AC=UNIMOD:{UNIMOD_ACCESSIONS[name]};PP={position};TA={target};MT={mod_type}"
+
+
 def make_sdrf(
     samplesheet: pd.DataFrame,
     organism: str,
     enzyme: str,
     fragment_tolerance: str,
-    precursor_tolerance: str
+    precursor_tolerance: str,
+    fixed_mods: list,
+    variable_mods: list
 ) -> pd.DataFrame:
     """The SDRF quantms reads: the table with its blanks filled, plus the per-run columns."""
+
+    both = [modification for modification in fixed_mods if modification in variable_mods]
+    if both:
+        raise ValueError(f"A modification can be fixed or variable, but not both: {', '.join(both)}")
 
     # sdrf-pipelines rejects values with leading or trailing whitespace
     sdrf = samplesheet.apply(lambda values: values.str.strip())
@@ -92,7 +151,18 @@ def make_sdrf(
         "comment[fragment mass tolerance]": fragment_tolerance,
         "comment[precursor mass tolerance]": precursor_tolerance,
     })
-    return sdrf.reindex(columns=sort_columns(sdrf.columns))
+    sdrf = sdrf.reindex(columns=sort_columns(sdrf.columns))
+
+    # One column per modification, all with the same name, ahead of the factor values.
+    # Without them quantms searches with no modifications at all, whatever its params say.
+    modifications = (
+        [sdrf_modification(modification, "Fixed") for modification in fixed_mods] +
+        [sdrf_modification(modification, "Variable") for modification in variable_mods]
+    )
+    position = len([cname for cname in sdrf.columns if not cname.startswith("factor value")])
+    for i, parameters in enumerate(modifications):
+        sdrf.insert(position + i, MODIFICATION, parameters, allow_duplicates=True)
+    return sdrf
 
 
 def sort_columns(columns) -> list:
@@ -120,6 +190,9 @@ if __name__ == "__main__":
         enzyme=ds.params["enzyme"],
         fragment_tolerance=f"{ds.params['fragment_mass_tolerance']} {ds.params['fragment_mass_tolerance_unit']}",
         precursor_tolerance=f"{ds.params['precursor_mass_tolerance']} {ds.params['precursor_mass_tolerance_unit']}",
+        # Absent or blank when no box is ticked
+        fixed_mods=split_modifications(ds.params.get("fixed_mods", "")),
+        variable_mods=split_modifications(ds.params.get("variable_mods", "")),
     )
 
     # Written apart from the table (mapped in process-input.json): quantms treats its input

@@ -8,6 +8,7 @@ CRLF line endings, a header from the form's columns, and blank cells left empty.
 """
 import importlib.util
 import io
+import json
 import re
 import unittest
 from pathlib import Path
@@ -47,14 +48,16 @@ def table(*rows: dict) -> pd.DataFrame:
     return pd.DataFrame([{column: row.get(column, "") for column in COLUMNS} for row in rows])
 
 
-def make_sdrf(samplesheet: pd.DataFrame) -> pd.DataFrame:
-    return preprocess.make_sdrf(
-        samplesheet,
-        organism="Homo sapiens",
-        enzyme="Trypsin",
-        fragment_tolerance="0.6 Da",
-        precursor_tolerance="10 ppm",
-    )
+def make_sdrf(samplesheet: pd.DataFrame, **kwargs) -> pd.DataFrame:
+    return preprocess.make_sdrf(samplesheet, **{
+        "organism": "Homo sapiens",
+        "enzyme": "Trypsin",
+        "fragment_tolerance": "0.6 Da",
+        "precursor_tolerance": "10 ppm",
+        "fixed_mods": [],
+        "variable_mods": [],
+        **kwargs,
+    })
 
 
 class ReadSamplesheet(unittest.TestCase):
@@ -160,11 +163,43 @@ class MakeSdrf(unittest.TestCase):
             )
 
     def test_enzyme_is_the_cleavage_agent(self):
-        sdrf = preprocess.make_sdrf(
-            table({"source name": "A", "comment[file uri]": f"{URI}/a.raw"}),
-            organism="Homo sapiens", enzyme="Lys-C", fragment_tolerance="0.6 Da", precursor_tolerance="10 ppm",
-        )
+        sdrf = make_sdrf(table({"source name": "A", "comment[file uri]": f"{URI}/a.raw"}), enzyme="Lys-C")
         self.assertEqual(sdrf["comment[cleavage agent details]"].tolist(), ["NT=Lys-C"])
+
+    def test_each_modification_is_a_column_before_the_factor_values(self):
+        sdrf = make_sdrf(
+            table(
+                {"source name": "A", "comment[file uri]": f"{URI}/a.raw", "factor value[condition]": "treated"},
+                {"source name": "B", "comment[file uri]": f"{URI}/b.raw", "factor value[condition]": "control"},
+            ),
+            fixed_mods=["Carbamidomethyl (C)"],
+            variable_mods=["Oxidation (M)", "Acetyl (Protein N-term)"],
+        )
+        columns = sdrf.columns.tolist()
+        self.assertEqual(columns[-4:], [preprocess.MODIFICATION] * 3 + ["factor value[condition]"])
+        self.assertEqual(sdrf.iloc[0, -4:-1].tolist(), [
+            "NT=Carbamidomethyl;AC=UNIMOD:4;PP=Anywhere;TA=C;MT=Fixed",
+            "NT=Oxidation;AC=UNIMOD:35;PP=Anywhere;TA=M;MT=Variable",
+            "NT=Acetyl;AC=UNIMOD:1;PP=Protein N-term;TA=N-term;MT=Variable",
+        ])
+        self.assertEqual(sdrf.iloc[1, -4:-1].tolist(), sdrf.iloc[0, -4:-1].tolist())
+        # sdrf-pipelines reads the repeated header as comment[modification parameters].1, .2, ...
+        written = io.StringIO()
+        sdrf.to_csv(written, sep="\t", index=None)
+        header = written.getvalue().splitlines()[0].split("\t")
+        self.assertEqual(header.count(preprocess.MODIFICATION), 3)
+
+    def test_no_modifications_no_column(self):
+        sdrf = make_sdrf(table({"source name": "A", "comment[file uri]": f"{URI}/a.raw"}))
+        self.assertNotIn(preprocess.MODIFICATION, sdrf.columns)
+
+    def test_fixed_and_variable_modification_fails(self):
+        with self.assertRaisesRegex(ValueError, r"not both: Oxidation \(M\)"):
+            make_sdrf(
+                table({"source name": "A", "comment[file uri]": f"{URI}/a.raw"}),
+                fixed_mods=["Carbamidomethyl (C)", "Oxidation (M)"],
+                variable_mods=["Oxidation (M)"],
+            )
 
     def test_condition_in_some_rows_only_fails(self):
         with self.assertRaisesRegex(ValueError, r"in every row or none.*row\(s\) 2"):
@@ -194,6 +229,37 @@ class MakeSdrf(unittest.TestCase):
             make_sdrf(table(
                 {"source name": "A", "comment[file uri]": f"{URI}/a.raw", "comment[technical replicate]": "one"},
             ))
+
+
+class Modifications(unittest.TestCase):
+
+    def test_split(self):
+        self.assertEqual(
+            preprocess.split_modifications("Carbamidomethyl (C),Oxidation (M)"),
+            ["Carbamidomethyl (C)", "Oxidation (M)"],
+        )
+        self.assertEqual(preprocess.split_modifications(""), [])
+
+    def test_sites(self):
+        for modification, parameters in [
+            ("Phospho (S)", "NT=Phospho;AC=UNIMOD:21;PP=Anywhere;TA=S;MT=Variable"),
+            ("Acetyl (Protein N-term)", "NT=Acetyl;AC=UNIMOD:1;PP=Protein N-term;TA=N-term;MT=Variable"),
+            ("Carbamyl (N-term)", "NT=Carbamyl;AC=UNIMOD:5;PP=Any N-term;TA=N-term;MT=Variable"),
+            ("Gln->pyro-Glu (N-term Q)", "NT=Gln->pyro-Glu;AC=UNIMOD:28;PP=Any N-term;TA=Q;MT=Variable"),
+        ]:
+            self.assertEqual(preprocess.sdrf_modification(modification, "Variable"), parameters)
+
+    def test_every_form_option_converts(self):
+        form = json.loads(Path(__file__).with_name("process-form.json").read_text())
+        search = form["form"]["properties"]["database_search"]["properties"]
+        for field in ("fixed_mods", "variable_mods"):
+            for modification in search[field]["items"]["enum"]:
+                self.assertRegex(preprocess.sdrf_modification(modification, "Fixed"), r"AC=UNIMOD:\d+;")
+
+    def test_unknown_modification_fails(self):
+        for modification in ("Oxidation", "Hex (N)"):
+            with self.assertRaisesRegex(ValueError, "Unsupported modification"):
+                preprocess.sdrf_modification(modification, "Fixed")
 
 
 if __name__ == "__main__":

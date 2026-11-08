@@ -1,5 +1,14 @@
 {
-  "ui": {},
+  "ui": {
+    "database_search": {
+      "fixed_mods": {
+        "ui:widget": "checkboxes"
+      },
+      "variable_mods": {
+        "ui:widget": "checkboxes"
+      }
+    }
+  },
   "form": {
     "title": "Quantitative Mass Spectrometry (DDA-LFQ) (nf-core/quantms)",
     "type": "object",
@@ -241,6 +250,74 @@
               "ppm"
             ]
           },
+          "fixed_mods": {
+            "type": "array",
+            "title": "Fixed Modifications",
+            "description": "Modifications present at every matching site, written to the SDRF as its modification parameters.",
+            "uniqueItems": true,
+            "default": ["Carbamidomethyl (C)"],
+            "items": {
+              "type": "string",
+              "enum": [
+                "Carbamidomethyl (C)",
+                "Propionamide (C)",
+                "Methylthio (C)",
+                "Oxidation (M)",
+                "Acetyl (Protein N-term)",
+                "Acetyl (K)",
+                "Deamidated (N)",
+                "Deamidated (Q)",
+                "Gln->pyro-Glu (N-term Q)",
+                "Glu->pyro-Glu (N-term E)",
+                "Pyro-carbamidomethyl (N-term C)",
+                "Carbamyl (N-term)",
+                "Carbamyl (K)",
+                "Phospho (S)",
+                "Phospho (T)",
+                "Phospho (Y)",
+                "GG (K)",
+                "Methyl (K)",
+                "Methyl (R)",
+                "Dimethyl (K)",
+                "Dimethyl (R)",
+                "Trimethyl (K)"
+              ]
+            }
+          },
+          "variable_mods": {
+            "type": "array",
+            "title": "Variable Modifications",
+            "description": "Modifications that may or may not be present at a matching site. Each one added makes the search slower.",
+            "uniqueItems": true,
+            "default": ["Oxidation (M)"],
+            "items": {
+              "type": "string",
+              "enum": [
+                "Carbamidomethyl (C)",
+                "Propionamide (C)",
+                "Methylthio (C)",
+                "Oxidation (M)",
+                "Acetyl (Protein N-term)",
+                "Acetyl (K)",
+                "Deamidated (N)",
+                "Deamidated (Q)",
+                "Gln->pyro-Glu (N-term Q)",
+                "Glu->pyro-Glu (N-term E)",
+                "Pyro-carbamidomethyl (N-term C)",
+                "Carbamyl (N-term)",
+                "Carbamyl (K)",
+                "Phospho (S)",
+                "Phospho (T)",
+                "Phospho (Y)",
+                "GG (K)",
+                "Methyl (K)",
+                "Methyl (R)",
+                "Dimethyl (K)",
+                "Dimethyl (R)",
+                "Trimethyl (K)"
+              ]
+            }
+          },
           "customize_database_search": {
             "type": "boolean",
             "title": "Enabled",
@@ -271,20 +348,6 @@
                     "title": "Allowed Missed Cleavages",
                     "description": "Specify the maximum number of allowed missed enzyme cleavages in a peptide. The parameter is not applied if `unspecific cleavage` is specified as enzyme.",
                     "default": 2
-                  },
-                  "fixed_mods": {
-                    "type": "string",
-                    "title": "Fixed Modifications",
-                    "description": "A comma-separated list of fixed modifications with their Unimod name to be searched during database search",
-                    "default": "Carbamidomethyl (C)",
-                    "help_text": "Specify which fixed modifications should be applied to the database search (eg. '' or 'Carbamidomethyl (C)')."
-                  },
-                  "variable_mods": {
-                    "type": "string",
-                    "title": "Variable Modifications",
-                    "description": "A comma-separated list of variable modifications with their Unimod name to be searched during database search",
-                    "default": "Oxidation (M)",
-                    "help_text": "Specify which variable modifications should be applied to the database search (eg. '' or 'Oxidation (M)')."
                   },
                   "isotope_error_range": {
                     "type": "string",
