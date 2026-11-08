@@ -132,6 +132,22 @@ class ReadSamplesheet(unittest.TestCase):
             preprocess.read_samplesheet(io.StringIO(HEADER))
 
 
+class MultiplexedSamples(unittest.TestCase):
+
+    BARCODE_HEADER = "sample,multiplexed_sample_id,probe_barcode_ids,cmo_ids,ocm_ids,description\r\n"
+
+    def test_untouched_or_empty_table_is_empty(self):
+        for path in (None, ""):
+            self.assertTrue(preprocess.is_empty_table(path))
+        self.assertTrue(preprocess.is_empty_table(io.StringIO("")))
+        self.assertTrue(preprocess.is_empty_table(io.StringIO(self.BARCODE_HEADER)))
+
+    def test_table_with_rows_is_kept(self):
+        self.assertFalse(preprocess.is_empty_table(io.StringIO(
+            self.BARCODE_HEADER + "PBMC,PBMC_1,,CMO301,,PBMCs 1\r\n"
+        )))
+
+
 class CheckLibraryTypes(unittest.TestCase):
 
     def test_single_library_aligners_ignore_the_library_columns(self):

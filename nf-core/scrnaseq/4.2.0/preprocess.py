@@ -73,6 +73,20 @@ def read_samplesheet(path) -> pd.DataFrame:
     return samplesheet
 
 
+def is_empty_table(path) -> bool:
+    """Whether an optional table filled out in the form has no rows.
+
+    Cirro omits the param when the field was never touched, and writes an empty file
+    (not even a header) when the table has no rows.
+    """
+    if not path:
+        return True
+    try:
+        return pd.read_csv(path, dtype=str, keep_default_na=False).empty
+    except pd.errors.EmptyDataError:
+        return True
+
+
 def check_library_types(samplesheet: pd.DataFrame, aligner: str):
     """Fail unless every row says what kind of library it is, when the aligner needs to know.
 
@@ -266,6 +280,11 @@ if __name__ == "__main__":
     aligner = ds.params["aligner"]
 
     check_library_types(read_samplesheet(ds.params.get("input")), aligner)
+
+    # The pipeline checks the multiplexed samples itself, but a file with no header
+    # is not a barcode CSV at all
+    if is_empty_table(ds.params.get("cellranger_multi_barcodes")):
+        ds.remove_param("cellranger_multi_barcodes", force=True)
 
     resolve_references(ds, "cellranger_prebuilt", "cellrangermulti_prebuilt")
 

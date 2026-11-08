@@ -39,7 +39,7 @@
   "cellrangerarc_config": "$.dataset.params.cellrangerarc_options.cellrangerarc_config",
   "skip_cellrangermulti_vdjref": "$.dataset.params.cellranger_multi_options.skip_cellrangermulti_vdjref",
   "gex_reference_version": "$.dataset.params.cellranger_multi_options.gex_reference_version",
-  "cellranger_multi_barcodes": "$.dataset.params.cellranger_multi_options.cellranger_multi_barcodes",
+  "cellranger_multi_barcodes": "$.structuredInputs.cellranger_multi_barcodes.path",
   "gex_frna_probe_set": "$.dataset.params.cellranger_multi_options.gex_frna_probe_set",
   "gex_target_panel": "$.dataset.params.cellranger_multi_options.gex_target_panel",
   "gex_cmo_set": "$.dataset.params.cellranger_multi_options.gex_cmo_set",

@@ -1263,9 +1263,7 @@
           },
           "cellranger_multi_barcodes": {
             "type": "string",
-            "title": "Barcode Sample Assignment CSV",
-            "format": "file-path",
-            "pattern": "\\.csv$"
+            "schema": "cellranger_multi_barcodes"
           },
           "gex_frna_probe_set": {
             "type": "string",
@@ -1358,7 +1356,7 @@
       "defaultSourceFile": "samplesheet.csv",
       "schema": {
         "title": "Samplesheet",
-        "description": "One row per pair of FASTQ files. Rows with the same sample name, such as one per sequencing lane, are merged by the pipeline. Alevin-fry, kallisto | bustools, STARsolo and Cell Ranger need only the sample and its two FASTQs. Cell Ranger ARC: give the GEX and ATAC rows of a sample the same sample name, set Sample Type on every row, and add each ATAC row's third read (R3) under ATAC R3 FASTQ. Cell Ranger multi: give every library of a sample the same sample name, and set Feature Type on every row.",
+        "description": "One row per pair of FASTQ files. Rows with the same sample name, such as one per sequencing lane, are merged by the pipeline. Alevin-fry, kallisto | bustools, STARsolo and Cell Ranger need only the sample and its two FASTQs. Cell Ranger ARC: give the GEX and ATAC rows of a sample the same sample name, set Sample Type on every row, and add each ATAC row's third read (R3) under ATAC R3 FASTQ. Cell Ranger multi: give every library of a sample the same sample name, set Feature Type on every row, and list the samples pooled in a multiplexed library under Multiplexed Samples.",
         "type": "array",
         "minItems": 1,
         "items": {
@@ -1428,6 +1426,61 @@
             "sample",
             "fastq_1",
             "fastq_2"
+          ]
+        }
+      }
+    },
+    "cellranger_multi_barcodes": {
+      "fileFormat": "CSV",
+      "schema": {
+        "title": "Multiplexed Samples",
+        "description": "Cell Ranger multi with multiplexed libraries only (FFPE probe barcodes, CMOs or OCMs): one row per multiplexed sample, with exactly one kind of barcode ID. Leave it empty otherwise.",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "sample": {
+              "type": "string",
+              "title": "Sample",
+              "description": "The sample of the samplesheet this sample was pooled into",
+              "pattern": "^\\S+$",
+              "errorMessage": "Sample names cannot contain spaces"
+            },
+            "multiplexed_sample_id": {
+              "type": "string",
+              "title": "Multiplexed Sample ID",
+              "description": "A name for this sample, unique across the table",
+              "pattern": "^\\S+$",
+              "errorMessage": "Multiplexed sample IDs cannot contain spaces"
+            },
+            "probe_barcode_ids": {
+              "type": "string",
+              "title": "Probe Barcode IDs",
+              "description": "FFPE (Flex) only, such as BC001"
+            },
+            "cmo_ids": {
+              "type": "string",
+              "title": "CMO IDs",
+              "description": "Such as CMO301, or CMO301|CMO302 for several",
+              "pattern": "^[a-zA-Z0-9_|-]*$",
+              "errorMessage": "CMO IDs can only contain letters, numbers, _, - and |"
+            },
+            "ocm_ids": {
+              "type": "string",
+              "title": "OCM IDs",
+              "description": "OB1 to OB4, or OB1|OB2 for several",
+              "pattern": "^(OB[1-4](\\|OB[1-4])*)?$",
+              "errorMessage": "OCM IDs must be OB1, OB2, OB3 or OB4, joined by | for several"
+            },
+            "description": {
+              "type": "string",
+              "title": "Description"
+            }
+          },
+          "required": [
+            "sample",
+            "multiplexed_sample_id",
+            "description"
           ]
         }
       }
