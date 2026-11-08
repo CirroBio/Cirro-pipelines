@@ -22,6 +22,7 @@
     "max_len": "$.dataset.params.read_trimming_and_quality_filtering.max_len",
     "sample_inference": "$.dataset.params.amplicon_sequence_variants_asv_calculation.sample_inference",
     "dada_ref_taxonomy": "$.dataset.params.taxonomic_database.dada_ref_taxonomy",
+    "use_custom_taxonomy": "$.dataset.params.taxonomic_database.use_custom_taxonomy",
     "dada_ref_tax_custom": "$.dataset.params.taxonomic_database.dada_ref_tax_custom",
     "dada_ref_tax_custom_sp": "$.dataset.params.taxonomic_database.dada_ref_tax_custom_sp",
     "qiime_ref_taxonomy": "$.dataset.params.taxonomic_database.qiime_ref_taxonomy",
