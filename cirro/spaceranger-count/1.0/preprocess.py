@@ -54,10 +54,11 @@ if __name__ == "__main__":
 
     samplesheet = read_samplesheet(ds.params.get("fastq_manifest"))
 
-    # The image file names are joined onto this prefix, so it is deliberately left
-    # without a trailing separator. It is consumed here and never reaches the run,
-    # which is why the workflow need not declare it.
-    images_dir = ds.params["images"]
+    # The image file names are joined onto this prefix. A whole dataset picked in the
+    # folder picker arrives as its data/ folder with a trailing slash, which pandas
+    # would keep as an empty path segment. It is consumed here and never reaches the
+    # run, which is why the workflow need not declare it.
+    images_dir = ds.params["images"].rstrip("/")
     ds.logger.info(f"Reading images from {images_dir}")
     images = make_image_manifest(
         pd.read_csv(f"{images_dir}/samplesheet.csv", dtype=str, keep_default_na=False),
