@@ -231,19 +231,11 @@
                     "unite-alleuk"
                 ]
             },
-            "dada_ref_tax_custom": {
-                "type": "string",
-                "title": "DADA2 Custom Taxonomy (optional)",
-                "description": "Used for the DADA2 addTaxonomy function. Must conform to expected syntax (>Kingom;Phylum;Class;Order;Family;Genus; ACGAATGTGAAGTAA....)",
-                "file": "**/genome_fasta/**/genome.fasta",
-                "pathType": "references"
-            },
-            "dada_ref_tax_custom_sp": {
-                "type": "string",
-                "title": "DADA2 Custom Species-Level Taxonomy (optional)",
-                "description": "Used for the DADA2 addSpecies function. Must conform to expected syntax (>SeqID genus species ACGAATGTGAAGTAA......)",
-                "file": "**/genome_fasta/**/genome.fasta",
-                "pathType": "references"
+            "use_custom_taxonomy": {
+                "title": "Use a Custom DADA2 Taxonomy",
+                "description": "Assign taxonomy with reference files from the project's references instead of the DADA2 Reference Taxonomy above",
+                "type": "boolean",
+                "default": false
             },
             "qiime_ref_taxonomy": {
                 "type": "string",
@@ -280,6 +272,41 @@
                     "unite-alleuk=8.3",
                     "unite-alleuk=8.2",
                     "unite-alleuk"
+                ]
+            }
+        },
+        "dependencies": {
+            "use_custom_taxonomy": {
+                "oneOf": [
+                    {
+                        "properties": {
+                            "use_custom_taxonomy": {
+                                "enum": [true]
+                            },
+                            "dada_ref_tax_custom": {
+                                "type": "string",
+                                "title": "DADA2 Custom Taxonomy",
+                                "description": "Used for the DADA2 addTaxonomy function. Must conform to expected syntax (>Kingom;Phylum;Class;Order;Family;Genus; ACGAATGTGAAGTAA....)",
+                                "file": "**/genome_fasta/**/genome.fasta",
+                                "pathType": "references"
+                            },
+                            "dada_ref_tax_custom_sp": {
+                                "type": "string",
+                                "title": "DADA2 Custom Species-Level Taxonomy (optional)",
+                                "description": "Used for the DADA2 addSpecies function. Must conform to expected syntax (>SeqID genus species ACGAATGTGAAGTAA......)",
+                                "file": "**/genome_fasta/**/genome.fasta",
+                                "pathType": "references"
+                            }
+                        },
+                        "required": ["dada_ref_tax_custom"]
+                    },
+                    {
+                        "properties": {
+                            "use_custom_taxonomy": {
+                                "enum": [false]
+                            }
+                        }
+                    }
                 ]
             }
         }
