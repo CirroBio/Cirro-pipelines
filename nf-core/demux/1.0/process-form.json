@@ -121,15 +121,6 @@
         }
       }
     },
-    "else": {
-      "properties": {
-        "workflow_options": {
-          "properties": {
-            "v1_schema": false
-          }
-        }
-      }
-    },
     "required": [
       "run_folder",
       "samplesheet",
