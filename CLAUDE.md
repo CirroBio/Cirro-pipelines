@@ -31,8 +31,7 @@ project's datasets (the same values as nf-schema):
 | `multiple` | `true` allows several picks. The value is a JSON array, so map it with `[*]` (`"$.dataset.params.fastq[*]"`) to pass a comma-separated string |
 | `process` | Limits the picker to datasets produced by these processes: a process ID, a glob of IDs (`"process-nf-core-rnaseq-*"`), or a list of them. Pipeline and intake process IDs both work |
 
-The workflow receives the full S3 path; folders have no trailing slash. `default` does not
-pre-select anything in this picker.
+The workflow receives the full S3 path. `default` does not pre-select anything in this picker.
 
 **Examples:**
 ```json
@@ -52,7 +51,9 @@ pre-select anything in this picker.
 
 A whole dataset picked in the folder picker yields its `data/` folder, so map such a field
 as it is (`"$.dataset.params.genome_index"`), not with the `|/data` suffix a `pathType`
-selector needed.
+selector needed. The path ends in a slash (`.../data/`), so a file name joined onto it
+gets `//`: Nextflow reads such a path, but pandas and boto3 do not, so strip the slash
+before joining in `preprocess.py`.
 
 ---
 
