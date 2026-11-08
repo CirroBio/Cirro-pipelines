@@ -12,7 +12,8 @@
     "repository": "GITHUBPUBLIC",
     "script": "main.nf",
     "uri": "nf-core/cutandrun",
-    "version": "3.2.2"
+    "version": "3.2.2",
+    "executorVersion": "25.04.8"
   },
   "allowMultipleSources": true,
   "usesSampleSheet": false,
