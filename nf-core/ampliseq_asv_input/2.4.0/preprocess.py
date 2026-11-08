@@ -53,6 +53,12 @@ if __name__ == "__main__":
         # Dead once a custom reference is set, and leaving it in overstates what ran
         ds.remove_param("dada_ref_taxonomy", force=True)
 
+    # QIIME2's downstream steps all start from the ASV abundance table, which FASTA
+    # input does not have. Left on, ampliseq 2.9.0 stops before any task: its taxa
+    # filter step never runs, and the null it then adds to the versions channel fails
+    # the version report ("Cannot invoke Path.getFileSystem() because path is null").
+    ds.add_param("skip_qiime_downstream", True, overwrite=True)
+
     # log
     ds.logger.info(ds.params)
 
