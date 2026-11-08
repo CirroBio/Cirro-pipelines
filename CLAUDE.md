@@ -51,9 +51,11 @@ The workflow receives the full S3 path. `default` does not pre-select anything i
 
 A whole dataset picked in the folder picker yields its `data/` folder, so map such a field
 as it is (`"$.dataset.params.genome_index"`), not with the `|/data` suffix a `pathType`
-selector needed. The path ends in a slash (`.../data/`), so a file name joined onto it
-gets `//`: Nextflow reads such a path, but pandas and boto3 do not, so strip the slash
-before joining in `preprocess.py`.
+selector needed. The path ends in a slash (`.../data/`), so anything joined onto it gets
+`//`: Nextflow reads a file at such a path but stages a folder there as empty, and pandas
+and boto3 read neither. Build paths inside the folder in `preprocess.py`, after stripping
+the slash, not with a `|/...` suffix in `process-input.json` (see
+`cirro/spaceranger-count/1.0/preprocess.py`).
 
 ---
 
@@ -93,9 +95,9 @@ map the field instead.
 
 A `pathType: "dataset"` selector in a path-mode form becomes `format: "directory-path"` with
 the same `process` list (see the `genome_index` example above), and its mapping drops
-`/data`: `"<field>|/data"` becomes `"<field>"`, and `"<field>|/data/probes.csv"` becomes
-`"<field>|/probes.csv"`. A form still in dataset mode keeps `pathType`, since one `format`
-field would switch it to path mode.
+`/data`: `"<field>|/data"` becomes `"<field>"`. A mapping to a path inside the dataset,
+such as `"<field>|/data/probes.csv"`, moves into `preprocess.py` (see above). A form still
+in dataset mode keeps `pathType`, since one `format` field would switch it to path mode.
 
 ---
 
