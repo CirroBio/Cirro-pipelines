@@ -13,7 +13,8 @@
     "repository": "GITHUBPUBLIC",
     "script": "main.nf",
     "uri": "nf-core/quantms",
-    "version": "1.2.0"
+    "version": "1.2.0",
+    "executorVersion": "25.04.8"
   },
   "allowMultipleSources": true,
   "usesSampleSheet": false,
