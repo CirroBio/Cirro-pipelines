@@ -121,6 +121,16 @@ if __name__ == "__main__":
         ds.add_param("ignore_failed_filtering", True, overwrite=True)
         ds.add_param("ignore_failed_trimming", True, overwrite=True)
 
+    # The custom pickers are filled with the project's first reference as soon as they
+    # are shown, and a run copied from before the box existed carries that value, so
+    # they count only when the box is ticked
+    if not ds.params.get("use_custom_taxonomy", False):
+        ds.remove_param("dada_ref_tax_custom", force=True)
+        ds.remove_param("dada_ref_tax_custom_sp", force=True)
+
+    # A form option only, which nf-core/ampliseq does not declare
+    ds.remove_param("use_custom_taxonomy", force=True)
+
     use_staged_reference(ds)
 
     # If a custom reference was provided
