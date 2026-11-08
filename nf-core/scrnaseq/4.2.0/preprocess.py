@@ -73,18 +73,22 @@ def read_samplesheet(path) -> pd.DataFrame:
     return samplesheet
 
 
-def is_empty_table(path) -> bool:
-    """Whether an optional table filled out in the form has no rows.
+def uses_multiplexed_samples(aligner: str, path) -> bool:
+    """Whether the Multiplexed Samples table is passed on to the pipeline.
 
-    Cirro omits the param when the field was never touched, and writes an empty file
-    (not even a header) when the table has no rows.
+    Only Cell Ranger multi reads it. Cirro omits the param when the field was never
+    touched, and writes an empty file (not even a header) when the table has no rows.
+    Opening the table fills its sample column from the dataset's sample names, and
+    closing it keeps those rows, so rows with nothing else in them were never filled
+    out either.
     """
-    if not path:
-        return True
+    if aligner != "cellrangermulti" or not path:
+        return False
     try:
-        return pd.read_csv(path, dtype=str, keep_default_na=False).empty
+        table = pd.read_csv(path, dtype=str, keep_default_na=False)
     except pd.errors.EmptyDataError:
-        return True
+        return False
+    return (table.drop(columns="sample", errors="ignore") != "").any(axis=None)
 
 
 def check_library_types(samplesheet: pd.DataFrame, aligner: str):
@@ -281,9 +285,9 @@ if __name__ == "__main__":
 
     check_library_types(read_samplesheet(ds.params.get("input")), aligner)
 
-    # The pipeline checks the multiplexed samples itself, but a file with no header
-    # is not a barcode CSV at all
-    if is_empty_table(ds.params.get("cellranger_multi_barcodes")):
+    # The pipeline checks the rows of a filled-out table itself, but nf-schema validates
+    # the file against its schema whatever the aligner
+    if not uses_multiplexed_samples(aligner, ds.params.get("cellranger_multi_barcodes")):
         ds.remove_param("cellranger_multi_barcodes", force=True)
 
     resolve_references(ds, "cellranger_prebuilt", "cellrangermulti_prebuilt")

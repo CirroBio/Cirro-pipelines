@@ -136,16 +136,34 @@ class MultiplexedSamples(unittest.TestCase):
 
     BARCODE_HEADER = "sample,multiplexed_sample_id,probe_barcode_ids,cmo_ids,ocm_ids,description\r\n"
 
-    def test_untouched_or_empty_table_is_empty(self):
-        for path in (None, ""):
-            self.assertTrue(preprocess.is_empty_table(path))
-        self.assertTrue(preprocess.is_empty_table(io.StringIO("")))
-        self.assertTrue(preprocess.is_empty_table(io.StringIO(self.BARCODE_HEADER)))
+    FILLED_ROW = "PBMC,PBMC_1,,CMO301,,PBMCs 1\r\n"
 
-    def test_table_with_rows_is_kept(self):
-        self.assertFalse(preprocess.is_empty_table(io.StringIO(
-            self.BARCODE_HEADER + "PBMC,PBMC_1,,CMO301,,PBMCs 1\r\n"
+    def test_untouched_or_empty_table_is_dropped(self):
+        for path in (None, ""):
+            self.assertFalse(preprocess.uses_multiplexed_samples("cellrangermulti", path))
+        for contents in ("", self.BARCODE_HEADER):
+            self.assertFalse(preprocess.uses_multiplexed_samples("cellrangermulti", io.StringIO(contents)))
+
+    def test_rows_holding_only_the_filled_in_sample_names_are_dropped(self):
+        self.assertFalse(preprocess.uses_multiplexed_samples("cellrangermulti", io.StringIO(
+            self.BARCODE_HEADER + "Sample_X,,,,,\r\nSample_Y,,,,,\r\n"
         )))
+
+    def test_filled_out_table_is_kept_for_cell_ranger_multi(self):
+        self.assertTrue(preprocess.uses_multiplexed_samples("cellrangermulti", io.StringIO(
+            self.BARCODE_HEADER + self.FILLED_ROW
+        )))
+
+    def test_partly_filled_out_row_is_kept_for_the_pipeline_to_reject(self):
+        self.assertTrue(preprocess.uses_multiplexed_samples("cellrangermulti", io.StringIO(
+            self.BARCODE_HEADER + "PBMC,PBMC_1,,,,\r\n"
+        )))
+
+    def test_other_aligners_drop_a_filled_out_table(self):
+        for aligner in ("simpleaf", "kallisto", "star", "cellranger", "cellrangerarc"):
+            self.assertFalse(preprocess.uses_multiplexed_samples(aligner, io.StringIO(
+                self.BARCODE_HEADER + self.FILLED_ROW
+            )))
 
 
 class CheckLibraryTypes(unittest.TestCase):
