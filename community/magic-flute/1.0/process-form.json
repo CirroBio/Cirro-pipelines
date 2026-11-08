@@ -2,6 +2,8 @@
   "form": {
     "type": "object",
     "required": [
+      "treatment_fastq",
+      "control_fastq",
       "library"
     ],
     "properties": {
@@ -9,15 +11,17 @@
         "type": "string",
         "title": "Treatment FASTQ",
         "multiple": true,
-        "file": "**/treatments/*.fastq.gz",
-        "pathType": "dataset"
+        "format": "file-path",
+        "pattern": "/[^\\s./]+\\.fastq\\.gz$",
+        "errorMessage": "Must be a gzipped FASTQ (.fastq.gz) with no spaces or other dots in its name"
       },
       "control_fastq": {
         "type": "string",
         "title": "Control FASTQ",
         "multiple": true,
-        "file": "**/controls/*.fastq.gz",
-        "pathType": "dataset"
+        "format": "file-path",
+        "pattern": "/[^\\s./]+\\.fastq\\.gz$",
+        "errorMessage": "Must be a gzipped FASTQ (.fastq.gz) with no spaces or other dots in its name"
       },
       "library": {
         "title": "Library",

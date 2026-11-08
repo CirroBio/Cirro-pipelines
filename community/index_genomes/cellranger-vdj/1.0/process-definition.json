@@ -18,6 +18,7 @@
     "script": "main_cellranger_vdj.nf"
   },
   "allowMultipleSources": false,
+  "allowMultipleSources": true,
   "usesSampleSheet": false,
   "computeDefaults": [
     {

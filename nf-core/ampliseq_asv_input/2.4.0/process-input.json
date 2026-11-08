@@ -1,6 +1,6 @@
 {
     "outdir": "$.dataset.dataPath",
-    "input": "$.dataset.params.input",
+    "input_fasta": "$.dataset.params.input",
     "dada_ref_taxonomy": "$.dataset.params.taxonomic_database.dada_ref_taxonomy",
     "qiime_ref_taxonomy": "$.dataset.params.taxonomic_database.qiime_ref_taxonomy",
     "filter_ssu": "$.dataset.params.asv_filtering.filter_ssu",

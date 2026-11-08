@@ -3,12 +3,15 @@
   "form": {
     "title": "16S Taxonomic Classification (nf-core/ampliseq)",
     "type": "object",
+    "required": ["input"],
     "properties": {
       "input": {
         "title": "Input Sequences",
         "description": "Select the file containing 16S sequences to analyze",
-        "file": "**/*.f*",
-        "pathType": "dataset"
+        "type": "string",
+        "format": "file-path",
+        "pattern": "\\.(fasta|fna|fa)$",
+        "errorMessage": "Must be an uncompressed FASTA file (.fasta, .fna or .fa)"
       },
     "taxonomic_database": {
         "title": "Taxonomic database",

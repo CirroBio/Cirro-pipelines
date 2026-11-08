@@ -2,16 +2,23 @@
   "form": {
     "type": "object",
     "properties": {
+      "run_folder": {
+        "title": "Sequencing Run Folder",
+        "description": "Output folder of the sequencing run (one flow cell) to demultiplex",
+        "type": "string",
+        "format": "directory-path"
+      },
       "samplesheet": {
         "title": "Samplesheet",
         "description": "File containing the sample information and indexes",
         "type": "string",
-        "pathType": "dataset",
-        "file": "**/*.csv"
+        "format": "file-path",
+        "pattern": "\\.csv$",
+        "errorMessage": "Must be a CSV file (.csv)"
       },
       "flowcell_id": {
         "title": "Flow Cell ID",
-        "description": "If not provided, uses dataset name. Should not contain spaces.",
+        "description": "If not provided, uses the dataset name. Only letters, numbers, - and _ are kept.",
         "type": "string",
         "pattern": "^\\S+$"
       },
@@ -37,7 +44,7 @@
           "sgdemux (Singular Genomics)",
           "mkfastq (10X Genomics)"
         ],
-        "description": "",
+        "description": "For mkfastq with a 10X simple sample sheet (Lane,Sample,Index), also tick samshee under Skip Tools: it only accepts Illumina v2 sample sheets",
         "fa_icon": "fas fa-microscope",
         "default": "bclconvert",
         "title": "Demultiplexer to use"
@@ -114,16 +121,8 @@
         }
       }
     },
-    "else": {
-      "properties": {
-        "workflow_options": {
-          "properties": {
-            "v1_schema": false
-          }
-        }
-      }
-    },
     "required": [
+      "run_folder",
       "samplesheet",
       "demultiplexer"
     ]

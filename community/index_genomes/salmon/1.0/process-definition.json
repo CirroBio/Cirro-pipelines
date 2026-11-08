@@ -18,6 +18,7 @@
     "script": "main_salmon.nf"
   },
   "allowMultipleSources": false,
+  "allowMultipleSources": true,
   "usesSampleSheet": false,
   "computeDefaults": [
     {
