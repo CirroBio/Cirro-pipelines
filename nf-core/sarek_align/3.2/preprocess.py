@@ -1,16 +1,21 @@
 #!/usr/bin/env python3
 
-from cirro.helpers.preprocess_dataset import PreprocessDataset
-from cirro.models.s3_path import S3Path
-import boto3
-import pandas as pd
-import urllib.request
-import urllib.error
+from __future__ import annotations
+
 import json
+import urllib.error
+import urllib.request
+from typing import TYPE_CHECKING
+
+import pandas as pd
+
+# The SDK is imported in __main__, so test_preprocess.py runs without it
+if TYPE_CHECKING:
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
 
 
 # Spellings of sex seen in user samplesheets, mapped to the XX/XY encoding sarek
-# requires. Anything else (including a blank cell) becomes the given default.
+# requires. Anything else (including a blank cell) becomes NA.
 _SEX_ALIASES = {
     'f': 'XX',
     'female': 'XX',
@@ -23,66 +28,134 @@ _SEX_ALIASES = {
 }
 
 
-def normalize_sex(value, default: str = 'NA') -> str:
+def normalize_sex(value: str) -> str:
     """Map a samplesheet sex value to sarek's XX/XY/NA encoding."""
-    if pd.isna(value):
-        return default
-    return _SEX_ALIASES.get(str(value).strip().lower(), default)
+    return _SEX_ALIASES.get(value.strip().lower(), 'NA')
 
 
-def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
+# Spellings of status mapped to sarek's encoding, 0 (normal) or 1 (tumor). A blank cell
+# is a normal sample, as in sarek. 0.0 and 1.0 come from sheets that stored status as a
+# number with blanks.
+_STATUS_ALIASES = {
+    '': '0',
+    '0': '0',
+    '0.0': '0',
+    'normal': '0',
+    '1': '1',
+    '1.0': '1',
+    'tumor': '1',
+    'tumour': '1',
+}
 
-    # Filter out any index files that may have been uploaded
-    ds.files = ds.files.loc[
-        ds.files.apply(
-            lambda r: r.get('readType', 'R') == 'R',
-            axis=1
+
+def normalize_status(value: str) -> str:
+    """Map a samplesheet status value to sarek's 0 (normal) / 1 (tumor) encoding."""
+    try:
+        return _STATUS_ALIASES[value.strip().lower()]
+    except KeyError:
+        raise ValueError(
+            f"Status must be 0 (normal), 1 (tumor) or blank (normal), not {value!r}"
+        ) from None
+
+
+def read_samplesheet(path) -> pd.DataFrame:
+    """Read the samplesheet filled out in the form, keeping every value as text."""
+
+    # The form field is marked required, but an empty table can still be submitted,
+    # in which case Cirro either omits the param or writes an empty file
+    if not path:
+        raise ValueError("No samplesheet was provided: add at least one row of FASTQ files")
+    try:
+        samplesheet = pd.read_csv(path, dtype=str, keep_default_na=False)
+    except pd.errors.EmptyDataError:
+        samplesheet = pd.DataFrame()
+    if samplesheet.empty:
+        raise ValueError("The samplesheet is empty: add at least one row of FASTQ files")
+    return samplesheet
+
+
+def number_blank_lanes(samplesheet: pd.DataFrame) -> pd.Series:
+    """Each row's lane, with blanks numbered 1, 2, ... past the lanes its sample already uses."""
+
+    lanes = samplesheet["lane"].copy()
+    for _, rows in samplesheet.groupby("sample", sort=False):
+        used = set(rows["lane"])
+        number = 0
+        for index in rows.index[rows["lane"] == ""]:
+            number += 1
+            while str(number) in used:
+                number += 1
+            lanes[index] = str(number)
+    return lanes
+
+
+def fill_samplesheet(samplesheet: pd.DataFrame) -> pd.DataFrame:
+    """Fill in the values sarek needs that the form lets the user leave blank."""
+
+    return samplesheet.assign(
+        patient=samplesheet["patient"].where(samplesheet["patient"] != "", samplesheet["sample"]),
+        sex=samplesheet["sex"].map(normalize_sex),
+        status=samplesheet["status"].map(normalize_status),
+        lane=number_blank_lanes(samplesheet),
+    )
+
+
+def check_one_patient_per_sample(samplesheet: pd.DataFrame):
+    """Fail when the rows of one sample name different patients, which sarek rejects."""
+
+    patients = samplesheet.groupby("sample", sort=False)["patient"].unique()
+    conflicts = patients[patients.map(len) > 1]
+    if not conflicts.empty:
+        listing = "; ".join(f"{sample} ({', '.join(names)})" for sample, names in conflicts.items())
+        raise ValueError(
+            f"Each sample must belong to a single patient, but these have several: {listing}. "
+            "A blank patient is filled with the sample name, so give every row of a sample "
+            "the same patient, or leave it blank on all of them."
         )
-    ]
 
-    # Make a wide manifest
-    manifest: pd.DataFrame = ds.wide_samplesheet(
-        index=["sampleIndex", "sample", "lane", "dataset"],
-        columns="read",
-        values="file",
-        column_prefix="fastq_"
-    )
-    assert manifest.shape[0] > 0, "No files detected -- error with data ingest"
 
-    # Get the sample metadata (if any)
-    # Populate the 'patient' column with the provided value,
-    # falling back to the sample ID if missing.
-    # Normalize 'sex' to the XX/XY/NA encoding sarek requires, defaulting to XX
-    # since alignment-only does not need sex differentiation. Default 'status' to 0.
-    samplesheet = ds.samplesheet.reindex(columns=["sample", "patient", "sex", "status"])
-    missing_status = samplesheet["status"].isna().sum()
-    if missing_status > 0:
-        ds.logger.warning(
-            f"status not provided for {missing_status} sample(s), defaulting to 0 (normal). "
-            "Set status explicitly in the samplesheet if running somatic variant calling downstream."
+def check_unique_lanes(samplesheet: pd.DataFrame):
+    """Fail when two rows share a patient, sample and lane, which sarek rejects."""
+
+    key = ["patient", "sample", "lane"]
+    duplicated = samplesheet.loc[samplesheet.duplicated(key, keep=False), key].drop_duplicates()
+    if not duplicated.empty:
+        listing = "; ".join(
+            f"patient {patient}, sample {sample}, lane {lane}"
+            for patient, sample, lane in duplicated.itertuples(index=False)
         )
-    samples = (
-        samplesheet
-        .assign(patient=lambda d: d['patient'].fillna(d['sample']))
-        .assign(sex=lambda d: d['sex'].apply(normalize_sex, default='XX'))
-        .assign(status=lambda d: d['status'].fillna(0).astype(int))
-        .set_index("sample")
-    )
+        raise ValueError(
+            f"Each row of a sample needs its own lane, but these are on more than one row: {listing}. "
+            "Correct the lanes, or leave them blank to have them numbered."
+        )
 
-    # 1. Use the 'patient' column if provided, falling back to the 'sample'
-    # 2. Order the columns
-    # 3. Overwrite the 'lane' column to provide a unique value per-row
-    # (This is necessary to account for datasets which merge flowcells)
-    manifest = (
-        manifest
-        .set_index("sample")
-        .assign(patient=samples["patient"], sex=samples["sex"], status=samples["status"])
-        .reset_index()
-        .reindex(columns=['patient', 'sample', 'sex', 'status', 'lane', 'fastq_1', 'fastq_2'])
-        .assign(lane=[str(i) for i in range(manifest.shape[0])])
-    )
 
-    return manifest
+def check_one_status_per_sample(samplesheet: pd.DataFrame):
+    """Fail when the rows of one sample disagree on whether it is a normal or a tumor."""
+
+    statuses = samplesheet.groupby("sample", sort=False)["status"].nunique()
+    mixed = statuses.index[statuses > 1].tolist()
+    if mixed:
+        raise ValueError(
+            f"Each sample must be either normal or tumor, but these have rows of both: {', '.join(mixed)}. "
+            "A blank status counts as normal (0), so set the status on every row of a tumor sample."
+        )
+
+
+def check_one_normal_per_tumor_patient(samplesheet: pd.DataFrame):
+    """Fail when a patient with a tumor has several normal samples, which sarek rejects."""
+
+    samples = samplesheet.drop_duplicates(["patient", "sample"])
+    tumor_patients = samples.loc[samples["status"] == "1", "patient"]
+    normals = samples.loc[(samples["status"] == "0") & samples["patient"].isin(tumor_patients)]
+    normals = normals.groupby("patient", sort=False)["sample"].unique()
+    conflicts = normals[normals.map(len) > 1]
+    if not conflicts.empty:
+        listing = "; ".join(f"{patient} ({', '.join(names)})" for patient, names in conflicts.items())
+        raise ValueError(
+            f"A tumor is paired with the one normal sample of its patient, but these patients have several: {listing}. "
+            "Give each extra normal sample a patient of its own."
+        )
 
 
 def warn_custom_genome_limitations(ds: PreprocessDataset):
@@ -196,11 +269,19 @@ _VCF_PARAM_PAIRS = (
 )
 
 
-def stage_colliding_vcf_params(ds: PreprocessDataset):
+def colliding_vcf_copies(params: dict) -> list[tuple[str, str, str]]:
+    """The (param, source URI, copy URI) of each known-sites VCF to copy under a name of its own.
+
+    Nextflow stages every input of a process into a single work directory, so dbsnp and
+    known_indels picked from the same germline_resource.vcf.gz reference type collide.
+    Each offending VCF is copied into the dataset's config/ folder, beside the
+    samplesheet, under a name prefixed with its param key, and its index as
+    ``<copy>.tbi``.
+    """
     paths = {
-        vcf_param: ds.params[vcf_param]
+        vcf_param: params[vcf_param]
         for vcf_param, _ in _VCF_PARAM_PAIRS
-        if ds.params.get(vcf_param)
+        if params.get(vcf_param)
     }
 
     by_name = {}
@@ -213,34 +294,18 @@ def stage_colliding_vcf_params(ds: PreprocessDataset):
         for vcf_param in vcf_params
     }
     if not colliding:
-        ds.logger.info("VCF inputs: no file name collisions to resolve")
-        return
+        return []
 
-    ds.logger.info(f"VCF inputs: resolving file name collision between {sorted(colliding)}")
-
-    s3 = boto3.client("s3")
-    config_dir = ds.params["input"].rsplit("/", 1)[0]
+    config_dir = params["input"].rsplit("/", 1)[0]
+    copies = []
     for vcf_param, tbi_param in _VCF_PARAM_PAIRS:
         if vcf_param not in colliding:
             continue
-
-        staged_vcf = f"{vcf_param}_{paths[vcf_param].rsplit('/', 1)[-1]}"
-        to_stage = [(vcf_param, paths[vcf_param], staged_vcf)]
-        if ds.params.get(tbi_param):
-            to_stage.append((tbi_param, ds.params[tbi_param], f"{staged_vcf}.tbi"))
-
-        for param, uri, staged_name in to_stage:
-            source = S3Path(uri)
-            assert source.valid, f"Cannot stage a copy of --{param}: {uri} is not an S3 path"
-            staged_uri = f"{config_dir}/{staged_name}"
-            dest = S3Path(staged_uri)
-            ds.logger.info(f"VCF inputs: staging {uri} as {staged_uri}")
-            s3.copy(
-                {"Bucket": source.bucket, "Key": source.key},
-                dest.bucket,
-                dest.key
-            )
-            ds.add_param(param, staged_uri, overwrite=True)
+        copy_uri = f"{config_dir}/{vcf_param}_{paths[vcf_param].rsplit('/', 1)[-1]}"
+        copies.append((vcf_param, paths[vcf_param], copy_uri))
+        if params.get(tbi_param):
+            copies.append((tbi_param, params[tbi_param], f"{copy_uri}.tbi"))
+    return copies
 
 
 def require_analysis_type_binding(ds: PreprocessDataset):
@@ -251,9 +316,9 @@ def require_analysis_type_binding(ds: PreprocessDataset):
     the whole block resolved to nothing — and ``intervals`` lives in that same block, so it
     was dropped too, which would silently turn a targeted run into a genome-wide one.
 
-    Nothing else catches this: the form declares no top-level ``required`` and draft-07
-    permits additional properties, so a flat parameter dict validates cleanly and then
-    binds none of the nested JSONPaths in process-input.json.
+    Nothing else catches this: the form's top-level ``required`` names only the
+    samplesheet, and draft-07 permits additional properties, so a flat parameter dict
+    validates cleanly and then binds none of the nested JSONPaths in process-input.json.
     """
     if "wes" in ds.params:
         return
@@ -406,17 +471,28 @@ def filter_params_by_schema(ds: PreprocessDataset):
 
 if __name__ == "__main__":
 
+    import boto3
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
+    from cirro.models.s3_path import S3Path
+
     ds = PreprocessDataset.from_running()
 
     ds.logger.info(f"Starting sarek_align preprocess — workflow_version={ds.params.get('workflow_version', _DEFAULT_WORKFLOW_VERSION)!r}")
 
     require_analysis_type_binding(ds)
 
-    manifest = make_manifest(ds)
-    ds.logger.info(manifest.to_csv(index=None))
-    # Write to the dataset's config/ folder (mapped in process-input.json)
-    manifest.to_csv(ds.params["input"], index=None)
-    ds.logger.info(f"Wrote {manifest.shape[0]} row(s) to {ds.params['input']}")
+    samplesheet = read_samplesheet(ds.params.get("input"))
+    filled = fill_samplesheet(samplesheet)
+
+    check_one_patient_per_sample(filled)
+    check_one_status_per_sample(filled)
+    check_unique_lanes(filled)
+    check_one_normal_per_tumor_patient(filled)
+
+    if not filled.equals(samplesheet):
+        # Overwrite the file Cirro wrote to the dataset's config/ folder (mapped in process-input.json)
+        filled.to_csv(ds.params["input"], index=None)
+        ds.logger.info(f"Wrote {filled.shape[0]} row(s) to {ds.params['input']}")
 
     # Warn about custom-genome limitations while genome_source is still present.
     warn_custom_genome_limitations(ds)
@@ -440,7 +516,15 @@ if __name__ == "__main__":
 
     apply_extra_json_params(ds)
 
-    stage_colliding_vcf_params(ds)
+    copies = colliding_vcf_copies(ds.params)
+    if not copies:
+        ds.logger.info("VCF inputs: no file name collisions to resolve")
+    for param, source_uri, copy_uri in copies:
+        source, dest = S3Path(source_uri), S3Path(copy_uri)
+        assert source.valid, f"Cannot stage a copy of --{param}: {source_uri} is not an S3 path"
+        ds.logger.info(f"VCF inputs: staging {source_uri} as {copy_uri}")
+        boto3.client("s3").copy({"Bucket": source.bucket, "Key": source.key}, dest.bucket, dest.key)
+        ds.add_param(param, copy_uri, overwrite=True)
 
     filter_params_by_schema(ds)
 

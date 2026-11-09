@@ -1,5 +1,5 @@
 {
-    "input": "$.dataset.s3|/config/manifest.csv",
+    "input": "$.structuredInputs.pipeline_samplesheet.path",
     "contrasts": "$.dataset.s3|/config/contrasts.csv",
     "igenomes_base": "$.referencesBucketUri|/igenomes/",
     "source": "fastq",

@@ -2,9 +2,9 @@
   "id": "process-nf-core-cutandrun-2-0",
   "childProcessIds": [],
   "name": "CUT&RUN (nf-core/cutandrun)",
-  "desc": "Alignment, peak-calling, and downstream analysis for CUT&RUN and CUT&Tag (v2.0)",
+  "desc": "Alignment, peak-calling, and downstream analysis for CUT&RUN and CUT&Tag (v3.2.2)",
   "executor": "NEXTFLOW",
-  "executionModes": ["STANDARD", "HEALTHOMICS"],
+  "executionModes": ["STANDARD"],
   "pipelineTypeOverride": "nf-core",
   "category": "DNA Sequencing",
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-dna-sequencing/#cutrun-nf-corecutandrun",
@@ -12,9 +12,11 @@
     "repository": "GITHUBPUBLIC",
     "script": "main.nf",
     "uri": "nf-core/cutandrun",
-    "version": "2.0"
+    "version": "3.2.2",
+    "executorVersion": "25.04.8"
   },
-  "usesSampleSheet": true,
+  "allowMultipleSources": true,
+  "usesSampleSheet": false,
   "computeDefaults": [
     {
       "executor": "NEXTFLOW",

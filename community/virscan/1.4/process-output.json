@@ -1,0 +1,187 @@
+{
+  "commands": [
+    {
+      "command": "hot.Dsv",
+      "params": {
+        "url": "https://matsengrp.github.io/phippery/introduction.html",
+        "source": "$data_directory/aggregated_data/organism.summary.csv.gz",
+        "sep": ",",
+        "header": true,
+        "name": "Organism Summary",
+        "desc": "Summary of organisms detected by VirScan",
+        "cols": [
+          {
+            "col": "sample",
+            "name": "Sample",
+            "desc": "Unique sample identifier"
+          },
+          {
+            "col": "organism",
+            "name": "Organism",
+            "desc": "Organism defined in the VirScan library"
+          },
+          {
+            "col": "n_hits_all",
+            "name": "Num. Hits",
+            "desc": "Number of epitope hits"
+          },
+          {
+            "col": "n_discordant_all",
+            "name": "Num. Discordant",
+            "desc": "Number of discordant epitopes"
+          },
+          {
+            "col": "max_ebs_all",
+            "name": "Max EBS",
+            "desc": "Maximum Epitope Binding Score"
+          },
+          {
+            "col": "mean_ebs_all",
+            "name": "Mean EBS",
+            "desc": "Mean Epitope Binding Score"
+          },
+          {
+            "col": "n_hits_public",
+            "name": "Num. Hits (Public)",
+            "desc": "Number of public epitope hits"
+          },
+          {
+            "col": "n_discordant_public",
+            "name": "Num. Discordant (Public)",
+            "desc": "Number of discordant public epitopes"
+          },
+          {
+            "col": "max_ebs_public",
+            "name": "Max EBS (Public)",
+            "desc": "Maximum Epitope Binding Score for public epitopes"
+          },
+          {
+            "col": "mean_ebs_public",
+            "name": "Mean EBS (Public)",
+            "desc": "Mean Epitope Binding Score for public epitopes"
+          },
+          {
+            "col": "max_ebs_hits",
+            "name": "Max EBS (Hits)",
+            "desc": "Maximum Epitope Binding Score for epitope hits"
+          },
+          {
+            "col": "mean_ebs_hits",
+            "name": "Mean EBS (Hits)",
+            "desc": "Mean Epitope Binding Score for epitope hits"
+          }
+        ]
+      }
+    },
+    {
+      "command": "hot.Dsv",
+      "params": {
+        "url": "https://matsengrp.github.io/phippery/introduction.html",
+        "source": "$data_directory/aggregated_data/peptide.ebs.csv.gz",
+        "sep": ",",
+        "header": true,
+        "name": "Epitope Summary",
+        "desc": "Summary of epitopes detected by VirScan",
+        "cols": [
+          {
+            "col": "sample",
+            "name": "Sample",
+            "desc": "Unique sample identifier"
+          },
+          {
+            "col": "peptide",
+            "name": "Epitope",
+            "desc": "Epitope"
+          },
+          {
+            "col": "n_replicates",
+            "name": "Num. Replicates",
+            "desc": "Number of replicates per sample"
+          },
+          {
+            "col": "EBS",
+            "name": "EBS",
+            "desc": "Epitope Binding Score"
+          },
+          {
+            "col": "hit",
+            "name": "Hit",
+            "desc": "Epitope meets Z-score threshold"
+          },
+          {
+            "col": "public",
+            "name": "Public",
+            "desc": "Public epitope"
+          }
+        ]
+      }
+    },    
+    {
+      "command": "hot.Dsv",
+      "params": {
+        "url": "https://matsengrp.github.io/phippery/introduction.html",
+        "source": "$data_directory/wide_data/virscan_sample_annotation_table.csv",
+        "sep": ",",
+        "header": true,
+        "name": "Sample Summary",
+        "desc": "Summary of sequencing depth and peptide detection per sample",
+        "cols": [
+          {
+            "col": "sample_name",
+            "name": "Replicate Name",
+            "desc": "Replicate Name"
+          },
+          {
+            "col": "sample",
+            "name": "Sample Name",
+            "desc": "Sample Name"
+          },
+          {
+            "col": "control_status",
+            "name": "Treatment vs. Control",
+            "desc": "Treatment vs. Control"
+          },
+          {
+            "col": "raw_total_sequences",
+            "name": "Total Sequences (#)",
+            "desc": "Total number of sequences in the replicate"
+          },
+          {
+            "col": "reads_mapped",
+            "name": "Mapped Sequences (#)",
+            "desc": "Number of sequences mapped"
+          },
+          {
+            "col": "error_rate",
+            "name": "Error Rate",
+            "desc": "Per-base sequencing error rate"
+          },
+          {
+            "col": "average_quality",
+            "name": "Average Quality",
+            "desc": "Mean quality score across all reads"
+          },
+          {
+            "col": "percent_mapped",
+            "name": "Mapped Sequences (%)",
+            "desc": "Percentage of sequences which were mapped"
+          },
+          {
+            "col": "percent_peptides_detected",
+            "name": "Peptides Detected (%)",
+            "desc": "Percentage of peptides which were detected"
+          },
+          {
+            "col": "percent_peptides_between_10_and_100",
+            "name": "Peptides with 10-100 reads (%)",
+            "desc": "Percentage of peptides with 10-100 reads detected"
+          }
+        ]
+      }
+    },
+    {
+      "command": "hot.Manifest",
+      "params": {}
+    }
+  ]
+}

@@ -1,7 +1,22 @@
 {
   "form": {
     "type": "object",
+    "required": [
+      "fastq_dir",
+      "samplesheet"
+    ],
     "properties": {
+      "fastq_dir": {
+        "title": "FASTQ Folders",
+        "description": "Datasets or folders holding the FASTQ files (.fastq.gz). Cell Ranger finds the files of each library in the samplesheet by its sample name",
+        "type": "string",
+        "format": "directory-path",
+        "multiple": true
+      },
+      "samplesheet": {
+        "type": "string",
+        "schema": "pipeline_samplesheet"
+      },
       "refs": {
         "type": "object",
         "title": "References",
@@ -72,11 +87,9 @@
                   "enabled": {
                     "enum": [true]
                   },
-                  "samples_table": {
+                  "probe_barcodes": {
                     "type": "string",
-                    "title": "Samples Table",
-                    "description": "List the samples, probe barcode IDs, and description of the samples (CSV format)",
-                    "default": "sample_id,probe_barcode_ids,description\nsample1,BC001+AB005,Control Sample"
+                    "schema": "pipeline_probe_barcodes"
                   }
                 }
               },
@@ -143,10 +156,83 @@
       }
     }
   },
-  "ui": {
-    "frp": {
-      "samples_table": {
-        "ui:widget": "textarea"
+  "ui": {},
+  "structuredInputs": {
+    "pipeline_samplesheet": {
+      "fileFormat": "CSV",
+      "schema": {
+        "title": "Samplesheet",
+        "description": "One row per library: the sample name its FASTQ files start with (the part before _S1_L001_R1_001.fastq.gz), the grouping it belongs to, and its feature type. The libraries of a grouping, such as a sample's gene expression and V(D)J libraries, are analyzed together in one Cell Ranger run named after the grouping.",
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "properties": {
+            "sample": {
+              "type": "string",
+              "title": "Sample",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "errorMessage": "Sample names can only contain letters, numbers, hyphens and underscores"
+            },
+            "grouping": {
+              "type": "string",
+              "title": "Grouping",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "errorMessage": "Groupings can only contain letters, numbers, hyphens and underscores"
+            },
+            "feature_types": {
+              "type": "string",
+              "title": "Feature Type",
+              "enum": [
+                "Gene Expression",
+                "VDJ",
+                "VDJ-T",
+                "VDJ-B",
+                "Antibody Capture",
+                "CRISPR Guide Capture",
+                "Multiplexing Capture"
+              ]
+            }
+          },
+          "required": [
+            "sample",
+            "grouping",
+            "feature_types"
+          ]
+        }
+      }
+    },
+    "pipeline_probe_barcodes": {
+      "fileFormat": "CSV",
+      "schema": {
+        "title": "Probe Barcodes",
+        "description": "One row per sample multiplexed in each grouping, with its probe barcode (e.g. BC001), joined by a + to its antibody barcode if it has one (BC001+AB005). Leave the table empty for singleplex samples.",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "sample_id": {
+              "type": "string",
+              "title": "Sample",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "errorMessage": "Sample names can only contain letters, numbers, hyphens and underscores"
+            },
+            "probe_barcode_ids": {
+              "type": "string",
+              "title": "Probe Barcode IDs",
+              "pattern": "^[A-Z]{2}[0-9]{3}([+|][A-Z]{2}[0-9]{3})*$",
+              "errorMessage": "Must be probe barcode IDs such as BC001, joined by a + to an antibody barcode (BC001+AB005) or by a pipe to another barcode of the same sample (BC001|BC002)"
+            },
+            "description": {
+              "type": "string",
+              "title": "Description"
+            }
+          },
+          "required": [
+            "sample_id",
+            "probe_barcode_ids"
+          ]
+        }
       }
     }
   }
