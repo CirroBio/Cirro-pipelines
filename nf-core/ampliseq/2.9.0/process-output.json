@@ -62,7 +62,7 @@
                         "delimiter": "\t"
                     }
                 },
-                "source": "$data_directory/dada2/ASV_tax_species.tsv",
+                "source": "$data_directory/dada2/ASV_tax_species.[reference].tsv",
                 "target": "dada2_ASV_tax_species.parquet",
                 "url": ""
             }
@@ -332,16 +332,9 @@
                         "delimiter": "\t"
                     }
                 },
-                "source": "$data_directory/qiime2/rel_abundance_tables/rel-table-ASV_with-[method]-tax.tsv",
+                "source": "$data_directory/qiime2/rel_abundance_tables/rel-table-ASV_with-DADA2-tax.tsv",
                 "target": "qiime2_rel_abundance_tables_rel-table-ASV_with-tax.parquet",
-                "url": "",
-                "concat": [
-                    {
-                        "token": "method",
-                        "name": "Method",
-                        "desc": "Method used for taxonomic assignment"
-                    }
-                ]
+                "url": ""
             }
         },
         {
