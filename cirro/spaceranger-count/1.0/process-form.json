@@ -14,7 +14,7 @@
       "ref": {
         "title": "Reference Transcriptome",
         "description": "Custom probe set combined with reference genome",
-        "pathType": "dataset",
+        "format": "directory-path",
         "process": [
           "process-hutch-spaceranger-mkref-1-0"
         ],
@@ -23,7 +23,7 @@
       "images": {
         "title": "Image File(s)",
         "description": "Dataset holding an image for each sample in the samplesheet, listed in the dataset's own samplesheet.csv under the columns sample and file (and optionally slide and area)",
-        "pathType": "dataset",
+        "format": "directory-path",
         "process": [
           "images"
         ],

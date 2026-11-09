@@ -45,6 +45,17 @@ def check_samples_match(samplesheet: pd.DataFrame, images: pd.DataFrame):
         raise ValueError(f"All FASTQ data must match up to image files: {'; '.join(unmatched)}")
 
 
+def reference_paths(ref: str) -> dict:
+    """The Space Ranger reference folder and probe set inside the picked reference dataset.
+
+    Built here rather than with a `|/...` suffix in process-input.json: a whole dataset
+    picked in the folder picker arrives as its data/ folder with a trailing slash, and
+    Nextflow stages a folder whose path contains `//` as an empty one.
+    """
+    ref = ref.rstrip("/")
+    return {"ref": f"{ref}/custom_SpaceRanger_reference/", "probes": f"{ref}/probes.csv"}
+
+
 if __name__ == "__main__":
 
     # Imported here so that test_preprocess.py runs without the SDK
@@ -54,10 +65,11 @@ if __name__ == "__main__":
 
     samplesheet = read_samplesheet(ds.params.get("fastq_manifest"))
 
-    # The image file names are joined onto this prefix, so it is deliberately left
-    # without a trailing separator. It is consumed here and never reaches the run,
-    # which is why the workflow need not declare it.
-    images_dir = ds.params["images"]
+    # The image file names are joined onto this prefix. A whole dataset picked in the
+    # folder picker arrives as its data/ folder with a trailing slash, which pandas
+    # would keep as an empty path segment. It is consumed here and never reaches the
+    # run, which is why the workflow need not declare it.
+    images_dir = ds.params["images"].rstrip("/")
     ds.logger.info(f"Reading images from {images_dir}")
     images = make_image_manifest(
         pd.read_csv(f"{images_dir}/samplesheet.csv", dtype=str, keep_default_na=False),
@@ -65,6 +77,9 @@ if __name__ == "__main__":
     )
 
     check_samples_match(samplesheet, images)
+
+    for param, value in reference_paths(ds.params["ref"]).items():
+        ds.add_param(param, value, overwrite=True)
 
     # Write to the dataset's config/ folder (mapped in process-input.json)
     images.to_csv(ds.params["image_manifest"], index=None)
