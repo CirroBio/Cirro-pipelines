@@ -154,7 +154,8 @@ def make_sdrf(
     sdrf = sdrf.reindex(columns=sort_columns(sdrf.columns))
 
     # One column per modification, all with the same name, ahead of the factor values.
-    # Without them quantms searches with no modifications at all, whatever its params say.
+    # Without them the search uses only Carbamidomethyl (C), as a fixed modification,
+    # whatever quantms's params say.
     modifications = (
         [sdrf_modification(modification, "Fixed") for modification in fixed_mods] +
         [sdrf_modification(modification, "Variable") for modification in variable_mods]
