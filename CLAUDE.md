@@ -2,43 +2,183 @@
 
 ## process-form.json Extended Syntax
 
-Cirro's `process-form.json` files use standard JSON Schema draft-07 as a base, extended with custom properties for UI rendering, file resolution, and cloud path support. The top-level structure is:
+Cirro's `process-form.json` files use standard JSON Schema draft-07 as a base, extended with custom properties for UI rendering, file selection, and structured inputs. The top-level structure is:
 
 ```json
 {
   "form": { ... },
-  "ui": { ... }
+  "ui": { ... },
+  "structuredInputs": { ... }
 }
 ```
 
 ---
 
-### File / Path Resolution Properties
+### Selecting Files and Folders
 
-These appear on `string`-type properties to wire them up to file pickers.
+Set `format` on a `string` property to let the user pick a file or folder from the
+project's datasets (the same values as nf-schema):
 
-| Property | Values | Purpose |
-|----------|--------|---------|
-| `pathType` | `"dataset"`, `"references"` | Where to resolve files from — a user dataset or a reference library |
-| `file` | glob pattern (e.g. `"**/*.f*"`) | File pattern for the file picker |
-| `folder` | glob pattern | Like `file` but selects a directory |
-| `useS3Path` | `true` / `false` | Allow direct S3 path entry in addition to the picker UI |
-| `multiple` | `true` / `false` | Allow selection of multiple files |
-| `process` | array of process ID strings | Filter the dataset picker to only show datasets produced by the listed process IDs (pipeline process IDs or intake process IDs) |
-| `mm` | `{ "matchBase": true }` | Controls file matching behavior (matchBase ignores leading path) |
-| `schema` | file path string | Path to external JSON Schema for validating selected file contents |
-| `mimetype` | MIME type string (e.g. `"text/plain"`) | Restricts accepted file types |
+| `format` | The user can select |
+|----------|---------------------|
+| `file-path`, `file-path-pattern` | A file |
+| `directory-path` | A folder (including a whole dataset) |
+| `path` | A file or a folder |
+
+| Property | Purpose |
+|----------|---------|
+| `pattern` | Regex that filters the files offered, matched against `data/<path>`. Anchor it at the end (`"\\.bam$"`), never the start: the value the form stores is a `cirro::` URI, and the pattern is validated against it |
+| `multiple` | `true` allows several picks. The value is a JSON array, so map it with `[*]` (`"$.dataset.params.fastq[*]"`) to pass a comma-separated string |
+| `process` | Limits the picker to datasets produced by these processes: a process ID, a glob of IDs (`"process-nf-core-rnaseq-*"`), or a list of them. Pipeline and intake process IDs both work |
+
+The workflow receives the full S3 path; folders have no trailing slash. `default` does not
+pre-select anything in this picker.
 
 **Example:**
 ```json
-"fasta": {
-  "title": "Reference FASTA",
+"gtf": {
+  "title": "Annotation File",
   "type": "string",
-  "pathType": "dataset",
-  "file": "**/*.f*",
-  "description": "Reference genome FASTA."
+  "format": "file-path",
+  "pattern": "\\.gtf(\\.gz)?$"
 }
 ```
+
+---
+
+### One File Picker for the Whole Form
+
+The portal picks a mode for the whole form, not per field:
+
+- **Path mode** — the form has a `structuredInputs` entry, or a `format` path field anywhere
+  (including inside `dependencies` and `if/then` branches). There is no "Datasets to use"
+  selector: the run's input datasets (`$.inputs`) are whichever datasets the form's picks
+  point into. Legacy `file` globs use the new picker too, and their `default` stops resolving.
+- **Dataset mode** — everything else. The user selects input datasets first, and `file`
+  globs offer files from those datasets only.
+
+Convert a pipeline as a whole: replace every `file` glob with `format: file-path` and a
+`pattern`, and set `usesSampleSheet` to `false`. Path mode loads no samples, so a pipeline
+that still requires them can never be run.
+
+A pipeline that reads a whole input dataset (`$.inputs[0].dataPath`) has nothing to pick in
+path mode, so the run gets no input dataset (and Run stays disabled when the pipeline has
+parent processes). Give it a required `format: directory-path` field for that folder and
+map the field instead.
+
+---
+
+### Deprecated File Keywords
+
+| Property | Values | Purpose |
+|----------|--------|---------|
+| `pathType` | `"dataset"`, `"reference"` (also spelled `"references"`) | `dataset` without `file` picks a whole dataset (its S3 path). `reference` picks a file from the project's references, filtered by the `file` glob |
+| `file` | glob pattern (e.g. `"**/*.f*"`) | Legacy file picker; use `format: file-path` instead |
+| `mm` | `{ "matchBase": true }` | Matching options for a `file` glob |
+| `useS3Path` | `true` / `false` | Ignored by the portal; drop it when converting a form |
+
+`multiple` and `process` (above) apply to these pickers too: `process` limits a
+`pathType: "dataset"` selector to datasets produced by those processes.
+
+**Example:**
+```json
+"genome_index": {
+  "title": "STAR Index",
+  "type": "string",
+  "pathType": "dataset",
+  "process": ["process-cirro-genome-index-star-1-0", "genome_star_index"]
+}
+```
+
+---
+
+### Structured Inputs (Sample Sheets)
+
+A `structuredInputs` entry describes a file the user fills out as a table in the form, and
+Cirro writes it to the dataset's `config/` folder at launch. This replaces building a
+samplesheet in `preprocess.py` from `ds.files` and `ds.samplesheet`.
+
+It is not limited to samplesheets: any input file whose rows fit a schema can be one, such
+as a contrasts table or a probe-barcode or hashtag table. Prefer a structured input over
+building such a file in `preprocess.py` or asking users to upload one, and migrate a
+pipeline's other CSV inputs when its form is converted.
+
+```json
+"form": {
+  "type": "object",
+  "required": ["input"],
+  "properties": {
+    "input": {"type": "string", "schema": "pipeline_samplesheet"}
+  }
+},
+"structuredInputs": {
+  "pipeline_samplesheet": {
+    "fileFormat": "CSV",
+    "defaultSourceFile": "samplesheet.csv",
+    "schema": {
+      "title": "Samplesheet",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "properties": {
+          "sample": {"type": "string", "title": "Sample", "pattern": "^\\S+$"},
+          "fastq_1": {"type": "string", "format": "file-path", "title": "FASTQ (R1)"}
+        },
+        "required": ["sample", "fastq_1"]
+      }
+    }
+  }
+}
+```
+
+Map the file's path in `process-input.json`; the form field itself never reaches
+`$.dataset.params`:
+
+```json
+"input": "$.structuredInputs.pipeline_samplesheet.path"
+```
+
+- **Naming** — the key becomes `config/<key>.csv` (or `.tsv`/`.json`), plus a raw copy at
+  `config/<key>.data.json` that "Copy parameters" reloads. A key may use only letters,
+  digits, `_` and `-`, up to 50 characters. Never use `samplesheet`, `files`,
+  `params`, `metadata` or `transform-params`: nothing stops them from colliding with Cirro's
+  own config files. Use `pipeline_samplesheet`.
+- **Columns** — one per property, in the order listed. A path `format` gives a file or folder
+  picker (one value per cell; use `fastq_1`/`fastq_2`, never an array), `enum` gives a
+  dropdown, and `integer`/`number`/`boolean` are checked. `object` and `array` columns are
+  not supported. `pattern`, `minimum`/`maximum`, `minLength`/`maxLength` and a string
+  `errorMessage` are checked against each row, and a file column's `pattern` sees the
+  dataset-relative path. Column `default`, `enumNames` and `oneOf` labels are ignored.
+- **Default source** — `defaultSourceFile` names a CSV or Excel file, such as
+  `samplesheet.csv`. When a run is started from a dataset holding a file whose path is or
+  ends with that name, the table is filled from it straight away, columns matched by name,
+  so sample metadata such as `strandedness` carries over without a preprocess script.
+- **Auto-fill** — users can import rows from a project Sheet, a CSV in a dataset, or a
+  dataset's file names. The generated rows are matched to columns by name: `sample` takes
+  the sample name, and `fastq_1`/`fastq_2` take paired reads. When the dataset has I1/I2
+  index reads, they become rows of their own, so exclude them in the FASTQ columns' `pattern` (see
+  `nf-core/rnaseq/3.1/process-form.json`).
+- **Validation is advisory** — invalid rows don't block Run, nothing re-checks them on the
+  server, and `required` on the form field doesn't mean at least one row. With no rows, Cirro
+  writes an empty file (no header), or omits the param if the field was never touched.
+  Give a table that needs rows `"minItems": 1` all the same, but not one that may be left
+  empty: the portal checks each row on its own, so it is not enforced yet. When the table
+  needs rows, `preprocess.py` should fail clearly in both cases (see
+  `cirro/cellranger-gex/1.1/preprocess.py`).
+- **File contents** — header row first, columns in schema order, blank cells empty, lines
+  ending in `\r\n`. File and folder cells hold absolute S3 URIs (an access-point alias for
+  datasets shared from another project).
+
+To change the file before the run, read and overwrite it at its mapped param. Read with
+`dtype=str, keep_default_na=False` so that sample names such as `01` stay as text:
+
+```python
+samplesheet = pd.read_csv(ds.params["input"], dtype=str, keep_default_na=False)
+samplesheet.to_csv(ds.params["input"], index=None)
+```
+
+Don't log the table's contents in preprocess: it is already shown with the run's params.
 
 ---
 
@@ -123,10 +263,10 @@ The `|` separates the static image prefix from a JSONPath expression that resolv
 
 ## process-input.json — JSONPath Roots
 
-The mapping resolves against the launch payload, whose only roots are `$.dataset`,
-`$.project`, `$.process` and `$.inputs`. Use `$.dataset.*` — the older
-`$.params.dataset.paramJson.*` / `$.params.dataset.s3` / `$.params.inputs[*]`
-spellings still resolve but are not the documented form.
+The mapping resolves against the launch payload, whose roots are `$.dataset`,
+`$.project`, `$.process`, `$.inputs`, `$.structuredInputs` and `$.referencesBucketUri`.
+Use `$.dataset.*` — the older `$.params.dataset.paramJson.*` / `$.params.dataset.s3` /
+`$.params.inputs[*]` spellings still resolve but are not the documented form.
 
 | Use | Path |
 |-----|------|
@@ -134,6 +274,8 @@ spellings still resolve but are not the documented form.
 | Output directory | `$.dataset.dataPath` — always this, never `$.dataset.s3\|/data/` |
 | Dataset root on S3 | `$.dataset.s3` |
 | An input dataset | `$.inputs[0].dataPath`, `$.inputs[0].s3`, or `$.inputs[*].dataPath` for all |
+| A structured input file | `$.structuredInputs.<key>.path` |
+| Cirro's shared references bucket | `$.referencesBucketUri` (e.g. `$.referencesBucketUri\|/igenomes/`) |
 
 `$.dataset.s3` is still right for the dataset's other folders — `|/config/<name>`,
 `|/web/`, `|/logs/`. Only the output directory has a dedicated field, and only that
@@ -173,7 +315,8 @@ config, and `PreprocessDataset.from_running()` reads all four at startup:
 | `config/metadata.json` | `ds.metadata` |
 
 Where a pipeline's own input is conceptually a samplesheet, `config/pipeline_samplesheet.csv`
-is the convention.
+is the convention. Prefer a [structured input](#structured-inputs-sample-sheets) over writing
+one here: building a samplesheet from `ds.files` and `ds.samplesheet` is deprecated.
 
 **Conditional writes:** the mapping populates the param on every run, so a file that is
 only written under some conditions must have its param removed otherwise — a param
@@ -198,6 +341,30 @@ Cromwell (`"executor": "CROMWELL"`) processes are the exception: `inputs.json` a
 `options.json` are picked up from the working directory by convention and have no
 `process-input.json` param to redirect.
 
+**Tests:** every `preprocess.py` ships with an offline `test_preprocess.py` beside it,
+because a preprocess bug only surfaces after a run has been submitted. Keep the logic in
+pure functions, import the SDK inside `__main__` (annotations through `TYPE_CHECKING`), and
+test the functions on in-memory fixtures. The test then needs pandas but not the Cirro SDK:
+`python test_preprocess.py` (see `nf-core/rnaseq/3.1/`). Older tests in this repo stub
+the SDK modules instead, which also works.
+
+---
+
+## Checking a Pipeline Folder
+
+- **`cirro-agent read check-config <folder>`** (Cirro Claude plugin, from
+  CirroBio/Cirro-claude-plugin#12) runs locally, with no sign-in. It reports:
+  - form keywords the portal does not understand;
+  - `process-input.json` mappings to fields the form lacks;
+  - `structuredInputs` entries Cirro cannot write;
+  - a literal `../` anywhere, which Cirro's WAF rejects;
+  - a `preprocess.py` with no `test_preprocess.py`.
+
+  It lists `process-definition.json` as an extra file, which is expected in this repo.
+- **Form Preview** renders a pasted `process-form.json` as people will see it, without
+  saving it: `/system/custom-pipelines/create/form-preview` on the tenant, or
+  `/project/<projectId>/custom-pipelines/create/form-preview` to offer that project's files.
+
 ---
 
 ## process-definition.json Structure
@@ -212,6 +379,7 @@ Key fields:
 | `dataType` | Human-readable output data type label |
 | `executor` | `"NEXTFLOW"` for pipeline processes, `"INGEST"` for intake processes |
 | `executionModes` | Optional. Where the process can run: `["STANDARD"]` (AWS Batch), `["HEALTHOMICS"]` (AWS HealthOmics), or both. Omit to declare Standard only |
+| `usesSampleSheet` | Deprecated. `true` makes the user select Cirro samples; it must be `false` once the form is in [path mode](#one-file-picker-for-the-whole-form) |
 | `category` | UI grouping (e.g. `"Reference Data"`) |
 | `code.repository` | `"GITHUBPUBLIC"` or `"NA"` |
 | `code.uri` | GitHub repo (e.g. `"CirroBio/nf-index-genome"`) |
