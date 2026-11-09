@@ -55,13 +55,13 @@ def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
 
     # Add that information to the manifest, filling in the form value when missing
     manifest = manifest.assign(
-        read_structure=manifest["sample"].apply(
-            read_structure.get
-        ).fillna(
-            ds.params.get("read_structure")
-        )
+        read_structure=manifest["sample"].apply(read_structure.get)
     )
-    assert not manifest["read_structure"].isnull().any(), "Missing read structure information"
+    # The form field has no default, and fillna(None) raises
+    if ds.params.get("read_structure"):
+        manifest["read_structure"] = manifest["read_structure"].fillna(ds.params["read_structure"])
+    assert not manifest["read_structure"].isnull().any(), \
+        "Missing read structure: set it in the form or in a read_structure samplesheet column"
     log_table(ds, "Manifest", manifest)
 
     return manifest
