@@ -5,7 +5,7 @@
   "desc": "Quantify sequencing coverage of sgRNA CRISPR guides with the MAGeCK Count analysis software.",
   "executor": "NEXTFLOW",
   "category": "Targeted Sequencing",
-  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-targeted-sequencing/#crispr-screen-analysis",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-targeted-sequencing/#mageck-count",
   "code": {
     "repository": "GITHUBPUBLIC",
     "script": "count.nf",
