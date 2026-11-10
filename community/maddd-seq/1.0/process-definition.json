@@ -5,7 +5,7 @@
   "desc": "Mutation and DNA Damage Detection by massively-parallel sequencing (MADDD-seq)",
   "executor": "NEXTFLOW",
   "category": "DNA Sequencing",
-  "documentationUrl": "https://github.com/FredHutch/maddd-seq",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-dna-sequencing/#duplex-sequencing-analysis-maddd-seq",
   "code": {
     "repository": "GITHUBPUBLIC",
     "uri": "FredHutch/maddd-seq",

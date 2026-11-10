@@ -9,7 +9,7 @@
   "executor": "NEXTFLOW",
   "pipelineTypeOverride": "nf-core",
   "category": "DNA Sequencing",
-  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-dna-sequencing/#dna-variant-calling-nf-coresarek",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-dna-sequencing/#align-reads-nf-coresarek",
   "code": {
     "repository": "GITHUBPUBLIC",
     "script": "main.nf",

@@ -8,7 +8,7 @@
   "executionModes": ["STANDARD", "HEALTHOMICS"],
   "pipelineTypeOverride": "nf-core",
   "category": "Microbial Analysis",
-  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-microbial-analysis#microbial-16s-nf-coreampliseq",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-microbial-analysis/#taxonomic-classification-nf-coreampliseq",
   "code": {
     "repository": "GITHUBPUBLIC",
     "script": "main.nf",

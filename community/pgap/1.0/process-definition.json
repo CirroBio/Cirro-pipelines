@@ -6,7 +6,7 @@
   "desc": "Annotate bacterial and archaeal genomes (chromosomes and plasmids) using the NCBI Prokaryotic Genome Annotation Pipeline (PGAP)",
   "executor": "NEXTFLOW",
   "category": "Microbial Analysis",
-  "documentationUrl": "https://github.com/ncbi/pgap",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-microbial-analysis/#annotate-microbial-genomes-pgap",
   "code": {
     "repository": "GITHUBPUBLIC",
     "script": "main.nf",

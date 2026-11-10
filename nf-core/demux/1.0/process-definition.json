@@ -12,7 +12,7 @@
   "executor": "NEXTFLOW",
   "pipelineTypeOverride": "nf-core",
   "category": "DNA Sequencing",
-  "documentationUrl": "https://nf-co.re/demultiplex/1.6.1",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-dna-sequencing/#demultiplex-nf-coredemultiplex",
   "code": {
     "repository": "GITHUBPUBLIC",
     "script": "main.nf",
