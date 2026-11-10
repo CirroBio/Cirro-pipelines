@@ -6,7 +6,7 @@
   "executor": "NEXTFLOW",
   "executionModes": ["STANDARD", "HEALTHOMICS"],
   "category": "Quality Control",
-  "documentationUrl": "https://github.com/FredHutch/interop-nf",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-quality-control/#interop-qc",
   "code": {
     "repository": "GITHUBPUBLIC",
     "script": "main.nf",

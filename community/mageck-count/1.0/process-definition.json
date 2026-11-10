@@ -6,7 +6,7 @@
   "executor": "NEXTFLOW",
   "allowMultipleSources": true,
   "category": "Targeted Sequencing",
-  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-targeted-sequencing/#crispr-screen-analysis",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-targeted-sequencing/#mageck-count",
   "code": {
     "repository": "GITHUBPUBLIC",
     "script": "count.nf",

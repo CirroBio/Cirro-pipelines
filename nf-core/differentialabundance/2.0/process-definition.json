@@ -7,7 +7,7 @@
   "executor": "NEXTFLOW",
   "pipelineTypeOverride": "nf-core",
   "category": "Statistical Analysis",
-  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-statistical-analysis/#differential-expression-analysis",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-statistical-analysis/#differential-abundance-analysis-nf-coredifferentialabundance",
   "code": {
     "repository": "GITHUBPUBLIC",
     "script": "main.nf",
