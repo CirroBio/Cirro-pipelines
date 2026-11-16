@@ -34,12 +34,15 @@ def normalize_sex(value: str) -> str:
 
 
 # Spellings of status mapped to sarek's encoding, 0 (normal) or 1 (tumor). A blank cell
-# is a normal sample, as in sarek.
+# is a normal sample, as in sarek. 0.0 and 1.0 come from sheets that stored status as a
+# number with blanks.
 _STATUS_ALIASES = {
     '': '0',
     '0': '0',
+    '0.0': '0',
     'normal': '0',
     '1': '1',
+    '1.0': '1',
     'tumor': '1',
     'tumour': '1',
 }
