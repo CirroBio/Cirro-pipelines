@@ -368,6 +368,9 @@ def resolve_reference_genome(ds: PreprocessDataset):
             raise ValueError(
                 "Custom Genome selected but no BWA genome index dataset was provided."
             )
+        # A whole dataset picked in the folder picker ends in a slash, and Nextflow stages
+        # a folder whose path contains // as an empty one.
+        bwa_index = bwa_index.rstrip("/")
         ds.logger.info(f"genome_source=dataset: using custom BWA index at {bwa_index}")
         ds.add_param("fasta", f"{bwa_index}/genome.fasta", overwrite=True)
         ds.add_param("fasta_fai", f"{bwa_index}/genome.fasta.fai", overwrite=True)

@@ -115,6 +115,16 @@ class ResolveReferenceGenomeTests(unittest.TestCase):
         self.assertEqual(ds.params.get("bwamem2"), "s3://bucket/bwamem2-index")
         self.assertNotIn("bwa", ds.params)
 
+    def test_custom_genome_strips_the_folder_pickers_trailing_slash(self):
+        ds = FakeDataset({
+            "genome_source": "dataset",
+            "aligner": "bwa-mem",
+            "bwa_index": "s3://bucket/datasets/idx/data/",
+        })
+        preprocess.resolve_reference_genome(ds)
+        self.assertEqual(ds.params.get("bwa"), "s3://bucket/datasets/idx/data")
+        self.assertEqual(ds.params.get("fasta"), "s3://bucket/datasets/idx/data/genome.fasta")
+
     def test_custom_genome_missing_index_raises(self):
         ds = FakeDataset({"genome_source": "dataset", "aligner": "bwa-mem2"})
         with self.assertRaisesRegex(ValueError, "no matching"):

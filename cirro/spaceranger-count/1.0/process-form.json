@@ -4,7 +4,8 @@
     "description": "Custom probe sequences will be combined with the human or mouse reference genome",
     "required": [
       "samplesheet",
-      "ref"
+      "ref",
+      "images"
     ],
     "properties": {
       "samplesheet": {

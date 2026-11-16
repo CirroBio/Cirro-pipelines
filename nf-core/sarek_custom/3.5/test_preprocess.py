@@ -77,8 +77,8 @@ class NormalizeStatus(unittest.TestCase):
 
     def test_spellings_map_to_sarek_values(self):
         cases = {
-            "": "0", " ": "0", "0": "0", "Normal": "0", "normal": "0",
-            "1": "1", "Tumor": "1", " TUMOR ": "1", "tumour": "1",
+            "": "0", " ": "0", "0": "0", "0.0": "0", "Normal": "0", "normal": "0",
+            "1": "1", "1.0": "1", "Tumor": "1", " TUMOR ": "1", "tumour": "1",
         }
         for value, expected in cases.items():
             self.assertEqual(preprocess.normalize_status(value), expected, value)
