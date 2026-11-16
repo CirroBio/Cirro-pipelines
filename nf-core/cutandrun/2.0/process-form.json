@@ -308,7 +308,6 @@
               "type": "string",
               "format": "file-path",
               "title": "FASTQ (R2)",
-              "description": "Leave blank for single-end reads",
               "pattern": "^(?![\\S\\s]*_I[12]_001\\.f(ast)?q\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
               "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
             },
@@ -320,7 +319,7 @@
               "errorMessage": "Control cannot contain spaces"
             }
           },
-          "required": ["group", "replicate", "fastq_1"]
+          "required": ["group", "replicate", "fastq_1", "fastq_2"]
         }
       }
     }

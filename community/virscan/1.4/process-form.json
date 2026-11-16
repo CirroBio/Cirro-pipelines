@@ -19,12 +19,6 @@
         "type": "integer",
         "default": 50
       },
-      "peptide_tile_length": {
-        "title": "Peptide Length",
-        "description": "Peptide length used for alignment",
-        "type": "integer",
-        "default": 50
-      },
       "n_mismatches": {
         "title": "Num. Mismatches",
         "description": "Number of mismatches allowed",
