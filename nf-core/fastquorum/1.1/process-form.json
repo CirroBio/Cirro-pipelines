@@ -1,5 +1,11 @@
 {
-    "ui": {},
+    "ui": {
+      "main_options": {
+        "read_structure": {
+          "ui:placeholder": "6M+T 6M+T"
+        }
+      }
+    },
     "form": {
       "type": "object",
       "properties": {
@@ -26,8 +32,7 @@
                   "read_structure": {
                     "type": "string",
                     "title": "Read structure",
-                    "description": "Specification of library structure used by fgbio. Note: can be specified on a per-sample basis with the `read_structure` samplesheet column.",
-                    "default": "Example: 6bp inline barcodes - 6M+T 6M+T"
+                    "description": "Specification of library structure used by fgbio, e.g. `6M+T 6M+T` for 6bp inline barcodes on both reads. Applied to every sample that does not set the `read_structure` samplesheet column; required unless all samples set it."
                   }
               }
           },
