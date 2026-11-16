@@ -78,7 +78,8 @@ The portal picks a mode for the whole form, not per field:
 
 Convert a pipeline as a whole: replace every `file` glob with `format: file-path` and a
 `pattern`, and set `usesSampleSheet` to `false`. Path mode loads no samples, so a pipeline
-that still requires them can never be run.
+that still requires them can never be run. Also set `allowMultipleSources` to `true` when
+picks can come from more than one dataset.
 
 A pipeline that reads a whole input dataset (`$.inputs[0].dataPath`) has nothing to pick in
 path mode, so the run gets no input dataset (and Run stays disabled when the pipeline has
@@ -399,6 +400,7 @@ Key fields:
 | `executor` | `"NEXTFLOW"` for pipeline processes, `"INGEST"` for intake processes |
 | `executionModes` | Optional. Where the process can run: `["STANDARD"]` (AWS Batch), `["HEALTHOMICS"]` (AWS HealthOmics), or both. Omit to declare Standard only |
 | `usesSampleSheet` | Deprecated. `true` makes the user select Cirro samples; it must be `false` once the form is in [path mode](#one-file-picker-for-the-whole-form) |
+| `allowMultipleSources` | `true` lets a run take more than one input dataset. In path mode the inputs are the datasets the form's picks point into, so set it whenever picks can come from more than one dataset (a table's rows, or separate fields). Without it, the launch is refused with "Process does not allow multiple dataset sources" |
 | `category` | UI grouping (e.g. `"Reference Data"`) |
 | `code.repository` | `"GITHUBPUBLIC"` or `"NA"` |
 | `code.uri` | GitHub repo (e.g. `"CirroBio/nf-index-genome"`) |
