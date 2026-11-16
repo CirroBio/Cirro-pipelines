@@ -33,7 +33,11 @@ project's datasets (the same values as nf-schema):
 
 The workflow receives the full S3 path. A file picker also offers the project's references
 that match `pattern`, and stores a picked reference as its S3 path rather than a `cirro::`
-URI. `default` does not pre-select anything in this picker.
+URI.
+
+Don't give a path field a `default`: the form fills it in as plain text, the picker shows it
+as if it had been picked, and it passes `pattern`, so the workflow receives that text instead
+of a path.
 
 **Examples:**
 ```json
