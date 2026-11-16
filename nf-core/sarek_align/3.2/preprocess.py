@@ -247,6 +247,9 @@ def resolve_reference_genome(ds: PreprocessDataset):
                 f"Custom Genome selected with aligner={aligner!r} but no matching "
                 "genome index dataset was provided."
             )
+        # A whole dataset picked in the folder picker ends in a slash, and Nextflow stages
+        # a folder whose path contains // as an empty one.
+        custom_index = custom_index.rstrip("/")
         ds.logger.info(f"genome_source=dataset: using custom {aligner} index at {custom_index}")
         ds.add_param("fasta", f"{custom_index}/genome.fasta", overwrite=True)
         ds.add_param("fasta_fai", f"{custom_index}/genome.fasta.fai", overwrite=True)
