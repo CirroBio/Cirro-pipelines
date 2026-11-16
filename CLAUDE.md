@@ -168,8 +168,7 @@ Map the file's path in `process-input.json`; the form field itself never reaches
   needs rows, `preprocess.py` should fail clearly in both cases (see
   `cirro/cellranger-gex/1.1/preprocess.py`).
 - **File contents** — header row first, columns in schema order, blank cells empty, lines
-  ending in `\r\n`. File and folder cells hold absolute S3 URIs (an access-point alias for
-  datasets shared from another project).
+  ending in `\r\n`. File and folder cells hold absolute S3 URIs.
 
 To change the file before the run, read and overwrite it at its mapped param. Read with
 `dtype=str, keep_default_na=False` so that sample names such as `01` stay as text:
