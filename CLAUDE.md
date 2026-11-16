@@ -27,12 +27,15 @@ project's datasets (the same values as nf-schema):
 
 | Property | Purpose |
 |----------|---------|
-| `pattern` | Regex that filters the files offered, matched against `data/<path>`. Anchor it at the end (`"\\.bam$"`), never the start: the value the form stores is a `cirro::` URI, and the pattern is validated against it |
+| `pattern` | Regex that filters the files offered, matched against `data/<path>`. Anchor it at the end (`"\\.bam$"`), never the start: the value the form stores is a `cirro::` URI, and the pattern is validated against it. A folder picker lists every file, so on a `directory-path` field the pattern only rejects a pick that doesn't match |
 | `multiple` | `true` allows several picks. The value is a JSON array, so map it with `[*]` (`"$.dataset.params.fastq[*]"`) to pass a comma-separated string |
-| `process` | Limits the picker to datasets produced by these processes: a process ID, a glob of IDs (`"process-nf-core-rnaseq-*"`), or a list of them. Pipeline and intake process IDs both work |
+| `process` | Limits the datasets the picker browses to those produced by these processes: a process ID, a glob of IDs (`"process-nf-core-rnaseq-*"`), or a list of them. Pipeline and intake process IDs both work. Searching in the picker still finds any dataset |
 
-The workflow receives the full S3 path; folders have no trailing slash. `default` does not
-pre-select anything in this picker.
+The workflow receives the full S3 path. A whole dataset picked in the folder picker gives
+its `data/` folder, ending in a slash (`.../data/`); a folder inside a dataset has none. A
+file picker also offers the project's references that match `pattern`, and stores a picked
+reference as its S3 path rather than a `cirro::` URI. `default` does not pre-select
+anything in this picker.
 
 **Example:**
 ```json
