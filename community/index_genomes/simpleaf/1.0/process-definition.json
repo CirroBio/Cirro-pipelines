@@ -17,7 +17,6 @@
     "version": "main",
     "script": "main_alevinfry.nf"
   },
-  "allowMultipleSources": false,
   "allowMultipleSources": true,
   "usesSampleSheet": false,
   "computeDefaults": [
