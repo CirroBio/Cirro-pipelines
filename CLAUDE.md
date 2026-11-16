@@ -29,7 +29,7 @@ project's datasets (the same values as nf-schema):
 |----------|---------|
 | `pattern` | Regex that filters the files offered, matched against `data/<path>`. Anchor it at the end (`"\\.bam$"`), never the start: the value the form stores is a `cirro::` URI, and the pattern is validated against it. A folder picker lists every file, so on a `directory-path` field the pattern only rejects a pick that doesn't match |
 | `multiple` | `true` allows several picks. The value is a JSON array, so map it with `[*]` (`"$.dataset.params.fastq[*]"`) to pass a comma-separated string |
-| `process` | Limits the datasets the picker browses to those produced by these processes: a process ID, a glob of IDs (`"process-nf-core-rnaseq-*"`), or a list of them. Pipeline and intake process IDs both work. Searching in the picker still finds any dataset |
+| `process` | Limits the datasets the picker browses to those produced by these processes: a process ID, a glob of IDs (`"process-nf-core-rnaseq-*"`), or a list of them. Pipeline and intake process IDs both work. Browsing includes their failed datasets, and searching in the picker still finds any dataset, which the form accepts |
 
 The workflow receives the full S3 path. A whole dataset picked in the folder picker gives
 its `data/` folder, ending in a slash (`.../data/`); a folder inside a dataset has none. A
@@ -78,7 +78,7 @@ map the field instead.
 
 | Property | Values | Purpose |
 |----------|--------|---------|
-| `pathType` | `"dataset"`, `"reference"` (also spelled `"references"`) | `dataset` without `file` picks a whole dataset (its S3 path). `reference` picks a file from the project's references, filtered by the `file` glob |
+| `pathType` | `"dataset"`, `"reference"` (also spelled `"references"`) | `dataset` without `file` picks a whole dataset (its S3 path). `reference` picks a file from the project's references, filtered by the `file` glob. Its dropdown selects a reference by itself, even on an optional field with no `default` |
 | `file` | glob pattern (e.g. `"**/*.f*"`) | Legacy file picker; use `format: file-path` instead |
 | `mm` | `{ "matchBase": true }` | Matching options for a `file` glob |
 | `useS3Path` | `true` / `false` | Ignored by the portal; drop it when converting a form |
@@ -154,8 +154,10 @@ Map the file's path in `process-input.json`; the form field itself never reaches
   picker (one value per cell; use `fastq_1`/`fastq_2`, never an array), `enum` gives a
   dropdown, and `integer`/`number`/`boolean` are checked. `object` and `array` columns are
   not supported. `pattern`, `minimum`/`maximum`, `minLength`/`maxLength` and a string
-  `errorMessage` are checked against each row, and a file column's `pattern` sees the
-  dataset-relative path. Column `default`, `enumNames` and `oneOf` labels are ignored.
+  `errorMessage` are checked against each row. A file column's `pattern` sees the file's
+  path inside `data/`, without that prefix (a top-level file is just its name), not the
+  `data/<path>` or `cirro::` URI a form field's sees. Column `default`, `enumNames` and
+  `oneOf` labels are ignored.
 - **Default source** — `defaultSourceFile` names a CSV or Excel file, such as
   `samplesheet.csv`. When a run is started from a dataset holding a file whose path is or
   ends with that name, the table is filled from it straight away, columns matched by name,
@@ -165,8 +167,10 @@ Map the file's path in `process-input.json`; the form field itself never reaches
   the sample name, and `fastq_1`/`fastq_2` take paired reads. When the dataset has I1/I2
   index reads, they become rows of their own, so exclude them in the FASTQ columns' `pattern` (see
   `nf-core/rnaseq/3.1/process-form.json`).
-- **Validation is advisory** — invalid rows don't block Run, nothing re-checks them on the
-  server, and `required` on the form field doesn't mean at least one row. With no rows, Cirro
+- **Validation is advisory** — invalid rows don't block Run. The table editor won't finish
+  with Done while any are marked red, but closing it keeps them, and the field then reads
+  "2 rows (2 invalid)". Nothing re-checks them on the server, and `required` on the form
+  field doesn't mean at least one row. With no rows, Cirro
   writes an empty file (no header), or omits the param if the field was never touched.
   The server does cap a table at 10,000 rows, and rejects a larger one when the run is
   submitted. Give a table that needs rows `"minItems": 1` all the same, but not one that may be left
