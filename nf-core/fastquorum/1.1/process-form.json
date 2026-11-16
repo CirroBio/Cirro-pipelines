@@ -1,5 +1,11 @@
 {
-    "ui": {},
+    "ui": {
+      "main_options": {
+        "read_structure": {
+          "ui:placeholder": "6M+T 6M+T"
+        }
+      }
+    },
     "form": {
       "type": "object",
       "required": ["input"],
