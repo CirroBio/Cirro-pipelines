@@ -219,7 +219,7 @@
           "fragment_mass_tolerance": {
             "type": "number",
             "title": "Fragment Mass Tolerance",
-            "description": "Fragment mass tolerance used for database search. The default of 0.03 Da is for high-resolution instruments.",
+            "description": "Fragment mass tolerance used for database search. Use about 0.03 Da for high-resolution instruments.",
             "default": 0.6,
             "help_text": "Caution: for Comet we are estimating the `fragment_bin_tolerance` parameter based on this automatically."
           },
