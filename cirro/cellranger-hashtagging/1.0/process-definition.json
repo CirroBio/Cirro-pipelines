@@ -5,7 +5,7 @@
     "hutch-scanpy-qc-1_0"
   ],
   "dataType": "Single-Cell Data (hashtagging)",
-  "name": "CellRanger Demultiplex Hashtags",
+  "name": "CellRanger Demultiplex Hashtags (legacy)",
   "desc": "Deconvolute CMO hashtagged single-cell data using CellRanger",
   "executor": "NEXTFLOW",
   "pipelineTypeOverride": "10X",

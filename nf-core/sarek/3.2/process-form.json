@@ -1,0 +1,626 @@
+{
+  "ui": {
+    "analysis_type": {
+      "tools": {
+        "ui:widget": "checkboxes"
+      }
+    },
+    "annotation": {
+      "annotation_tool": {
+        "ui:widget": "checkboxes"
+      }
+    },
+    "read_trimming_options": {
+      "trim_fastq": {
+        "ui:widget": "radio"
+      }
+    },
+    "extra_params_json": {
+      "ui:widget": "textarea",
+      "ui:placeholder": "{\"skip_markduplicates\": true, \"save_bam_mapped\": true}"
+    }
+  },
+  "form": {
+    "title": "Variant Calling (nf-core/sarek)",
+    "description": "Perform variant calling on unaligned sequence reads",
+    "type": "object",
+    "required": ["input"],
+    "properties": {
+      "input": {
+        "type": "string",
+        "schema": "pipeline_samplesheet"
+      },
+      "workflow_version": {
+        "type": "string",
+        "title": "Workflow Version",
+        "description": "Version of nf-core/sarek to run (e.g. 3.8.1). See https://nf-co.re/sarek/releases for all releases.",
+        "default": "3.8.1",
+        "pattern": "^\\d+\\.\\d+(\\.\\d+)?$"
+      },
+      "analysis_type": {
+        "title": "Experiment Design",
+        "description": "Indicate the analysis type (germline/somatic) and select high level parameters for the workflow.",
+        "type": "object",
+        "required": ["analysis_type", "tools", "wes"],
+        "properties": {
+          "genome_selection": {
+            "title": "Reference Genome",
+            "type": "object",
+            "properties": {
+              "genome_source": {
+                "type": "string",
+                "title": "Reference Genome Source",
+                "description": "Select whether to use a curated iGenomes reference or a pre-built BWA genome index dataset from Cirro.",
+                "enum": ["igenomes", "dataset"],
+                "enumNames": ["iGenomes", "Custom Genome"],
+                "default": "igenomes"
+              }
+            },
+            "dependencies": {
+              "genome_source": {
+                "oneOf": [
+                  {
+                    "properties": {
+                      "genome_source": { "enum": ["igenomes"] },
+                      "igenomes": {
+                        "type": "object",
+                        "title": "Reference Genome (iGenomes)",
+                        "description": "Select a curated reference genome from the iGenomes collection.",
+                        "properties": {
+                          "genome": {
+                            "title": "Select A Reference Genome",
+                            "type": "string",
+                            "default": "GATK.GRCh38",
+                            "enum": ["GATK.GRCh38", "GATK.GRCh37", "GRCm38"],
+                            "enumNames": [
+                              "Homo sapiens (GATK.GRCh38)",
+                              "Homo sapiens (GATK.GRCh37)",
+                              "Mus musculus (GRCm38)"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "genome_source": { "enum": ["dataset"] },
+                      "bwa_cirro_reference": {
+                        "type": "object",
+                        "title": "Custom Genome Index (BWA)",
+                        "description": "Select a pre-built BWA genome index dataset from Cirro. Variant annotation (VEP/snpEff) and GATK known-sites resources are not available for custom genomes.",
+                        "properties": {
+                          "genome_index": {
+                            "title": "BWA Genome Index",
+                            "type": "string",
+                            "pathType": "dataset",
+                            "process": [
+                              "process-cirro-genome-index-bwa-1-0",
+                              "genome_bwa_index"
+                            ],
+                            "description": "Pre-built BWA genome index dataset"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "wes": {
+            "title": "Whole Exome/Targeted Gene Panel Assay",
+            "description": "Please indicate if your data was generated using a capture kit.",
+            "type": "boolean",
+            "default": false
+          },
+          "intervals": {
+            "title": "Genomic intervals",
+            "description": "Target bed file in case of whole exome or targeted sequencing or intervals file for parallelization.",
+            "type": "string",
+            "pathType": "references",
+            "file": "**/genome_bed/**/regions.bed"
+          },
+          "germline_resource": {
+            "title": "Germline resource",
+            "description": "The germline resource VCF file (bgzipped and tabixed) needed by GATK4 Mutect2 is a collection of calls that are likely present in the sample, with allele frequencies.",
+            "type": "string",
+            "pathType": "references",
+            "file": "**/germline_resource/**/germline_resource.vcf.gz"
+          },
+          "analysis_type": {
+            "title": "Variant Calling Type",
+            "default": "Germline Variant Calling",
+            "enum": ["Germline Variant Calling", "Somatic Variant Calling"]
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "analysis_type": {
+                  "const": "Germline Variant Calling"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "tools": {
+                  "title": "Germline variant calling tool(s)",
+                  "description": "Please select one or more variant callers for your analysis.",
+                  "type": "array",
+                  "pattern": "^((cnvkit|deepvariant|freebayes|haplotypecaller|manta|mpileup|strelka|tiddit)*,?)*$",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "cnvkit",
+                      "deepvariant",
+                      "freebayes",
+                      "haplotypecaller",
+                      "manta",
+                      "mpileup",
+                      "strelka",
+                      "tiddit"
+                    ],
+                    "enumNames": [
+                      "CNVkit",
+                      "DeepVariant",
+                      "FreeBayes",
+                      "HaplotypeCaller",
+                      "Manta",
+                      "mpileup",
+                      "Strelka",
+                      "TIDDIT"
+                    ]
+                  },
+                  "uniqueItems": true
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "analysis_type": {
+                  "const": "Somatic Variant Calling"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "tools": {
+                  "title": "Somatic variant calling tool(s)",
+                  "description": "Please select one or more variant callers for your analysis.",
+                  "type": "array",
+                  "pattern": "^((ascat|controlfreec|cnvkit|freebayes|manta|msisensorpro|mutect2|strelka|tiddit)*,?)*$",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "ascat",
+                      "controlfreec",
+                      "cnvkit",
+                      "freebayes",
+                      "manta",
+                      "msisensorpro",
+                      "mutect2",
+                      "strelka",
+                      "tiddit"
+                    ],
+                    "enumNames": [
+                      "ASCAT",
+                      "Control-FREEC",
+                      "CNVkit",
+                      "FreeBayes",
+                      "Manta",
+                      "MSIsensorpro",
+                      "Mutect2",
+                      "Strelka",
+                      "TIDDIT"
+                    ]
+                  },
+                  "uniqueItems": true
+                },
+                "only_paired_variant_calling": {
+                  "type": "boolean",
+                  "title": "Only paired variant calling",
+                  "description": "Skip germline variant calling for matched normal samples; only perform tumor/normal somatic calling. Normal samples without a matched tumor are still processed through germline calling.",
+                  "default": false
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "required": [
+                "tools"
+              ],
+              "properties": {
+                "tools": {
+                  "contains": {
+                    "type": "string",
+                    "const": "mutect2"
+                  }
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "joint_mutect2": {
+                  "type": "boolean",
+                  "title": "Joint calling with Mutect2",
+                  "description": "Runs Mutect2 in joint (multi-sample) mode for better concordance among variant calls of tumor samples from the same patient.",
+                  "default": false
+                },
+                "pon": {
+                  "title": "Panel of Normals (Mutect2)",
+                  "description": "Panel-of-normals VCF (bgzipped) for GATK Mutect2, used to filter recurrent technical artifacts. If omitted, Mutect2 runs without a PON and produces an unfiltered VCF.",
+                  "type": "string",
+                  "pathType": "references",
+                  "file": "**/*.vcf.gz"
+                },
+                "ignore_soft_clipped_bases": {
+                  "type": "boolean",
+                  "title": "Ignore soft-clipped bases",
+                  "description": "Do not analyze soft-clipped bases in the reads (passes --dont-use-soft-clipped-bases to GATK Mutect2).",
+                  "default": false
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "required": [
+                "tools"
+              ],
+              "properties": {
+                "tools": {
+                  "contains": {
+                    "type": "string",
+                    "const": "haplotypecaller"
+                  }
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "joint_germline": {
+                  "type": "boolean",
+                  "title": "Joint germline calling",
+                  "description": "Turn on joint germline variant calling for GATK HaplotypeCaller, using all normal germline samples together followed by VQSR filtering.",
+                  "default": false
+                }
+              }
+            }
+          }
+        ]
+      },
+      "annotation": {
+        "title": "Variant Annotation",
+        "description": "Select variant annotation tools and VEP plugins.",
+        "type": "object",
+        "properties": {
+          "annotation_tool": {
+            "title": "Annotation tool(s)",
+            "description": "Please select one or both variant annotation tools.",
+            "type": "array",
+            "pattern": "^((vep|snpeff)*,?)*$",
+            "items": {
+              "type": "string",
+              "enum": ["vep", "snpeff"],
+              "enumNames": ["Variant Effect Predictor (VEP)", "snpEff"]
+            },
+            "uniqueItems": true
+          }
+        },
+        "if": {
+          "properties": {
+            "annotation_tool": {
+              "contains": {
+                "type": "string",
+                "const": "vep"
+              }
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "vep_dbnsfp": {
+              "type": "boolean",
+              "title": "dbNSFP plugin",
+              "description": "Enable the use of the VEP dbNSFP plugin that retrieves data for missense variants.",
+              "default": false
+            },
+            "vep_loftee": {
+              "type": "boolean",
+              "title": "LOFTEE plugin",
+              "description": "Enable the use of the VEP LOFTEE plugin to identify LoF (loss-of-function) variation.",
+              "default": false
+            },
+            "vep_spliceai": {
+              "type": "boolean",
+              "title": "SpliceAI plugin",
+              "description": "Enable the use of the VEP SpliceAI plugin to annotate variants predicted effect on splicing.",
+              "default": false
+            },
+            "vep_spliceregion": {
+              "type": "boolean",
+              "title": "SpliceRegion plugin",
+              "description": "Enable the use of the VEP SpliceRegion plugin to provide granular predictions of splicing effects.",
+              "default": false
+            },
+            "vep_mastermind": {
+              "type": "boolean",
+              "title": "Mastermind plugin",
+              "description": "Enable the use of the VEP Mastermind plugin to retrieve genomic evidence citation counts for variants.",
+              "default": false
+            },
+            "vep_condel": {
+              "type": "boolean",
+              "title": "Condel plugin",
+              "description": "Enable the use of the VEP Condel plugin to compute a Consensus Deleteriousness score for missense variants from SIFT and PolyPhen-2.",
+              "default": false
+            },
+            "vep_phenotypes": {
+              "type": "boolean",
+              "title": "Phenotypes plugin",
+              "description": "Enable the use of the VEP Phenotypes plugin to retrieve overlapping phenotype information from Ensembl.",
+              "default": false
+            },
+            "vep_out_format": {
+              "type": "string",
+              "title": "VEP output format",
+              "description": "Format of the VEP output file.",
+              "default": "vcf",
+              "enum": ["vcf", "json", "tab"],
+              "enumNames": ["VCF", "JSON", "Tab-delimited"]
+            }
+          }
+        }
+      },
+      "read_trimming_options": {
+        "title": "Read Trimming Options",
+        "description": "Parameters for performing adapter and read trimming using Trim-Galore.",
+        "type": "object",
+        "properties": {
+          "trim_fastq": {
+            "type": "boolean",
+            "title": "Trim reads using Trim-Galore?",
+            "default": false
+          }
+        },
+        "dependencies": {
+          "trim_fastq": {
+            "oneOf": [
+              {
+                "properties": {
+                  "trim_fastq": {
+                    "enum": [false]
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "trim_fastq": {
+                    "enum": [true]
+                  },
+                  "clip_r1": {
+                    "type": "integer",
+                    "title": "Clip R1",
+                    "description": "Instructs Trim Galore to remove bp from the 5' end of read 1 (or single-end reads)."
+                  },
+                  "clip_r2": {
+                    "type": "integer",
+                    "title": "Clip R2",
+                    "description": "Instructs Trim Galore to remove bp from the 5' end of read 2 (paired-end reads only)."
+                  },
+                  "three_prime_clip_r1": {
+                    "type": "integer",
+                    "title": "Three Prime Clip R1",
+                    "description": "Instructs Trim Galore to remove bp from the 3' end of read 1 AFTER adapter/quality trimming has been performed."
+                  },
+                  "three_prime_clip_r2": {
+                    "type": "integer",
+                    "title": "Three Prime Clip R2",
+                    "description": "Instructs Trim Galore to remove bp from the 3' end of read 2 AFTER adapter/quality trimming has been performed."
+                  },
+                  "trim_nextseq": {
+                    "type": "boolean",
+                    "title": "Trim NextSeq",
+                    "description": "DetectS polyG in read tails and trim them. Corresponds to the FastP flag `--trim_poly_g.`"
+                  },
+                  "save_trimmed": {
+                    "type": "boolean",
+                    "title": "Save the trimmed FastQ files in the results directory?",
+                    "default": false
+                  },
+                  "length_required": {
+                    "type": "integer",
+                    "title": "Minimum read length",
+                    "description": "Minimum length of reads to keep after trimming (FastP --length_required).",
+                    "default": 15
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "umi_options": {
+        "type": "object",
+        "title": "Unique Molecular Identifiers",
+        "description": "Options for handling Unique Molecular Identifiers (UMIs) in the workflow.",
+        "properties": {
+          "umi_tool": {
+            "type": "string",
+            "title": "UMI Processing",
+            "default": "none",
+            "enum": ["none", "use_fgbio", "use_fastp"],
+            "enumNames": [
+              "Skip UMI Processing",
+              "Process UMIS - fgbio",
+              "Process UMIS - fastp"
+            ]
+          },
+          "umi_in_read_header": {
+            "type": "boolean",
+            "title": "UMI in Read Header",
+            "description": "Move UMIs from fastq read headers to a tag prior to deduplication. Use if UMIs are already present in the header of the read, for instance from using OverrideCycles in bclconvert or umi_tools/extract."
+          }
+
+        },
+        "dependencies": {
+          "umi_tool": {
+            "oneOf": [
+              {
+                "properties": {
+                  "umi_tool": {"enum": ["none"]}
+                }
+              },
+              {
+                "properties": {
+                  "umi_tool": {"enum": ["use_fgbio"]},
+                  "umi_read_structure": {
+                    "type": "string",
+                    "title": "UMI Read Structure",
+                    "description": "Specify UMI read structure for fgbio UMI consensus read generation. One structure if UMI is present on one end (i.e. '+T 2M11S+T'), or two structures separated by a blank space if UMIs a present on both ends (i.e. '2M11S+T 2M11S+T'); please note, this does not handle duplex-UMIs."
+                  },
+                  "group_by_umi_strategy": {
+                    "type": "string",
+                    "title": "Group by UMI Strategy",
+                    "default": "Adjacency",
+                    "description": "Default strategy for fgbio UMI-based consensus read generation ",
+                    "enum": ["Identity", "Edit", "Adjacency", "Paired"]
+                  }
+                }
+              },
+              {
+                "required": ["umi_length"],
+                "properties": {
+                  "umi_tool": {"enum": ["use_fastp"]},
+                  "umi_location": {
+                    "type": "string",
+                    "title": "UMI Location",
+                    "description": "Location of the UMI(s) to be extracted with fastp. Use if UMIs are not present in the read header, but in a specific location within the reads/fastq header index. This will be used to extract UMIs from reads or index in the fastq header and store them in the RX tag.",
+                    "default": "read1",
+                    "enum": ["read1", "read2", "per_read", "index1", "index2", "per_index"]
+                  },
+                  "umi_length": {
+                    "type": "integer",
+                    "title": "UMI Length",
+                    "description": "Length of the UMI(s) in the read. If UMIs are being extracted using fastp, specify the length of the UMI here. This will be used to extract UMIs from reads and store them in the RX tag."
+                  },
+                  "umi_base_skip": {
+                    "type": "integer",
+                    "title": "UMI Base Skip",
+                    "description": "Number of bases to skip after the UMI(s) in the read when extracting with fastp. If UMIs are being extracted using fastp, specify the number of bases to skip after the UMI here. This will trim some bases after the UMI."
+                  }
+                }
+              }
+            ]
+          }
+      }
+    },
+    "advanced_options": {
+        "type": "object",
+        "title": "Advanced Options",
+        "properties": {
+          "optical_duplicate_pixel_distance": {
+            "type": "integer",
+            "title": "MarkDuplicates - Optical Duplicate Pixel Distance",
+            "description": "The `--OPTICAL_DUPLICATE_PIXEL_DISTANCE` parameter is used by MarkDuplicates to set the maximum offset between two duplicate clusters in pixels for them to be considered optical duplicates. A value of 100 is generally appropriate for unpatterned Illumina flowcells and 250 is appropriate for patterned Illumina flow cells.",
+            "default": 100
+          },
+          "save_output_as_bam": {
+            "type": "boolean",
+            "title": "Save Output as BAM",
+            "description": "Save mapped reads as BAM files instead of the default CRAM format.",
+            "default": true
+          },
+          "save_mapped": {
+            "type": "boolean",
+            "title": "Save Mapped Reads",
+            "description": "Save the mapped BAM/CRAM files (before duplicate marking) to the results directory.",
+            "default": false
+          },
+          "split_fastq": {
+            "type": "integer",
+            "title": "Split FastQ size",
+            "description": "Number of reads per split of each FastQ file; splitting parallelizes mapping across shards to speed it up. Set 0 to disable splitting.",
+            "default": 50000000
+          }
+        }
+      },
+      "extra_params_json": {
+        "type": "string",
+        "title": "Extra Parameters (JSON)",
+        "description": "Optional: provide additional workflow parameters as a JSON object (e.g. {\"skip_markduplicates\": true}). Parameters are validated against the nf-core/sarek schema for the selected workflow version — unrecognized keys are silently removed. Protected system parameters (input, outdir, igenomes_base, compute_multiplier, etc.) cannot be overridden.",
+        "maxLength": 10000,
+        "default": ""
+      }
+    }
+  },
+  "structuredInputs": {
+    "pipeline_samplesheet": {
+      "fileFormat": "CSV",
+      "defaultSourceFile": "samplesheet.csv",
+      "schema": {
+        "title": "Samplesheet",
+        "description": "One row per pair of R1 and R2 FASTQ files. Rows with the same sample, such as one per sequencing lane, are merged by the pipeline. Give a tumor and its matched normal the same patient to call them as a pair.",
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "properties": {
+            "patient": {
+              "type": "string",
+              "title": "Patient",
+              "description": "Leave blank to use the sample name. A tumor is paired with the normal sample of the same patient",
+              "pattern": "^\\S+$",
+              "errorMessage": "Patient ID cannot contain spaces"
+            },
+            "sex": {
+              "type": "string",
+              "title": "Sex",
+              "description": "Leave blank if unknown (NA). Values such as male/female or M/F are converted to XY/XX. ASCAT and Control-FREEC need it for every sample",
+              "enum": ["XX", "XY", "NA"]
+            },
+            "status": {
+              "type": "string",
+              "title": "Status (0 = normal, 1 = tumor)",
+              "description": "0 for a normal sample, 1 for a tumor. Leave blank for normal. Values such as Normal/Tumor are converted to 0/1",
+              "enum": ["0", "1"]
+            },
+            "sample": {
+              "type": "string",
+              "title": "Sample",
+              "pattern": "^\\S+$",
+              "errorMessage": "Sample ID must be provided and cannot contain spaces"
+            },
+            "lane": {
+              "type": "string",
+              "title": "Lane",
+              "description": "Leave blank to number the rows of each sample automatically",
+              "pattern": "^\\S+$",
+              "errorMessage": "Lane cannot contain spaces"
+            },
+            "fastq_1": {
+              "type": "string",
+              "format": "file-path",
+              "title": "FASTQ (R1)",
+              "pattern": "^(?![\\S\\s]*_I[12]_001\\.f(ast)?q\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+              "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+            },
+            "fastq_2": {
+              "type": "string",
+              "format": "file-path",
+              "title": "FASTQ (R2)",
+              "pattern": "^(?![\\S\\s]*_I[12]_001\\.f(ast)?q\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+              "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+            }
+          },
+          "required": ["sample", "fastq_1", "fastq_2"]
+        }
+      }
+    }
+  }
+}

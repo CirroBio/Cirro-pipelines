@@ -16,7 +16,7 @@
     "version": "1.2.1"
   },
   "allowMultipleSources": true,
-  "usesSampleSheet": true,
+  "usesSampleSheet": false,
   "computeDefaults": [
     {
       "executor": "NEXTFLOW",

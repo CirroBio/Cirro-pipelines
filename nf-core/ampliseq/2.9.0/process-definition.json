@@ -1,0 +1,44 @@
+{
+  "id": "process-nf-core-ampliseq-2-9-0",
+  "childProcessIds": [
+    "differential-abundance-ampliseq"
+  ],
+  "dataType": "Microbial 16S (nf-core/ampliseq)",
+  "name": "Amplicon Analysis (nf-core/ampliseq)",
+  "desc": "Microbial 16S amplicon sequencing analysis workflow using DADA2 and QIIME2",
+  "executor": "NEXTFLOW",
+  "pipelineTypeOverride": "nf-core",
+  "category": "Microbial Analysis",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-microbial-analysis#microbial-16s-nf-coreampliseq",
+  "code": {
+    "repository": "GITHUBPUBLIC",
+    "script": "main.nf",
+    "uri": "nf-core/ampliseq",
+    "version": "2.9.0"
+  },
+  "allowMultipleSources": true,
+  "usesSampleSheet": false,
+  "computeDefaults": [
+    {
+      "executor": "NEXTFLOW",
+      "json": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-compute.config",
+      "name": "Default"
+    }
+  ],
+  "paramMapJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json",
+  "formJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-form.json",
+  "preProcessScript": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/preprocess.py",
+  "webOptimizationJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-output.json",
+  "fileMappingRules": [
+    {
+      "description": "FastQC Files",
+      "fileNamePatterns": [
+        {
+          "exampleName": "fastqc/SampleName_1_fastqc.html",
+          "description": "FastQC Summary",
+          "sampleMatchingPattern": "fastqc/(?P<sampleName>\\S*)_[12]_fastqc\\.html"
+        }
+      ]
+    }
+  ]
+}

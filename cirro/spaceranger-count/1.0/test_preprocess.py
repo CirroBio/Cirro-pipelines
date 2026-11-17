@@ -1,0 +1,94 @@
+"""Offline tests for the Space Ranger count preprocess script.
+
+preprocess.py imports the Cirro SDK only when it runs, so this is a plain
+`python -m unittest` that needs pandas and nothing else.
+
+The samplesheet is the structured input Cirro writes from the run form: a CSV with
+CRLF line endings, a header from the form's columns, and one row per lane. The
+images come from the samplesheet.csv of the selected image dataset.
+"""
+import importlib.util
+import io
+import unittest
+from pathlib import Path
+
+import pandas as pd
+
+
+def _load_preprocess():
+    path = Path(__file__).with_name("preprocess.py")
+    spec = importlib.util.spec_from_file_location("spaceranger_count_preprocess", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+preprocess = _load_preprocess()
+
+HEADER = "sample,fastq_1,fastq_2\r\n"
+LANE_1 = "01,s3://bucket/data/01_S1_L001_R1_001.fastq.gz,s3://bucket/data/01_S1_L001_R2_001.fastq.gz\r\n"
+LANE_2 = "01,s3://bucket/data/01_S1_L002_R1_001.fastq.gz,s3://bucket/data/01_S1_L002_R2_001.fastq.gz\r\n"
+IMAGES_DIR = "s3://bucket/datasets/images/data"
+
+
+def read_images(text: str) -> pd.DataFrame:
+    return pd.read_csv(io.StringIO(text), dtype=str, keep_default_na=False)
+
+
+class ReadSamplesheet(unittest.TestCase):
+
+    def test_lane_rows_are_read_as_text(self):
+        samplesheet = preprocess.read_samplesheet(io.StringIO(HEADER + LANE_1 + LANE_2))
+        self.assertEqual(samplesheet["sample"].tolist(), ["01", "01"])
+
+    def test_no_param_fails_clearly(self):
+        for path in (None, ""):
+            with self.assertRaisesRegex(ValueError, "No samplesheet was provided"):
+                preprocess.read_samplesheet(path)
+
+    def test_empty_file_fails_clearly(self):
+        with self.assertRaisesRegex(ValueError, "The samplesheet is empty"):
+            preprocess.read_samplesheet(io.StringIO(""))
+
+    def test_header_without_rows_fails_clearly(self):
+        with self.assertRaisesRegex(ValueError, "The samplesheet is empty"):
+            preprocess.read_samplesheet(io.StringIO(HEADER))
+
+
+class MakeImageManifest(unittest.TestCase):
+
+    def test_image_files_become_paths_in_the_image_dataset(self):
+        images = preprocess.make_image_manifest(
+            read_images("sample,file,slide,area\n01,tissue/01.tif,V19L01-041,A1\n02,02.tif,,\n"),
+            IMAGES_DIR,
+        )
+        self.assertEqual(
+            images.to_csv(index=None),
+            "sample,file,slide,area\n"
+            f"01,{IMAGES_DIR}/tissue/01.tif,V19L01-041,A1\n"
+            f"02,{IMAGES_DIR}/02.tif,,\n",
+        )
+
+    def test_missing_column_fails_clearly(self):
+        with self.assertRaisesRegex(ValueError, "must have a 'file' column \\(found: sample, image\\)"):
+            preprocess.make_image_manifest(read_images("sample,image\n01,01.tif\n"), IMAGES_DIR)
+
+
+class CheckSamplesMatch(unittest.TestCase):
+
+    def test_samples_with_both_pass(self):
+        preprocess.check_samples_match(
+            preprocess.read_samplesheet(io.StringIO(HEADER + LANE_1 + LANE_2)),
+            read_images("sample,file\n01,01.tif\n"),
+        )
+
+    def test_unmatched_samples_are_named(self):
+        with self.assertRaisesRegex(ValueError, "02 has images only; 01 has FASTQs only"):
+            preprocess.check_samples_match(
+                preprocess.read_samplesheet(io.StringIO(HEADER + LANE_1)),
+                read_images("sample,file\n02,02.tif\n"),
+            )
+
+
+if __name__ == "__main__":
+    unittest.main()

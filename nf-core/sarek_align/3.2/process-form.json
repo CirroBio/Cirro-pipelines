@@ -14,7 +14,12 @@
     "title": "Align Reads (nf-core/sarek)",
     "description": "Perform read alignment, mark duplicates, and base recalibration.",
     "type": "object",
+    "required": ["input"],
     "properties": {
+      "input": {
+        "type": "string",
+        "schema": "pipeline_samplesheet"
+      },
       "workflow_version": {
         "type": "string",
         "title": "Workflow Version",
@@ -91,7 +96,6 @@
                         "type": "string",
                         "pathType": "references",
                         "file": "**/germline_resource/**/germline_resource.vcf.gz",
-                        "useS3Path": true,
                         "description": "Optional: a VCF of known variant sites (e.g. dbSNP, or a species-appropriate known-sites resource), published to the project's references library. Cirro's references library only supports VCFs under the germline_resource reference type, so publish it there (or paste its S3 path directly). Combined with Known Indels below to enable base quality score recalibration (BQSR) -- providing either field is enough; BQSR is otherwise skipped automatically for custom genomes."
                       },
                       "known_indels": {
@@ -99,7 +103,6 @@
                         "type": "string",
                         "pathType": "references",
                         "file": "**/germline_resource/**/germline_resource.vcf.gz",
-                        "useS3Path": true,
                         "description": "Optional: a VCF of known indel sites, published to the project's references library (same germline_resource reference type as above -- pick a different entry than dbSNP, or paste its S3 path directly). Combined with dbSNP / Known Sites above to enable base quality score recalibration (BQSR) -- providing either field is enough; BQSR is otherwise skipped automatically for custom genomes."
                       }
                     },
@@ -277,6 +280,70 @@
         "description": "Optional: provide additional workflow parameters as a JSON object (e.g. {\"skip_markduplicates\": true}). Parameters are validated against the nf-core/sarek schema for the selected workflow version — unrecognized keys are silently removed.",
         "maxLength": 10000,
         "default": ""
+      }
+    }
+  },
+  "structuredInputs": {
+    "pipeline_samplesheet": {
+      "fileFormat": "CSV",
+      "defaultSourceFile": "samplesheet.csv",
+      "schema": {
+        "title": "Samplesheet",
+        "description": "One row per pair of R1 and R2 FASTQ files. Rows with the same sample, such as one per sequencing lane, are merged by the pipeline. Alignment does not use patient, sex or status, but sarek records them with the aligned reads for variant calling.",
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "properties": {
+            "patient": {
+              "type": "string",
+              "title": "Patient",
+              "description": "Leave blank to use the sample name. A tumor is paired with the normal sample of the same patient",
+              "pattern": "^\\S+$",
+              "errorMessage": "Patient ID cannot contain spaces"
+            },
+            "sex": {
+              "type": "string",
+              "title": "Sex",
+              "description": "Leave blank if unknown (NA). Values such as male/female or M/F are converted to XY/XX",
+              "enum": ["XX", "XY", "NA"]
+            },
+            "status": {
+              "type": "string",
+              "title": "Status (0 = normal, 1 = tumor)",
+              "description": "0 for a normal sample, 1 for a tumor. Leave blank for normal. Values such as Normal/Tumor are converted to 0/1",
+              "enum": ["0", "1"]
+            },
+            "sample": {
+              "type": "string",
+              "title": "Sample",
+              "pattern": "^\\S+$",
+              "errorMessage": "Sample ID must be provided and cannot contain spaces"
+            },
+            "lane": {
+              "type": "string",
+              "title": "Lane",
+              "description": "Leave blank to number the rows of each sample automatically",
+              "pattern": "^\\S+$",
+              "errorMessage": "Lane cannot contain spaces"
+            },
+            "fastq_1": {
+              "type": "string",
+              "format": "file-path",
+              "title": "FASTQ (R1)",
+              "pattern": "^(?![\\S\\s]*_I[12]_001\\.f(ast)?q\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+              "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+            },
+            "fastq_2": {
+              "type": "string",
+              "format": "file-path",
+              "title": "FASTQ (R2)",
+              "pattern": "^(?![\\S\\s]*_I[12]_001\\.f(ast)?q\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+              "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+            }
+          },
+          "required": ["sample", "fastq_1", "fastq_2"]
+        }
       }
     }
   }

@@ -1,102 +1,76 @@
 #!/usr/bin/env python3
+
 import pandas as pd
-from cirro.helpers.preprocess_dataset import PreprocessDataset
 
-def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
 
-    # Filter out any index files that may have been uploaded
-    ds.files = ds.files.loc[
-        ds.files.apply(
-            lambda r: r.get('readType', 'R') == 'R',
-            axis=1
+def read_samplesheet(path) -> pd.DataFrame:
+    """Read the samplesheet filled out in the form, keeping every value as text."""
+
+    # The form field is marked required, but an empty table can still be submitted,
+    # in which case Cirro either omits the param or writes an empty file
+    if not path:
+        raise ValueError("No samplesheet was provided: add at least one row of FASTQ files")
+    try:
+        # Read every value as text, so that group names like "01" are kept as-is
+        samplesheet = pd.read_csv(path, dtype=str, keep_default_na=False)
+    except pd.errors.EmptyDataError:
+        samplesheet = pd.DataFrame()
+    if samplesheet.empty:
+        raise ValueError("The samplesheet is empty: add at least one row of FASTQ files")
+    return samplesheet
+
+
+def check_replicates(samplesheet: pd.DataFrame):
+    """Fail unless the replicates of each group are numbered 1 to n, as the pipeline requires."""
+
+    not_numbered = samplesheet.loc[~samplesheet["replicate"].str.isdecimal(), "group"]
+    if not not_numbered.empty:
+        raise ValueError(
+            f"Every row needs a whole-number replicate; check group(s) {', '.join(not_numbered.unique())}"
         )
-    ]
 
-    # Make a wide manifest
-    manifest = ds.files.pivot(
-        index=["sampleIndex", "sample"],
-        columns="read",
-        values="file"
-    ).rename(
-        columns=lambda i: f"fastq_{i}"
-    ).reset_index(
-    ).set_index(
-        "sampleIndex"
-    )
-    ds.logger.info("Manifest")
-    ds.logger.info(manifest)
-    assert manifest.shape[0] > 0, "No files detected -- there may be an error with data ingest"
+    for group, replicates in samplesheet["replicate"].astype(int).groupby(samplesheet["group"]):
+        numbers = sorted(replicates.unique())
+        if numbers != list(range(1, len(numbers) + 1)):
+            raise ValueError(
+                f"The replicates of group {group} must be numbered 1 to {len(numbers)}, "
+                f"not {', '.join(map(str, numbers))}"
+            )
 
-    # Get the sample-level metadata
-    samples = ds.samplesheet.set_index("sample")
-    ds.logger.info("Sample metadata")
-    ds.logger.info(samples)
 
-    # The `grouping` and `replicate` annotation must have been assigned
-    for cname in ['grouping', 'replicate']:
-        msg = f"The {cname} must be assigned for each sample"
-        assert cname in samples.columns.values, msg
+def check_controls(samplesheet: pd.DataFrame, use_control: bool):
+    """Fail unless each control names another group and, with use_control on, every target group has one."""
 
-    # If control normalization is being used
-    ds.logger.info("Parameter - use_control:")
-    ds.logger.info(ds.params["use_control"])
-    if ds.params["use_control"]:
+    has_control = samplesheet["control"] != ""
+    controls = samplesheet.loc[has_control, "control"]
 
-        # The 'control' annotation must have been assigned
-        assert 'control' in samples.columns.values, "The 'control' must be assigned for each sample"
+    unknown = controls.loc[~controls.isin(samplesheet["group"])]
+    if not unknown.empty:
+        raise ValueError(f"Control(s) {', '.join(unknown.unique())} are not a group in the samplesheet")
 
-    # Annotate the manifest with the sample-level metadata
-    ds.logger.info("Adding group, replicate, and control to manifest")
-    manifest = manifest.assign(
-        group=manifest["sample"].apply(samples["grouping"].get),
-        replicate=manifest["sample"].apply(samples["replicate"].get),
-        control=manifest["sample"].apply(samples.reindex(columns=["control"])["control"].fillna("").get)
-    )
+    own = samplesheet.loc[has_control & (samplesheet["control"] == samplesheet["group"]), "group"]
+    if not own.empty:
+        raise ValueError(f"Group(s) {', '.join(own.unique())} name themselves as their control")
 
-    # There must be a group value for each sample
-    ds.logger.info("Checking for samples lacking 'grouping'")
-    unannotated_samples = [
-        sample
-        for sample, group in manifest["group"].items()
-        if pd.isnull(group) or len(group) == 0
-    ]
-    msg = f"Samples are missing a 'grouping': {', '.join(unannotated_samples)}"
-    assert len(unannotated_samples) == 0, msg
-
-    # Each of the control values must either be blank, or correspond to a group
-    ds.logger.info("Checking for controls which do not match a grouping")
-    unmatched_controls = [
-        f"{sample}: {control}"
-        for sample, control in manifest["control"].items()
-        if len(control) > 0 and control not in manifest["group"].values
-    ]
-    msg = f"Found 'control' labels which do not correspond to a 'grouping': {', '.join(unmatched_controls)}"
-    assert len(unmatched_controls) == 0, msg
-
-    # Arrange the table to have the expected order
-    manifest = manifest.reindex(
-        columns=[
-            "group",
-            "replicate",
-            "fastq_1",
-            "fastq_2",
-            "control"
-        ]
-    )
-    ds.logger.info("Reordered manifest")
-    ds.logger.info(manifest)
-
-    return manifest
+    if use_control:
+        no_control = samplesheet.loc[~has_control & ~samplesheet["group"].isin(controls), "group"]
+        if not no_control.empty:
+            raise ValueError(
+                "Use Control is on, so every group that is not itself a control needs one; "
+                f"set Control for group(s) {', '.join(no_control.unique())}"
+            )
 
 
 if __name__ == "__main__":
 
-    # Load the information for this dataset
-    ds = PreprocessDataset.from_running()
-    manifest = make_manifest(ds)
+    # Imported here so that test_preprocess.py runs without the SDK
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
 
-    # Write to the dataset's config/ folder (mapped in process-input.json)
-    manifest.to_csv(ds.params["input"], index=None)
+    ds = PreprocessDataset.from_running()
+
+    samplesheet = read_samplesheet(ds.params.get("input"))
+    check_replicates(samplesheet)
+    check_controls(samplesheet, ds.params["use_control"])
 
     # macs_gsize is around 2.7e9. A whole number that large is a Long by the time
     # Cirro builds the HealthOmics parameter list, and only String, Integer, Double

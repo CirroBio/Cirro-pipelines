@@ -13,7 +13,8 @@
     "uri": "nf-core/chipseq",
     "version": "2.1.0"
   },
-  "usesSampleSheet": true,
+  "allowMultipleSources": true,
+  "usesSampleSheet": false,
   "computeDefaults": [
     {
       "executor": "NEXTFLOW",

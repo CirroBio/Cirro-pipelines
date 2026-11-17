@@ -4,20 +4,23 @@
         "title": "ChIP-seq (nf-core/chipseq)",
         "description": "Peak-calling, QC, and differential analysis",
         "type": "object",
+        "required": ["input"],
         "properties": {
+            "input": {
+                "type": "string",
+                "schema": "pipeline_samplesheet"
+            },
             "workflow_version": {
                 "title": "Workflow Version",
                 "description": "Select the specific version of nf-core/chipseq to use",
                 "type": "string",
                 "enum": [
-                    "2.0.0",
                     "2.1.0"
                 ],
                 "default": "2.1.0"
             },
             "general": {
-                "title": "Samples must be annotated by `group`, `antibody`, `replicate`, and `control` prior to analysis",
-                "description": "For more details, see the User Guide.",
+                "title": "General options",
                 "type": "object",
                 "properties": {
                     "genome": {
@@ -339,6 +342,71 @@
                         "default": false,
                         "title": "Skip MultiQC"
                     }
+                }
+            }
+        }
+    },
+    "structuredInputs": {
+        "pipeline_samplesheet": {
+            "fileFormat": "CSV",
+            "defaultSourceFile": "samplesheet.csv",
+            "schema": {
+                "title": "Samplesheet",
+                "description": "One row per FASTQ file (single-end) or pair of FASTQ files (paired-end). Number the replicates of each sample 1, 2, 3 and so on. Rows with the same sample and replicate, such as one per sequencing lane, are merged by the pipeline. On ChIP rows, set the antibody and the input sample and replicate to call peaks against; leave all three blank on the input samples' own rows.",
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "sample": {
+                            "type": "string",
+                            "title": "Sample",
+                            "pattern": "^[A-Za-z0-9_.-]+$",
+                            "errorMessage": "Sample name must be provided and can only contain letters, numbers, underscores, dots and dashes"
+                        },
+                        "fastq_1": {
+                            "type": "string",
+                            "format": "file-path",
+                            "title": "FASTQ (R1)",
+                            "pattern": "^(?![\\S\\s]*_I[12]_001\\.f(ast)?q\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+                            "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+                        },
+                        "fastq_2": {
+                            "type": "string",
+                            "format": "file-path",
+                            "title": "FASTQ (R2)",
+                            "description": "Leave blank for single-end reads",
+                            "pattern": "^(?![\\S\\s]*_I[12]_001\\.f(ast)?q\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+                            "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+                        },
+                        "replicate": {
+                            "type": "integer",
+                            "title": "Replicate",
+                            "description": "Replicate number of this sample, starting from 1",
+                            "minimum": 1
+                        },
+                        "antibody": {
+                            "type": "string",
+                            "title": "Antibody",
+                            "description": "Antibody used for the ChIP. Leave blank on input (control) rows",
+                            "pattern": "^\\S+$",
+                            "errorMessage": "Antibody cannot contain spaces"
+                        },
+                        "control": {
+                            "type": "string",
+                            "title": "Control",
+                            "description": "Sample name of the input to call peaks against. Required when Antibody is set",
+                            "pattern": "^[A-Za-z0-9_.-]+$",
+                            "errorMessage": "Control must be a sample name, which can only contain letters, numbers, underscores, dots and dashes"
+                        },
+                        "control_replicate": {
+                            "type": "integer",
+                            "title": "Control Replicate",
+                            "description": "Replicate number of the control sample to call peaks against. Required when Control is set",
+                            "minimum": 1
+                        }
+                    },
+                    "required": ["sample", "fastq_1", "replicate"]
                 }
             }
         }

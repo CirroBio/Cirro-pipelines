@@ -1,7 +1,7 @@
 {
-    "input": "$.dataset.s3|/config/manifest.csv",
+    "input": "$.structuredInputs.pipeline_samplesheet.path",
     "genome": "$.dataset.params.igenomes.genome",
-    "heatmap_id_column": "$.dataset.params.processing_options.heatmap_id_column",
+    "heatmap_id_column": "HEATMAP_ID",
     "normalization_method": "$.dataset.params.normalization_parameters.normalization_method",
     "gene_score_method": "$.dataset.params.gene_score_computation.gene_score_method",
     "igenomes_base": "$.referencesBucketUri|/igenomes/",

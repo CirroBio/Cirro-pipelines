@@ -4,6 +4,7 @@
     "single-cell-h5",
     "ingest_cellranger",
     "process-hutch-cellranger-hashtagging-1-0",
+    "process-hutch-cellranger-hashtagging-1-1",
     "process-hutch-cellranger-aggr-1-0",
     "process-hutch-cellranger-gex-fetchngs-1-0",
     "process-hutch-cellranger-gex-1-0",

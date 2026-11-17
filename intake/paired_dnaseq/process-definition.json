@@ -19,6 +19,7 @@
     "process-hutch-germline-wgs-dragen-1-0",
     "process-hutch-dragen-wgs-align-dna-1-0",
     "process-nf-core-sarek-3-1",
+    "process-nf-core-sarek-3-2",
     "process-nf-core-sarek-align-3-2",
     "process-hutch-subset-fastq-paired-dna-1_0",
     "hutch-gig-map-align-reads-1-0",

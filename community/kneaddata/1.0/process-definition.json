@@ -8,6 +8,7 @@
   ],
   "childProcessIds": [
     "process-nf-core-ampliseq-2-4-0",
+    "process-nf-core-ampliseq-2-9-0",
     "process-nf-core-rnasplice-dev",
     "process-hutch-metaphlan-paired-1-0",
     "process-cirro-humann-1-0",

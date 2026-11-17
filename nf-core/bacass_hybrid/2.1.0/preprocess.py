@@ -1,107 +1,60 @@
 #!/usr/bin/env python3
 
-from cirro.helpers.preprocess_dataset import PreprocessDataset
 import pandas as pd
 
+# bacass 2.4.0 builds its input channel from all six columns, and tells an absent input
+# apart only by the literal "NA": a missing column or a blank cell reaches the workflow
+# as an empty list, which it treats as a file to process
+BACASS_COLUMNS = ["ID", "R1", "R2", "LongFastQ", "Fast5", "GenomeSize"]
 
-def make_manifest(ds: PreprocessDataset) -> pd.DataFrame:
 
-    # Filter out any index files that may have been uploaded
-    ds.files = ds.files.loc[
-        ds.files.apply(
-            lambda r: r.get('readType', 'R') != 'I',
-            axis=1
-        )
-    ]
+def read_samplesheet(path) -> pd.DataFrame:
+    """Read the tab-separated samplesheet filled out in the form, keeping every value as text."""
 
-    ds.logger.info("Files annotated in the input datasets:")
-    ds.logger.info(ds.files.to_csv(index=None))
-
-    ds.files = (
-        ds.files
-        .merge(ds.samplesheet, on="sample", how="left")
-    )
-
-    ds.logger.info("Files annotated with metadata:")
-    ds.logger.info(ds.files.to_csv(index=None))
-
-    if ds.params["merge_on"] != "sample":
-        ds.logger.info(f"Merging on {ds.params['merge_on']}")
-        ds.files = ds.files.rename(columns={ds.params["merge_on"]: "sample"})
-
-    # Files that don't have a readType are assumed to be long reads
-    ds.files = ds.files.assign(read=ds.files.apply(
-        lambda r: "LongFastQ" if r["process"] == "long_read_fastq" else r["read"],
-        axis=1
-    ))
-
-    # Make sure that there are both short and long reads present
-    if "LongFastQ" not in ds.files["read"].values:
-        ds.logger.info("######################################################")
-        ds.logger.info("# Must provide long reads as inputs for the assembly #")
-        ds.logger.info("######################################################")
-        raise ValueError("No long reads detected in the input data")
-    if 1 not in ds.files["read"].values:
-        ds.logger.info("#######################################################")
-        ds.logger.info("# Must provide short reads as inputs for the assembly #")
-        ds.logger.info("#######################################################")
-        raise ValueError("No short reads detected in the input data")
-
-    # If there is more than one sample present
-    if ds.files["sample"].nunique() > 1:
-
-        # Get the number of samples for the short and long reads
-        short_read_samples = ds.files.query("read == 1")["sample"].unique()
-        long_read_samples = ds.files.query("read == 'LongFastQ'")["sample"].unique()
-
-        # If there is only a single sample for both types of data
-        if short_read_samples.shape[0] == 1 and long_read_samples.shape[0] == 1:
-
-            # Just use the short read sample name for both
-            ds.logger.info(f"Single sample detected for both short and long reads: {short_read_samples[0]}")
-            ds.files = ds.files.replace({"sample": {long_read_samples[0]: short_read_samples[0]}})
-
-    # Make a wide samplesheet with the columns
-    # ID,R1,R2,LongFastQ,Fast5,GenomeSize
-    samplesheet = (
-        ds.files
-        .replace({"read": {1: "R1", 2: "R2"}})
-        .pivot(
-            index=["sample"],
-            columns="read",
-            values="file"
-        )
-        .reset_index()
-        .rename(columns=dict(sample="ID"))
-        .reindex(
-            columns=[
-                "ID",
-                "R1",
-                "R2",
-                "LongFastQ",
-                "Fast5",
-                "GenomeSize"
-            ]
-        )
-        .fillna("NA")
-    )
-
-    ds.logger.info("Formatted samplesheet:")
-    ds.logger.info(samplesheet.to_csv(index=None))
-    assert samplesheet.shape[0] > 0, "No files detected -- there may be an error with data ingest"
-
+    # The form field is marked required, but an empty table can still be submitted,
+    # in which case Cirro either omits the param or writes an empty file
+    if not path:
+        raise ValueError("No samplesheet was provided: add at least one sample")
+    try:
+        samplesheet = pd.read_csv(path, sep="\t", dtype=str, keep_default_na=False)
+    except pd.errors.EmptyDataError:
+        samplesheet = pd.DataFrame()
+    if samplesheet.empty:
+        raise ValueError("The samplesheet is empty: add at least one sample")
     return samplesheet
+
+
+def check_one_long_read_file_per_sample(samplesheet: pd.DataFrame):
+    """Fail before the run when the rows of one sample name different long-read files.
+
+    bacass 2.4.0 concatenates the short reads of rows with the same ID, but keeps only
+    the long-read FASTQ of the first row.
+    """
+
+    long_read_files = samplesheet.groupby("ID", sort=False)["LongFastQ"].nunique()
+    conflicting = long_read_files.index[long_read_files > 1]
+    if len(conflicting) > 0:
+        raise ValueError(f"Each sample can have only one long-read FASTQ, but these name several: {', '.join(conflicting)}")
+
+
+def to_bacass_samplesheet(samplesheet: pd.DataFrame) -> pd.DataFrame:
+    """Add the columns the form does not ask for, and mark every empty cell NA."""
+
+    return samplesheet.reindex(columns=BACASS_COLUMNS, fill_value="NA").replace("", "NA")
 
 
 if __name__ == "__main__":
 
-    # Load the information for this dataset
+    # Imported here so that test_preprocess.py runs without the SDK
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
+
     ds = PreprocessDataset.from_running()
 
-    # Make the samplesheet
-    samplesheet = make_manifest(ds)
+    samplesheet = read_samplesheet(ds.params.get("input"))
+    check_one_long_read_file_per_sample(samplesheet)
+    samplesheet = to_bacass_samplesheet(samplesheet)
 
-    # Write to the dataset's config/ folder (mapped in process-input.json)
+    # Overwrite the file Cirro wrote to the dataset's config/ folder (mapped in process-input.json)
     samplesheet.to_csv(ds.params["input"], index=None, sep="\t")
 
     # Format the unicycler_args based on the mode
@@ -111,9 +64,6 @@ if __name__ == "__main__":
 
     # log
     ds.logger.info(ds.params)
-
-    # Consumed above; not a parameter the workflow declares.
-    ds.remove_param("merge_on", force=True)
 
     # Force params.json to be written: the HealthOmics pre-process Lambda fails the run
     # when the file is absent, and the SDK writes it only when a parameter changes.

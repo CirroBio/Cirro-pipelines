@@ -1,7 +1,7 @@
 {
   "id": "process-hutch-virscan-1_3",
   "childProcessIds": [],
-  "name": "VirScan (PhIP-Flow v1.14)",
+  "name": "VirScan (PhIP-Flow v1.14, legacy)",
   "desc": "Analysis of antibody binding to viral epitopes in the VirScan library, using the PhIP-Flow analysis workflow.\nNegative controls should be annotated with control_status = 'beads_only'",
   "executor": "NEXTFLOW",
   "executionModes": ["STANDARD", "HEALTHOMICS"],
