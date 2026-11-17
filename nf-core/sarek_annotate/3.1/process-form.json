@@ -166,7 +166,9 @@
             "variantcaller": {
               "type": "string",
               "title": "Variant Caller",
-              "description": "Optional: the tool that produced the VCF (e.g. haplotypecaller)"
+              "description": "Optional: the tool that produced the VCF (e.g. haplotypecaller)",
+              "pattern": "^\\S*$",
+              "errorMessage": "Variant caller cannot contain spaces"
             },
             "vcf": {
               "type": "string",
