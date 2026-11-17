@@ -5,22 +5,25 @@
       "fasta": {
         "title": "Genome FASTA",
         "type": "string",
-        "pathType": "dataset",
-        "file": "**/*.f*",
+        "format": "file-path",
+        "pattern": "\\.(fa|fasta|fna)(\\.gz)?$",
+        "errorMessage": "Must be a FASTA file (.fa, .fasta or .fna), optionally gzipped",
         "description": "Reference genome FASTA used to build the Salmon index."
       },
       "extra_fasta": {
         "title": "Additional FASTA",
         "type": "string",
-        "pathType": "dataset",
-        "file": "**/*.f*",
-        "description": "Additional decoy sequences to add to the Salmon index."
+        "format": "file-path",
+        "pattern": "\\.(fa|fasta|fna)$",
+        "errorMessage": "Must be an uncompressed FASTA file (.fa, .fasta or .fna)",
+        "description": "Additional sequences (e.g. spike-ins) appended to the transcriptome and indexed as transcripts, not decoys. Must be uncompressed."
       },
       "gtf": {
         "title": "GTF Annotation",
         "type": "string",
-        "pathType": "dataset",
-        "file": "**/*.gtf*",
+        "format": "file-path",
+        "pattern": "\\.gtf(\\.gz)?$",
+        "errorMessage": "Must be a GTF file (.gtf or .gtf.gz)",
         "description": "Gene annotation GTF for building a splice-aware Salmon index."
       },
       "salmon_version": {

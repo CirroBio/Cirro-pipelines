@@ -5,43 +5,49 @@
       "fasta": {
         "title": "Reference FASTA",
         "type": "string",
-        "pathType": "dataset",
-        "file": "**/*.f*",
-        "description": "Reference genome FASTA used to build the HISAT2 index."
+        "format": "file-path",
+        "pattern": "\\.(fa|fasta|fna)$",
+        "errorMessage": "Must be an uncompressed FASTA file (.fa, .fasta or .fna)",
+        "description": "Reference genome FASTA used to build the HISAT2 index. Must be uncompressed: hisat2-build cannot read a gzipped FASTA."
       },
       "hisat2_gtf": {
         "title": "GTF Annotation (optional)",
         "type": "string",
-        "pathType": "dataset",
-        "file": "**/*.gtf*",
+        "format": "file-path",
+        "pattern": "\\.gtf(\\.gz)?$",
+        "errorMessage": "Must be a GTF file (.gtf or .gtf.gz)",
         "description": "Gene annotation GTF. Splice sites and exons will be extracted automatically. Cannot be used together with Splice Sites File or Exon File."
       },
       "hisat2_ss": {
         "title": "Splice Sites File (optional)",
         "type": "string",
-        "pathType": "dataset",
-        "file": "**/*.ss",
+        "format": "file-path",
+        "pattern": "\\.ss$",
+        "errorMessage": "Must be a splice sites file (.ss)",
         "description": "Pre-computed splice sites file (.ss). Cannot be used together with GTF Annotation."
       },
       "hisat2_exon": {
         "title": "Exon File (optional)",
         "type": "string",
-        "pathType": "dataset",
-        "file": "**/*.exon",
+        "format": "file-path",
+        "pattern": "\\.exon$",
+        "errorMessage": "Must be an exon file (.exon)",
         "description": "Pre-computed exon file (.exon). Cannot be used together with GTF Annotation."
       },
       "hisat2_snp": {
         "title": "SNP File (optional)",
         "type": "string",
-        "pathType": "dataset",
-        "file": "**/*.snp",
+        "format": "file-path",
+        "pattern": "\\.snp$",
+        "errorMessage": "Must be a SNP file (.snp)",
         "description": "SNP file for building a SNP-aware HISAT2 index."
       },
       "hisat2_haplotype": {
         "title": "Haplotype File (optional)",
         "type": "string",
-        "pathType": "dataset",
-        "file": "**/*.haplotype",
+        "format": "file-path",
+        "pattern": "\\.haplotype$",
+        "errorMessage": "Must be a haplotype file (.haplotype)",
         "description": "Haplotype file for building a haplotype-aware HISAT2 index."
       },
       "hisat2_version": {

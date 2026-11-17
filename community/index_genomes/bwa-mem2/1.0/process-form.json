@@ -5,15 +5,17 @@
       "fasta": {
         "title": "Reference FASTA",
         "type": "string",
-        "pathType": "dataset",
-        "file": "**/*.f*",
+        "format": "file-path",
+        "pattern": "\\.(fa|fasta|fna)(\\.gz)?$",
+        "errorMessage": "Must be a FASTA file (.fa, .fasta or .fna), optionally gzipped",
         "description": "Reference genome FASTA used to build the BWA-MEM2 index."
       },
       "gtf": {
         "title": "GTF Annotation (optional)",
         "type": "string",
-        "pathType": "dataset",
-        "file": "**/*.*",
+        "format": "file-path",
+        "pattern": "\\.gtf(\\.gz)?$",
+        "errorMessage": "Must be a GTF file (.gtf or .gtf.gz)",
         "description": "Gene annotation GTF file (optional)."
       },
       "bwamem2_version": {

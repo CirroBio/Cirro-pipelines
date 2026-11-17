@@ -2,6 +2,7 @@
   "form": {
     "type": "object",
     "required": [
+      "fastq",
       "library"
     ],
     "properties": {
@@ -9,8 +10,9 @@
         "type": "string",
         "title": "FASTQ",
         "multiple": true,
-        "file": "**/**.fastq.gz",
-        "pathType": "dataset"
+        "format": "file-path",
+        "pattern": "/[^\\s/]+\\.fastq\\.gz$",
+        "errorMessage": "Must be a gzipped FASTQ (.fastq.gz) with no spaces in its name"
       },
       "library": {
         "title": "Library",

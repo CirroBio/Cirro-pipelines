@@ -64,7 +64,11 @@ Each method is a versioned folder with the four standard process files:
     and `preprocess.py` at the top of this folder (see below)
 
 - **process-form.json** — the input form. Every method has:
-  - `fasta` (required) — the reference FASTA, `pathType: "dataset"`
+  - `fasta` (required) — the reference FASTA, a `format: "file-path"` picker
+    whose `pattern` admits only what the index tool reads:
+    `\.(fa|fasta|fna)(\.gz)?$`, except that STAR, RSEM and HISAT2 cannot read
+    a gzipped FASTA and Bismark only finds `.fa`/`.fasta`. Every file field
+    uses this picker, so the form is in path mode (no "Datasets to use").
   - a `<tool>_extra_args` string for pass-through CLI flags, usually with a
     `ui:placeholder` example (Cell Ranger tools name these per subcommand, e.g.
     `cellranger_mkref_args`, `cellranger_mkgtf_args`, `cellranger_mkvdjref_args`)

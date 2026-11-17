@@ -1,12 +1,16 @@
 {
   "form": {
     "type": "object",
+    "required": [
+      "input_tiff"
+    ],
     "properties": {
       "input_tiff": {
         "title": "Select Image",
         "type": "string",
-        "pathType": "dataset",
-        "file": "**/*",
+        "format": "file-path",
+        "pattern": "\\.(tiff?|TIFF?|qptiff)$",
+        "errorMessage": "Must be a TIFF image (.tif, .tiff or .qptiff)",
         "description": "Image in TIFF format used as input for Cellpose segmentation."
       },
       "cellpose_options": {

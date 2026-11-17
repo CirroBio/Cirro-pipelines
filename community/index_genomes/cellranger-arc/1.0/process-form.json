@@ -5,15 +5,17 @@
       "fasta": {
         "title": "Genome FASTA",
         "type": "string",
-        "pathType": "dataset",
-        "file": "**/*.f*",
+        "format": "file-path",
+        "pattern": "\\.(fa|fasta|fna)(\\.gz)?$",
+        "errorMessage": "Must be a FASTA file (.fa, .fasta or .fna), optionally gzipped",
         "description": "Reference genome FASTA (gzipped or uncompressed)."
       },
       "gtf": {
         "title": "GTF Annotation",
         "type": "string",
-        "pathType": "dataset",
-        "file": "**/*.gtf*",
+        "format": "file-path",
+        "pattern": "\\.gtf(\\.gz)?$",
+        "errorMessage": "Must be a GTF file (.gtf or .gtf.gz)",
         "description": "Gene annotation GTF. Must be well-formed: each transcript needs a 'transcript' row before its 'exon' rows."
       },
       "cellrangerarc_version": {
@@ -36,8 +38,9 @@
       "cellrangerarc_motifs": {
         "title": "ATAC Motifs (optional)",
         "type": "string",
-        "pathType": "dataset",
-        "file": "**/*.{txt,jaspar,pfm}",
+        "format": "file-path",
+        "pattern": "\\.(txt|jaspar|pfm)$",
+        "errorMessage": "Must be a JASPAR motifs file (.txt, .jaspar or .pfm)",
         "description": "ATAC transcription-factor motifs file in JASPAR format (optional). Leave unset to build the reference without motif annotation."
       },
       "cellrangerarc_mkref_args": {

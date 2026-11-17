@@ -9,50 +9,56 @@
       },
       "fasta": {
         "title": "Reference FASTA (optional)",
-        "description": "Reference genome FASTA file. If not provided, it will be detected from the input pipeline's execution logs.",
+        "description": "Reference genome FASTA file. If not provided, it will be detected from the execution logs of the datasets the selected files come from.",
         "type": "string",
-        "file": "**/*.f*",
-        "pathType": "dataset"
+        "format": "file-path",
+        "pattern": "\\.(fa|fasta|fna)$",
+        "errorMessage": "Must be an uncompressed FASTA file (.fa, .fasta or .fna)"
       },
       "bam": {
         "title": "BAM Files",
         "description": "Alignment files in BAM format",
         "type": "string",
         "multiple": true,
-        "file": "**/*.bam",
-        "pathType": "dataset"
+        "format": "file-path",
+        "pattern": "\\.bam$",
+        "errorMessage": "Must be a BAM file (.bam)"
       },
       "cram": {
         "title": "CRAM Files",
         "description": "Alignment files in CRAM format",
         "type": "string",
         "multiple": true,
-        "file": "**/*.cram",
-        "pathType": "dataset"
+        "format": "file-path",
+        "pattern": "\\.cram$",
+        "errorMessage": "Must be a CRAM file (.cram)"
       },
       "vcf": {
         "title": "VCF Files",
         "description": "Variant calls in gzipped VCF format",
         "type": "string",
         "multiple": true,
-        "file": "**/*.vcf.gz",
-        "pathType": "dataset"
+        "format": "file-path",
+        "pattern": "\\.vcf\\.gz$",
+        "errorMessage": "Must be a bgzipped VCF file (.vcf.gz)"
       },
       "bigwig": {
         "title": "BigWig Files",
         "description": "Coverage or signal tracks in BigWig format",
         "type": "string",
         "multiple": true,
-        "file": "**/*.bigWig",
-        "pathType": "dataset"
+        "format": "file-path",
+        "pattern": "\\.(bigWig|bigwig|bw)$",
+        "errorMessage": "Must be a BigWig file (.bigWig, .bigwig or .bw)"
       },
       "gff": {
         "title": "GFF3 Files",
         "description": "Gene annotations in bgzipped, tabix-indexed GFF3 format",
         "type": "string",
         "multiple": true,
-        "file": "**/*.gff*.gz",
-        "pathType": "dataset"
+        "format": "file-path",
+        "pattern": "\\.gff3?\\.gz$",
+        "errorMessage": "Must be a bgzipped GFF3 file (.gff3.gz or .gff.gz)"
       }
     }
   },

@@ -17,7 +17,7 @@
     "version": "main",
     "script": "main_kb.nf"
   },
-  "allowMultipleSources": false,
+  "allowMultipleSources": true,
   "usesSampleSheet": false,
   "computeDefaults": [
     {

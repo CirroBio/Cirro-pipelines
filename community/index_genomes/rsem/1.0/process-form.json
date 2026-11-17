@@ -5,16 +5,18 @@
       "fasta": {
         "title": "Reference FASTA",
         "type": "string",
-        "pathType": "dataset",
-        "file": "**/*.f*",
-        "description": "Reference genome FASTA used to build the RSEM index."
+        "format": "file-path",
+        "pattern": "\\.(fa|fasta|fna)$",
+        "errorMessage": "Must be an uncompressed FASTA file (.fa, .fasta or .fna)",
+        "description": "Reference genome FASTA used to build the RSEM index. Must be uncompressed: rsem-prepare-reference cannot read a gzipped FASTA."
       },
       "gtf": {
         "title": "GTF Annotation",
         "type": "string",
-        "pathType": "dataset",
-        "file": "**/*.gtf*",
-        "description": "Gene annotation GTF file. Published alongside the index but not passed to rsem-prepare-reference; pass via Extra Arguments if needed."
+        "format": "file-path",
+        "pattern": "\\.gtf(\\.gz)?$",
+        "errorMessage": "Must be a GTF file (.gtf or .gtf.gz)",
+        "description": "Gene annotation GTF; rsem-prepare-reference uses it to define the transcripts."
       },
       "rsem_version": {
         "title": "RSEM Version",

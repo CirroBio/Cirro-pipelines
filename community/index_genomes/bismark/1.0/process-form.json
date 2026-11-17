@@ -5,15 +5,17 @@
       "fasta": {
         "title": "Reference FASTA",
         "type": "string",
-        "pathType": "dataset",
-        "file": "**/*.f*",
-        "description": "Reference genome FASTA used to build the Bismark index."
+        "format": "file-path",
+        "pattern": "\\.(fa|fasta)(\\.gz)?$",
+        "errorMessage": "Must be a FASTA file (.fa or .fasta), optionally gzipped",
+        "description": "Reference genome FASTA used to build the Bismark index. Bismark only reads .fa and .fasta files (optionally gzipped)."
       },
       "gtf": {
         "title": "GTF Annotation (optional)",
         "type": "string",
-        "pathType": "dataset",
-        "file": "**/*.*",
+        "format": "file-path",
+        "pattern": "\\.gtf(\\.gz)?$",
+        "errorMessage": "Must be a GTF file (.gtf or .gtf.gz)",
         "description": "Gene annotation GTF file (optional)."
       },
       "bismark_version": {

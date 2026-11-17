@@ -16,6 +16,7 @@
     "uri": "Sage-Bionetworks-Workflows/nf-artist",
     "version": "main"
   },
+  "allowMultipleSources": true,
   "usesSampleSheet": false,
   "computeDefaults": [
     {

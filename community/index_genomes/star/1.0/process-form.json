@@ -5,15 +5,17 @@
       "fasta": {
         "title": "Reference FASTA",
         "type": "string",
-        "pathType": "dataset",
-        "file": "**/*.f*",
-        "description": "Reference genome FASTA used to build the STAR index."
+        "format": "file-path",
+        "pattern": "\\.(fa|fasta|fna)$",
+        "errorMessage": "Must be an uncompressed FASTA file (.fa, .fasta or .fna)",
+        "description": "Reference genome FASTA used to build the STAR index. Must be uncompressed: STAR cannot read a gzipped FASTA."
       },
       "gtf": {
         "title": "GTF Annotation",
         "type": "string",
-        "pathType": "dataset",
-        "file": "**/*.gtf*",
+        "format": "file-path",
+        "pattern": "\\.gtf(\\.gz)?$",
+        "errorMessage": "Must be a GTF file (.gtf or .gtf.gz)",
         "description": "Gene annotation GTF for building a splice-aware STAR index."
       },
       "star_version": {

@@ -13,7 +13,7 @@
     "repository": "GITHUBPUBLIC",
     "script": "main.nf",
     "uri": "nf-core/ampliseq",
-    "version": "2.4.0"
+    "version": "2.9.0"
   },
   "usesSampleSheet": false,
   "computeDefaults": [
