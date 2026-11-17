@@ -4,7 +4,12 @@
         "title": "methylseq (nf-core)",
         "description": "Methylation (Bisulfite-Sequencing) analysis pipeline using Bismark or bwa-meth + MethylDackel",
         "type": "object",
+        "required": ["input"],
         "properties": {
+            "input": {
+                "type": "string",
+                "schema": "pipeline_samplesheet"
+            },
             "genome": {
                 "title": "Reference Genome",
                 "type": "string",
@@ -342,6 +347,45 @@
                         "description": "Save trimmed reads to results directory.",
                         "help_text": "By default, trimmed FastQ files will not be saved to the results directory. Specify this flag (or set to true in your config file) to copy these files to the results directory when complete."
                     }
+                }
+            }
+        }
+    },
+    "structuredInputs": {
+        "pipeline_samplesheet": {
+            "fileFormat": "CSV",
+            "defaultSourceFile": "samplesheet.csv",
+            "schema": {
+                "title": "Samplesheet",
+                "description": "One row per FASTQ file (single-end) or pair of FASTQ files (paired-end). Rows with the same sample name, such as one per sequencing lane, are merged by the pipeline.",
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "sample": {
+                            "type": "string",
+                            "title": "Sample",
+                            "pattern": "^\\S+$",
+                            "errorMessage": "Sample name must be provided and cannot contain spaces"
+                        },
+                        "fastq_1": {
+                            "type": "string",
+                            "format": "file-path",
+                            "title": "FASTQ (R1)",
+                            "pattern": "^(?![\\S\\s]*_I[12]_001\\.f(ast)?q\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+                            "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+                        },
+                        "fastq_2": {
+                            "type": "string",
+                            "format": "file-path",
+                            "title": "FASTQ (R2)",
+                            "description": "Leave blank for single-end reads",
+                            "pattern": "^(?![\\S\\s]*_I[12]_001\\.f(ast)?q\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+                            "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+                        }
+                    },
+                    "required": ["sample", "fastq_1"]
                 }
             }
         }

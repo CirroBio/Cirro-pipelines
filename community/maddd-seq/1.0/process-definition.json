@@ -1,7 +1,7 @@
 {
   "id": "process-hutch-maddd-seq-1_0",
   "childProcessIds": [],
-  "name": "Duplex Sequencing Analysis (MADDD-seq)",
+  "name": "Duplex Sequencing Analysis (MADDD-seq, legacy)",
   "desc": "Mutation and DNA Damage Detection by massively-parallel sequencing (MADDD-seq)",
   "executor": "NEXTFLOW",
   "category": "DNA Sequencing",

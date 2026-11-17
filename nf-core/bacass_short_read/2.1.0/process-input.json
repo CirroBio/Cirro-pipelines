@@ -1,6 +1,6 @@
 {
     "outdir": "$.dataset.dataPath",
-    "input": "$.dataset.s3|/config/samplesheet.tsv",
+    "input": "$.structuredInputs.pipeline_samplesheet.path",
     "kraken2db": "$.referencesBucketUri|/kraken/k2_minusb_20220607/k2_minusb_20220607.tar.gz",
     "baktadb": "$.referencesBucketUri|/bakta/v5.1_2024-03-07/db.tar.gz",
     "assembler": "unicycler",
@@ -8,5 +8,6 @@
     "unicycler_mode": "$.dataset.params.mode",
     "annotation_tool": "$.dataset.params.annotation_tool",
     "skip_kraken2": "$.dataset.params.skip_kraken2",
+    "skip_kmerfinder": true,
     "skip_annotation": "$.dataset.params.skip_annotation"
 }

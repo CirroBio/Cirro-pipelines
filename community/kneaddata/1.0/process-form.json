@@ -2,7 +2,12 @@
   "form": {
     "type": "object",
     "name": "Metagenome Decontamination (KneadData)",
+    "required": ["samplesheet"],
     "properties": {
+      "samplesheet": {
+        "type": "string",
+        "schema": "pipeline_samplesheet"
+      },
       "reference": {
         "title": "Reference Database",
         "properties": {
@@ -10,7 +15,7 @@
             "title": "Decontamination Database",
             "description": "Database of reference genome used for host decontamination",
             "type": "string",
-            "default": "kneaddata/human_genome",
+            "default": "kneaddata/human_genome/bowtie2/",
             "enum": [
               "kneaddata/human_genome/bowtie2/",
               "kneaddata/human_transcriptome/bowtie2/",
@@ -66,5 +71,47 @@
       }
     }
   },
-  "ui": {}
+  "ui": {},
+  "structuredInputs": {
+    "pipeline_samplesheet": {
+      "fileFormat": "CSV",
+      "defaultSourceFile": "samplesheet.csv",
+      "schema": {
+        "title": "Samplesheet",
+        "description": "One row per sample, with its pair of R1 and R2 FASTQ files. Each sample can be listed only once, so combine the FASTQ files of a sample sequenced on several lanes before running.",
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "properties": {
+            "sample": {
+              "type": "string",
+              "title": "Sample",
+              "pattern": "^\\S+$",
+              "errorMessage": "Sample name must be provided and cannot contain spaces"
+            },
+            "fastq_1": {
+              "type": "string",
+              "format": "file-path",
+              "title": "FASTQ (R1)",
+              "pattern": "^(?![\\S\\s]*_I[12]_001\\.fastq\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+              "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+            },
+            "fastq_2": {
+              "type": "string",
+              "format": "file-path",
+              "title": "FASTQ (R2)",
+              "pattern": "^(?![\\S\\s]*_I[12]_001\\.fastq\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+              "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+            }
+          },
+          "required": [
+            "sample",
+            "fastq_1",
+            "fastq_2"
+          ]
+        }
+      }
+    }
+  }
 }

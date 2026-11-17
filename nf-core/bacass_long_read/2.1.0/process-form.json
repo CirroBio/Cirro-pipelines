@@ -3,7 +3,12 @@
   "form": {
     "title": "De novo bacterial assembly and annotation (nf-core/bacass)",
     "type": "object",
+    "required": ["input"],
     "properties": {
+      "input": {
+        "type": "string",
+        "schema": "pipeline_samplesheet"
+      },
       "assembler": {
         "type": "object",
         "title": "Assembly",
@@ -53,14 +58,12 @@
                     "enum": [
                       "-nanopore",
                       "-pacbio",
-                      "-pacbio-hifi",
-                      "null"
+                      "-pacbio-hifi"
                     ],
                     "enumNames": [
                       "Nanopore",
                       "PacBio",
-                      "PacBio HiFi",
-                      "None"
+                      "PacBio HiFi"
                     ],
                     "default": "-nanopore"
                   }
@@ -105,6 +108,43 @@
         "title": "Skip Annotation",
         "description": "Skip annotating the assembly with Prokka",
         "default": false
+      }
+    }
+  },
+  "structuredInputs": {
+    "pipeline_samplesheet": {
+      "fileFormat": "TSV",
+      "schema": {
+        "title": "Samplesheet",
+        "description": "One row per sample, with all of its long reads in a single gzipped FASTQ file.",
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "properties": {
+            "ID": {
+              "type": "string",
+              "title": "Sample",
+              "pattern": "^\\S+$",
+              "errorMessage": "Sample name must be provided and cannot contain spaces"
+            },
+            "LongFastQ": {
+              "type": "string",
+              "format": "file-path",
+              "title": "Long-read FASTQ",
+              "pattern": "^(?![\\S\\s]*_I[12]_001\\.f(ast)?q\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+              "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+            },
+            "GenomeSize": {
+              "type": "string",
+              "title": "Genome size",
+              "description": "Estimated genome size in megabases, such as 2.8m. Required when the assembler is Canu",
+              "pattern": "^\\d+\\.\\d+m$",
+              "errorMessage": "Must be a number of megabases with a decimal point, followed by m (such as 2.8m or 5.0m)"
+            }
+          },
+          "required": ["ID", "LongFastQ"]
+        }
       }
     }
   }

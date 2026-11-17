@@ -1,6 +1,6 @@
 {
     "outdir": "$.dataset.dataPath",
-    "input": "$.dataset.s3|/config/design.csv",
+    "input": "$.structuredInputs.pipeline_samplesheet.path",
     "igenomes_base": "$.referencesBucketUri|/igenomes/",
     "genome": "$.dataset.params.genome",
     "fragment_size": "$.dataset.params.fragment_size",
@@ -9,7 +9,7 @@
     "clip_r2": "$.dataset.params.adapter_trimming_options.clip_r2",
     "three_prime_clip_r1": "$.dataset.params.adapter_trimming_options.three_prime_clip_r1",
     "three_prime_clip_r2": "$.dataset.params.adapter_trimming_options.three_prime_clip_r2",
-    "trim_nextseq": "$.dataset.params.trim_nextseq",
+    "trim_nextseq": "$.dataset.params.adapter_trimming_options.trim_nextseq",
     "keep_mito": "$.dataset.params.alignment_options.keep_mito",
     "keep_dups": "$.dataset.params.alignment_options.keep_dups",
     "keep_multi_map": "$.dataset.params.alignment_options.keep_multi_map",
