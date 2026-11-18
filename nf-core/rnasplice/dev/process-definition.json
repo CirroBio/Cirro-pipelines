@@ -6,7 +6,7 @@
   "executor": "NEXTFLOW",
   "category": "RNA Sequencing",
   "pipelineTypeOverride": "nf-core",
-  "documentationUrl": "https://nf-co.re/rnasplice/",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-rna-sequencing/#alternative-splicing-analysis-nf-corernasplice",
   "code": {
     "repository": "GITHUBPUBLIC",
     "script": "main.nf",
