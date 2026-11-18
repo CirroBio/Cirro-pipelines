@@ -97,7 +97,7 @@
                                       "genome_index": {
                                         "title": "STAR Genome Index",
                                         "type": "string",
-                                        "pathType": "dataset",
+                                        "format": "directory-path",
                                         "process": [
                                           "process-cirro-genome-index-star-1-0",
                                           "genome_star_index"
@@ -114,7 +114,7 @@
                                       "genome_index": {
                                         "title": "Salmon Genome Index",
                                         "type": "string",
-                                        "pathType": "dataset",
+                                        "format": "directory-path",
                                         "process": [
                                           "process-cirro-genome-index-salmon-1-0",
                                           "genome_salmon_index"
@@ -183,7 +183,7 @@
                                       "genome_index": {
                                         "title": "STAR Genome Index",
                                         "type": "string",
-                                        "pathType": "dataset",
+                                        "format": "directory-path",
                                         "process": [
                                           "process-cirro-genome-index-star-1-0",
                                           "genome_star_index"
@@ -200,7 +200,7 @@
                                       "genome_index": {
                                         "title": "RSEM Genome Index",
                                         "type": "string",
-                                        "pathType": "dataset",
+                                        "format": "directory-path",
                                         "process": [
                                           "process-cirro-genome-index-rsem-1-0",
                                           "genome_rsem_index"
@@ -269,7 +269,7 @@
                                       "genome_index": {
                                         "title": "HISAT2 Genome Index",
                                         "type": "string",
-                                        "pathType": "dataset",
+                                        "format": "directory-path",
                                         "process": [
                                           "process-cirro-genome-index-hisat2-1-0",
                                           "genome_hisat2_index"
@@ -338,7 +338,7 @@
                                       "genome_index": {
                                         "title": "Bowtie2 Genome Index",
                                         "type": "string",
-                                        "pathType": "dataset",
+                                        "format": "directory-path",
                                         "process": [
                                           "process-cirro-genome-index-bowtie2-1-0",
                                           "genome_bowtie2_index"
@@ -355,7 +355,7 @@
                                       "genome_index": {
                                         "title": "Salmon Genome Index",
                                         "type": "string",
-                                        "pathType": "dataset",
+                                        "format": "directory-path",
                                         "process": [
                                           "process-cirro-genome-index-salmon-1-0",
                                           "genome_salmon_index"

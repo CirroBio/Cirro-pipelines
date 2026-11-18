@@ -90,5 +90,21 @@ class CheckSamplesMatch(unittest.TestCase):
             )
 
 
+class ReferencePaths(unittest.TestCase):
+
+    def test_whole_dataset_pick_gives_single_slashes(self):
+        ref = "s3://bucket/datasets/ref-1/data/"
+        self.assertEqual(preprocess.reference_paths(ref), {
+            "ref": "s3://bucket/datasets/ref-1/data/custom_SpaceRanger_reference/",
+            "probes": "s3://bucket/datasets/ref-1/data/probes.csv",
+        })
+
+    def test_folder_without_trailing_slash_is_joined_as_is(self):
+        self.assertEqual(
+            preprocess.reference_paths("s3://bucket/datasets/ref-1/data/build")["probes"],
+            "s3://bucket/datasets/ref-1/data/build/probes.csv",
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

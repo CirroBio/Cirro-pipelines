@@ -336,5 +336,36 @@ class CollidingVcfCopies(unittest.TestCase):
         self.assertEqual(preprocess.colliding_vcf_copies({"input": self.INPUT}), [])
 
 
+class FakeLogger:
+    def info(self, *args):
+        pass
+
+
+class FakeDataset:
+    """The slice of PreprocessDataset that resolve_reference_genome touches."""
+
+    def __init__(self, params):
+        self.params = dict(params)
+        self.logger = FakeLogger()
+
+    def add_param(self, name, value, overwrite=False):
+        if not overwrite and name in self.params:
+            return
+        self.params[name] = value
+
+    def remove_param(self, name, force=False):
+        self.params.pop(name, None)
+
+
+class ResolveReferenceGenome(unittest.TestCase):
+
+    def test_custom_genome_strips_the_folder_pickers_trailing_slash(self):
+        ds = FakeDataset({"genome_source": "dataset", "bwa_index": "s3://bucket/datasets/idx/data/"})
+        preprocess.resolve_reference_genome(ds)
+        self.assertEqual(ds.params["bwa"], "s3://bucket/datasets/idx/data")
+        self.assertEqual(ds.params["fasta"], "s3://bucket/datasets/idx/data/genome.fasta")
+        self.assertEqual(ds.params["fasta_fai"], "s3://bucket/datasets/idx/data/genome.fasta.fai")
+
+
 if __name__ == "__main__":
     unittest.main()

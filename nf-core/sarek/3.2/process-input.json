@@ -18,7 +18,7 @@
   "vep_spliceregion": "$.dataset.params.annotation.vep_spliceregion",
   "genome_source": "$.dataset.params.analysis_type.genome_selection.genome_source",
   "genome": "$.dataset.params.analysis_type.genome_selection.igenomes.genome",
-  "bwa_index": "$.dataset.params.analysis_type.genome_selection.bwa_cirro_reference.genome_index|/data",
+  "bwa_index": "$.dataset.params.analysis_type.genome_selection.bwa_cirro_reference.genome_index",
   "intervals": "$.dataset.params.analysis_type.intervals",
   "optical_duplicate_pixel_distance": "$.dataset.params.advanced_options.optical_duplicate_pixel_distance",
   "save_output_as_bam": "$.dataset.params.advanced_options.save_output_as_bam",

@@ -93,7 +93,7 @@
                           "genome_index": {
                             "title": "BWA Genome Index",
                             "type": "string",
-                            "pathType": "dataset",
+                            "format": "directory-path",
                             "process": [
                               "process-cirro-genome-index-bwa-1-0",
                               "genome_bwa_index"

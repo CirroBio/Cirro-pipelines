@@ -31,24 +31,37 @@ project's datasets (the same values as nf-schema):
 | `multiple` | `true` allows several picks. The value is a JSON array, so map it with `[*]` (`"$.dataset.params.fastq[*]"`) to pass a comma-separated string |
 | `process` | Limits the datasets the picker browses to those produced by these processes: a process ID, a glob of IDs (`"process-nf-core-rnaseq-*"`), or a list of them. Pipeline and intake process IDs both work. Browsing includes their failed datasets, and searching in the picker still finds any dataset, which the form accepts |
 
-The workflow receives the full S3 path. A whole dataset picked in the folder picker gives
-its `data/` folder, ending in a slash (`.../data/`); a folder inside a dataset has none. A
-file picker also offers the project's references that match `pattern`, and stores a picked
-reference as its S3 path rather than a `cirro::` URI.
+The workflow receives the full S3 path. A file picker also offers the project's references
+that match `pattern`, and stores a picked reference as its S3 path rather than a `cirro::`
+URI.
 
 Don't give a path field a `default`: the form fills it in as plain text, the picker shows it
 as if it had been picked, and it passes `pattern`, so the workflow receives that text instead
 of a path.
 
-**Example:**
+**Examples:**
 ```json
 "gtf": {
   "title": "Annotation File",
   "type": "string",
   "format": "file-path",
   "pattern": "\\.gtf(\\.gz)?$"
+},
+"genome_index": {
+  "title": "STAR Index",
+  "type": "string",
+  "format": "directory-path",
+  "process": ["process-cirro-genome-index-star-1-0", "genome_star_index"]
 }
 ```
+
+A whole dataset picked in the folder picker yields its `data/` folder, so map such a field
+as it is (`"$.dataset.params.genome_index"`), not with the `|/data` suffix a `pathType`
+selector needed. The path ends in a slash (`.../data/`), so anything joined onto it gets
+`//`: Nextflow reads a file at such a path but stages a folder there as empty, and pandas
+and boto3 read neither. Build paths inside the folder in `preprocess.py`, after stripping
+the slash, not with a `|/...` suffix in `process-input.json` (see
+`cirro/spaceranger-count/1.0/preprocess.py`).
 
 ---
 
@@ -87,15 +100,11 @@ map the field instead.
 `multiple` and `process` (above) apply to these pickers too: `process` limits a
 `pathType: "dataset"` selector to datasets produced by those processes.
 
-**Example:**
-```json
-"genome_index": {
-  "title": "STAR Index",
-  "type": "string",
-  "pathType": "dataset",
-  "process": ["process-cirro-genome-index-star-1-0", "genome_star_index"]
-}
-```
+A `pathType: "dataset"` selector in a path-mode form becomes `format: "directory-path"` with
+the same `process` list (see the `genome_index` example above), and its mapping drops
+`/data`: `"<field>|/data"` becomes `"<field>"`. A mapping to a path inside the dataset,
+such as `"<field>|/data/probes.csv"`, moves into `preprocess.py` (see above). A form still
+in dataset mode keeps `pathType`, since one `format` field would switch it to path mode.
 
 ---
 
