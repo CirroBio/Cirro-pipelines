@@ -1,7 +1,8 @@
 {
   "id": "proteomics_mzml",
   "childProcessIds": [
-    "process-nf-core-quantms-dda-lfq-1_0"
+    "process-nf-core-quantms-dda-lfq-1_0",
+    "process-nf-core-quantms-dda-lfq-1_1"
   ],
   "name": "Proteomics (mzML)",
   "desc": "Identification of protein fragments by mass spectrometry (mzML format)",

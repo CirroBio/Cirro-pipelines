@@ -1,5 +1,5 @@
 {
-  "samplesheet": "$.dataset.s3|/config/pipeline_samplesheet.csv",
+  "samplesheet": "$.structuredInputs.pipeline_samplesheet.path",
   "reference_dir": "$.dataset.params.reference_dir",
   "cellranger_version": "$.dataset.params.cellranger_version",
   "output": "$.dataset.dataPath"

@@ -3,7 +3,7 @@
   "childProcessIds": [
     "process-nf-core-sarek-annotate-3-1"
   ],
-  "name": "Variant Calling from BAM (nf-core/sarek)",
+  "name": "Variant Calling from BAM (nf-core/sarek, legacy)",
   "desc": "DNA variant calling based on GATK4 best practices",
   "executor": "NEXTFLOW",
   "pipelineTypeOverride": "nf-core",

@@ -2,8 +2,14 @@
   "form": {
     "title": "Single-Cell RNA-Seq Analysis Pipeline",
     "type": "object",
-    "required": [],
+    "required": [
+      "input"
+    ],
     "properties": {
+      "input": {
+        "type": "string",
+        "schema": "pipeline_samplesheet"
+      },
       "workflow_version": {
         "type": "string",
         "title": "Workflow Version",
@@ -194,12 +200,12 @@
                                       "genome_index": {
                                         "title": "simpleaf Reference",
                                         "type": "string",
-                                        "pathType": "dataset",
+                                        "format": "directory-path",
                                         "process": [
                                           "process-cirro-genome-index-simpleaf-1-0",
                                           "genome_simpleaf_index"
                                         ],
-                                        "description": "Pre-built simpleaf reference dataset"
+                                        "description": "Pre-built simpleaf reference dataset. Select the whole dataset, not a folder inside it"
                                       }
                                     }
                                   }
@@ -356,12 +362,12 @@
                                       "genome_index": {
                                         "title": "kb Reference",
                                         "type": "string",
-                                        "pathType": "dataset",
+                                        "format": "directory-path",
                                         "process": [
                                           "process-cirro-genome-index-kb-1-0",
                                           "genome_kb_index"
                                         ],
-                                        "description": "Pre-built kb-python reference dataset"
+                                        "description": "Pre-built kb-python reference dataset. Select the whole dataset, not a folder inside it"
                                       }
                                     }
                                   }
@@ -518,12 +524,12 @@
                                       "genome_index": {
                                         "title": "STAR Genome Index",
                                         "type": "string",
-                                        "pathType": "dataset",
+                                        "format": "directory-path",
                                         "process": [
                                           "process-cirro-genome-index-star-1-0",
                                           "genome_star_index"
                                         ],
-                                        "description": "Pre-built STAR genome index dataset"
+                                        "description": "Pre-built STAR genome index dataset. Select the whole dataset, not a folder inside it"
                                       }
                                     }
                                   }
@@ -720,7 +726,7 @@
                                       "genome_index": {
                                         "title": "Cell Ranger Reference",
                                         "type": "string",
-                                        "pathType": "dataset",
+                                        "format": "directory-path",
                                         "process": [
                                           "process-cirro-genome-index-cellranger-1-0",
                                           "genome_cellranger_index"
@@ -882,7 +888,7 @@
                                       "genome_index": {
                                         "title": "Cell Ranger ARC Reference",
                                         "type": "string",
-                                        "pathType": "dataset",
+                                        "format": "directory-path",
                                         "process": [
                                           "process-cirro-genome-index-cellranger-arc-1-0",
                                           "genome_cellranger-arc_index"
@@ -1084,7 +1090,7 @@
                                       "genome_index": {
                                         "title": "Gene Expression Reference",
                                         "type": "string",
-                                        "pathType": "dataset",
+                                        "format": "directory-path",
                                         "process": [
                                           "process-cirro-genome-index-cellranger-1-0",
                                           "genome_cellranger_index"
@@ -1101,7 +1107,7 @@
                                       "genome_index": {
                                         "title": "V(D)J Reference",
                                         "type": "string",
-                                        "pathType": "dataset",
+                                        "format": "directory-path",
                                         "process": [
                                           "process-cirro-genome-index-cellranger-vdj-1-0",
                                           "genome_cellranger-vdj_index"
@@ -1133,8 +1139,8 @@
       "barcode_whitelist": {
         "type": "string",
         "title": "Barcode Whitelist",
-        "pathType": "dataset",
-        "file": "**/*.txt*",
+        "format": "file-path",
+        "pattern": "\\.txt(\\.gz)?$",
         "description": "Optional barcode whitelist. Leave unset to use the whitelist bundled with the selected protocol."
       },
       "simpleaf_options": {
@@ -1228,15 +1234,15 @@
           "motifs": {
             "type": "string",
             "title": "ATAC Motifs",
-            "pathType": "dataset",
-            "file": "**/*.{txt,jaspar,pfm}",
+            "format": "file-path",
+            "pattern": "\\.(txt|jaspar|pfm)$",
             "description": "ATAC transcription-factor motifs in JASPAR format, used when the pipeline builds the ARC reference itself."
           },
           "cellrangerarc_config": {
             "type": "string",
             "title": "ARC Config File",
-            "pathType": "dataset",
-            "file": "**/*config*",
+            "format": "file-path",
+            "pattern": "config[^/]*$",
             "description": "Optional cellranger-arc mkref config file."
           }
         }
@@ -1257,39 +1263,37 @@
           },
           "cellranger_multi_barcodes": {
             "type": "string",
-            "title": "Barcode Sample Assignment CSV",
-            "pathType": "dataset",
-            "file": "**/*.csv"
+            "schema": "cellranger_multi_barcodes"
           },
           "gex_frna_probe_set": {
             "type": "string",
             "title": "Fixed RNA Probe Set CSV",
-            "pathType": "dataset",
-            "file": "**/*.csv"
+            "format": "file-path",
+            "pattern": "\\.csv$"
           },
           "gex_target_panel": {
             "type": "string",
             "title": "Target Panel CSV",
-            "pathType": "dataset",
-            "file": "**/*.csv"
+            "format": "file-path",
+            "pattern": "\\.csv$"
           },
           "gex_cmo_set": {
             "type": "string",
             "title": "CMO Set CSV",
-            "pathType": "dataset",
-            "file": "**/*.csv"
+            "format": "file-path",
+            "pattern": "\\.csv$"
           },
           "fb_reference": {
             "type": "string",
             "title": "Feature Barcode Reference CSV",
-            "pathType": "dataset",
-            "file": "**/*.csv"
+            "format": "file-path",
+            "pattern": "\\.csv$"
           },
           "vdj_inner_enrichment_primers": {
             "type": "string",
             "title": "V(D)J Inner Enrichment Primers",
-            "pathType": "dataset",
-            "file": "**/*.txt"
+            "format": "file-path",
+            "pattern": "\\.txt$"
           }
         }
       },
@@ -1343,6 +1347,142 @@
     "cellranger_multi_options": {
       "gex_reference_version": {
         "ui:placeholder": "GRCh38"
+      }
+    }
+  },
+  "structuredInputs": {
+    "pipeline_samplesheet": {
+      "fileFormat": "CSV",
+      "defaultSourceFile": "samplesheet.csv",
+      "schema": {
+        "title": "Samplesheet",
+        "description": "One row per pair of FASTQ files. Rows with the same sample name, such as one per sequencing lane, are merged by the pipeline. Alevin-fry, kallisto | bustools, STARsolo and Cell Ranger need only the sample and its two FASTQs. Cell Ranger ARC: give the GEX and ATAC rows of a sample the same sample name, set Sample Type on every row, and add each ATAC row's third read (R3) under ATAC R3 FASTQ. Cell Ranger multi: give every library of a sample the same sample name, set Feature Type on every row, and list the samples pooled in a multiplexed library under Multiplexed Samples.",
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "properties": {
+            "sample": {
+              "type": "string",
+              "title": "Sample",
+              "pattern": "^\\S+$",
+              "errorMessage": "Sample name must be provided and cannot contain spaces"
+            },
+            "fastq_1": {
+              "type": "string",
+              "format": "file-path",
+              "title": "FASTQ (R1)",
+              "pattern": "^(?![\\S\\s]*_I[12]_001\\.f(ast)?q\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+              "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+            },
+            "fastq_2": {
+              "type": "string",
+              "format": "file-path",
+              "title": "FASTQ (R2)",
+              "pattern": "^(?![\\S\\s]*_I[12]_001\\.f(ast)?q\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+              "errorMessage": "Must be a gzipped read FASTQ (.fastq.gz or .fq.gz) with no spaces in its name, not an I1/I2 index read"
+            },
+            "fastq_barcode": {
+              "type": "string",
+              "format": "file-path",
+              "title": "ATAC R3 FASTQ",
+              "description": "Cell Ranger ARC ATAC rows only: the library's third read. Cell Ranger ARC tells the three reads apart by file name. Leave blank on other rows",
+              "pattern": "^([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",
+              "errorMessage": "Must be a gzipped FASTQ (.fastq.gz or .fq.gz) with no spaces in its name"
+            },
+            "expected_cells": {
+              "type": "integer",
+              "title": "Expected Cells",
+              "description": "Optional, for Alevin-fry, STARsolo and Cell Ranger. Give every row of a sample the sample's total"
+            },
+            "seq_center": {
+              "type": "string",
+              "title": "Sequencing Center",
+              "description": "Optional, for STARsolo's BAM files. Overrides the form's Sequencing Center; give every row of a sample the same value"
+            },
+            "sample_type": {
+              "type": "string",
+              "title": "Sample Type",
+              "description": "Cell Ranger ARC only: gex for gene expression rows, atac for chromatin accessibility rows",
+              "enum": [
+                "atac",
+                "gex"
+              ]
+            },
+            "feature_type": {
+              "type": "string",
+              "title": "Feature Type",
+              "description": "Cell Ranger multi only: gex (gene expression), vdj (V(D)J), ab (antibody capture), crispr (CRISPR guide capture) or cmo (cell multiplexing oligos)",
+              "enum": [
+                "gex",
+                "vdj",
+                "ab",
+                "crispr",
+                "cmo"
+              ]
+            }
+          },
+          "required": [
+            "sample",
+            "fastq_1",
+            "fastq_2"
+          ]
+        }
+      }
+    },
+    "cellranger_multi_barcodes": {
+      "fileFormat": "CSV",
+      "schema": {
+        "title": "Multiplexed Samples",
+        "description": "Cell Ranger multi with multiplexed libraries only (FFPE probe barcodes, CMOs or OCMs): one row per multiplexed sample, with exactly one kind of barcode ID. Leave it empty otherwise.",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "sample": {
+              "type": "string",
+              "title": "Sample",
+              "description": "The sample of the samplesheet this sample was pooled into",
+              "pattern": "^\\S+$",
+              "errorMessage": "Sample names cannot contain spaces"
+            },
+            "multiplexed_sample_id": {
+              "type": "string",
+              "title": "Multiplexed Sample ID",
+              "description": "A name for this sample, unique across the table",
+              "pattern": "^\\S+$",
+              "errorMessage": "Multiplexed sample IDs cannot contain spaces"
+            },
+            "probe_barcode_ids": {
+              "type": "string",
+              "title": "Probe Barcode IDs",
+              "description": "FFPE (Flex) only, such as BC001"
+            },
+            "cmo_ids": {
+              "type": "string",
+              "title": "CMO IDs",
+              "description": "Such as CMO301, or CMO301|CMO302 for several",
+              "pattern": "^[a-zA-Z0-9_|-]*$",
+              "errorMessage": "CMO IDs can only contain letters, numbers, _, - and |"
+            },
+            "ocm_ids": {
+              "type": "string",
+              "title": "OCM IDs",
+              "description": "OB1 to OB4, or OB1|OB2 for several",
+              "pattern": "^(OB[1-4](\\|OB[1-4])*)?$",
+              "errorMessage": "OCM IDs must be OB1, OB2, OB3 or OB4, joined by | for several"
+            },
+            "description": {
+              "type": "string",
+              "title": "Description"
+            }
+          },
+          "required": [
+            "sample",
+            "multiplexed_sample_id",
+            "description"
+          ]
+        }
       }
     }
   }
