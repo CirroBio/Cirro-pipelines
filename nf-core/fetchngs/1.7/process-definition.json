@@ -34,7 +34,7 @@
   "desc": "Pipeline to fetch metadata and raw FASTQ files from public databases",
   "executor": "NEXTFLOW",
   "category": "Data Download",
-  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-data-download/#public-download",
+  "documentationUrl": "https://github.com/nf-core/fetchngs/releases/tag/1.10.0",
   "code": {
     "repository": "GITHUBPUBLIC",
     "script": "main.nf",
