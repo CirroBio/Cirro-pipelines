@@ -1,8 +1,8 @@
 {
-  "id": "process-nf-core-methylseq-3-0",
+  "id": "process-nf-core-methylseq-4-2",
   "childProcessIds": [],
   "name": "MethylSeq (nf-core/methylseq)",
-  "desc": "Methylation (Bisulfite-Sequencing) analysis pipeline using Bismark or bwa-meth + MethylDackel (v3.0.0)",
+  "desc": "Methylation (Bisulfite-Sequencing) analysis pipeline using Bismark or bwa-meth + MethylDackel (v4.2.0)",
   "executor": "NEXTFLOW",
   "pipelineTypeOverride": "nf-core",
   "category": "DNA Sequencing",
@@ -11,7 +11,7 @@
     "repository": "GITHUBPUBLIC",
     "script": "main.nf",
     "uri": "nf-core/methylseq",
-    "version": "3.0.0"
+    "version": "4.2.0"
   },
   "allowMultipleSources": true,
   "usesSampleSheet": false,
