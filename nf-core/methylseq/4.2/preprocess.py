@@ -29,7 +29,3 @@ if __name__ == "__main__":
 
     # Read only to fail clearly when the table is missing or empty
     read_samplesheet(ds.params.get("input"))
-
-    # Cast comprehensive from int 0/1 to boolean
-    comprehensive = bool(ds.params.get('comprehensive'))
-    ds.add_param('comprehensive', comprehensive, overwrite=True)

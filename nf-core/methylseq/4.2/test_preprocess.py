@@ -1,4 +1,4 @@
-"""Offline tests for the nf-core/methylseq 3.0 samplesheet handling.
+"""Offline tests for the nf-core/methylseq 4.2 samplesheet handling.
 
 preprocess.py imports the Cirro SDK only when it runs, so this is a plain
 `python -m unittest` that needs pandas and nothing else.
