@@ -1403,22 +1403,33 @@
             "sample_type": {
               "type": "string",
               "title": "Sample Type",
-              "description": "Cell Ranger ARC only: gex for gene expression rows, atac for chromatin accessibility rows",
+              "description": "Cell Ranger ARC only",
               "enum": [
                 "atac",
                 "gex"
+              ],
+              "enumNames": [
+                "Chromatin Accessibility (atac)",
+                "Gene Expression (gex)"
               ]
             },
             "feature_type": {
               "type": "string",
               "title": "Feature Type",
-              "description": "Cell Ranger multi only: gex (gene expression), vdj (V(D)J), ab (antibody capture), crispr (CRISPR guide capture) or cmo (cell multiplexing oligos)",
+              "description": "Cell Ranger multi only",
               "enum": [
                 "gex",
                 "vdj",
                 "ab",
                 "crispr",
                 "cmo"
+              ],
+              "enumNames": [
+                "Gene Expression (gex)",
+                "V(D)J (vdj)",
+                "Antibody Capture (ab)",
+                "CRISPR Guide Capture (crispr)",
+                "Cell Multiplexing (cmo)"
               ]
             }
           },

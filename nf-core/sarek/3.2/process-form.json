@@ -582,13 +582,15 @@
               "type": "string",
               "title": "Sex",
               "description": "Leave blank if unknown (NA). Values such as male/female or M/F are converted to XY/XX. ASCAT and Control-FREEC need it for every sample",
-              "enum": ["XX", "XY", "NA"]
+              "enum": ["XX", "XY", "NA"],
+              "enumNames": ["XX (female)", "XY (male)", "Unknown"]
             },
             "status": {
               "type": "string",
-              "title": "Status (0 = normal, 1 = tumor)",
-              "description": "0 for a normal sample, 1 for a tumor. Leave blank for normal. Values such as Normal/Tumor are converted to 0/1",
-              "enum": ["0", "1"]
+              "title": "Status",
+              "description": "Leave blank for normal. Imported values such as Normal/Tumor are converted to 0/1",
+              "enum": ["0", "1"],
+              "enumNames": ["Normal", "Tumor"]
             },
             "sample": {
               "type": "string",

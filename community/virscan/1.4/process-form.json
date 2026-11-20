@@ -82,11 +82,16 @@
             "control_status": {
               "type": "string",
               "title": "Control Status",
-              "description": "beads_only for a negative control, library for an unselected library sample, or blank for an empirical sample",
+              "description": "Leave blank for an empirical sample",
               "enum": [
                 "empirical",
                 "beads_only",
                 "library"
+              ],
+              "enumNames": [
+                "Empirical sample",
+                "Beads only (negative control)",
+                "Library (unselected input)"
               ]
             },
             "fastq_1": {
