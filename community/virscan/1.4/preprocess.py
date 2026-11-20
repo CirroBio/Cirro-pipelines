@@ -25,7 +25,9 @@ def read_samplesheet(path) -> pd.DataFrame:
         samplesheet = pd.DataFrame()
     if samplesheet.empty:
         raise ValueError("The sample table is empty: add one row per FASTQ file")
-    return samplesheet
+    # The form's column is fastq_1 so that Cirro fills it from a VirScan dataset's
+    # samplesheet.csv, a project Sheet or a dataset's file names; phip-flow reads fastq_filepath
+    return samplesheet.rename(columns={"fastq_1": "fastq_filepath"})
 
 
 def public_epitopes_csv(peptide_table) -> str:

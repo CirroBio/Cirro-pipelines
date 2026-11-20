@@ -25,7 +25,7 @@ def _load_preprocess():
 
 preprocess = _load_preprocess()
 
-HEADER = "sample,sample_name,control_status,fastq_filepath\r\n"
+HEADER = "sample,sample_name,control_status,fastq_1\r\n"
 DATA = "s3://bucket/datasets/ds1/data"
 
 
@@ -39,6 +39,11 @@ class ReadSamplesheet(unittest.TestCase):
         table = sample_table(f"01,,,{DATA}/01_rep1.R1.fastq.gz")
         self.assertEqual(table["sample"].tolist(), ["01"])
         self.assertEqual(table["control_status"].tolist(), [""])
+
+    def test_fastq_column_is_renamed_for_phip_flow(self):
+        table = sample_table(f"A,,,{DATA}/A_rep1.R1.fastq.gz")
+        self.assertEqual(table.columns.tolist(), ["sample", "sample_name", "control_status", "fastq_filepath"])
+        self.assertEqual(table["fastq_filepath"].tolist(), [f"{DATA}/A_rep1.R1.fastq.gz"])
 
     def test_no_param_fails_clearly(self):
         for path in (None, ""):

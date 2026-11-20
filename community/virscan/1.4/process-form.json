@@ -58,6 +58,7 @@
   "structuredInputs": {
     "pipeline_samplesheet": {
       "fileFormat": "CSV",
+      "defaultSourceFile": "samplesheet.csv",
       "schema": {
         "title": "Sample Table",
         "description": "One row per FASTQ file, each a replicate of a sample. Mark at least two rows as beads_only controls. All FASTQ files must be in the same S3 bucket.",
@@ -88,7 +89,7 @@
                 "library"
               ]
             },
-            "fastq_filepath": {
+            "fastq_1": {
               "type": "string",
               "format": "file-path",
               "title": "FASTQ",
@@ -98,7 +99,7 @@
           },
           "required": [
             "sample",
-            "fastq_filepath"
+            "fastq_1"
           ]
         }
       }
