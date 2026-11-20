@@ -1,7 +1,8 @@
 {
   "id": "process-differential-expression-custom-1_0",
   "parentProcessIds": [
-    "table_csv_tsv"
+    "table_csv_tsv",
+    "custom_dataset"
   ],
   "childProcessIds": [],
   "name": "Identify Differentially Expressed Genes",

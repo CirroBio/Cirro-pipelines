@@ -1,0 +1,34 @@
+{
+  "id": "process-nf-core-differentialabundance-matrix-2_0",
+  "parentProcessIds": [
+    "custom_dataset"
+  ],
+  "childProcessIds": [],
+  "dataType": "Differential Abundance Report (nf-core/differentialabundance)",
+  "name": "Differential Abundance Analysis - Feature Matrix (nf-core/differentialabundance)",
+  "desc": "Differential abundance analysis of one feature matrix (counts or log-scale abundance) in a combined multi-omics dataset, with optional covariates and repeated measures (v2.0.0)",
+  "executor": "NEXTFLOW",
+  "pipelineTypeOverride": "nf-core",
+  "category": "Statistical Analysis",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-statistical-analysis/#differential-abundance-analysis-nf-coredifferentialabundance",
+  "code": {
+    "repository": "GITHUBPUBLIC",
+    "script": "main.nf",
+    "uri": "nf-core/differentialabundance",
+    "version": "2.0.0",
+    "executorVersion": "25.10.4"
+  },
+  "usesSampleSheet": false,
+  "computeDefaults": [
+    {
+      "executor": "NEXTFLOW",
+      "json": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-compute.config",
+      "name": "Default"
+    }
+  ],
+  "paramMapJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json",
+  "preProcessScript": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/preprocess.py",
+  "formJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-form.json",
+  "webOptimizationJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-output.json",
+  "fileMappingRules": []
+}

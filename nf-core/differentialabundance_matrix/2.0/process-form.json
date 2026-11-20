@@ -1,0 +1,92 @@
+{
+  "ui": {
+    "data": {
+      "matrix": {
+        "ui:placeholder": "rna/raw.csv"
+      }
+    },
+    "study_design": {
+      "covariates": {
+        "ui:placeholder": "age,batch"
+      },
+      "random_effect": {
+        "ui:placeholder": "subject_id"
+      }
+    }
+  },
+  "form": {
+    "title": "Differential Abundance Analysis Parameters",
+    "type": "object",
+    "properties": {
+      "data": {
+        "title": "Feature Matrix",
+        "type": "object",
+        "description": "The matrix to test, from the selected combined dataset. Sample variables are read from its samples.csv.",
+        "required": [
+          "matrix",
+          "values"
+        ],
+        "properties": {
+          "matrix": {
+            "type": "string",
+            "title": "Matrix",
+            "description": "Path of the matrix within the dataset: <modality>/raw.csv or <modality>/prepared.csv",
+            "pattern": "^[^/]+/(raw|prepared)\\.csv$",
+            "errorMessage": "Must be <modality>/raw.csv or <modality>/prepared.csv"
+          },
+          "values": {
+            "type": "string",
+            "title": "Values",
+            "description": "Raw counts are tested with DESeq2. Log-scale values, such as log intensities or log-CPM, are tested with limma. With repeated measures, both are tested with dream.",
+            "enum": [
+              "counts",
+              "log_abundance"
+            ],
+            "enumNames": [
+              "Raw counts",
+              "Log-scale abundance"
+            ],
+            "default": "counts"
+          }
+        }
+      },
+      "study_design": {
+        "title": "Study Design",
+        "type": "object",
+        "description": "Variables are named by their column in samples.csv. Samples missing a value for any of them are left out.",
+        "required": [
+          "variable",
+          "reference",
+          "target"
+        ],
+        "properties": {
+          "variable": {
+            "type": "string",
+            "title": "Variable Column",
+            "description": "Column holding the groups to compare"
+          },
+          "reference": {
+            "type": "string",
+            "title": "Reference Value",
+            "description": "Group the target is compared to; features higher in the target have positive fold changes"
+          },
+          "target": {
+            "type": "string",
+            "title": "Target Value",
+            "description": "Group compared to the reference"
+          },
+          "covariates": {
+            "type": "string",
+            "title": "Covariates (optional)",
+            "description": "Comma-separated columns to adjust for, such as age or batch"
+          },
+          "random_effect": {
+            "type": "string",
+            "title": "Repeated Measures (optional)",
+            "description": "Column naming the unit measured more than once, such as subject_id. Fits a mixed model with dream, with a random intercept for each unit."
+          }
+        }
+      }
+    }
+  }
+}
