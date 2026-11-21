@@ -59,6 +59,10 @@
               "enum": [
                 "gex",
                 "atac"
+              ],
+              "enumNames": [
+                "Gene Expression (gex)",
+                "Chromatin Accessibility (atac)"
               ]
             },
             "fastq_1": {

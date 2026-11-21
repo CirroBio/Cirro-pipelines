@@ -162,12 +162,13 @@ Map the file's path in `process-input.json`; the form field itself never reaches
   own config files. Use `pipeline_samplesheet`.
 - **Columns** — one per property, in the order listed. A path `format` gives a file or folder
   picker (one value per cell; use `fastq_1`/`fastq_2`, never an array), `enum` gives a
-  dropdown, and `integer`/`number`/`boolean` are checked. `object` and `array` columns are
+  dropdown (label coded values such as `0`/`1` with `enumNames`; the file gets the `enum`
+  value), and `integer`/`number`/`boolean` are checked. `object` and `array` columns are
   not supported. `pattern`, `minimum`/`maximum`, `minLength`/`maxLength` and a string
   `errorMessage` are checked against each row. A file column's `pattern` sees the file's
   path inside `data/`, without that prefix (a top-level file is just its name), not the
-  `data/<path>` or `cirro::` URI a form field's sees. Column `default`, `enumNames` and
-  `oneOf` labels are ignored.
+  `data/<path>` or `cirro::` URI a form field's sees. Column `default` and `oneOf` labels
+  are ignored.
 - **Default source** — `defaultSourceFile` names a CSV or Excel file, such as
   `samplesheet.csv`. When a run is started from a dataset holding a file whose path is or
   ends with that name, the table is filled from it straight away, columns matched by name,
