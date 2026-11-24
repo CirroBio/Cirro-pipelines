@@ -1,29 +1,22 @@
-from cirro.helpers.preprocess_dataset import PreprocessDataset
+#!/usr/bin/env python3
 
-ds = PreprocessDataset.from_running()
+BUNDLE_FILE = "/analysis.zarr.zip"
 
-# Make sure that the user provided an input path
-input_uri = ds.params.get("input", "")
-msg = "Error: Must provide input dataset"
-assert len(input_uri) > 0, msg
 
-# Remove the '/analysis.zarr.zip' suffix
-suffix = "/analysis.zarr.zip"
-msg = f"Error: Expected input to end with '{suffix}', not {input_uri}"
-assert input_uri.endswith(suffix), msg
-ds.add_param(
-    "input",
-    input_uri[:-len(suffix)],
-    overwrite=True
-)
+def bundle_folder(input_uri: str) -> str:
+    """The Xenium output bundle that holds the picked analysis.zarr.zip file."""
+    if not input_uri:
+        raise ValueError("No input was provided: select the analysis.zarr.zip file of a Xenium output bundle")
+    if not input_uri.endswith(BUNDLE_FILE):
+        raise ValueError(f"Expected the input to end with '{BUNDLE_FILE}', not {input_uri}")
+    return input_uri[:-len(BUNDLE_FILE)]
 
-# If the user selected a modified expansion distance, then
-# the resegment-nuclei parameter must also be set to True
-if ds.params.get("expansion_distance") is not None:
-    if ds.params.get("resegment_nuclei", False) is False:
-        msg = "Setting --resegment-nuclei True (expansion-distance was set)"
-        ds.logger.info(msg)
-        ds.add_param("resegment_nuclei", True, overwrite=True)
 
-# Consumed above; not a parameter the workflow declares.
-ds.remove_param("resegment_nuclei", force=True)
+if __name__ == "__main__":
+
+    # Imported here so that test_preprocess.py runs without the SDK
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
+
+    ds = PreprocessDataset.from_running()
+
+    ds.add_param("input", bundle_folder(ds.params.get("input")), overwrite=True)

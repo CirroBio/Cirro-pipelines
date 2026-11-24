@@ -16,7 +16,7 @@
     "version": "main",
     "script": "main.nf"
   },
-  "usesSampleSheet": true,
+  "usesSampleSheet": false,
   "computeDefaults": [
     {
       "executor": "NEXTFLOW",

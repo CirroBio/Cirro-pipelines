@@ -13,6 +13,8 @@
     "uri": "FredHutch/pw-bulk-rna-lymphocytes",
     "version": "main"
   },
+  "allowMultipleSources": true,
+  "usesSampleSheet": false,
   "computeDefaults": [
     {
       "executor": "NEXTFLOW",

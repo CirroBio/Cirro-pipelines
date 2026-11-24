@@ -16,7 +16,8 @@
     "uri": "gatk-workflows/gatk4-data-processing",
     "version": "master"
   },
-  "usesSampleSheet": true,
+  "allowMultipleSources": true,
+  "usesSampleSheet": false,
   "computeDefaults": [
     {
       "executor": "NEXTFLOW",

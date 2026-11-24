@@ -10,6 +10,8 @@
     "executor": "NEXTFLOW",
     "executionModes": ["STANDARD", "HEALTHOMICS"],
     "category": "Spatial Transcriptomics",
+    "allowMultipleSources": true,
+    "usesSampleSheet": false,
     "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-spatial-analysis/#resegment-cells-xenium-ranger",
     "code": {
         "repository": "GITHUBPUBLIC",

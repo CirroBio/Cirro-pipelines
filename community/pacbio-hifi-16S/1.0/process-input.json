@@ -1,6 +1,6 @@
 {
-  "metadata": "$.dataset.s3|/config/metadata.tsv",
-  "input": "$.dataset.s3|/config/samples.tsv",
+  "metadata": "$.structuredInputs.pipeline_metadata.path",
+  "input": "$.structuredInputs.pipeline_samplesheet.path",
   "front_p": "$.dataset.params.library.front_p",
   "adapter_p": "$.dataset.params.library.adapter_p",
   "skip_primer_trim": "$.dataset.params.library.skip_primer_trim",

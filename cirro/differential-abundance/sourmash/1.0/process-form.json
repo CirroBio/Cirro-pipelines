@@ -1,6 +1,23 @@
 {
     "form": {
+        "type": "object",
+        "required": [
+            "samplesheet",
+            "metadata"
+        ],
         "properties": {
+            "samplesheet": {
+                "type": "string",
+                "schema": "pipeline_samplesheet"
+            },
+            "metadata": {
+                "title": "Sample Metadata",
+                "description": "CSV table with a 'sample' column naming each sample as in the samplesheet, and a column for each variable used in the formula or filter",
+                "type": "string",
+                "format": "file-path",
+                "pattern": "\\.csv$",
+                "errorMessage": "Must be an uncompressed CSV table (.csv)"
+            },
             "formula": {
                 "default": "",
                 "description": "Metadata column(s) used for statistical analysis (e.g. \"colA + colB\")",
@@ -28,14 +45,41 @@
                 "description": "FDR-adjusted p-value threshold used to annotate significant results",
                 "title": "FDR Cutoff",
                 "type": "number"
-            },
-            "min_abund": {
-                "default": 0.01,
-                "description": "Only display organisms which meet this minimum proportion threshold in at least one sample",
-                "title": "Minimum Abundance Display Threshold",
-                "type": "number"
             }
         }
     },
-    "ui": {}
+    "ui": {},
+    "structuredInputs": {
+        "pipeline_samplesheet": {
+            "fileFormat": "CSV",
+            "schema": {
+                "title": "Samplesheet",
+                "description": "One row per sample, with its Sourmash taxonomy summary. Each sample also needs a row in the Sample Metadata table.",
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "sample": {
+                            "type": "string",
+                            "title": "Sample",
+                            "pattern": "^\\S+$",
+                            "errorMessage": "Sample names cannot contain spaces"
+                        },
+                        "file": {
+                            "type": "string",
+                            "format": "file-path",
+                            "title": "Sourmash taxonomy summary",
+                            "pattern": "\\.tax\\.metagenome\\.summarized\\.csv$",
+                            "errorMessage": "Must be a Sourmash taxonomy summary (.tax.metagenome.summarized.csv)"
+                        }
+                    },
+                    "required": [
+                        "sample",
+                        "file"
+                    ]
+                }
+            }
+        }
+    }
 }

@@ -52,15 +52,15 @@
             "type": "string",
             "title": "Input BAM (single file)",
             "description": "BAM or uBAM file for the sample. This pipeline analyzes one BAM per run; merge multi-BAM samples before ingest.",
-            "pathType": "dataset",
-            "file": "**/*.{bam,ubam}"
+            "format": "file-path",
+            "pattern": "\\.u?bam$"
           },
           "ref": {
             "type": "string",
             "title": "Reference FASTA",
             "description": "Reference genome FASTA. Annotation and CNV require hg19/hg38; STR requires hg38.",
-            "pathType": "dataset",
-            "file": "**/*.{fa,fasta,fna}{,.gz}"
+            "format": "file-path",
+            "pattern": "\\.(fa|fasta|fna)(\\.gz)?$"
           },
           "sample_name": {
             "type": "string",
@@ -71,15 +71,15 @@
             "type": "string",
             "title": "Target regions BED",
             "description": "Optional BED file of regions to process for variant calling. A fourth (name) column also produces per-region coverage metrics.",
-            "pathType": "dataset",
-            "file": "**/*.bed"
+            "format": "file-path",
+            "pattern": "\\.bed$"
           },
           "coverage_bed": {
             "type": "string",
             "title": "Coverage-metrics BED",
             "description": "Optional BED file of regions for coverage metrics only. Requires a fourth column (region name).",
-            "pathType": "dataset",
-            "file": "**/*.bed"
+            "format": "file-path",
+            "pattern": "\\.bed$"
           },
           "phased": {
             "type": "boolean",
@@ -239,8 +239,8 @@
             "type": "string",
             "title": "Tandem repeat BED",
             "description": "BED file of tandem repeat annotations for the reference genome, passed to Sniffles2 (SV subworkflow).",
-            "pathType": "dataset",
-            "file": "**/*.bed"
+            "format": "file-path",
+            "pattern": "\\.bed$"
           },
           "sniffles_args": {
             "type": "string",

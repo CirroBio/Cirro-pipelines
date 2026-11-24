@@ -1,5 +1,5 @@
 {
-  "samplesheet": "$.dataset.s3|/config/pipeline_samplesheet.csv",
+  "samplesheet": "$.structuredInputs.pipeline_samplesheet.path",
   "db": "$.dataset.params.reference.db",
   "min_cu_len": "$.dataset.params.alignment_thresholds.min_cu_len",
   "min_mapq_val": "$.dataset.params.alignment_thresholds.min_mapq_val",

@@ -1,8 +1,20 @@
 {
   "form": {
     "type": "object",
-    "required": [],
+    "required": [
+      "input"
+    ],
     "properties": {
+      "input": {
+        "title": "Signal Data",
+        "description": "Folder of POD5 or FAST5 files to basecall, such as a whole nanopore signal dataset",
+        "type": "string",
+        "format": "directory-path",
+        "process": [
+          "nanpore_pod5",
+          "nanpore_fast5"
+        ]
+      },
       "output_fmt": {
         "title": "Output File Format",
         "type": "string",

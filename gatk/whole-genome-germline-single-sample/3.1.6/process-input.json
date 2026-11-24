@@ -1,4 +1,5 @@
 {
+  "samplesheet": "$.structuredInputs.pipeline_samplesheet.path",
   "genome": "$.dataset.params.genome",
   "dragen_mode": "$.dataset.params.dragen_mode",
   "final_workflow_outputs_dir": "$.dataset.dataPath",

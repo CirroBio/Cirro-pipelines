@@ -6,7 +6,10 @@ on which subworkflows are enabled and which reference genome is used. Fatal
 combinations raise here so the run fails fast; ignored options only warn.
 """
 import re
-from cirro.helpers.preprocess_dataset import PreprocessDataset
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
 
 SUBWORKFLOWS = ["sv", "snp", "cnv", "str", "mod"]
 
@@ -35,7 +38,7 @@ def infer_reference_build(ref: str):
     return None
 
 
-def drop_empty_params(ds: PreprocessDataset):
+def drop_empty_params(ds: "PreprocessDataset"):
     """Unset optional form fields arrive as empty strings; remove them so the
     workflow does not receive e.g. --bed ''."""
     for key, value in list(ds.params.items()):
@@ -44,7 +47,7 @@ def drop_empty_params(ds: PreprocessDataset):
             ds.remove_param(key, force=True)
 
 
-def drop_inactive_dependents(ds: PreprocessDataset):
+def drop_inactive_dependents(ds: "PreprocessDataset"):
     """Fields shown only when a toggle is on are meaningless when it is off."""
     for toggle, dependent in [
         ("downsample_coverage", "downsample_coverage_target"),
@@ -55,7 +58,7 @@ def drop_inactive_dependents(ds: PreprocessDataset):
             ds.remove_param(dependent, force=True)
 
 
-def check_subworkflows(ds: PreprocessDataset) -> list:
+def check_subworkflows(ds: "PreprocessDataset") -> list:
     enabled = [wf for wf in SUBWORKFLOWS if ds.params.get(wf)]
     if not enabled:
         raise ValueError(
@@ -76,7 +79,7 @@ def check_subworkflows(ds: PreprocessDataset) -> list:
     return enabled
 
 
-def check_reference(ds: PreprocessDataset, enabled: list):
+def check_reference(ds: "PreprocessDataset", enabled: list):
     ref = ds.params["ref"]
     build = infer_reference_build(ref)
     ds.logger.info(f"Reference build inferred from file name: {build or 'unknown'}")
@@ -103,7 +106,7 @@ def check_reference(ds: PreprocessDataset, enabled: list):
         )
 
 
-def check_option_combinations(ds: PreprocessDataset, enabled: list):
+def check_option_combinations(ds: "PreprocessDataset", enabled: list):
     p = ds.params
 
     if p.get("phased") and "snp" not in enabled:
@@ -174,6 +177,10 @@ def check_option_combinations(ds: PreprocessDataset, enabled: list):
 
 
 if __name__ == "__main__":
+
+    # Imported here so that test_preprocess.py runs without the SDK
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
+
     ds = PreprocessDataset.from_running()
 
     drop_empty_params(ds)

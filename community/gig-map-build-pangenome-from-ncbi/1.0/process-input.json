@@ -1,6 +1,5 @@
 {
-    "genome_csv": "$.inputs[0].dataPath|/*.csv",
-    "genome_tsv": "$.inputs[0].dataPath|/*.tsv",
+    "genome_tables": "$.dataset.params.genome_tables[*]",
     "cluster_similarity": "$.dataset.params.gene_catalog.cluster_similarity",
     "cluster_coverage": "$.dataset.params.gene_catalog.cluster_coverage",
     "min_gene_length": "$.dataset.params.gene_catalog.min_gene_length",

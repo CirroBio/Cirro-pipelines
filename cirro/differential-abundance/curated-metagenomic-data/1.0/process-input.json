@@ -5,6 +5,5 @@
     "method": "$.dataset.params.method",
     "formula": "$.dataset.params.formula",
     "input": "$.dataset.params.input",
-    "min_abund": "$.dataset.params.min_abund",
     "web_output": "$.dataset.s3|/web/"
 }

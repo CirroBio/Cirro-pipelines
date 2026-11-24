@@ -1,4 +1,42 @@
 {
-  "form": {},
-  "ui": {}
+  "form": {
+    "type": "object",
+    "required": ["samplesheet"],
+    "properties": {
+      "samplesheet": {
+        "type": "string",
+        "schema": "pipeline_samplesheet"
+      }
+    }
+  },
+  "ui": {},
+  "structuredInputs": {
+    "pipeline_samplesheet": {
+      "fileFormat": "CSV",
+      "schema": {
+        "title": "Unmapped BAMs",
+        "description": "One row per unmapped BAM (one read group each). Rows with the same sample are aligned and merged into one BAM for that sample",
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "properties": {
+            "sample_name": {
+              "type": "string",
+              "title": "Sample",
+              "pattern": "^\\S+$",
+              "errorMessage": "Must not contain spaces"
+            },
+            "flowcell_unmapped_bams": {
+              "type": "string",
+              "format": "file-path",
+              "title": "Unmapped BAM",
+              "pattern": "\\.bam$"
+            }
+          },
+          "required": ["sample_name", "flowcell_unmapped_bams"]
+        }
+      }
+    }
+  }
 }

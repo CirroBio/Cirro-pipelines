@@ -1,6 +1,5 @@
 {
-    "sample_sheet": "$.dataset.s3|/config/pipeline_samplesheet.csv",
-    "category_name": "$.dataset.params.category_name",
+    "sample_sheet": "$.structuredInputs.pipeline_samplesheet.path",
     "distance": "$.dataset.params.distance",
     "gene_enrichment": "$.dataset.params.gene_enrichment",
     "linkage": "$.dataset.params.linkage",

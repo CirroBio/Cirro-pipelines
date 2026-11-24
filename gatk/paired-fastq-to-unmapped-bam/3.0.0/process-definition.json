@@ -17,7 +17,8 @@
     "uri": "gatk-workflows/seq-format-conversion",
     "version": "master"
   },
-  "usesSampleSheet": true,
+  "allowMultipleSources": true,
+  "usesSampleSheet": false,
   "computeDefaults": [
     {
       "executor": "NEXTFLOW",

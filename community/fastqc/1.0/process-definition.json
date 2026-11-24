@@ -5,6 +5,7 @@
   "name": "Assess Sequencing Quality (FASTQC)",
   "desc": "Analysis of base-level sequencing quality with FASTQC",
   "executor": "NEXTFLOW",
+  "usesSampleSheet": false,
   "allowMultipleSources": true,
   "pipelineTypeOverride": "Community",
   "category": "Quality Control",

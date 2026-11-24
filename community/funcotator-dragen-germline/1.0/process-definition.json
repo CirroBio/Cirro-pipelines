@@ -16,7 +16,8 @@
       "uri": "FredHutch/funcotator-nf",
       "version": "main"
     },
-    "usesSampleSheet": true,
+    "usesSampleSheet": false,
+    "allowMultipleSources": true,
     "computeDefaults": [
       {
         "executor": "NEXTFLOW",

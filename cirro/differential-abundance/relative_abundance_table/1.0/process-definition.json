@@ -13,6 +13,8 @@
         "uri": "CirroBio/nf-differential-abundance",
         "version": "main"
     },
+    "allowMultipleSources": true,
+    "usesSampleSheet": false,
     "computeDefaults": [
         {
             "executor": "NEXTFLOW",

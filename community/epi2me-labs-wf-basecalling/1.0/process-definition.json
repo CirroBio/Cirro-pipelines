@@ -13,6 +13,7 @@
   ],
   "category": "DNA Sequencing",
   "allowMultipleSources": true,
+  "usesSampleSheet": false,
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-nanopore-sequencing/#nanopore-basecalling-dorado",
   "code": {
     "repository": "GITHUBPUBLIC",

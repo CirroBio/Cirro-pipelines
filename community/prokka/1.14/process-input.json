@@ -1,4 +1,4 @@
 {
   "output_folder": "$.dataset.dataPath",
-  "sample_sheet": "$.dataset.s3|/config/pipeline_samplesheet.csv"
+  "sample_sheet": "$.structuredInputs.pipeline_samplesheet.path"
 }

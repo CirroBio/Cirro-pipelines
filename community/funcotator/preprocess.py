@@ -1,56 +1,52 @@
 #!/usr/bin/env python3
+
 import pandas as pd
-from cirro.helpers.preprocess_dataset import PreprocessDataset
 
 
-def resolve_references(ds: PreprocessDataset, *params: str):
-    """Make reference params absolute against the references bucket.
+def absolute_reference(value, references_base: str):
+    """A reference param's value, made absolute against the references bucket.
 
     Form values name a path under that bucket rather than a full URI, so the
     configuration is not tied to one deployment. A value that is already absolute
-    is left alone, which keeps datasets created before that change re-runnable.
+    is returned as is, which keeps datasets created before that change re-runnable.
     """
-    for param in params:
-        value = ds.params.get(param)
-        if not isinstance(value, str) or not value or value.startswith("s3://"):
-            continue
-        ds.add_param(param, f"{ds.references_base}/{value}", overwrite=True)
+    if not isinstance(value, str) or not value or value.startswith("s3://"):
+        return value
+    return f"{references_base}/{value}"
 
 
-def make_samplesheet(ds: PreprocessDataset) -> pd.DataFrame:
-    msg = "No files detected -- there may be a data ingest error"
-    assert ds.files.shape[0] > 0, msg
+def read_samplesheet(path) -> pd.DataFrame:
+    """Read the samplesheet filled out in the form, keeping every value as text."""
 
-    ds.logger.info("File listing for dataset:")
-    ds.logger.info(ds.files.to_csv(index=None))
-
-    for cname in ['sample', 'file']:
-        assert cname in ds.files.columns.values, f"Missing column {cname}"
-
-    return ds.files.assign(
-        sample=lambda d: d['sample'].apply(
-            lambda s: s.replace("/", "_")
-        )
-    ).reindex(
-        columns=['sample', 'file']
-    ).rename(
-        columns=dict(
-            file='vcf'
-        )
-    )
+    # The form field is marked required, but an empty table can still be submitted,
+    # in which case Cirro either omits the param or writes an empty file
+    if not path:
+        raise ValueError("No samplesheet was provided: add at least one row of VCF files")
+    try:
+        samplesheet = pd.read_csv(path, dtype=str, keep_default_na=False)
+    except pd.errors.EmptyDataError:
+        samplesheet = pd.DataFrame()
+    if samplesheet.empty:
+        raise ValueError("The samplesheet is empty: add at least one row of VCF files")
+    return samplesheet
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
+
+    # Imported here so that test_preprocess.py runs without the SDK
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
+
     ds = PreprocessDataset.from_running()
 
-    resolve_references(ds, "data_sources")
+    # Only Funcotator 1.0 lets the user pick data_sources; the DRAGEN variants map
+    # an absolute path, which is left alone
+    data_sources = ds.params.get("data_sources")
+    resolved = absolute_reference(data_sources, ds.references_base)
+    if resolved != data_sources:
+        ds.add_param("data_sources", resolved, overwrite=True)
 
-    samplesheet = make_samplesheet(ds)
-    ds.logger.info("Samplesheet:")
-    ds.logger.info(samplesheet.to_csv(index=None))
-
-    # Write to the dataset's config/ folder (mapped in process-input.json)
-    samplesheet.to_csv(ds.params["samplesheet"], index=None)
+    # Read only to fail clearly when the table is missing or empty
+    read_samplesheet(ds.params.get("samplesheet"))
 
     # Force params.json to be written: the HealthOmics pre-process Lambda fails the run
     # when the file is absent, and the SDK writes it only when a parameter changes.

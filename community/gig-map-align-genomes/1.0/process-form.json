@@ -4,12 +4,27 @@
             "inputs": {
                 "type": "object",
                 "title": "Input Data",
+                "required": [
+                    "genes",
+                    "genomes"
+                ],
                 "properties": {
                     "genes": {
-                        "pathType": "dataset",
+                        "type": "string",
+                        "format": "directory-path",
                         "title": "Gene Catalog",
                         "description": "Precomputed gene catalog used as the alignment reference",
                         "process": "hutch-gig-map-build-gene-catalog-1-0"
+                    },
+                    "genomes": {
+                        "type": "string",
+                        "format": "directory-path",
+                        "title": "Genomes",
+                        "description": "Folder of genome nucleotide FASTA files to align the genes against",
+                        "process": [
+                            "microbial_genome_fasta",
+                            "hutch-gig-map-download-genomes-1-0"
+                        ]
                     }
                 }
             },

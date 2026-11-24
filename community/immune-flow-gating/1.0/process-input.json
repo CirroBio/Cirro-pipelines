@@ -1,5 +1,6 @@
 {
-  "samplesheet": "$.dataset.s3|/config/pipeline_samplesheet.csv",
+  "fcs_samplesheet": "$.structuredInputs.pipeline_samplesheet.path",
+  "samplesheet": "$.dataset.s3|/config/flow_samplesheet.csv",
   "channel_map": "$.dataset.s3|/config/channel_map.json",
   "CCR7": "$.dataset.params.CCR7",
   "CD3": "$.dataset.params.CD3",
@@ -11,6 +12,5 @@
   "CD45RA": "$.dataset.params.CD45RA",
   "CD56": "$.dataset.params.CD56",
   "LD": "$.dataset.params.LD",
-  "outdir": "$.dataset.dataPath",
-  "fcs": "$.inputs[0].s3|/data/**.fcs"
+  "outdir": "$.dataset.dataPath"
 }

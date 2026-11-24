@@ -1,15 +1,14 @@
 {
   "form": {
     "type": "object",
-    "required": ["input_wsp"],
+    "required": [
+      "fcs_files",
+      "input_wsp"
+    ],
     "properties": {
-      "subset": {
-        "title": "(optional) Select Input Files",
+      "fcs_files": {
         "type": "string",
-        "pathType": "dataset",
-        "file": "**/*",
-        "multiple": true,
-        "description": "Default: all files will be analyzed"
+        "schema": "fcs_files"
       },
       "input_wsp": {
         "type": "string",
@@ -17,8 +16,46 @@
         "file": "**/flowjo_wsp/**/flowjo.wsp",
         "pathType": "references",
         "description": "Select the FlowJo workspace uploaded as a References"
+      },
+      "input_anndata": {
+        "title": "(optional) Previous Results",
+        "description": "Summaries (output.h5ad) from earlier runs of this pipeline, plotted alongside these files",
+        "type": "string",
+        "format": "file-path",
+        "multiple": true,
+        "pattern": "\\.h5ad$",
+        "errorMessage": "Must be an AnnData file (.h5ad)",
+        "process": [
+          "process-hutch-flowjo-gating-1_0"
+        ]
       }
     }
   },
-  "ui": {}
+  "ui": {},
+  "structuredInputs": {
+    "fcs_files": {
+      "fileFormat": "CSV",
+      "schema": {
+        "title": "FCS Files",
+        "description": "One row per FCS file. Files are told apart by name, so a name listed twice (even in different folders) is analyzed once.",
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "properties": {
+            "fcs": {
+              "type": "string",
+              "format": "file-path",
+              "title": "FCS File",
+              "pattern": "\\.[Ff][Cc][Ss]$",
+              "errorMessage": "Must be a flow cytometry file (.fcs or .FCS)"
+            }
+          },
+          "required": [
+            "fcs"
+          ]
+        }
+      }
+    }
+  }
 }

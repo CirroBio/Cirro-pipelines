@@ -1,79 +1,50 @@
 #!/usr/bin/env python3
 
+from __future__ import annotations
+
 import json
-from cirro.helpers.preprocess_dataset import PreprocessDataset
-from cirro.models.s3_path import S3Path
+from typing import TYPE_CHECKING
+
+import pandas as pd
+
+# The SDK is imported in __main__, so test_preprocess.py runs without it
+if TYPE_CHECKING:
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
+
+WORKFLOW = "HaplotypeCallerGvcf_GATK4"
 
 
-def setup_inputs(ds: PreprocessDataset):
+def read_samplesheet(path) -> pd.DataFrame:
+    """Read the table of alignments filled out in the form, keeping every value as text."""
 
-    # Make a combined set of inputs with each of the BAM files
-    all_inputs = [
-        {
-            **single_input,
-            **{
-                kw: val
-                for kw, val in ds.params.items()
-                if kw.startswith("HaplotypeCallerGvcf_GATK4")
-            }
-        }
-        for single_input in yield_single_inputs(ds)
-    ]
-
-    # Raise an error if no inputs are found
-    assert len(all_inputs) > 0, "No inputs found -- stopping execution"
-
-    # Write out the complete set of inputs
-    write_json("inputs.json", all_inputs)
-
-    # Write out each individual file pair
-    for i, input in enumerate(all_inputs):
-        write_json(f"inputs.{i}.json", input)
+    # The form field is marked required, but an empty table can still be submitted,
+    # in which case Cirro either omits the param or writes an empty file
+    if not path:
+        raise ValueError("No samplesheet was provided: add at least one row with a BAM and its index")
+    try:
+        samplesheet = pd.read_csv(path, dtype=str, keep_default_na=False)
+    except pd.errors.EmptyDataError:
+        samplesheet = pd.DataFrame()
+    if samplesheet.empty:
+        raise ValueError("The samplesheet is empty: add at least one row with a BAM and its index")
+    return samplesheet
 
 
-def write_json(fp, obj, indent=4) -> None:
+def build_inputs(samplesheet: pd.DataFrame, params: dict) -> list:
+    """One set of workflow inputs per row of the samplesheet."""
 
-    with open(fp, "wt") as handle:
-        json.dump(obj, handle, indent=indent)
+    workflow_params = {
+        kw: val
+        for kw, val in params.items()
+        if kw.startswith(WORKFLOW)
+    }
 
+    all_inputs = []
+    for _, row in samplesheet.iterrows():
 
-def mark_filetype(fp: str) -> str:
-    if fp.endswith(".bam"):
-        return "bam"
-    elif fp.endswith(".bai"):
-        return "bai"
-    else:
-        return "other"
-
-
-def yield_single_inputs(ds: PreprocessDataset) -> dict:
-    """The input files will have both a BAM and a BAI for each sample."""
-
-    # Get the BAM and BAI for each sample
-    for sample, files in ds.files.groupby("sample"):
-
-        file_dict = {
-            mark_filetype(fp): fp
-            for fp in files['file'].values
-        }
-
-        bam_fp = file_dict.get("bam")
-        bai_fp = file_dict.get("bai")
-
-        ds.logger.info(f"Sample: {sample}")
-        if bam_fp is None:
-            ds.logger.info("No BAM file found, skipping")
-            continue
-        ds.logger.info(f"BAM: {bam_fp}")
-        if bai_fp is None:
-            ds.logger.info("No BAM Index file found, skipping")
-            continue
-
-        # Set the params, which will all have the
-        # workflow-level prefix appended (below)
         dat = dict(
-            input_bam=bam_fp,
-            input_bam_index=bai_fp
+            input_bam=row["input_bam"],
+            input_bam_index=row["input_bam_index"]
         )
 
         # Set inputs at the task level
@@ -85,13 +56,23 @@ def yield_single_inputs(ds: PreprocessDataset) -> dict:
             # Set the preemptible attempts
             dat[f"{task}.preemptible_attempts"] = 3
 
-        yield {
-            f"HaplotypeCallerGvcf_GATK4.{kw}": val
-            for kw, val in dat.items()
-        }
+        all_inputs.append({
+            **{f"{WORKFLOW}.{kw}": val for kw, val in dat.items()},
+            **workflow_params
+        })
+
+    return all_inputs
+
+
+def write_json(fp, obj, indent=4) -> None:
+
+    with open(fp, "wt") as handle:
+        json.dump(obj, handle, indent=indent)
 
 
 def setup_options(ds: PreprocessDataset):
+
+    from cirro.models.s3_path import S3Path
 
     # Add default params
     ds.add_param("memory_retry_multiplier", 2.0)
@@ -107,15 +88,29 @@ def setup_options(ds: PreprocessDataset):
     options = {
         kw: val
         for kw, val in ds.params.items()
-        if not kw.startswith("HaplotypeCallerGvcf_GATK4")
+        if not kw.startswith(WORKFLOW)
     }
 
     # Write out
-    with open("options.json", "wt") as handle:
-        json.dump(options, handle, indent=4)
+    write_json("options.json", options)
 
 
 if __name__ == "__main__":
+
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
+
     ds = PreprocessDataset.from_running()
-    setup_inputs(ds)
+
+    all_inputs = build_inputs(read_samplesheet(ds.params.get("samplesheet")), ds.params)
+
+    # The samplesheet is only read here, so keep it out of the Cromwell options
+    ds.remove_param("samplesheet")
+
+    # Write out the complete set of inputs
+    write_json("inputs.json", all_inputs)
+
+    # Write out each individual sample
+    for i, single_input in enumerate(all_inputs):
+        write_json(f"inputs.{i}.json", single_input)
+
     setup_options(ds)

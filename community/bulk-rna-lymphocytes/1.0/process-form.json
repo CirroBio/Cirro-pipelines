@@ -9,10 +9,9 @@
         "title": "Gene Expression (TPM)",
         "description": "Table of normalized gene expression across all samples (TPM).",
         "type": "string",
-        "pathType": "dataset",
-        "mm": { "matchBase": true },
-        "file": "*.tsv",
-        "default": "data/star_salmon/salmon.merged.gene_tpm.tsv"
+        "format": "file-path",
+        "pattern": "\\.tsv$",
+        "errorMessage": "Must be a tab-separated table (.tsv), such as salmon.merged.gene_tpm.tsv from nf-core/rnaseq"
       },
       "tumor": {
         "title": "Tumor Analysis",

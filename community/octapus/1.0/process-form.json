@@ -1,9 +1,15 @@
 {
     "form": {
+        "type": "object",
         "required": [
+            "genome_table",
             "operon"
         ],
         "properties": {
+            "genome_table": {
+                "type": "string",
+                "schema": "pipeline_samplesheet"
+            },
             "operon": {
                 "default": "",
                 "description": "Collection of genes to search for across the genome collection",
@@ -38,5 +44,36 @@
             }
         }
     },
-    "ui": {}
+    "ui": {},
+    "structuredInputs": {
+        "pipeline_samplesheet": {
+            "fileFormat": "CSV",
+            "schema": {
+                "title": "Genomes",
+                "description": "One row per genome to search for the operon.",
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "organism": {
+                            "type": "string",
+                            "title": "Organism Name"
+                        },
+                        "uri": {
+                            "type": "string",
+                            "format": "file-path",
+                            "title": "Genome (FASTA)",
+                            "pattern": "\\.(fa|fna|fasta|fas)(\\.gz)?$",
+                            "errorMessage": "Must be a FASTA file (.fa, .fna, .fasta or .fas, optionally gzipped)"
+                        }
+                    },
+                    "required": [
+                        "organism",
+                        "uri"
+                    ]
+                }
+            }
+        }
+    }
 }

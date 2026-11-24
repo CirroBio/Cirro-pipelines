@@ -37,7 +37,7 @@
     "script": "main.nf"
   },
   "allowMultipleSources": true,
-  "usesSampleSheet": true,
+  "usesSampleSheet": false,
   "computeDefaults": [
     {
       "executor": "NEXTFLOW",

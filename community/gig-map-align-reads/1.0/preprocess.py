@@ -1,42 +1,61 @@
+import pandas as pd
 
-from cirro.helpers.preprocess_dataset import PreprocessDataset
 
-# Instantiate the Cirro dataset object
-ds = PreprocessDataset.from_running()
+def read_samplesheet(path) -> pd.DataFrame:
+    """Read the samplesheet filled out in the form, keeping every value as text."""
 
-# Filter out any index files that may have been uploaded
-ds.files = ds.files.loc[
-    ds.files.apply(
-        lambda r: r.get('readType', 'R') == 'R',
-        axis=1
-    )
-]
+    # The form field is marked required, but an empty table can still be submitted,
+    # in which case Cirro either omits the param or writes an empty file
+    if not path:
+        raise ValueError("No samplesheet was provided: add at least one row of FASTQ files")
+    try:
+        samplesheet = pd.read_csv(path, dtype=str, keep_default_na=False)
+    except pd.errors.EmptyDataError:
+        samplesheet = pd.DataFrame()
+    if samplesheet.empty:
+        raise ValueError("The samplesheet is empty: add at least one row of FASTQ files")
+    return samplesheet
 
-# Make a wide samplesheet
-samplesheet = ds.wide_samplesheet(
-    index=["sample", "sampleIndex", "dataset"],
-    columns="read",
-    values="file",
-    column_prefix="R"
-).reindex(
-    columns=["sample", "R1", "R2"]
-)
-assert samplesheet.shape[0] > 0, "No files detected -- there may be an error with data ingest"
 
-ds.logger.info("Samplesheet:")
-ds.logger.info(samplesheet.to_csv(index=None))
+def drop_blank_fastq_2(samplesheet: pd.DataFrame) -> pd.DataFrame:
+    """Remove the R2 column of a single-end samplesheet.
 
-# Write to the dataset's config/ folder (mapped in process-input.json)
-ds.logger.info(f"Writing out {samplesheet.shape[0]:,} lines to {ds.params['samplesheet']}")
-samplesheet.to_csv(
-    ds.params["samplesheet"],
-    index=None
-)
+    gig-map calls file() on every fastq_2 cell, which fails on a blank one, and skips
+    R2 only when the column is absent. So R2 must be given for every row or none.
+    """
+    blank = samplesheet["fastq_2"] == ""
+    if blank.all():
+        return samplesheet.drop(columns="fastq_2")
+    if blank.any():
+        samples = ", ".join(samplesheet.loc[blank, "sample"].unique())
+        raise ValueError(
+            f"Some rows have no FASTQ (R2) file ({samples}): "
+            "give every row an R2 file, or leave R2 blank in all of them"
+        )
+    return samplesheet
 
-# Log the parameters present
-for k, v in ds.params.items():
-    ds.logger.info(f"{k}: {v}")
 
-# Force params.json to be written: the HealthOmics pre-process Lambda fails the run
-# when the file is absent, and the SDK writes it only when a parameter changes.
-ds.keep_params(list(ds.params.keys()))
+def catalog_genes(catalog: str) -> str:
+    """The deduplicated genes inside the picked gene catalog dataset.
+
+    Built here rather than with a `|/...` suffix in process-input.json: a whole dataset
+    picked in the folder picker arrives as its data/ folder with a trailing slash.
+    """
+    return f"{catalog.rstrip('/')}/centroids.faa.gz"
+
+
+if __name__ == "__main__":
+
+    # Imported here so that test_preprocess.py runs without the SDK
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
+
+    ds = PreprocessDataset.from_running()
+
+    samplesheet = drop_blank_fastq_2(read_samplesheet(ds.params.get("samplesheet")))
+    samplesheet.to_csv(ds.params["samplesheet"], index=None)
+
+    ds.add_param("genes", catalog_genes(ds.params["genes"]), overwrite=True)
+
+    # Force params.json to be written: the HealthOmics pre-process Lambda fails the run
+    # when the file is absent, and the SDK writes it only when a parameter changes.
+    ds.keep_params(list(ds.params.keys()))

@@ -1,7 +1,20 @@
 {
     "form": {
         "type": "object",
+        "required": [
+            "genes"
+        ],
         "properties": {
+            "genes": {
+                "type": "string",
+                "format": "directory-path",
+                "title": "Genes",
+                "description": "Folder of amino acid FASTA files to deduplicate",
+                "process": [
+                    "microbial_genome_fastp",
+                    "hutch-gig-map-download-genes-1-0"
+                ]
+            },
             "cluster_similarity": {
                 "type": "number",
                 "title": "Clustering Similarity Threshold",

@@ -1,12 +1,24 @@
 {
     "form": {
+        "type": "object",
+        "required": [
+            "samplesheet"
+        ],
         "properties": {
+            "samplesheet": {
+                "type": "string",
+                "schema": "pipeline_samplesheet"
+            },
             "inputs": {
                 "type": "object",
                 "title": "Input Data",
+                "required": [
+                    "pangenome"
+                ],
                 "properties": {
                     "pangenome": {
-                        "pathType": "dataset",
+                        "type": "string",
+                        "format": "directory-path",
                         "title": "Pangenome",
                         "description": "Precomputed pangenome used as the alignment reference",
                         "process": [
@@ -68,14 +80,68 @@
                 "type": "object",
                 "title": "Association Parameters",
                 "properties": {
+                    "metadata": {
+                        "type": "string",
+                        "format": "file-path",
+                        "pattern": "\\.csv$",
+                        "title": "Sample Metadata",
+                        "description": "Optional: CSV with a 'sample' column matching the samplesheet, and a column for each variable to compare by"
+                    },
                     "category": {
                         "type": "string",
                         "title": "Category",
-                        "description": "Optional: Compare sample groups based on a metadata variable"
+                        "description": "Optional: Compare sample groups based on this column of the sample metadata"
                     }
+                },
+                "dependencies": {
+                    "category": [
+                        "metadata"
+                    ]
                 }
             }
         }
     },
-    "ui": {}
+    "ui": {},
+    "structuredInputs": {
+        "pipeline_samplesheet": {
+            "fileFormat": "CSV",
+            "defaultSourceFile": "samplesheet.csv",
+            "schema": {
+                "title": "Samplesheet",
+                "description": "One row per FASTQ file (single-end) or pair of FASTQ files (paired-end). Rows with the same sample name, such as one per sequencing lane, are combined into one sample.",
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "sample": {
+                            "type": "string",
+                            "title": "Sample",
+                            "pattern": "^\\S+$",
+                            "errorMessage": "Sample name must be provided and cannot contain spaces"
+                        },
+                        "fastq_1": {
+                            "type": "string",
+                            "format": "file-path",
+                            "title": "FASTQ (R1)",
+                            "pattern": "^(?![\\S\\s]*_I[12]_001\\.f(ast)?q(\\.gz)?$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q(\\.gz)?$",
+                            "errorMessage": "Must be a read FASTQ (.fq, .fastq, .fq.gz or .fastq.gz) with no spaces in its name, not an I1/I2 index read"
+                        },
+                        "fastq_2": {
+                            "type": "string",
+                            "format": "file-path",
+                            "title": "FASTQ (R2)",
+                            "description": "Leave blank for single-end reads",
+                            "pattern": "^(?![\\S\\s]*_I[12]_001\\.f(ast)?q(\\.gz)?$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q(\\.gz)?$",
+                            "errorMessage": "Must be a read FASTQ (.fq, .fastq, .fq.gz or .fastq.gz) with no spaces in its name, not an I1/I2 index read"
+                        }
+                    },
+                    "required": [
+                        "sample",
+                        "fastq_1"
+                    ]
+                }
+            }
+        }
+    }
 }

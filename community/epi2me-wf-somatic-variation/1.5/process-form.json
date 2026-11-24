@@ -40,22 +40,22 @@
             "type": "string",
             "title": "Tumor BAM (single file)",
             "description": "BAM or uBAM file for the tumor sample. This pipeline analyzes one BAM per sample; merge multi-BAM samples before ingest.",
-            "pathType": "dataset",
-            "file": "**/*.{bam,ubam}"
+            "format": "file-path",
+            "pattern": "\\.u?bam$"
           },
           "bam_normal": {
             "type": "string",
             "title": "Normal BAM (single file)",
             "description": "BAM or uBAM file for the matched normal sample. Leave blank to run in tumor-only mode, which skips differential methylation and switches small-variant calling to ClairS-TO.",
-            "pathType": "dataset",
-            "file": "**/*.{bam,ubam}"
+            "format": "file-path",
+            "pattern": "\\.u?bam$"
           },
           "ref": {
             "type": "string",
             "title": "Reference FASTA",
             "description": "Reference genome FASTA. Annotation requires hg19/hg38; the default structural variant panel of normals is hg38 only.",
-            "pathType": "dataset",
-            "file": "**/*.{fa,fasta,fna}{,.gz}"
+            "format": "file-path",
+            "pattern": "\\.(fa|fasta|fna)(\\.gz)?$"
           },
           "sample_name": {
             "type": "string",
@@ -66,22 +66,22 @@
             "type": "string",
             "title": "Target regions BED",
             "description": "Optional BED file of regions to process for variant calling.",
-            "pathType": "dataset",
-            "file": "**/*.bed"
+            "format": "file-path",
+            "pattern": "\\.bed$"
           },
           "tr_bed": {
             "type": "string",
             "title": "Simple repeat BED",
             "description": "Optional BED file of simple repeat regions passed to Severus. A bundled hg19/hg38 file is selected automatically when this is left blank.",
-            "pathType": "dataset",
-            "file": "**/*.bed"
+            "format": "file-path",
+            "pattern": "\\.bed$"
           },
           "pon_file": {
             "type": "string",
             "title": "Structural variant panel of normals",
             "description": "Optional Severus panel-of-normals TSV of expected germline SVs. A 1000 Genomes panel is used automatically for hg38 when this is left blank.",
-            "pathType": "dataset",
-            "file": "**/*.tsv{,.gz}"
+            "format": "file-path",
+            "pattern": "\\.tsv(\\.gz)?$"
           },
           "annotation": {
             "type": "boolean",
@@ -182,22 +182,22 @@
             "type": "string",
             "title": "Pre-computed normal VCF",
             "description": "Germline VCF for the normal sample, skipping germline calling for that sample. A bgzipped VCF must be accompanied by its .tbi index.",
-            "pathType": "dataset",
-            "file": "**/*.vcf.gz"
+            "format": "file-path",
+            "pattern": "\\.vcf\\.gz$"
           },
           "hybrid_mode_vcf": {
             "type": "string",
             "title": "Hybrid mode VCF",
             "description": "Combine de novo calling with genotyping at the positions in this VCF. Cannot be combined with a genotyping mode VCF.",
-            "pathType": "dataset",
-            "file": "**/*.vcf{,.gz}"
+            "format": "file-path",
+            "pattern": "\\.vcf(\\.gz)?$"
           },
           "genotyping_mode_vcf": {
             "type": "string",
             "title": "Genotyping mode VCF",
             "description": "Call variants only at the sites in this VCF. Cannot be combined with a hybrid mode VCF.",
-            "pathType": "dataset",
-            "file": "**/*.vcf{,.gz}"
+            "format": "file-path",
+            "pattern": "\\.vcf(\\.gz)?$"
           }
         }
       },

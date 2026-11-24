@@ -1,62 +1,37 @@
 #!/usr/bin/env python3
 
-from cirro.helpers.preprocess_dataset import PreprocessDataset
-import pandas as pd
 
-ds = PreprocessDataset.from_running()
-
-
-def log_table(title: str, df: pd.DataFrame, **kwargs):
-    ds.logger.info(title)
-    msg = "No rows found in table -- stopping"
-    assert df.shape[0] > 0, msg
-    for line in df.to_csv(**kwargs).split("\n"):
-        ds.logger.info(line)
+def check_params(params: dict):
+    if not params.get("formula"):
+        raise ValueError("Must provide formula indicating columns to test")
+    if not 0 <= params["fdr_cutoff"] < 1:
+        raise ValueError("fdr_cutoff must be >= 0 and < 1")
 
 
-def make_samplesheet() -> pd.DataFrame:
+def ampliseq_tables(ampliseq_results: str) -> dict:
+    """The counts and taxonomy tables inside the picked nf-core/ampliseq output.
 
-    log_table("File Table", ds.files)
-    log_table("Sample metadata", ds.samplesheet)
-
-    samplesheet = (
-        ds.files
-        .merge(
-            ds.samplesheet,
-            right_on="sample",
-            left_on="sample"
-        )
-        .set_index("sample")
-    )
-
-    # Drop the sampleIndex column if it's present
-    if "sampleIndex" in samplesheet.columns.values:
-        samplesheet = samplesheet.drop(columns=["sampleIndex"])
-
-    log_table("Merged", samplesheet)
-
-    # Write to the dataset's config/ folder (mapped in process-input.json)
-    samplesheet.to_csv(ds.params["samplesheet"])
-
-
-def main():
-    # Get the input data
-    make_samplesheet()
-
-    msg = "Must provide formula indicating columns to test"
-    assert len(ds.params.get("formula", "")) > 0, msg
-
-    for kw in ["min_abund", "fdr_cutoff"]:
-        assert ds.params[kw] >= 0, f"{kw} must be >= 0"
-        assert ds.params[kw] < 1, f"{kw} must be < 1"
+    A whole dataset picked in the folder picker arrives as its data/ folder with a
+    trailing slash, so the paths are joined here rather than with a `|/...` suffix.
+    """
+    folder = ampliseq_results.rstrip("/")
+    return {
+        "counts": f"{folder}/qiime2/abundance_tables/feature-table.tsv",
+        "taxonomy": f"{folder}/qiime2/taxonomy/taxonomy.tsv",
+    }
 
 
 if __name__ == "__main__":
-    main()
 
-    # Consumed above; not a parameter the workflow declares.
-    ds.remove_param("min_abund", force=True)
+    # Imported here so that test_preprocess.py runs without the SDK
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
 
-    # Force params.json to be written: the HealthOmics pre-process Lambda fails the run
-    # when the file is absent, and the SDK writes it only when a parameter changes.
-    ds.keep_params(list(ds.params.keys()))
+    ds = PreprocessDataset.from_running()
+
+    check_params(ds.params)
+
+    for param, value in ampliseq_tables(ds.params["ampliseq_results"]).items():
+        ds.add_param(param, value, overwrite=True)
+
+    # Consumed above; not a parameter the workflow declares
+    ds.remove_param("ampliseq_results")

@@ -1,15 +1,26 @@
 {
   "form": {
     "type": "object",
+    "required": [
+      "counts",
+      "manifest"
+    ],
     "properties": {
       "counts": {
         "title": "Gene Counts",
-        "description": "Table of read counts per gene across all samples.",
+        "description": "Table of read counts per gene across all samples, such as star_salmon/salmon.merged.gene_counts.tsv from nf-core/rnaseq.",
         "type": "string",
-        "pathType": "dataset",
-        "mm": { "matchBase": true },
-        "file": "*.tsv",
-        "default": "data/star_salmon/salmon.merged.gene_counts.tsv"
+        "format": "file-path",
+        "pattern": "\\.tsv$",
+        "errorMessage": "Must be a TSV table (.tsv)"
+      },
+      "manifest": {
+        "title": "Metadata Table",
+        "description": "CSV table of sample annotations, with the sample names of the Gene Counts table in its first column and a column for each variable used for comparison, batch correction or filtering.",
+        "type": "string",
+        "format": "file-path",
+        "pattern": "\\.csv$",
+        "errorMessage": "Must be an uncompressed CSV table (.csv)"
       },
       "algorithm": {
         "title": "Algorithm",

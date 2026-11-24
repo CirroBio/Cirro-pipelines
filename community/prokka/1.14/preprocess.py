@@ -1,37 +1,43 @@
 #!/usr/bin/env python3
 
-from cirro.helpers.preprocess_dataset import PreprocessDataset
+import pandas as pd
 
-ds = PreprocessDataset.from_running()
 
-ds.logger.info("Files annotated in the dataset:")
-ds.logger.info(ds.files.to_csv(index=None))
+def read_samplesheet(path) -> pd.DataFrame:
+    """Read the genome table filled out in the form, keeping every value as text."""
 
-# There may only be a single file per sample
-if ds.files['sample'].value_counts().max() > 1:
-    raise Exception("Only one FASTA is allowed per genome")
+    # The form field is marked required, but an empty table can still be submitted,
+    # in which case Cirro either omits the param or writes an empty file
+    if not path:
+        raise ValueError("No genomes were provided: add one row per genome")
+    try:
+        samplesheet = pd.read_csv(path, dtype=str, keep_default_na=False)
+    except pd.errors.EmptyDataError:
+        samplesheet = pd.DataFrame()
+    if samplesheet.empty:
+        raise ValueError("The genome table is empty: add one row per genome")
+    return samplesheet
 
-# Make a simple table with each of the files listed on single row
-samplesheet = ds.files.rename(
-    columns=dict(
-        file="fasta",
-        sample="name"
-    )
-).reindex(
-    columns=["name", "fasta"]
-)
-# Write to the dataset's config/ folder (mapped in process-input.json)
-samplesheet.to_csv(
-    ds.params["sample_sheet"],
-    index=False
-)
 
-ds.logger.info("Samplesheet:")
-ds.logger.info(samplesheet.to_csv(index=None))
+def check_unique_names(samplesheet: pd.DataFrame):
+    """Each genome's results are written to a folder named after it."""
 
-# log
-ds.logger.info(ds.params)
+    duplicated = samplesheet.loc[samplesheet["name"].duplicated(), "name"].unique()
+    if len(duplicated) > 0:
+        raise ValueError(
+            f"Only one FASTA is allowed per genome. Listed more than once: {', '.join(duplicated)}"
+        )
 
-# Force params.json to be written: the HealthOmics pre-process Lambda fails the run
-# when the file is absent, and the SDK writes it only when a parameter changes.
-ds.keep_params(list(ds.params.keys()))
+
+if __name__ == "__main__":
+
+    # Imported here so that test_preprocess.py runs without the SDK
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
+
+    ds = PreprocessDataset.from_running()
+
+    check_unique_names(read_samplesheet(ds.params.get("sample_sheet")))
+
+    # Force params.json to be written: the HealthOmics pre-process Lambda fails the run
+    # when the file is absent, and the SDK writes it only when a parameter changes.
+    ds.keep_params(list(ds.params.keys()))

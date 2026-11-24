@@ -1,5 +1,4 @@
 {
-    "genome_csv": "$.inputs[0].s3|/data/*.csv",
-    "genome_tsv": "$.inputs[0].s3|/data/*.tsv",
+    "genome_tables": "$.dataset.params.genome_tables[*]",
     "output": "$.dataset.dataPath"
 }

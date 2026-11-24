@@ -14,7 +14,8 @@
     "uri": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/",
     "version": "https://raw.githubusercontent.com/gatk-workflows/gatk4-germline-snps-indels/2.3.1/haplotypecaller-gvcf-gatk4.wdl"
   },
-  "usesSampleSheet": true,
+  "allowMultipleSources": true,
+  "usesSampleSheet": false,
   "computeDefaults": [
     {
       "executor": "NEXTFLOW",

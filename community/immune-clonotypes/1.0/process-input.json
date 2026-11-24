@@ -1,5 +1,5 @@
 {
-  "paired_manifest": "$.dataset.s3|/config/manifest.csv",
+  "paired_manifest": "$.structuredInputs.pipeline_samplesheet.path",
   "ref": "$.dataset.params.genome",
   "output_folder": "$.dataset.dataPath"
 }

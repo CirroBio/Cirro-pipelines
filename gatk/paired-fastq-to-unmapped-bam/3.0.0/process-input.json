@@ -1,4 +1,5 @@
 {
+  "samplesheet": "$.structuredInputs.pipeline_samplesheet.path",
   "ConvertPairedFastQsToUnmappedBamWf.run_date": "$.dataset.params.run_date",
   "ConvertPairedFastQsToUnmappedBamWf.platform_name": "$.dataset.params.platform_name",
   "ConvertPairedFastQsToUnmappedBamWf.sequencing_center": "$.dataset.params.sequencing_center",

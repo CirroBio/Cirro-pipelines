@@ -1,6 +1,14 @@
 {
     "form": {
+        "type": "object",
+        "required": [
+            "samplesheet"
+        ],
         "properties": {
+            "samplesheet": {
+                "type": "string",
+                "schema": "pipeline_samplesheet"
+            },
             "mcl_inflation": {
                 "default": 2,
                 "description": "Ranges from 2 (approximately species-level) to 10 (approximately strain-level)",
@@ -24,12 +32,6 @@
                 "description": "Any pairwise genome ANI scores below this threshold will be set to zero",
                 "title": "Minimum Alignment Fraction",
                 "type": "number"
-            },
-            "category_name": {
-                "default": "",
-                "description": "Optional genome metadata attribute used to compare genomes",
-                "title": "Compare Genomes By",
-                "type": "string"
             },
             "gene_enrichment": {
                 "default": false,
@@ -75,5 +77,42 @@
             }
         }
     },
-    "ui": {}
+    "ui": {},
+    "structuredInputs": {
+        "pipeline_samplesheet": {
+            "fileFormat": "CSV",
+            "schema": {
+                "title": "Genomes",
+                "description": "One row per genome. Fill in Category to compare genomes by it (at least two distinct values), or leave it blank in every row.",
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "genome": {
+                            "type": "string",
+                            "format": "file-path",
+                            "title": "Genome (FASTA)",
+                            "pattern": "\\.(fa|fna|fasta|fas|fsa)(\\.gz)?$",
+                            "errorMessage": "Must be a FASTA file (.fa, .fna, .fasta, .fas or .fsa, optionally gzipped)"
+                        },
+                        "name": {
+                            "type": "string",
+                            "title": "Name",
+                            "pattern": "^[A-Za-z_][A-Za-z0-9_]*$",
+                            "errorMessage": "Name can only contain letters, numbers and underscores, and cannot start with a number"
+                        },
+                        "category": {
+                            "type": "string",
+                            "title": "Category"
+                        }
+                    },
+                    "required": [
+                        "genome",
+                        "name"
+                    ]
+                }
+            }
+        }
+    }
 }

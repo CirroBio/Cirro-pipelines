@@ -1,13 +1,17 @@
 {
     "form": {
+        "type": "object",
+        "required": [
+            "input"
+        ],
         "properties": {
             "input": {
-                "default": "",
-                "description": "Select relative abundance table to analyze",
-                "file": "**/*.*",
-                "pathType": "dataset",
                 "title": "Input Data",
-                "type": "string"
+                "description": "Relative abundance table from the curatedMetagenomicDataTerminal tool, which holds both the organism abundances and the sample metadata",
+                "type": "string",
+                "format": "file-path",
+                "pattern": "relative_abundance[^/]*$",
+                "errorMessage": "Must be a curatedMetagenomicData relative abundance table (<study>.relative_abundance)"
             },
             "formula": {
                 "default": "",
@@ -35,12 +39,6 @@
                 "default": 0.05,
                 "description": "FDR-adjusted p-value threshold used to annotate significant results",
                 "title": "FDR Cutoff",
-                "type": "number"
-            },
-            "min_abund": {
-                "default": 0.01,
-                "description": "Only display organisms which meet this minimum proportion threshold in at least one sample",
-                "title": "Minimum Abundance Display Threshold",
                 "type": "number"
             }
         }

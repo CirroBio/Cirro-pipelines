@@ -1,5 +1,5 @@
 {
-    "samplesheet": "$.dataset.s3|/config/pipeline_samplesheet.csv",
+    "samplesheet": "$.structuredInputs.pipeline_samplesheet.path",
     "ref_version": "$.dataset.params.ref_version",
     "reference_fasta": "$.referencesBucketUri|/igenomes/Homo_sapiens/UCSC/|$.dataset.params.ref_version|/Sequence/WholeGenomeFasta/genome.fa",
     "data_sources": "$.dataset.params.data_sources",

@@ -4,9 +4,24 @@
             "inputs": {
                 "type": "object",
                 "title": "Input Data",
+                "required": [
+                    "genomes",
+                    "genes"
+                ],
                 "properties": {
+                    "genomes": {
+                        "type": "string",
+                        "format": "directory-path",
+                        "title": "Genomes",
+                        "description": "Folder of genome nucleotide FASTA files",
+                        "process": [
+                            "microbial_genome_fasta",
+                            "hutch-gig-map-download-genomes-1-0"
+                        ]
+                    },
                     "genes": {
-                        "pathType": "dataset",
+                        "type": "string",
+                        "format": "directory-path",
                         "title": "Gene Collection",
                         "description": "Dataset of Microbial Proteins (amino acid FASTA format)",
                         "process": [

@@ -3,8 +3,14 @@
     "type": "object",
     "title": "Panel Markers",
     "description": "Indicate the channel used for each marker",
-    "required": [],
+    "required": [
+      "fcs_samplesheet"
+    ],
     "properties": {
+      "fcs_samplesheet": {
+        "type": "string",
+        "schema": "pipeline_samplesheet"
+      },
       "CCR7": {
         "title": "CCR7",
         "type": "string",
@@ -57,5 +63,42 @@
       }
     }
   },
-  "ui": {}
+  "ui": {},
+  "structuredInputs": {
+    "pipeline_samplesheet": {
+      "fileFormat": "CSV",
+      "schema": {
+        "title": "Samplesheet",
+        "description": "One row per FCS file. Each file name must be unique, even across folders. Fill in Batch to gate each batch of files together, or leave it blank in every row.",
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "properties": {
+            "sample": {
+              "type": "string",
+              "title": "Sample",
+              "pattern": "^\\S+$",
+              "errorMessage": "Sample name must be provided and cannot contain spaces"
+            },
+            "fcs": {
+              "type": "string",
+              "format": "file-path",
+              "title": "FCS File",
+              "pattern": "\\.[Ff][Cc][Ss]$",
+              "errorMessage": "Must be a flow cytometry file (.fcs)"
+            },
+            "batch": {
+              "type": "string",
+              "title": "Batch"
+            }
+          },
+          "required": [
+            "sample",
+            "fcs"
+          ]
+        }
+      }
+    }
+  }
 }

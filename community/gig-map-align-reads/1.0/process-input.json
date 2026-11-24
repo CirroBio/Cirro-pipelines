@@ -1,8 +1,6 @@
 {
-    "samplesheet": "$.dataset.s3|/config/pipeline_samplesheet.csv",
-    "reads": "$.inputs[0].s3|/data/",
-    "genes": "$.dataset.params.inputs.genes|/data/centroids.faa.gz",
-    "paired": "$.dataset.params.inputs.paired",
+    "samplesheet": "$.structuredInputs.pipeline_samplesheet.path",
+    "genes": "$.dataset.params.inputs.genes",
     "min_score_reads": "$.dataset.params.alignment.min_score_reads",
     "min_identity": "$.dataset.params.alignment.min_identity",
     "max_evalue": "$.dataset.params.alignment.max_evalue",

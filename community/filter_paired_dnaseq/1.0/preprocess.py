@@ -1,43 +1,35 @@
 #!/usr/bin/env python3
 
-from cirro.helpers.preprocess_dataset import PreprocessDataset
+import pandas as pd
 
-# Instantiate the Cirro dataset object
-ds = PreprocessDataset.from_running()
 
-# Filter out any index files that may have been uploaded
-ds.files = ds.files.loc[
-    ds.files.apply(
-        lambda r: r.get('readType', 'R') == 'R',
-        axis=1
-    )
-]
+def read_samplesheet(path) -> pd.DataFrame:
+    """Read the table of FASTQ pairs filled out in the form, keeping every value as text."""
 
-# Make a wide samplesheet
-samplesheet = ds.wide_samplesheet(
-    index=["sampleIndex", "dataset", "sample", "lane"],
-    columns="read",
-    values="file",
-    column_prefix="fastq_"
-).reindex(
-    columns=["fastq_1", "fastq_2"]
-)
+    # The form field is marked required, but an empty table can still be submitted,
+    # in which case Cirro either omits the param or writes an empty file. The workflow
+    # would then index the reference and finish without filtering anything.
+    if not path:
+        raise ValueError("No FASTQ files were provided: add at least one pair of FASTQ files")
+    try:
+        samplesheet = pd.read_csv(path, dtype=str, keep_default_na=False)
+    except pd.errors.EmptyDataError:
+        samplesheet = pd.DataFrame()
+    if samplesheet.empty:
+        raise ValueError("The table of FASTQ files is empty: add at least one pair of FASTQ files")
+    return samplesheet
 
-ds.logger.info("Samplesheet:")
-ds.logger.info(samplesheet.to_csv(index=None))
 
-# Write to the dataset's config/ folder (mapped in process-input.json)
-ds.logger.info(f"Writing out {samplesheet.shape[0]:,} lines to {ds.params['paired_samplesheet']}")
-assert samplesheet.shape[0] > 0, "No files detected -- there may be an error with data ingest"
-samplesheet.to_csv(
-    ds.params["paired_samplesheet"],
-    index=None
-)
+if __name__ == "__main__":
 
-# Log the parameters present
-for k, v in ds.params.items():
-    ds.logger.info(f"{k}: {v}")
+    # Imported here so that test_preprocess.py runs without the SDK
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
 
-# Force params.json to be written: the HealthOmics pre-process Lambda fails the run
-# when the file is absent, and the SDK writes it only when a parameter changes.
-ds.keep_params(list(ds.params.keys()))
+    ds = PreprocessDataset.from_running()
+
+    # Read only to fail clearly when the table is missing or empty
+    read_samplesheet(ds.params.get("paired_samplesheet"))
+
+    # Force params.json to be written: the HealthOmics pre-process Lambda fails the run
+    # when the file is absent, and the SDK writes it only when a parameter changes.
+    ds.keep_params(list(ds.params.keys()))

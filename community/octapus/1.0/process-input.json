@@ -1,4 +1,5 @@
 {
+    "genome_table": "$.structuredInputs.pipeline_samplesheet.path",
     "genomes": "$.dataset.s3|/config/genomes.csv",
     "annotation_window": "$.dataset.params.annotation_window",
     "annotations": "$.dataset.params.annotations",

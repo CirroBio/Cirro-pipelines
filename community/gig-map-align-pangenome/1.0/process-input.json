@@ -1,10 +1,7 @@
 {
-    "metadata": "$.dataset.s3|/config/metadata.csv",
-    "samplesheet": "$.dataset.s3|/config/pipeline_samplesheet.csv",
-    "genes": "$.dataset.params.inputs.pangenome|/data/gene_catalog/centroids.faa.gz",
-    "gene_bins": "$.dataset.params.inputs.pangenome|/data/bin_pangenome/gene_bins.csv",
-    "group_profile": "$.dataset.params.inputs.pangenome|/data/bin_pangenome/group_profile.csv",
-    "genome_groups": "$.dataset.params.inputs.pangenome|/data/bin_pangenome/genome_groups.csv",
+    "metadata": "$.dataset.params.association.metadata",
+    "samplesheet": "$.structuredInputs.pipeline_samplesheet.path",
+    "pangenome": "$.dataset.params.inputs.pangenome",
     "min_score_reads": "$.dataset.params.alignment.min_score_reads",
     "min_identity": "$.dataset.params.alignment.min_identity",
     "max_evalue": "$.dataset.params.alignment.max_evalue",

@@ -12,9 +12,10 @@
             },
             "input": {
                 "title": "Input Files",
-                "description": "Select the analysis bundle(s) to reprocess",
-                "file": "**/analysis.zarr.zip",
-                "pathType": "dataset",
+                "description": "Select the analysis.zarr.zip file of the Xenium output bundle to reprocess",
+                "format": "file-path",
+                "pattern": "\\/analysis\\.zarr\\.zip$",
+                "errorMessage": "Must be the analysis.zarr.zip file of a Xenium output bundle",
                 "type": "string"
             },
             "id": {

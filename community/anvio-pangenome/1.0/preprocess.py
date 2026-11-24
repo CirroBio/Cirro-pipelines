@@ -1,83 +1,67 @@
+#!/usr/bin/env python3
 
-from cirro.helpers.preprocess_dataset import PreprocessDataset
 import pandas as pd
-import re
+
+CATEGORY = "category"
 
 
-def make_samplesheet(ds: PreprocessDataset):
+def read_samplesheet(path) -> pd.DataFrame:
+    """Read the genome table filled out in the form, keeping every value as text."""
 
-    ds.logger.info("All Input Files:")
-    ds.logger.info(ds.files.to_csv(index=None))
+    # The form field is marked required, but an empty table can still be submitted,
+    # in which case Cirro either omits the param or writes an empty file
+    if not path:
+        raise ValueError("No genomes were provided: add one row per genome")
+    try:
+        samplesheet = pd.read_csv(path, dtype=str, keep_default_na=False)
+    except pd.errors.EmptyDataError:
+        samplesheet = pd.DataFrame()
+    if samplesheet.empty:
+        raise ValueError("The genome table is empty: add one row per genome")
+    return samplesheet
 
-    # Rename the columns
-    samplesheet = (
-        ds.files
-        .rename(
-            columns=dict(file="genome", sample="name"))
-        .reindex(
-            columns=["genome", "name"]))
-    ds.logger.info("Renamed columns:")
-    ds.logger.info(samplesheet.to_csv(index=None))
 
-    # Merge in any sample metadata
-    samplesheet = pd.merge(
-        samplesheet,
-        ds.samplesheet,
-        left_on="name",
-        right_on="sample"
-    ).drop(columns=["sample"])
-    ds.logger.info("Added metadata:")
-    ds.logger.info(samplesheet.to_csv(index=None))
+def check_unique_names(samplesheet: pd.DataFrame):
+    """Each genome gets a contigs database named after it."""
 
-    # Replace all disallowed characters
-    samplesheet["name"] = samplesheet["name"].apply(
-        lambda s: re.sub('[^a-zA-Z0-9_]+', '_', s)
-    )
+    duplicated = samplesheet.loc[samplesheet["name"].duplicated(), "name"].unique()
+    if len(duplicated) > 0:
+        raise ValueError(
+            f"Each genome name can be listed only once. Listed more than once: {', '.join(duplicated)}"
+        )
 
-    assert samplesheet.shape[0] > 0, "No files detected"
 
+def drop_blank_category(samplesheet: pd.DataFrame) -> pd.DataFrame:
+    """Remove the category column when no row fills it in.
+
+    Every column after the genome path is imported into anvi'o as metadata, and the
+    workflow reads a blank cell as the text 'nan'.
+    """
+    if (samplesheet[CATEGORY] == "").all():
+        return samplesheet.drop(columns=[CATEGORY])
+    if samplesheet[CATEGORY].nunique() < 2:
+        raise ValueError("To compare genomes by Category, it must have at least two distinct values")
     return samplesheet
 
 
 if __name__ == "__main__":
 
-    # Instantiate the Cirro dataset object
+    # Imported here so that test_preprocess.py runs without the SDK
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
+
     ds = PreprocessDataset.from_running()
 
-    ###############
-    # SAMPLESHEET #
-    ###############
+    samplesheet = read_samplesheet(ds.params.get("sample_sheet"))
+    check_unique_names(samplesheet)
+    samplesheet = drop_blank_category(samplesheet)
+    samplesheet.to_csv(ds.params["sample_sheet"], index=None)
 
-    # Make the samplesheet
-    samplesheet = make_samplesheet(ds)
+    if CATEGORY in samplesheet.columns:
+        ds.add_param("category_name", CATEGORY)
 
-    # Write to the dataset's config/ folder (mapped in process-input.json)
-    ds.logger.info(
-        f"Writing out {samplesheet.shape[0]:,} lines to {ds.params['sample_sheet']}"
-    )
-    samplesheet.to_csv(
-        ds.params["sample_sheet"],
-        index=None
-    )
-
-    # OUTPUT NAME #
     # Remove any spaces from the output name
     ds.add_param(
         "output_name",
         ds.params["output_name"].replace(" ", "_"),
         overwrite=True
     )
-
-    # COMPARISON GROUPS #
-    # If the user has specified a 'category_name'
-    if len(ds.params.get("category_name", "")) > 0:
-
-        category_name = ds.params["category_name"]
-
-        # Make sure that the category is in the samplesheet
-        assert category_name in samplesheet.columns, \
-            f"Category '{category_name}' not found in samplesheet"
-
-        # Make sure that there are at least two unique values
-        assert samplesheet[category_name].nunique() > 1, \
-            f"Category '{category_name}' must have at least two unique values"

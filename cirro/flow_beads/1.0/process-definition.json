@@ -9,7 +9,7 @@
   "executor": "NEXTFLOW",
   "category": "Flow Cytometry",
   "allowMultipleSources": true,
-  "usesSampleSheet": true,
+  "usesSampleSheet": false,
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-flow-cytometry/#analyze-control-beads",
   "code": {
     "repository": "GITHUBPRIVATE",

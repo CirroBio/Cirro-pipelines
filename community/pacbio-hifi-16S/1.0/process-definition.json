@@ -11,7 +11,7 @@
     "version": "main"
   },
   "allowMultipleSources": true,
-  "usesSampleSheet": true,
+  "usesSampleSheet": false,
   "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-microbial-analysis#pacbio-hifi-16s",
   "executor": "NEXTFLOW",
   "category": "Microbial Analysis",

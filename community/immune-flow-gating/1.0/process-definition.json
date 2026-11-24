@@ -16,7 +16,8 @@
     "uri": "FredHutch/immune-flow-gating",
     "version": "main"
   },
-  "usesSampleSheet": true,
+  "allowMultipleSources": true,
+  "usesSampleSheet": false,
   "computeDefaults": [
     {
       "executor": "NEXTFLOW",

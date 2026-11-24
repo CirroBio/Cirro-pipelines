@@ -1,23 +1,59 @@
 {
   "form": {
     "type": "object",
-    "required": [],
+    "required": [
+      "fcs_files"
+    ],
     "properties": {
+      "fcs_files": {
+        "type": "string",
+        "schema": "fcs_files"
+      },
       "gate_size_multiplier": {
         "title": "Gate Size Multiplier",
         "type": "number",
         "description": "Width of the gate around the bead peak in units of interquartile range",
         "default": 4
       },
-      "subset": {
-        "title": "(optional) Select Input Files",
+      "input_anndata": {
+        "title": "(optional) Previous Results",
+        "description": "Summaries (output.h5ad) from earlier runs of this pipeline, plotted alongside these files",
         "type": "string",
-        "pathType": "dataset",
-        "file": "**/*",
+        "format": "file-path",
         "multiple": true,
-        "description": "Default: all files will be analyzed"
+        "pattern": "\\.h5ad$",
+        "errorMessage": "Must be an AnnData file (.h5ad)",
+        "process": [
+          "process-hutch-flow-beads-1_0"
+        ]
       }
     }
   },
-  "ui": {}
+  "ui": {},
+  "structuredInputs": {
+    "fcs_files": {
+      "fileFormat": "CSV",
+      "schema": {
+        "title": "FCS Files",
+        "description": "One row per FCS file. Files are told apart by name, so a name listed twice (even in different folders) is analyzed once.",
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "properties": {
+            "fcs": {
+              "type": "string",
+              "format": "file-path",
+              "title": "FCS File",
+              "pattern": "\\.[Ff][Cc][Ss]$",
+              "errorMessage": "Must be a flow cytometry file (.fcs or .FCS)"
+            }
+          },
+          "required": [
+            "fcs"
+          ]
+        }
+      }
+    }
+  }
 }

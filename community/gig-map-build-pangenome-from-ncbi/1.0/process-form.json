@@ -1,6 +1,18 @@
 {
     "form": {
+        "type": "object",
+        "required": [
+            "genome_tables"
+        ],
         "properties": {
+            "genome_tables": {
+                "type": "string",
+                "format": "directory-path",
+                "multiple": true,
+                "title": "Genome Tables",
+                "description": "Folder(s) holding tables of NCBI genomes to download: the CSV from the legacy NCBI Genome browser or the TSV from NCBI Datasets",
+                "process": "ncbi_genome_table"
+            },
             "gene_catalog": {
                 "type": "object",
                 "title": "Gene Catalog Parameters",

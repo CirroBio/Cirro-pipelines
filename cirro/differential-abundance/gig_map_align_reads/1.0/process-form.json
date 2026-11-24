@@ -1,6 +1,27 @@
 {
     "form": {
+        "type": "object",
+        "required": [
+            "input",
+            "metadata"
+        ],
         "properties": {
+            "input": {
+                "title": "Read Alignments",
+                "description": "read_alignments.csv.gz produced by the gig-map align_reads workflow",
+                "type": "string",
+                "format": "file-path",
+                "pattern": "read_alignments\\.csv\\.gz$",
+                "errorMessage": "Must be the read_alignments.csv.gz output of gig-map align_reads"
+            },
+            "metadata": {
+                "title": "Sample Metadata",
+                "description": "CSV table with a 'sample' column naming each specimen as in the read alignments, and a column for each variable used in the formula or filter",
+                "type": "string",
+                "format": "file-path",
+                "pattern": "\\.csv$",
+                "errorMessage": "Must be an uncompressed CSV table (.csv)"
+            },
             "formula": {
                 "default": "",
                 "description": "Metadata column(s) used for statistical analysis (e.g. \"colA + colB\")",
@@ -33,12 +54,6 @@
                 "default": 0.75,
                 "description": "Filter out genes which align less than this fraction of their length in a particular sample",
                 "title": "Minimum Coverage Analysis Threshold",
-                "type": "number"
-            },
-            "min_abund": {
-                "default": 0.01,
-                "description": "Only display organisms which meet this minimum proportion threshold in at least one sample",
-                "title": "Minimum Abundance Display Threshold",
                 "type": "number"
             }
         }

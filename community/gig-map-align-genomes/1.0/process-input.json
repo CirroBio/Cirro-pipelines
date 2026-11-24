@@ -1,6 +1,6 @@
 {
-    "genomes": "$.inputs[0].s3|/data/",
-    "genes": "$.dataset.params.inputs.genes|/data/centroids.faa.gz",
+    "genomes": "$.dataset.params.inputs.genomes",
+    "genes": "$.dataset.params.inputs.genes",
     "min_coverage": "$.dataset.params.alignment.min_coverage",
     "min_identity": "$.dataset.params.alignment.min_identity",
     "max_overlap": "$.dataset.params.alignment.max_overlap",

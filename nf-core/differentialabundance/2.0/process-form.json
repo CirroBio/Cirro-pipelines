@@ -3,33 +3,30 @@
   "form": {
     "title": "Differential Abundance Analysis Parameters",
     "type": "object",
+    "required": [
+      "rnaseq_results",
+      "input",
+      "contrasts"
+    ],
     "properties": {
-      "input_output_options": {
-        "title": "Study Design",
-        "type": "object",
-        "description": "Specify the groups of samples to compare.",
-        "required": [
-          "variable",
-          "reference",
-          "target"
-        ],
-        "properties": {
-          "variable": {
-            "type": "string",
-            "title": "Variable Column",
-            "description": "Sample metadata column name to use for contrasts"
-          },
-          "reference": {
-            "type": "string",
-            "title": "Reference Value",
-            "description": "Reference for contrasts"
-          },
-          "target": {
-            "type": "string",
-            "title": "Target Value",
-            "description": "Target for contrasts"
-          }
-        }
+      "rnaseq_results": {
+        "title": "nf-core/rnaseq Results",
+        "description": "Output of an nf-core/rnaseq run, which provides the gene count matrix",
+        "type": "string",
+        "format": "directory-path",
+        "process": "process-nf-core-rnaseq-*"
+      },
+      "input": {
+        "title": "Sample Metadata",
+        "description": "CSV or TSV table with a 'sample' column naming each sample as in the count matrix, and a column for each variable used in the contrasts",
+        "type": "string",
+        "format": "file-path",
+        "pattern": "\\.(csv|tsv)$",
+        "errorMessage": "Must be an uncompressed CSV or TSV table (.csv or .tsv)"
+      },
+      "contrasts": {
+        "type": "string",
+        "schema": "contrasts"
       },
       "shiny_app_settings": {
         "title": "Build Shiny App",
@@ -44,6 +41,55 @@
             "description": "Should a Shiny app be built?",
             "help_text": ""
           }
+        }
+      }
+    }
+  },
+  "structuredInputs": {
+    "contrasts": {
+      "fileFormat": "CSV",
+      "schema": {
+        "title": "Contrasts",
+        "description": "One row per comparison between two groups of samples, defined by the values of a column in the Sample Metadata table.",
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "title": "Contrast ID",
+              "description": "Name used for this contrast's output files",
+              "pattern": "^[A-Za-z0-9_.-]+$",
+              "errorMessage": "Contrast IDs can only contain letters, numbers, dots, hyphens and underscores"
+            },
+            "variable": {
+              "type": "string",
+              "title": "Variable Column",
+              "description": "Sample Metadata column whose values define the groups"
+            },
+            "reference": {
+              "type": "string",
+              "title": "Reference Value",
+              "description": "Value in the variable column for the reference group"
+            },
+            "target": {
+              "type": "string",
+              "title": "Target Value",
+              "description": "Value in the variable column for the target group"
+            },
+            "blocking": {
+              "type": "string",
+              "title": "Blocking Columns",
+              "description": "Optional Sample Metadata columns to model alongside the variable, separated by semicolons (e.g. replicate;batch)"
+            }
+          },
+          "required": [
+            "id",
+            "variable",
+            "reference",
+            "target"
+          ]
         }
       }
     }

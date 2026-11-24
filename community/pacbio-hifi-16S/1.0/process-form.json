@@ -1,6 +1,16 @@
 {
     "form": {
-        "properties": { 
+        "type": "object",
+        "required": ["input"],
+        "properties": {
+            "input": {
+                "type": "string",
+                "schema": "pipeline_samplesheet"
+            },
+            "metadata": {
+                "type": "string",
+                "schema": "pipeline_metadata"
+            },
             "library": {
                 "type": "object",
                 "title": "Sequencing Library",
@@ -120,5 +130,65 @@
             }
         }
     },
-    "ui": {}
+    "ui": {},
+    "structuredInputs": {
+        "pipeline_samplesheet": {
+            "fileFormat": "TSV",
+            "schema": {
+                "title": "Samples",
+                "description": "One row per sample, with its HiFi reads in a single FASTQ file.",
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "sample-id": {
+                            "type": "string",
+                            "title": "Sample",
+                            "pattern": "^[A-Za-z0-9._-]+$",
+                            "errorMessage": "Sample names can only contain letters, numbers, periods, hyphens and underscores"
+                        },
+                        "absolute-filepath": {
+                            "type": "string",
+                            "format": "file-path",
+                            "title": "HiFi FASTQ",
+                            "pattern": "^([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q(\\.gz)?$",
+                            "errorMessage": "Must be a FASTQ file (.fastq or .fq, optionally gzipped) with no spaces in its name"
+                        }
+                    },
+                    "required": ["sample-id", "absolute-filepath"]
+                }
+            }
+        },
+        "pipeline_metadata": {
+            "fileFormat": "TSV",
+            "schema": {
+                "title": "Sample Metadata",
+                "description": "Optional. One row per sample, named as in the samples table. Left empty, the samples are given placeholder conditions.",
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "sample_name": {
+                            "type": "string",
+                            "title": "Sample",
+                            "pattern": "^[A-Za-z0-9._-]+$",
+                            "errorMessage": "Sample names can only contain letters, numbers, periods, hyphens and underscores"
+                        },
+                        "condition": {
+                            "type": "string",
+                            "title": "Condition",
+                            "description": "Group used to color samples in the report"
+                        },
+                        "pool": {
+                            "type": "string",
+                            "title": "Pool",
+                            "description": "Optional. Samples in different pools are denoised separately by DADA2"
+                        }
+                    },
+                    "required": ["sample_name", "condition"]
+                }
+            }
+        }
+    }
 }

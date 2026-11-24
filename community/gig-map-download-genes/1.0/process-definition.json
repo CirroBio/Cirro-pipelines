@@ -16,6 +16,8 @@
         "uri": "FredHutch/gig-map",
         "version": "main"
     },
+    "allowMultipleSources": true,
+    "usesSampleSheet": false,
     "computeDefaults": [
         {
             "executor": "NEXTFLOW",

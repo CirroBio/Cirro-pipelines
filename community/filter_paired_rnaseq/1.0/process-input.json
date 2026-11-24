@@ -1,5 +1,5 @@
 {
-  "paired_samplesheet": "$.dataset.s3|/config/pipeline_samplesheet.csv",
+  "paired_samplesheet": "$.structuredInputs.pipeline_samplesheet.path",
   "reference": "$.dataset.params.reference",
   "outdir": "$.dataset.dataPath",
   "cpus": "16",

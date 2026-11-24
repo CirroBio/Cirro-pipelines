@@ -1,74 +1,56 @@
 #!/usr/bin/env python3
 
-from cirro.helpers.preprocess_dataset import PreprocessDataset
-
-ds = PreprocessDataset.from_running()
+import pandas as pd
 
 
-def _deduplicate_fcs(fcs_files: list) -> str:
+def read_fcs_files(path) -> pd.DataFrame:
+    """Read the FCS file table filled out in the form, keeping every value as text."""
+
+    # The form field is marked required, but an empty table can still be submitted,
+    # in which case Cirro either omits the param or writes an empty file
+    if not path:
+        raise ValueError("No FCS files were provided: add one row per FCS file")
+    try:
+        fcs_files = pd.read_csv(path, dtype=str, keep_default_na=False)
+    except pd.errors.EmptyDataError:
+        fcs_files = pd.DataFrame()
+    if fcs_files.empty:
+        raise ValueError("The FCS file table is empty: add one row per FCS file")
+    return fcs_files
+
+
+def deduplicate_fcs(fcs_files: list, logger) -> str:
+    """Comma-separated FCS files, keeping the first of any that share a file name.
+
+    The workflow stages every file into one folder, so files with the same name
+    collide even when they come from different folders.
     """
-    Deduplicate a list of FCS files,
-    making sure that the file names are all unique
-    (even if some files are in different folders).
-
-    :param fcs_files: List of FCS files.
-    :return: Deduplicated comma-separated list of FCS files.
-    """
-    # This pattern is being used to differentiate the URI from the filename
-    seen = set([])
+    seen = set()
     output = []
-
     for file in fcs_files:
         fn = file.split("/")[-1]
         if fn in seen:
-            ds.logger.warning(f"Removing duplicate file: {file}")
+            logger.warning(f"Removing duplicate file: {file}")
         else:
             seen.add(fn)
             output.append(file)
-
     return ",".join(output)
 
 
-if len(ds.params.get("subset") or []) > 0:
-    n = len(ds.params['subset'])
-    ds.logger.info(f"User specified a subset of {n:,} files to analyze")
-    ds.add_param(
-        "input_fcs",
-        _deduplicate_fcs(ds.params["subset"]),
-        overwrite=True
-    )
-else:
-    ds.logger.info("No subset specified -- analyzing all files")
+if __name__ == "__main__":
 
-    input_fcs = [
-        file
-        for file in ds.files["file"].tolist()
-        # Instruments write the extension in either case (e.g. Cytomics FC 500: .FCS)
-        if file.lower().endswith(".fcs")
-    ]
-    ds.logger.info(f"Found {len(input_fcs):,} FCS files to analyze")
-    ds.add_param(
-        "input_fcs",
-        _deduplicate_fcs(input_fcs)
-    )
+    # Imported here so that test_preprocess.py runs without the SDK
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
 
-    input_anndata = [
-        file
-        for file in ds.files["file"].tolist()
-        if file.endswith(".h5ad")
-    ]
-    if len(input_anndata) > 0:
-        ds.logger.info(f"Found {len(input_anndata):,} anndata files to analyze")
-        ds.add_param(
-            "input_anndata",
-            ",".join(input_anndata)
-        )
-    else:
-        ds.logger.info("No anndata files found")
+    ds = PreprocessDataset.from_running()
 
-# log
-ds.logger.info(ds.params)
+    fcs_files = read_fcs_files(ds.params.get("fcs_files"))
+    ds.logger.info(f"Found {fcs_files.shape[0]:,} FCS files to analyze")
+    ds.add_param("input_fcs", deduplicate_fcs(fcs_files["fcs"].tolist(), ds.logger))
 
-# Force params.json to be written: the HealthOmics pre-process Lambda fails the run
-# when the file is absent, and the SDK writes it only when a parameter changes.
-ds.keep_params(list(ds.params.keys()))
+    # Consumed above; not a parameter the workflow declares.
+    ds.remove_param("fcs_files", force=True)
+
+    # An optional pick that was left empty
+    if not ds.params.get("input_anndata"):
+        ds.remove_param("input_anndata", force=True)
