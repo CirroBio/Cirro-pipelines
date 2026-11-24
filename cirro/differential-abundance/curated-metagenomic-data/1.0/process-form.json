@@ -1,0 +1,49 @@
+{
+    "form": {
+        "properties": {
+            "input": {
+                "default": "",
+                "description": "Select relative abundance table to analyze",
+                "file": "**/*.*",
+                "pathType": "dataset",
+                "title": "Input Data",
+                "type": "string"
+            },
+            "formula": {
+                "default": "",
+                "description": "Metadata column(s) used for statistical analysis (e.g. \"colA + colB\")",
+                "title": "Formula",
+                "type": "string"
+            },
+            "filter": {
+                "title": "Filter Samples",
+                "description": "Optionally filter samples based on metadata (e.g. \"colA > 10\")",
+                "type": "string"
+            },
+            "method": {
+                "title": "Statistical Method",
+                "description": "Analysis tool used to compare the relative abundance between groups",
+                "type": "string",
+                "default": "corncob",
+                "enum": [
+                    "corncob",
+                    "radEmu",
+                    "mannwhitneyu"
+                ]
+            },
+            "fdr_cutoff": {
+                "default": 0.05,
+                "description": "FDR-adjusted p-value threshold used to annotate significant results",
+                "title": "FDR Cutoff",
+                "type": "number"
+            },
+            "min_abund": {
+                "default": 0.01,
+                "description": "Only display organisms which meet this minimum proportion threshold in at least one sample",
+                "title": "Minimum Abundance Display Threshold",
+                "type": "number"
+            }
+        }
+    },
+    "ui": {}
+}

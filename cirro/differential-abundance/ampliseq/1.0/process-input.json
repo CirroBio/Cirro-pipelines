@@ -1,0 +1,13 @@
+{
+    "samplesheet": "$.dataset.s3|/config/pipeline_samplesheet.csv",
+    "counts": "$.inputs[0].s3|/data/qiime2/abundance_tables/feature-table.tsv",
+    "taxonomy": "$.inputs[0].s3|/data/qiime2/taxonomy/taxonomy.tsv",
+    "metadata": "$.dataset.s3|/config/samplesheet.csv",
+    "data_output": "$.dataset.dataPath",
+    "filter": "$.dataset.params.filter",
+    "fdr_cutoff": "$.dataset.params.fdr_cutoff",
+    "method": "$.dataset.params.method",
+    "formula": "$.dataset.params.formula",
+    "min_abund": "$.dataset.params.min_abund",
+    "web_output": "$.dataset.s3|/web/"
+}

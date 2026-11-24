@@ -1,0 +1,70 @@
+{
+  "id": "process-hutch-scrub-human-1-0",
+  "childProcessIds": [
+    "process-hutch-fastqc-1_0",
+    "process-nf-core-cutandrun-2-0",
+    "process-nf-core-sarek-3-1",
+    "process-nf-core-sarek-3-2",
+    "process-nf-core-sarek-align-3-2",
+    "process-nf-core-sarek-custom-genome-3-5",
+    "process-nf-core-atacseq-2-0",
+    "process-nf-core-chipseq-2-0",
+    "process-nf-core-methylseq-3-0",
+    "process-hutch-somatic-wgs-dragen-1-0",
+    "process-hutch-germline-wgs-dragen-1-0",
+    "process-hutch-dragen-wgs-align-dna-1-0",
+    "process-nf-core-bacass-short-read-2-1-0",
+    "process-nf-core-bacass-hybrid-2-1-0",
+    "process-hutch-metaphlan-paired-1-0",
+    "process-hutch-filter-paired-dnaseq-1-0",
+    "process-hutch-ngscheckmate-1-0",
+    "hutch-gig-map-align-pangenome-1-0",
+    "hutch-sourmash-tax",
+    "hutch-gig-map-align-reads-1-0",
+    "process-nf-core-mag-3_0"
+  ],
+  "dataType": "Paired DNAseq (Human Removed)",
+  "name": "Scrub Human Sequences",
+  "desc": "Mask any genomic sequences which may have a human origin",
+  "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
+  "category": "DNA Sequencing",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-dna-sequencing/#scrub-human-sequences",
+  "code": {
+    "repository": "GITHUBPUBLIC",
+    "uri": "FredHutch/sra-human-scrubber-nf",
+    "version": "main",
+    "script": "main.nf"
+  },
+  "allowMultipleSources": true,
+  "usesSampleSheet": true,
+  "computeDefaults": [
+    {
+      "executor": "NEXTFLOW",
+      "json": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-compute.config",
+      "name": "Default"
+    }
+  ],
+  "paramMapJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json",
+  "preProcessScript": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/preprocess.py",
+  "formJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-form.json",
+  "webOptimizationJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-output.json",
+  "fileMappingRules": [
+    {
+      "description": "Paired FASTQs (R1/R2)",
+      "min": 2,
+      "fileNamePatterns": [
+        {
+          "exampleName": "SampleName_R1.fastq.gz",
+          "description": "FASTQ",
+          "sampleMatchingPattern": "(?P<sampleName>[\\S ]*)(\\.|_)(R|)(?P<read>1|2)\\.(fq|fastq)(\\.gz|)"
+        },
+        {
+          "exampleName": "SampleName_S1_L001_R1_001.fastq.gz",
+          "description": "FASTQ (Illumina Format)",
+          "sampleMatchingPattern": "(?P<sampleName>\\S*)_S(?P<sampleIndex>\\S*)_L(?P<lane>\\S*)_R(?P<read>1|2)_001\\.fastq\\.gz"
+        }
+      ]
+    }
+  ]
+}

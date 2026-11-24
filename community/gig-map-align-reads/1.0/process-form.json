@@ -1,0 +1,43 @@
+{
+    "form": {
+        "properties": {
+            "inputs": {
+                "type": "object",
+                "title": "Input Data",
+                "properties": {
+                    "genes": {
+                        "pathType": "dataset",
+                        "title": "Gene Catalog",
+                        "description": "Precomputed gene catalog used as the alignment reference",
+                        "process": "hutch-gig-map-build-gene-catalog-1-0"
+                    }
+                }
+            },
+            "alignment": {
+                "type": "object",
+                "title": "Alignment Parameters",
+                "properties": {
+                    "min_score_reads": {
+                        "type": "integer",
+                        "title": "Minimum Alignment Score",
+                        "description": "Threshold applied on a per-read level",
+                        "default": 50
+                    },
+                    "min_identity": {
+                        "type": "integer",
+                        "title": "Minimum Percent Identity",
+                        "description": "Minimum percent identity of the amino acid alignment required to retain the alignment (ranges 0-100)",
+                        "default": 90
+                    },
+                    "max_evalue": {
+                        "type": "number",
+                        "title": "Maximum E-Value",
+                        "description": "Maximum E-value threshold used to filter all alignments",
+                        "default": 0.001
+                    }
+                }
+            }
+        }
+    },
+    "ui": {}
+}

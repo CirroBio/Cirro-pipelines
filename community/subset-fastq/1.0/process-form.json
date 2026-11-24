@@ -1,0 +1,20 @@
+{
+  "form": {
+    "type": "object",
+    "properties": {
+      "filtering": {
+        "type": "object",
+        "title": "Filtering Options",
+        "required": ["nreads"],
+        "properties": {
+          "nreads": {
+            "title": "Number of Reads",
+            "type": "integer",
+            "default": 1000
+          }
+        }
+      }
+    }
+  },
+  "ui": {}
+}

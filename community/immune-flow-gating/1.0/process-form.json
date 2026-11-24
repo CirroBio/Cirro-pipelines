@@ -1,0 +1,61 @@
+{
+  "form": {
+    "type": "object",
+    "title": "Panel Markers",
+    "description": "Indicate the channel used for each marker",
+    "required": [],
+    "properties": {
+      "CCR7": {
+        "title": "CCR7",
+        "type": "string",
+        "default": "PerCP-Cy5-5-A"
+      },
+      "CD3": {
+        "title": "CD3",
+        "type": "string",
+        "default": "Alexa Fluor 700-A"
+      },
+      "CD4": {
+        "title": "CD4",
+        "type": "string",
+        "default": "APC-eFluor 780-A"
+      },
+      "CD8": {
+        "title": "CD8",
+        "type": "string",
+        "default": "BV650-A"
+      },
+      "CD14": {
+        "title": "CD14",
+        "type": "string",
+        "default": "APC-A"
+      },
+      "CD19": {
+        "title": "CD19",
+        "type": "string",
+        "default": "PE-Cy7-A"
+      },
+      "CD25": {
+        "title": "CD25",
+        "type": "string",
+        "default": "FITC-A"
+      },
+      "CD45RA": {
+        "title": "CD45RA",
+        "type": "string",
+        "default": "eFluor 450-A"
+      },
+      "CD56": {
+        "title": "CD56",
+        "type": "string",
+        "default": "PE-A"
+      },
+      "LD": {
+        "title": "LD",
+        "type": "string",
+        "default": "V500-A"
+      }
+    }
+  },
+  "ui": {}
+}

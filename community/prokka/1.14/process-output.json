@@ -1,0 +1,67 @@
+{
+  "commands": [
+      {
+          "command": "hot.Parquet",
+          "params": {
+              "cols": [
+                  {
+                      "col": "locus_tag",
+                      "desc": "Unique identifier assigned to a genomic locus or sequence region",
+                      "name": "Locus Tag"
+                  },
+                  {
+                      "col": "ftype",
+                      "desc": "Indicates the type of gene record based on its sequence composition",
+                      "name": "Feature Type"
+                  },
+                  {
+                      "col": "length_bp",
+                      "desc": "Length of the annotated sequence (in base pairs)",
+                      "name": "Length"
+                  },
+                  {
+                      "col": "gene",
+                      "desc": "Unique gene identifier",
+                      "name": "Gene ID"
+                  },
+                  {
+                      "col": "EC_number",
+                      "desc": "Enzyme Commission (EC) number indicating the specific enzymatic function associated with teh annotated sequence (if applicable)",
+                      "name": "EC Number"
+                  },
+                  {
+                      "col": "COG",
+                      "desc": "Clusters of Orthologous Groups (COG) classification for predicted gene functions based on orthology to known functional categories in the COG database",
+                      "name": "COG Classification"
+                  },
+                  {
+                      "col": "product",
+                      "desc": "Description or annotation of the biological function or putative role of the annotated sequence",
+                      "name": "Product"
+                  }
+              ],
+              "desc": "Gene-level annotations provided by Prokka",
+              "name": "Gene Annotations",
+              "read_csv": {
+                  "parse": {
+                      "delimiter": "\t"
+                  }
+              },
+              "source": "$data_directory/[genome]/prokka/[genomeB].tsv.gz",
+              "target": "prokka_output.parquet",
+              "url": "",
+              "concat": [
+                  {
+                      "token": "genome",
+                      "name": "Genome",
+                      "desc": "Genome sequence analyzed by Prokka"
+                  }
+              ]
+          }
+      },
+      {
+          "command": "hot.Manifest",
+          "params": {}
+      }
+  ]
+}

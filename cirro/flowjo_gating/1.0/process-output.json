@@ -1,0 +1,72 @@
+{
+  "commands": [
+    {
+      "command": "hot.Parquet",
+      "params": {
+        "url": "",
+        "source": "$data_directory/percent.csv",
+        "target": "gating_percent.parquet",
+        "name": "Cell Populations (percent)",
+        "desc": "Percentage of cells assigned to each subpopulation",
+        "read_csv": {
+          "parse": {
+            "delimiter": ","
+          }
+        },
+        "melt": {
+          "key": {
+              "desc": "Gated cell population",
+              "name": "Population"
+          },
+          "value": {
+              "desc": "Percentage of parent population assigned to the indicated group",
+              "name": "Percent"
+          }
+        },
+        "cols": [
+          {
+            "col": "sample",
+            "name": "Sample",
+            "desc": "Name of analyzed sample"
+          }
+        ]
+      }
+    },
+    {
+      "command": "hot.Parquet",
+      "params": {
+        "url": "",
+        "source": "$data_directory/count.csv",
+        "target": "gating_count.parquet",
+        "name": "Cell Populations (count)",
+        "desc": "Number of cells assigned to each subpopulation",
+        "read_csv": {
+          "parse": {
+            "delimiter": ","
+          }
+        },
+        "melt": {
+          "key": {
+              "desc": "Gated cell population",
+              "name": "Population"
+          },
+          "value": {
+              "desc": "Number of cells assigned to the indicated group",
+              "name": "Count"
+          }
+        },
+        "cols": [
+          {
+            "col": "sample",
+            "name": "Sample",
+            "desc": "Name of analyzed sample"
+          }
+        ]
+      }
+    },
+    {
+      "command": "hot.Manifest",
+      "params": {}
+    }
+  ]
+}

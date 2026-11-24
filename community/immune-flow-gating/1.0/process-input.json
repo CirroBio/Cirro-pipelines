@@ -1,0 +1,16 @@
+{
+  "samplesheet": "$.dataset.s3|/config/pipeline_samplesheet.csv",
+  "channel_map": "$.dataset.s3|/config/channel_map.json",
+  "CCR7": "$.dataset.params.CCR7",
+  "CD3": "$.dataset.params.CD3",
+  "CD4": "$.dataset.params.CD4",
+  "CD8": "$.dataset.params.CD8",
+  "CD14": "$.dataset.params.CD14",
+  "CD19": "$.dataset.params.CD19",
+  "CD25": "$.dataset.params.CD25",
+  "CD45RA": "$.dataset.params.CD45RA",
+  "CD56": "$.dataset.params.CD56",
+  "LD": "$.dataset.params.LD",
+  "outdir": "$.dataset.dataPath",
+  "fcs": "$.inputs[0].s3|/data/**.fcs"
+}

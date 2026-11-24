@@ -1,0 +1,296 @@
+{
+  "ui": {},
+  "form": {
+    "type": "object",
+    "properties": {
+      "workflow": {
+        "type": "object",
+        "title": "Workflow Options",
+        "description": "Enable at least one analysis subworkflow. The run will fail if none is selected.",
+        "properties": {
+          "snv": {
+            "type": "boolean",
+            "title": "Somatic small variants (SNV/indel)",
+            "description": "Call somatic small variants with ClairS, or with ClairS-TO when no normal sample is given.",
+            "default": false
+          },
+          "sv": {
+            "type": "boolean",
+            "title": "Somatic structural variants (SV)",
+            "description": "Call somatic structural variants with Severus.",
+            "default": false
+          },
+          "mod": {
+            "type": "boolean",
+            "title": "Modified bases",
+            "description": "Aggregate modified-base calls to bedMethyl with modkit. Requires input BAMs with MM/ML tags.",
+            "default": false
+          }
+        }
+      },
+      "input": {
+        "type": "object",
+        "title": "Main Options",
+        "required": [
+          "bam_tumor",
+          "ref"
+        ],
+        "properties": {
+          "bam_tumor": {
+            "type": "string",
+            "title": "Tumor BAM (single file)",
+            "description": "BAM or uBAM file for the tumor sample. This pipeline analyzes one BAM per sample; merge multi-BAM samples before ingest.",
+            "pathType": "dataset",
+            "file": "**/*.{bam,ubam}"
+          },
+          "bam_normal": {
+            "type": "string",
+            "title": "Normal BAM (single file)",
+            "description": "BAM or uBAM file for the matched normal sample. Leave blank to run in tumor-only mode, which skips differential methylation and switches small-variant calling to ClairS-TO.",
+            "pathType": "dataset",
+            "file": "**/*.{bam,ubam}"
+          },
+          "ref": {
+            "type": "string",
+            "title": "Reference FASTA",
+            "description": "Reference genome FASTA. Annotation requires hg19/hg38; the default structural variant panel of normals is hg38 only.",
+            "pathType": "dataset",
+            "file": "**/*.{fa,fasta,fna}{,.gz}"
+          },
+          "sample_name": {
+            "type": "string",
+            "title": "Sample name",
+            "description": "Sample name to be displayed in workflow outputs."
+          },
+          "bed": {
+            "type": "string",
+            "title": "Target regions BED",
+            "description": "Optional BED file of regions to process for variant calling.",
+            "pathType": "dataset",
+            "file": "**/*.bed"
+          },
+          "tr_bed": {
+            "type": "string",
+            "title": "Simple repeat BED",
+            "description": "Optional BED file of simple repeat regions passed to Severus. A bundled hg19/hg38 file is selected automatically when this is left blank.",
+            "pathType": "dataset",
+            "file": "**/*.bed"
+          },
+          "pon_file": {
+            "type": "string",
+            "title": "Structural variant panel of normals",
+            "description": "Optional Severus panel-of-normals TSV of expected germline SVs. A 1000 Genomes panel is used automatically for hg38 when this is left blank.",
+            "pathType": "dataset",
+            "file": "**/*.tsv{,.gz}"
+          },
+          "annotation": {
+            "type": "boolean",
+            "title": "SnpEff annotation",
+            "description": "Annotate variant calls with SnpEff/ClinVar (hg19/hg38 references only).",
+            "default": true
+          },
+          "include_all_ctgs": {
+            "type": "boolean",
+            "title": "Include all contigs",
+            "description": "Call variants on all sequences in the reference; otherwise variants are only called on chr{1..22,X,Y,MT}.",
+            "default": false
+          },
+          "igv": {
+            "type": "boolean",
+            "title": "IGV output",
+            "description": "Emit configuration for the EPI2ME IGV visualizer.",
+            "default": false
+          }
+        }
+      },
+      "qc_options": {
+        "type": "object",
+        "title": "Quality Control Options",
+        "properties": {
+          "tumor_min_coverage": {
+            "type": "number",
+            "title": "Minimum tumor coverage",
+            "description": "Minimum read coverage of the tumor BAM required to run analysis. Set to 0 to skip the check.",
+            "default": 20
+          },
+          "normal_min_coverage": {
+            "type": "number",
+            "title": "Minimum normal coverage",
+            "description": "Minimum read coverage of the normal BAM required to run analysis. Set to 0 to skip the check.",
+            "default": 20
+          },
+          "depth_intervals": {
+            "type": "boolean",
+            "title": "Depth intervals bedGraph",
+            "description": "Output a bedGraph file with entries for each genomic interval featuring homogeneous depth.",
+            "default": false
+          }
+        }
+      },
+      "snv_options": {
+        "type": "object",
+        "title": "Small Variant Calling Options",
+        "description": "Only used when the small variant subworkflow is enabled.",
+        "properties": {
+          "override_basecaller_cfg": {
+            "type": "string",
+            "title": "Override basecaller configuration",
+            "description": "Basecall model used to select the small-variant calling model. Normally auto-detected from the BAM header; set only when the header lacks (or mixes) basecall-model annotations. Indel calling is only performed for dna_r10 models.",
+            "enum": [
+              "dna_r10.4.1_e8.2_400bps_sup@v4.2.0",
+              "dna_r10.4.1_e8.2_400bps_hac@v4.2.0",
+              "dna_r10.4.1_e8.2_400bps_sup@v4.1.0",
+              "dna_r10.4.1_e8.2_400bps_hac@v4.1.0",
+              "dna_r10.4.1_e8.2_400bps_sup@v3.5.2",
+              "dna_r9.4.1_e8_hac@v3.3",
+              "dna_r9.4.1_e8_sup@v3.3",
+              "dna_r9.4.1_450bps_hac",
+              "dna_r9.4.1_450bps_hac_prom"
+            ]
+          },
+          "germline": {
+            "type": "boolean",
+            "title": "Germline calling",
+            "description": "Call germline variants with Clair3 and use them to phase the tumor. Disabling this greatly speeds up execution but removes the germline VCFs. Ignored in tumor-only mode.",
+            "default": true
+          },
+          "fast_mode": {
+            "type": "boolean",
+            "title": "Fast germline calling",
+            "description": "Relax Clair3 variant calling parameters to speed up germline calling. No germline VCFs are emitted.",
+            "default": false
+          },
+          "phase_normal": {
+            "type": "boolean",
+            "title": "Phase the normal sample",
+            "description": "Phase and haplotag the normal sample in addition to the tumor. Requires a normal BAM.",
+            "default": false
+          },
+          "liquid_tumor": {
+            "type": "boolean",
+            "title": "Liquid tumor",
+            "description": "Use ClairS presets and models tuned for liquid tumors. No liquid-tumor presets exist for tumor-only mode.",
+            "default": false
+          },
+          "skip_haplotype_filter": {
+            "type": "boolean",
+            "title": "Skip haplotype filtering",
+            "description": "Skip haplotype filtering of the called variants.",
+            "default": false
+          },
+          "normal_vcf": {
+            "type": "string",
+            "title": "Pre-computed normal VCF",
+            "description": "Germline VCF for the normal sample, skipping germline calling for that sample. A bgzipped VCF must be accompanied by its .tbi index.",
+            "pathType": "dataset",
+            "file": "**/*.vcf.gz"
+          },
+          "hybrid_mode_vcf": {
+            "type": "string",
+            "title": "Hybrid mode VCF",
+            "description": "Combine de novo calling with genotyping at the positions in this VCF. Cannot be combined with a genotyping mode VCF.",
+            "pathType": "dataset",
+            "file": "**/*.vcf{,.gz}"
+          },
+          "genotyping_mode_vcf": {
+            "type": "string",
+            "title": "Genotyping mode VCF",
+            "description": "Call variants only at the sites in this VCF. Cannot be combined with a hybrid mode VCF.",
+            "pathType": "dataset",
+            "file": "**/*.vcf{,.gz}"
+          }
+        }
+      },
+      "sv_options": {
+        "type": "object",
+        "title": "Structural Variant Calling Options",
+        "description": "Only used when the SV subworkflow is enabled.",
+        "properties": {
+          "min_sv_length": {
+            "type": "integer",
+            "title": "Minimum SV length",
+            "description": "Minimum size in bp of the structural variants called by Severus.",
+            "default": 50
+          },
+          "severus_args": {
+            "type": "string",
+            "title": "Extra Severus arguments",
+            "description": "Additional command-line arguments passed to Severus. These fully override the options set by the workflow."
+          }
+        }
+      },
+      "mod_options": {
+        "type": "object",
+        "title": "Modified Base Calling Options",
+        "description": "Only used when the modified-bases subworkflow is enabled.",
+        "properties": {
+          "diff_mod": {
+            "type": "boolean",
+            "title": "Differential modification analysis",
+            "description": "Detect differentially modified loci and regions with DSS. Requires a normal BAM, and is memory intensive.",
+            "default": true
+          },
+          "force_strand": {
+            "type": "boolean",
+            "title": "Strand-aware modification calls",
+            "description": "Require modkit to call strand-aware modifications.",
+            "default": false
+          },
+          "modkit_args": {
+            "type": "string",
+            "title": "Extra modkit arguments",
+            "description": "Additional command-line options passed to modkit. These fully override the options set by the workflow."
+          }
+        }
+      },
+      "multiprocessing_options": {
+        "type": "object",
+        "title": "Multiprocessing Options",
+        "properties": {
+          "ubam_map_threads": {
+            "type": "integer",
+            "title": "uBAM mapping threads",
+            "description": "Max threads for aligning reads from uBAM (limited by executor cpus).",
+            "default": 8
+          },
+          "ubam_sort_threads": {
+            "type": "integer",
+            "title": "uBAM sort threads",
+            "description": "Max threads for sorting and indexing aligned reads from uBAM.",
+            "default": 3
+          },
+          "ubam_bam2fq_threads": {
+            "type": "integer",
+            "title": "uBAM bam2fq threads",
+            "description": "Max threads for uncompressing uBAM and generating FASTQ for alignment.",
+            "default": 1
+          },
+          "haplotype_filter_threads": {
+            "type": "integer",
+            "title": "Haplotype filter threads",
+            "description": "Max threads for the haplotype filtering stage of the small variant subworkflow.",
+            "default": 4
+          },
+          "severus_threads": {
+            "type": "integer",
+            "title": "Severus threads",
+            "description": "Total threads used by Severus (minimum of 4, limited by executor cpus).",
+            "default": 8
+          },
+          "modkit_threads": {
+            "type": "integer",
+            "title": "modkit threads",
+            "description": "Total threads used in modkit modified-base calling.",
+            "default": 4
+          },
+          "dss_threads": {
+            "type": "integer",
+            "title": "DSS threads",
+            "description": "Total threads used in the DSS differential modification analysis. DSS reserves roughly 19 GB of memory per thread.",
+            "default": 1
+          }
+        }
+      }
+    }
+  }
+}

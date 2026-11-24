@@ -1,0 +1,7 @@
+{
+    "genes": "$.inputs[0].s3|/data/",
+    "cluster_similarity": "$.dataset.params.cluster_similarity",
+    "cluster_coverage": "$.dataset.params.cluster_coverage",
+    "min_gene_length": "$.dataset.params.min_gene_length",
+    "output": "$.dataset.dataPath"
+}

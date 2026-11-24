@@ -1,0 +1,55 @@
+{
+  "commands": [
+    {
+      "command": "hot.Dsv",
+      "params": {
+        "url": "https://huttenhower.sph.harvard.edu/metaphlan/",
+        "source": "$data_directory/metaphlan.long.csv.gz",
+        "sep": ",",
+        "header": true,
+        "name": "Taxonomic Classification Results",
+        "desc": "Summary of organisms detected by MetaPhlAn4",
+        "cols": [
+          {
+            "col": "clade_name",
+            "name": "Clade name",
+            "desc": "Long-form name of organism"
+          },
+          {
+            "col": "NCBI_tax_id",
+            "name": "NCBI Tax ID",
+            "desc": "Unique taxonomic identifier assigned by NCBI"
+          },
+          {
+            "col": "relative_abundance",
+            "name": "Relative abundance",
+            "desc": "Estimated percent abundance of organism (at taxonomic level)"
+          },
+          {
+            "col": "additional_species",
+            "name": "Additional species",
+            "desc": "Additional species detected"
+          },
+          {
+            "col": "level",
+            "name": "Taxonomic level",
+            "desc": "Taxonomic level of organism detected"
+          },
+          {
+            "col": "org_name",
+            "name": "Organism name",
+            "desc": "Name of organism detected"
+          },
+          {
+            "col": "name",
+            "name": "Sample name",
+            "desc": "Unique sample identifier"
+          }
+        ]
+      }
+    },    {
+      "command": "hot.Manifest",
+      "params": {}
+    }
+  ]
+}

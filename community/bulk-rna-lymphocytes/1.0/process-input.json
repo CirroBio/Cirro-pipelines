@@ -1,0 +1,5 @@
+{
+    "gene_tpm": "$.dataset.params.gene_tpm",
+    "tumor": "$.dataset.params.tumor",
+    "output_folder": "$.dataset.dataPath"
+}

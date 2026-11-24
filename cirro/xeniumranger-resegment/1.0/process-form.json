@@ -1,0 +1,95 @@
+{
+    "form": {
+        "required": ["input"],
+        "properties": {
+            "version": {
+                "title": "Xenium Ranger Version",
+                "default": "2.0.0",
+                "enum": [
+                    "2.0.0",
+                    "1.7.0"
+                ]
+            },
+            "input": {
+                "title": "Input Files",
+                "description": "Select the analysis bundle(s) to reprocess",
+                "file": "**/analysis.zarr.zip",
+                "pathType": "dataset",
+                "type": "string"
+            },
+            "id": {
+                "default": "xenium_analysis",
+                "description": "Value for the --id argument provided to Xenium Ranger",
+                "title": "Analysis ID",
+                "type": "string"
+            },
+            "dapi_filter": {
+                "type": "object",
+                "title": "DAPI Filter",
+                "properties": {
+                    "enabled": {
+                        "type": "boolean",
+                        "title": "Change DAPI Filter Value",
+                        "default": false
+                    }
+                },
+                "dependencies": {
+                    "enabled": {
+                        "oneOf": [
+                            {
+                                "properties": {
+                                    "enabled": {"enum": [true]},
+                                    "dapi_filter": {
+                                        "title": "New Value",
+                                        "description": "Minimum intensity in photoelectrons (pe) to filter nuclei. Default: 100 (appropriate range of values is 0 to 99th percentile of image stack or 1000, whichever is larger).",
+                                        "default": 100,
+                                        "type": "integer"
+                                    }
+                                }
+                            },
+                            {
+                                "properties": {
+                                    "enabled": {"enum": [false]}
+                                }
+                            }
+                        ]
+                    }
+                }
+            },
+            "expansion_distance": {
+                "type": "object",
+                "title": "Expansion Distance",
+                "properties": {
+                    "enabled": {
+                        "type": "boolean",
+                        "title": "Change Expansion Distance Value",
+                        "default": false
+                    }
+                },
+                "dependencies": {
+                    "enabled": {
+                        "oneOf": [
+                            {
+                                "properties": {
+                                    "enabled": {"enum": [true]},
+                                    "expansion_distance": {
+                                        "title": "New Value",
+                                        "description": "Nuclei boundary expansion distance in microns. Default: 5 (accepted range: 0 - 100).",
+                                        "default": 5,
+                                        "type": "integer"
+                                    }
+                                }
+                            },
+                            {
+                                "properties": {
+                                    "enabled": {"enum": [false]}
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "ui": {}
+}

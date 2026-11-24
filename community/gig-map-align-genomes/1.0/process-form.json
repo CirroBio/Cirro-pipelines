@@ -1,0 +1,69 @@
+{
+    "form": {
+        "properties": {
+            "inputs": {
+                "type": "object",
+                "title": "Input Data",
+                "properties": {
+                    "genes": {
+                        "pathType": "dataset",
+                        "title": "Gene Catalog",
+                        "description": "Precomputed gene catalog used as the alignment reference",
+                        "process": "hutch-gig-map-build-gene-catalog-1-0"
+                    }
+                }
+            },
+            "alignment": {
+                "type": "object",
+                "title": "Alignment Parameters",
+                "properties": {
+                    "min_coverage": {
+                        "type": "integer",
+                        "title": "Minimum Coverage",
+                        "description": "Minimum proportion of a gene which must align in order to retain the alignment (ranges 0-100)",
+                        "default": 90
+                    },
+                    "min_identity": {
+                        "type": "integer",
+                        "title": "Minimum Percent Identity",
+                        "description": "Minimum percent identity of the amino acid alignment required to retain the alignment (ranges 0-100)",
+                        "default": 90
+                    },
+                    "max_overlap": {
+                        "type": "integer",
+                        "title": "Maximum Overlap",
+                        "description": "Any alignment which overlaps a higher-scoring alignment by more than this amount will be filtered out",
+                        "default": 50
+                    },
+                    "max_evalue": {
+                        "type": "number",
+                        "title": "Maximum E-Value",
+                        "description": "Maximum E-value threshold used to filter all alignments",
+                        "default": 0.001
+                    },
+                    "query_gencode": {
+                        "type": "integer",
+                        "title": "Genetic Code",
+                        "description": "Translation table used for conceptual translation of nucleotides to protein",
+                        "default": 11
+                    },
+                    "aligner": {
+                        "type": "string",
+                        "title": "Aligner",
+                        "description": "Algorithm for aligning genes to genomes (note: DIAMOND is a much faster version of BLAST)",
+                        "default": "diamond",
+                        "enum": [
+                            "diamond",
+                            "blast"
+                        ],
+                        "enumNames": [
+                            "DIAMOND",
+                            "BLAST"
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "ui": {}
+}

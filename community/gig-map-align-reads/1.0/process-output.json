@@ -1,0 +1,65 @@
+{
+    "commands": [
+        {
+            "command": "hot.Parquet",
+            "params": {
+                "cols": [
+                    {
+                        "col": "std",
+                        "desc": "Standard deviation of the vector of sequencing depths across the gene",
+                        "name": "Standard Deviation"
+                    },
+                    {
+                        "col": "depth",
+                        "desc": "Average number of reads covering each position of the gene",
+                        "name": "Depth"
+                    },
+                    {
+                        "col": "length",
+                        "desc": "Length of gene sequence",
+                        "name": "Gene Length"
+                    },
+                    {
+                        "col": "coverage",
+                        "desc": "Proportion of the gene covered by any reads",
+                        "name": "Coverage"
+                    },
+                    {
+                        "col": "nreads",
+                        "desc": "Number of reads aligned to this gene",
+                        "name": "Num Reads"
+                    },
+                    {
+                        "col": "id",
+                        "desc": "Unique identifier of gene from catalog",
+                        "name": "Gene ID"
+                    },
+                    {
+                        "col": "specimen",
+                        "desc": "Unique identifier for sequence reads",
+                        "name": "Specimen ID"
+                    },
+                    {
+                        "col": "tot_reads",
+                        "desc": "Total number of reads input for alignment",
+                        "name": "Total Reads"
+                    }
+                ],
+                "desc": "Quantification of gene-level abundances from metagenomic datasets",
+                "name": "Read Alignments",
+                "read_csv": {
+                    "parse": {
+                        "delimiter": ","
+                    }
+                },
+                "source": "$data_directory/read_alignments.csv.gz",
+                "target": "read_alignments.parquet",
+                "url": ""
+            }
+        },
+        {
+            "command": "hot.Manifest",
+            "params": {}
+        }
+    ]
+}

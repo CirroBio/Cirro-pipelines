@@ -1,0 +1,15 @@
+{
+  "form": {
+    "type": "object",
+    "properties": {
+      "reference": {
+        "title": "Reference Genome",
+        "description": "Nucleotide sequence used to remove matching read-pairs",
+        "type": "string",
+        "pathType": "references",
+        "file": "**/genome_fasta/**/genome.fasta"
+      }
+    }
+  },
+  "ui": {}
+}

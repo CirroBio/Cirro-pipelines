@@ -1,0 +1,6 @@
+{
+  "subset": "$.dataset.params.subset",
+  "input_wsp": "$.dataset.params.input_wsp",
+  "output_directory": "$.dataset.dataPath",
+  "container": "public.ecr.aws/cirrobio/flowjo-gating:98c57a8"
+}

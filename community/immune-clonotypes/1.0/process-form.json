@@ -1,0 +1,24 @@
+{
+  "form": {
+    "type": "object",
+    "properties": {
+      "genome": {
+        "title": "Genome",
+        "description": "Reference genome sequence used for identifying the recombined V(D)J of B- and T-cell receptors",
+        "type": "string",
+        "default": "hg38",
+        "enum": [
+          "hg38",
+          "hg19",
+          "GRCm38"
+        ],
+        "enumNames": [
+          "Homo sapiens GRCh38 (hg38)",
+          "Homo sapiens GRCh37 (hg19)",
+          "Mus musculus GRCm38 (mm10)"
+        ]
+      }
+    }
+  },
+  "ui": {}
+}

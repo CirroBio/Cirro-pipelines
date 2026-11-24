@@ -1,0 +1,4 @@
+{
+  "nreads": "$.dataset.params.filtering.nreads",
+  "outdir": "$.dataset.dataPath"
+}

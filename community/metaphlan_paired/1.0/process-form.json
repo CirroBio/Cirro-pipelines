@@ -1,0 +1,180 @@
+{
+  "form": {
+    "type": "object",
+    "name": "Taxonomic Classification (MetaPhlAn4)",
+    "properties": {
+      "reference": {
+        "title": "Reference Database",
+        "properties": {
+          "db": {
+            "title": "Database Version",
+            "description": "Database of taxonomic markers used for alignment and taxonomic classification",
+            "type": "string",
+            "default": "2023-12-20/mpa_vJun23_CHOCOPhlAnSGB_202307",
+            "enum": [
+              "2023-12-20/mpa_vJun23_CHOCOPhlAnSGB_202307",
+              "2023-12-20/mpa_vOct22_CHOCOPhlAnSGB_202212",
+              "2023-02-02/mpa_vJan21_CHOCOPhlAnSGB_202103"
+            ],
+            "enumNames": [
+              "vJun23 (CHOCOPhlAnSGB_202307)",
+              "vOct22 (CHOCOPhlAnSGB_202212)",
+              "vJan21 (CHOCOPhlAnSGB_202103)"
+            ]
+          }    
+        }
+      },
+      "alignment_thresholds": {
+        "title": "Alignment Thresholds",
+        "properties": {
+          "min_mapq_val": {
+            "title": "Minimum mapping quality value (min_mapq_val)",
+            "type": "integer",
+            "default": 5
+          },
+          "min_cu_len": {
+            "title": "Minimum Total Nucleotide Length (min_cu_len)",
+            "description": "Minimum total nucleotide length for the markers in a clade for estimating the abundance without considering sub-clade abundances",
+            "type": "integer",
+            "default": 2000
+          }
+        }
+      },
+      "taxonomic": {
+        "title": "Taxonomic Specificity",
+        "properties": {
+          "tax_lev": {
+            "type": "string",
+            "title": "Taxonomic Level (tax_lev)",
+            "description": "The taxonomic level for the relative abundance output",
+            "default": "a",
+            "enum": [
+              "a",
+              "k",
+              "p",
+              "c",
+              "o",
+              "f",
+              "g",
+              "s",
+              "t"
+            ],
+            "enumNames": [
+              "all taxonomic levels",
+              "kingdoms",
+              "phyla only",
+              "classes only",
+              "orders only",
+              "families only",
+              "genera only",
+              "species only",
+              "SGBs only"
+            ]
+          },
+          "add_viruses": {
+            "title": "Add Viruses",
+            "description": "Include viruses in the taxonomic classification (note: uses MetaPhlAn3 algorithm)",
+            "type": "boolean",
+            "default": false
+          },
+          "ignore_eukaryotes": {
+            "title": "Ignore Eukaryotes",
+            "description": "Ignore eukaryotes in the taxonomic classification",
+            "type": "boolean",
+            "default": false
+          },
+          "ignore_archaea": {
+            "title": "Ignore Archaea",
+            "description": "Ignore archaea in the taxonomic classification",
+            "type": "boolean",
+            "default": false
+          },
+          "ignore_bacteria": {
+            "title": "Ignore Bacteria",
+            "description": "Ignore bacteria in the taxonomic classification",
+            "type": "boolean",
+            "default": false
+          }
+        }
+      },
+      "abund_options": {
+        "title": "Abundance Estimation Options",
+        "properties": {
+          "unclassified_estimation": {
+            "title": "Estimate Unclassified (unclassified_estimation)",
+            "description": "Scale relative abundances to the number of reads mapping to identified clades in order to estimate unclassified taxa",
+            "type": "boolean",
+            "default": true
+          },
+          "mpa3": {
+            "title": "Use MetaPhlAn3 Algorithm (mpa3)",
+            "description": "Use MetaPhlAn3 algorithm for taxonomic classification",
+            "type": "boolean",
+            "default": false
+          },
+          "perc_nonzero": {
+            "title": "Percentage of Non-Zero Abundances (perc_nonzero)",
+            "description": "Percentage of markers with a non zero relative abundance for misidentify a species",
+            "type": "number",
+            "default": 0.33
+          },
+          "stat_q": {
+            "title": "Statistical Quantile (stat_q)",
+            "description": "Quantile value for the robust average",
+            "type": "number",
+            "default": 0.2
+          },
+          "stat": {
+            "title": "Statistical Method (stat)",
+            "description": "Statistical approach for converting marker abundances into clade abundances",
+            "default": "tavg_g",
+            "enum": [
+              "avg_g",
+              "avg_l",
+              "tavg_g",
+              "tavg_l",
+              "wavg_g",
+              "wavg_l",
+              "med"
+            ],
+            "enumNames": [
+              "clade global (i.e. normalizing all markers together) average",
+              "average of length-normalized marker counts",
+              "truncated clade global average at --stat_q quantile",
+              "truncated average of length-normalized marker counts (at --stat_q)",
+              "winsorized clade global average (at --stat_q)",
+              "winsorized average of length-normalized marker counts (at --stat_q)",
+              "median of length-normalized marker counts"
+            ]
+          },
+          "analysis_type": {
+            "title": "Analysis Type (analysis_type)",
+            "description": "Type of analysis to perform",
+            "default": "rel_ab_w_read_stats",
+            "enum": [
+              "rel_ab",
+              "rel_ab_w_read_stats",
+              "reads_map",
+              "clade_profiles",
+              "marker_ab_table",
+              "marker_counts",
+              "marker_pres_table",
+              "clade_specific_strain_tracker"
+            ],
+            "enumNames": [
+              "rel_ab: profiling a metagenomes in terms of relative abundances",
+              "rel_ab_w_read_stats: profiling a metagenomes in terms of relative abundances and estimate the number of reads coming from each clade.",
+              "reads_map: mapping from reads to clades (only reads hitting a marker)",
+              "clade_profiles: normalized marker counts for clades with at least a non-null marker",
+              "marker_ab_table: normalized marker counts (only when > 0.0 and normalized by metagenome size if --nreads is specified)",
+              "marker_counts: non-normalized marker counts [use with extreme caution]",
+              "marker_pres_table: list of markers present in the sample (threshold at 1.0 if not differently specified with --pres_th",
+              "clade_specific_strain_tracker: list of markers present for a specific clade, specified with --clade, and all its subclades"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "ui": {}
+}

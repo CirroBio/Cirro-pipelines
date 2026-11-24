@@ -1,0 +1,34 @@
+{
+  "ui": {},
+  "form": {
+    "title": "Funcotator (GATK)",
+    "description": "Functional annotation of genomic variants",
+    "type": "object",
+    "properties": {
+      "ref_version": {
+        "title": "Reference Genome Version",
+        "type": "string",
+        "default": "hg38",
+        "enum": ["hg38"],
+        "enumNames": [
+          "Homo sapiens (GRCh38)"
+        ]
+      },
+      "output_file_format": {
+        "title": "Output File Format",
+        "type": "string",
+        "default": "VCF",
+        "enum": ["VCF", "MAF"]
+      },
+      "transcript_selection_mode": {
+        "title": "Transcript Selection Mode",
+        "type": "string",
+        "default": "CANONICAL",
+        "enum": [
+          "BEST_EFFECT", "CANONICAL", "ALL"
+        ]
+      }
+      
+    }
+  }
+}

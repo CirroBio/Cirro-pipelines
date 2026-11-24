@@ -1,0 +1,42 @@
+{
+    "form": {
+        "required": [
+            "operon"
+        ],
+        "properties": {
+            "operon": {
+                "default": "",
+                "description": "Collection of genes to search for across the genome collection",
+                "file": "**/genome_fasta/**/genome.fasta",
+                "pathType": "references",
+                "title": "Operon (Protein FASTA)",
+                "type": "string"
+            },
+            "min_identity": {
+                "default": 90,
+                "description": "Percent identity threshold used for alignment",
+                "title": "Minimum Identity",
+                "type": "integer"
+            },
+            "min_coverage": {
+                "default": 50,
+                "description": "Percent coverage threshold used for alignment",
+                "title": "Minimum Coverage",
+                "type": "integer"
+            },
+            "annotations": {
+                "title": "For each combination of genes found adjacently, annotate the genomic region of the operon (note: does not scale efficiently beyond ~50 genomes)",
+                "description": "Annotate Genome Windows",
+                "default": true,
+                "type": "boolean"
+            },
+            "annotation_window": {
+                "default": 10000,
+                "title": "Annotation Window Size",
+                "description": "The additional area on either side of the operon to annotate (in bp)",
+                "type": "integer"
+            }
+        }
+    },
+    "ui": {}
+}

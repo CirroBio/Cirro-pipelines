@@ -1,0 +1,11 @@
+{
+    "input": "$.dataset.params.input",
+    "metadata": "$.inputs[0].s3|/data/samplesheet.csv",
+    "data_output": "$.dataset.dataPath",
+    "filter": "$.dataset.params.filter",
+    "fdr_cutoff": "$.dataset.params.fdr_cutoff",
+    "method": "$.dataset.params.method",
+    "formula": "$.dataset.params.formula",
+    "min_abund": "$.dataset.params.min_abund",
+    "web_output": "$.dataset.s3|/web/"
+}

@@ -1,0 +1,5 @@
+{
+  "paired_manifest": "$.dataset.s3|/config/manifest.csv",
+  "ref": "$.dataset.params.genome",
+  "output_folder": "$.dataset.dataPath"
+}

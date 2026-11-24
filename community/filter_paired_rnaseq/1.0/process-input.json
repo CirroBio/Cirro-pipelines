@@ -1,0 +1,7 @@
+{
+  "paired_samplesheet": "$.dataset.s3|/config/pipeline_samplesheet.csv",
+  "reference": "$.dataset.params.reference",
+  "outdir": "$.dataset.dataPath",
+  "cpus": "16",
+  "memory_gb": "30"
+}

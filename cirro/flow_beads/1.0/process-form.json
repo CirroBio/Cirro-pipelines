@@ -1,0 +1,23 @@
+{
+  "form": {
+    "type": "object",
+    "required": [],
+    "properties": {
+      "gate_size_multiplier": {
+        "title": "Gate Size Multiplier",
+        "type": "number",
+        "description": "Width of the gate around the bead peak in units of interquartile range",
+        "default": 4
+      },
+      "subset": {
+        "title": "(optional) Select Input Files",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*",
+        "multiple": true,
+        "description": "Default: all files will be analyzed"
+      }
+    }
+  },
+  "ui": {}
+}

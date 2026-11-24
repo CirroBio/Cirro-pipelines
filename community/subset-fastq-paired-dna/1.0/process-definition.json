@@ -1,0 +1,75 @@
+{
+  "id": "process-hutch-subset-fastq-paired-dna-1_0",
+  "childProcessIds": [
+    "process-nf-core-atacseq-2-0",
+    "process-nf-core-chipseq-2-0",
+    "process-nf-core-cutandrun-2-0",
+    "process-nf-core-bacass-short-read-2-1-0",
+    "process-nf-core-bacass-hybrid-2-1-0",
+    "process-hutch-filter-paired-dnaseq-1-0",
+    "process-nf-core-methylseq-3-0",
+    "process-hutch-fastqc-1_0",
+    "process-hutch-scrub-human-1-0",
+    "process-hutch-ngscheckmate-1-0",
+    "process-hutch-metaphlan-paired-1-0",
+    "process-cirro-humann-1-0",
+    "process-hutch-somatic-wgs-dragen-1-0",
+    "process-hutch-germline-wgs-dragen-1-0",
+    "process-hutch-dragen-wgs-align-dna-1-0",
+    "process-nf-core-sarek-3-1",
+    "process-nf-core-sarek-3-2",
+    "process-nf-core-sarek-align-3-2",
+    "process-nf-core-sarek-custom-genome-3-5",
+    "hutch-gig-map-align-reads-1-0",
+    "hutch-gig-map-align-pangenome-1-0",
+    "hutch-sourmash-tax",
+    "process-nf-core-mag-3_0"
+  ],
+  "dataType": "Paired DNAseq (Filtered)",
+  "name": "Subset DNA Reads",
+  "desc": "Filter a set of FASTQ files, keeping the reads at the top of each file",
+  "executor": "NEXTFLOW",
+  "category": "DNA Sequencing",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-dna-sequencing/#subset-dna-reads",
+  "code": {
+    "repository": "GITHUBPUBLIC",
+    "script": "main.nf",
+    "uri": "FredHutch/subset-fastq-nf",
+    "version": "main"
+  },
+  "usesSampleSheet": true,
+  "computeDefaults": [
+    {
+      "executor": "NEXTFLOW",
+      "json": "s3://<RESOURCES_BUCKET>/process/public/community/subset-fastq/1.0/process-compute.config",
+      "name": "Default"
+    }
+  ],
+  "paramMapJson": "s3://<RESOURCES_BUCKET>/process/public/community/subset-fastq/1.0/process-input.json",
+  "formJson": "s3://<RESOURCES_BUCKET>/process/public/community/subset-fastq/1.0/process-form.json",
+  "preProcessScript": "s3://<RESOURCES_BUCKET>/process/public/community/subset-fastq/1.0/preprocess.py",
+  "webOptimizationJson": "s3://<RESOURCES_BUCKET>/process/public/community/subset-fastq/1.0/process-output.json",
+  "fileMappingRules": [
+    {
+      "description": "Paired FASTQs (R1/R2)",
+      "min": 2,
+      "fileNamePatterns": [
+        {
+          "exampleName": "SampleName_R1.fastq.gz",
+          "description": "FASTQ",
+          "sampleMatchingPattern": "(?P<sampleName>[\\S ]*)(\\.|_)(?P<readType>R|I|)(?P<read>1|2|3|4)\\.(fq|fastq)(\\.gz|)"
+        },
+        {
+          "exampleName": "SampleName_S1_L001_R1_001.fastq.gz",
+          "description": "FASTQ (Illumina Format - with lane)",
+          "sampleMatchingPattern": "(?P<sampleName>\\S*)_S(?P<libraryIndex>\\S*)_L(?P<lane>\\S*)_(?P<readType>R|I)(?P<read>1|2|3|4)_001\\.fastq\\.gz"
+        },
+        {
+          "exampleName": "SampleName_S1_R1_001.fastq.gz",
+          "description": "FASTQ (Illumina Format - no lane)",
+          "sampleMatchingPattern": "(?P<sampleName>\\S*)_S(?P<libraryIndex>\\S*)_(?P<readType>R|I)(?P<read>1|2|3|4)_001\\.fastq\\.gz"
+        }
+      ]
+    }
+  ]
+}

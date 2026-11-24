@@ -1,0 +1,124 @@
+{
+    "form": {
+        "properties": { 
+            "library": {
+                "type": "object",
+                "title": "Sequencing Library",
+                "properties": {
+                    "front_p": {
+                        "title": "Forward Primer Sequence",
+                        "type": "string",
+                        "default": "AGRGTTYGATYMTGGCTCAG"
+                    },
+                    "adapter_p": {
+                        "title": "Reverse Primer Sequence",
+                        "type": "string",
+                        "default": "AAGTCGTAACAAGGTARCY"
+                    },
+                    "skip_primer_trim": {
+                        "title": "Skip Cutadapt and DADA2 primer removal",
+                        "description": "Skip Primer Trimming",
+                        "type": "boolean"
+                    }
+                }
+            },
+            "filtering": {
+                "type": "object",
+                "title": "Filtering Parameters",
+                "properties": {
+                    "filterQ": {
+                        "title": "Filter Quality Threshold",
+                        "description": "Filter input reads above this Q value",
+                        "default": 20,
+                        "type": "integer"
+                    },
+                    "minQ": {
+                        "title": "Minimum Quality (minQ)",
+                        "description": "Reads with any base lower than this quality score will be removed",
+                        "type": "integer",
+                        "default": 0
+                    },
+                    "min_len": {
+                        "title": "Minimum Length (bp)",
+                        "description": "Sequences shorter than this will be discarded",
+                        "type": "integer",
+                        "default": 1000
+                    },
+                    "max_len": {
+                        "title": "Maximum Length (bp)",
+                        "description": "Sequences longer than this will be discarded",
+                        "type": "integer",
+                        "default": 1600
+                    }
+                }
+            },
+            "denoising": {
+                "type": "object",
+                "title": "Denoising Parameters",
+                "properties": {
+                    "max_ee": {
+                        "title": "Maximum Expected Errors (max_EE)",
+                        "description": "Reads with number of expected errors higher than this value will be discarded",
+                        "type": "integer",
+                        "default": 2
+                    },
+                    "pooling_method": {
+                        "title": "Pooling Method",
+                        "description": "QIIME 2 pooling method for DADA2 denoising",
+                        "type": "string",
+                        "default": "independent",
+                        "enum": ["independent", "pseudo"]
+                    }
+                }
+            },
+            "classification": {
+                "type": "object",
+                "title": "Classification Parameters",
+                "properties": {
+                    "maxreject": {
+                        "title": "Max Reject",
+                        "description": "QIIME 2 max-reject parameter for VSEARCH taxonomy classification method",
+                        "type": "integer",
+                        "default": 100
+                    },
+                    "maxaccept": {
+                        "title": "Max Accept",
+                        "description": "QIIME 2 max-accept parameter for VSEARCH taxonomy classification method",
+                        "type": "integer",
+                        "default": 100
+                    },
+                    "vsearch_identity": {
+                        "title": "Minimum Identity",
+                        "description": "Minimum identity to be considered as hit",
+                        "type": "number",
+                        "default": 0.97
+                    },
+                    "skip_nb": {
+                        "title": "Only uses VSEARCH",
+                        "description": "Skip Naive-Bayes Classification",
+                        "type": "boolean"
+                    }
+                }
+            },
+            "outputs": {
+                "title": "Output Parameters",
+                "type": "object",
+                "properties": {
+                    "min_asv_totalfreq": {
+                        "title": "Minimum Counts per ASV",
+                        "description": "Total counts of any ASV across all samples must be above this threshold to be retained",
+                        "type": "integer",
+                        "default": 5
+                    },
+                    "min_asv_sample": {
+                        "title": "Minimum Samples per ASV",
+                        "description": "Minimum number of samples that an ASV must be found in to be retained",
+                        "type": "integer",
+                        "default": 1
+                    }
+                }
+            }
+        }
+    },
+    "ui": {}
+}

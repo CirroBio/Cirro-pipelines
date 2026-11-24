@@ -1,0 +1,81 @@
+{
+  "commands": [
+    {
+      "command": "hot.Dsv",
+      "params": {
+        "url": "https://icbi.i-med.ac.at/software/quantiseq/doc/index.html",
+        "source": "$data_directory/quanTIseq_cell_fractions.txt",
+        "sep": "\t",
+        "header": true,
+        "name": "QuanTIseq Cell Fractions",
+        "desc": "Proportional abundance of lymphocyte cell types estimated from bulk gene expression data",
+        "cols": [
+          {
+            "col": "Sample",
+            "name": "Sample",
+            "desc": "Sample Name"
+          },
+          {
+            "col": "B.cells",
+            "name": "B-cells",
+            "desc": "Proportional abundance of B-cells"
+          },
+          {
+            "col": "Macrophages.M1",
+            "name": "M1 Macrophages",
+            "desc": "Proportional abundance of M1 Macrophages"
+          },
+          {
+            "col": "Macrophages.M2",
+            "name": "M2 Macrophages",
+            "desc": "Proportional abundance of M2 Macrophages"
+          },
+          {
+            "col": "Monocytes",
+            "name": "Monocytes",
+            "desc": "Proportional abundance of Monocytes"
+          },
+          {
+            "col": "Neutrophils",
+            "name": "Neutrophils",
+            "desc": "Proportional abundance of Neutrophils"
+          },
+          {
+            "col": "NK.cells",
+            "name": "NK cells",
+            "desc": "Proportional abundance of NK cells"
+          },
+          {
+            "col": "T.cells.CD4",
+            "name": "CD4+ T-cells",
+            "desc": "Proportional abundance of CD4+ T-cells"
+          },
+          {
+            "col": "T.cells.CD8",
+            "name": "CD8+ T-cells",
+            "desc": "Proportional abundance of CD8+ T-cells"
+          },
+          {
+            "col": "Tregs",
+            "name": "Tregs",
+            "desc": "Proportional abundance of Tregs"
+          },
+          {
+            "col": "Dendritic.cells",
+            "name": "Dendritic cells",
+            "desc": "Proportional abundance of Dendritic cells"
+          },
+          {
+            "col": "Other",
+            "name": "Other",
+            "desc": "Proportional abundance of all other cell types"
+          }
+        ]
+      }
+    },
+    {
+      "command": "hot.Manifest",
+      "params": {}
+    }
+  ]
+}

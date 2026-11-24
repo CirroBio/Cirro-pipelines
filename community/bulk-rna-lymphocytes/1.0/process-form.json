@@ -1,0 +1,25 @@
+{
+  "ui": {},
+  "form": {
+    "title": "Lymphocyte Cell Type Quantification",
+    "type": "object",
+    "required": ["gene_tpm"],
+    "properties": {
+      "gene_tpm": {
+        "title": "Gene Expression (TPM)",
+        "description": "Table of normalized gene expression across all samples (TPM).",
+        "type": "string",
+        "pathType": "dataset",
+        "mm": { "matchBase": true },
+        "file": "*.tsv",
+        "default": "data/star_salmon/salmon.merged.gene_tpm.tsv"
+      },
+      "tumor": {
+        "title": "Tumor Analysis",
+        "description": "Correct for expression of tumor-associated genes.",
+        "type": "boolean",
+        "default": false
+      }
+    }
+  }
+}

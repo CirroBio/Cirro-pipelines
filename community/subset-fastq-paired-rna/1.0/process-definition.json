@@ -1,0 +1,63 @@
+{
+  "id": "process-hutch-subset-fastq-paired-rna-1_0",
+  "childProcessIds": [
+    "process-hutch-filter-paired-rnaseq-1-0",
+    "process-nf-core-rnaseq-3",
+    "process-nf-core-rnaseq-3_1",
+    "process-nf-core-rnasplice-dev",
+    "process-hutch-immune-clonotypes-1_0",
+    "process-hutch-fastqc-1_0",
+    "process-nf-core-rnafusion-3_0",
+    "process-hutch-ngscheckmate-1-0",
+    "hutch-gig-map-align-pangenome-1-0",
+    "hutch-sourmash-tax",
+    "process-nf-core-mag-3_0"
+  ],
+  "dataType": "Paired RNAseq (Filtered)",
+  "name": "Subset RNA Reads",
+  "desc": "Filter a set of FASTQ files, keeping the reads at the top of each file",
+  "executor": "NEXTFLOW",
+  "category": "RNA Sequencing",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-rna-sequencing/#subset-rna-reads",
+  "code": {
+    "repository": "GITHUBPUBLIC",
+    "script": "main.nf",
+    "uri": "FredHutch/subset-fastq-nf",
+    "version": "main"
+  },
+  "usesSampleSheet": true,
+  "computeDefaults": [
+    {
+      "executor": "NEXTFLOW",
+      "json": "s3://<RESOURCES_BUCKET>/process/public/community/subset-fastq/1.0/process-compute.config",
+      "name": "Default"
+    }
+  ],
+  "paramMapJson": "s3://<RESOURCES_BUCKET>/process/public/community/subset-fastq/1.0/process-input.json",
+  "formJson": "s3://<RESOURCES_BUCKET>/process/public/community/subset-fastq/1.0/process-form.json",
+  "preProcessScript": "s3://<RESOURCES_BUCKET>/process/public/community/subset-fastq/1.0/preprocess.py",
+  "webOptimizationJson": "s3://<RESOURCES_BUCKET>/process/public/community/subset-fastq/1.0/process-output.json",
+  "fileMappingRules": [
+    {
+      "description": "Paired FASTQs (R1/R2)",
+      "min": 2,
+      "fileNamePatterns": [
+        {
+          "exampleName": "SampleName_R1.fastq.gz",
+          "description": "FASTQ",
+          "sampleMatchingPattern": "(?P<sampleName>[\\S ]*)(\\.|_)(?P<readType>R|I|)(?P<read>1|2|3|4)\\.(fq|fastq)(\\.gz|)"
+        },
+        {
+          "exampleName": "SampleName_S1_L001_R1_001.fastq.gz",
+          "description": "FASTQ (Illumina Format - with lane)",
+          "sampleMatchingPattern": "(?P<sampleName>\\S*)_S(?P<libraryIndex>\\S*)_L(?P<lane>\\S*)_(?P<readType>R|I)(?P<read>1|2|3|4)_001\\.fastq\\.gz"
+        },
+        {
+          "exampleName": "SampleName_S1_R1_001.fastq.gz",
+          "description": "FASTQ (Illumina Format - no lane)",
+          "sampleMatchingPattern": "(?P<sampleName>\\S*)_S(?P<libraryIndex>\\S*)_(?P<readType>R|I)(?P<read>1|2|3|4)_001\\.fastq\\.gz"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+    "commands": [
+        {
+            "command": "hot.Parquet",
+            "params": {
+                "source": "$data_directory/corncob/mu.[category].csv",
+                "target": "corncob_mu.parquet",
+                "desc": "Corncob beta-binomial regression results",
+                "name": "Differential Abundance Results",
+                "url": "https://github.com/statdivlab/corncob/",
+                "read_csv": {
+                    "parse": {
+                        "delimiter": ","
+                    }
+                },
+                "concat": [
+                    {
+                        "token": "category",
+                        "name": "Category",
+                        "desc": "Basis of comparison between samples"
+                    }
+                ],
+                "cols": [
+                    {
+                        "col": "id",
+                        "desc": "Unique identifier for each feature",
+                        "name": "Feature ID"
+                    },
+                    {
+                        "col": "est_coef",
+                        "desc": "Estimated coefficient of association",
+                        "name": "Estimated Coefficient"
+                    },
+                    {
+                        "col": "p_value",
+                        "desc": "The probability of observing the test statistic or a more extreme value, assuming the null hypothesis is true",
+                        "name": "P-value"
+                    },
+                    {
+                        "col": "std_error",
+                        "desc": "Standard error of the estimated coefficient",
+                        "name": "Standard Error"
+                    },
+                    {
+                        "col": "t_value",
+                        "desc": "Test statistic",
+                        "name": "T-value"
+                    }
+                ]
+            }
+        },
+        {
+            "command": "hot.Manifest",
+            "params": {}
+        }
+    ]
+}

@@ -1,0 +1,8 @@
+{
+    "version": "$.dataset.params.version",
+    "id": "$.dataset.params.id",
+    "input": "$.dataset.params.input",
+    "output": "$.dataset.dataPath",
+    "dapi_filter": "$.dataset.params.dapi_filter.dapi_filter",
+    "expansion_distance": "$.dataset.params.expansion_distance.expansion_distance"
+}

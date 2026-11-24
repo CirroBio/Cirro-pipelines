@@ -1,0 +1,18 @@
+{
+  "samplesheet": "$.dataset.s3|/config/pipeline_samplesheet.csv",
+  "db": "$.dataset.params.reference.db",
+  "min_cu_len": "$.dataset.params.alignment_thresholds.min_cu_len",
+  "min_mapq_val": "$.dataset.params.alignment_thresholds.min_mapq_val",
+  "tax_lev": "$.dataset.params.taxonomic.tax_lev",
+  "add_viruses": "$.dataset.params.taxonomic.add_viruses",
+  "ignore_eukaryotes": "$.dataset.params.taxonomic.ignore_eukaryotes",
+  "ignore_archaea": "$.dataset.params.taxonomic.ignore_archaea",
+  "ignore_bacteria": "$.dataset.params.taxonomic.ignore_bacteria",
+  "unclassified_estimation": "$.dataset.params.abund_options.unclassified_estimation",
+  "mpa3": "$.dataset.params.abund_options.mpa3",
+  "perc_nonzero": "$.dataset.params.abund_options.perc_nonzero",
+  "stat_q": "$.dataset.params.abund_options.stat_q",
+  "stat": "$.dataset.params.abund_options.stat",
+  "analysis_type": "$.dataset.params.abund_options.analysis_type",
+  "output": "$.dataset.dataPath"
+}

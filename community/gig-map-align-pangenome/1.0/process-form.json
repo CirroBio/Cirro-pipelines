@@ -1,0 +1,81 @@
+{
+    "form": {
+        "properties": {
+            "inputs": {
+                "type": "object",
+                "title": "Input Data",
+                "properties": {
+                    "pangenome": {
+                        "pathType": "dataset",
+                        "title": "Pangenome",
+                        "description": "Precomputed pangenome used as the alignment reference",
+                        "process": [
+                            "hutch-gig-map-build-pangenome-custom-1-0",
+                            "hutch-gig-map-build-pangenome-from-ncbi-1-0"
+                        ]
+                    }
+                }
+            },
+            "alignment": {
+                "type": "object",
+                "title": "Alignment Parameters",
+                "properties": {
+                    "min_score_reads": {
+                        "type": "integer",
+                        "title": "Minimum Alignment Score",
+                        "description": "Threshold applied on a per-read level",
+                        "default": 50
+                    },
+                    "min_identity": {
+                        "type": "integer",
+                        "title": "Minimum Percent Identity",
+                        "description": "Minimum percent identity of the amino acid alignment required to retain the alignment (ranges 0-100)",
+                        "default": 90
+                    },
+                    "max_evalue": {
+                        "type": "number",
+                        "title": "Maximum E-Value",
+                        "description": "Maximum E-value threshold used to filter all alignments",
+                        "default": 0.001
+                    }
+                }
+            },
+            "filtering": {
+                "type": "object",
+                "title": "Filtering Parameters",
+                "properties": {
+                    "min_n_reads": {
+                        "type": "integer",
+                        "title": "Minimum Number of Reads",
+                        "description": "Minimum number of aligned reads required to retain a sample",
+                        "default": 1
+                    },
+                    "min_n_genes": {
+                        "type": "integer",
+                        "title": "Minimum Number of Genes",
+                        "description": "Minimum number of genes required to retain a sample",
+                        "default": 1
+                    },
+                    "famli_sd_mean_cutoff": {
+                        "type": "number",
+                        "title": "FAMLI SD/Mean Cutoff",
+                        "description": "Per-gene filtering threshold based on the ratio of Standard Deviation to Mean alignment depth. Higher values are more relaxed.",
+                        "default": 3.0
+                    }
+                }
+            },
+            "association": {
+                "type": "object",
+                "title": "Association Parameters",
+                "properties": {
+                    "category": {
+                        "type": "string",
+                        "title": "Category",
+                        "description": "Optional: Compare sample groups based on a metadata variable"
+                    }
+                }
+            }
+        }
+    },
+    "ui": {}
+}

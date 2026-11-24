@@ -1,0 +1,79 @@
+{
+    "form": {
+        "properties": {
+            "mcl_inflation": {
+                "default": 2,
+                "description": "Ranges from 2 (approximately species-level) to 10 (approximately strain-level)",
+                "title": "Gene Clustering Threshold (mcl_inflation)",
+                "type": "integer"
+            },
+            "minbit": {
+                "default": 0.5,
+                "description": "Threshold of sequence similarity used to group genes (ranges 0-1)",
+                "title": "Sequence Similarity Threshold (minbit)",
+                "type": "number"
+            },
+            "min_occurrence": {
+                "default": 1,
+                "description": "Filter out any genes which are found in fewer than this number of genomes",
+                "title": "Minimum Occurrence",
+                "type": "integer"
+            },
+            "min_alignment_fraction": {
+                "default": 0.0,
+                "description": "Any pairwise genome ANI scores below this threshold will be set to zero",
+                "title": "Minimum Alignment Fraction",
+                "type": "number"
+            },
+            "category_name": {
+                "default": "",
+                "description": "Optional genome metadata attribute used to compare genomes",
+                "title": "Compare Genomes By",
+                "type": "string"
+            },
+            "gene_enrichment": {
+                "default": false,
+                "description": "Instead of using functional groupings, enrichment scores can be calculated on a per-gene basis",
+                "title": "Calculate Gene-Level Enrichment",
+                "type": "boolean",
+                "value": false
+            },
+            "distance": {
+                "default": "euclidean",
+                "description": "Metric used to summarize genome similarity",
+                "title": "Distance Metric",
+                "type": "string",
+                "enum": [
+                    "euclidean",
+                    "braycurtis",
+                    "canberra",
+                    "chebyshev",
+                    "cityblock",
+                    "cosine",
+                    "correlation",
+                    "hamming",
+                    "jaccard",
+                    "sqeuclidean",
+                    "yule",
+                    "matching"
+                ]
+            },
+            "linkage": {
+                "default": "ward",
+                "description": "Method used to build tree of genomes",
+                "title": "Linkage Method",
+                "type": "string",
+                "enum": [
+                    "single",
+                    "complete",
+                    "average",
+                    "weighted",
+                    "centroid",
+                    "median",
+                    "ward"
+                ]
+            }
+        }
+    },
+    "ui": {}
+}

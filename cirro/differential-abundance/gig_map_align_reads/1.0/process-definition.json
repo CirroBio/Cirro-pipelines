@@ -1,0 +1,28 @@
+{
+    "id": "differential-abundance-gig-map-align-reads",
+    "childProcessIds": [],
+    "dataType": "Differential Abundance Analysis (Gene Catalog)",
+    "name": "Identify Differentially Abundant Taxa (Gene Catalog)",
+    "desc": "Identify genes which are differentially abundant between groups of microbiome samples",
+    "executor": "NEXTFLOW",
+    "category": "Statistical Analysis",
+    "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-microbial-analysis#differential-abundance-analysis",
+    "code": {
+        "repository": "GITHUBPUBLIC",
+        "script": "gig_map_align_reads.nf",
+        "uri": "CirroBio/nf-differential-abundance",
+        "version": "main"
+    },
+    "usesSampleSheet": true,
+    "computeDefaults": [
+        {
+            "executor": "NEXTFLOW",
+            "json": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-compute.config",
+            "name": "Default"
+        }
+    ],
+    "paramMapJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json",
+    "formJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-form.json",
+    "preProcessScript": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/preprocess.py",
+    "webOptimizationJson": "s3://<RESOURCES_BUCKET>/process/public/cirro/differential-abundance/process-output.json"
+}

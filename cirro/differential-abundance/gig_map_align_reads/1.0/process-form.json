@@ -1,0 +1,47 @@
+{
+    "form": {
+        "properties": {
+            "formula": {
+                "default": "",
+                "description": "Metadata column(s) used for statistical analysis (e.g. \"colA + colB\")",
+                "title": "Formula",
+                "type": "string"
+            },
+            "filter": {
+                "title": "Filter Samples",
+                "description": "Optionally filter samples based on metadata (e.g. \"colA > 10\")",
+                "type": "string"
+            },
+            "method": {
+                "title": "Statistical Method",
+                "description": "Analysis tool used to compare the relative abundance between groups",
+                "type": "string",
+                "default": "corncob",
+                "enum": [
+                    "corncob",
+                    "radEmu",
+                    "mannwhitneyu"
+                ]
+            },
+            "fdr_cutoff": {
+                "default": 0.05,
+                "description": "FDR-adjusted p-value threshold used to annotate significant results",
+                "title": "FDR Cutoff",
+                "type": "number"
+            },
+            "min_coverage": {
+                "default": 0.75,
+                "description": "Filter out genes which align less than this fraction of their length in a particular sample",
+                "title": "Minimum Coverage Analysis Threshold",
+                "type": "number"
+            },
+            "min_abund": {
+                "default": 0.01,
+                "description": "Only display organisms which meet this minimum proportion threshold in at least one sample",
+                "title": "Minimum Abundance Display Threshold",
+                "type": "number"
+            }
+        }
+    },
+    "ui": {}
+}

@@ -1,0 +1,5 @@
+{
+  "paired_fastq_samplesheet": "$.dataset.s3|/config/pipeline_samplesheet.csv",
+  "outdir": "$.dataset.dataPath",
+  "ref": "$.referencesBucketUri|/ngscheckmate/SNP.pt"
+}

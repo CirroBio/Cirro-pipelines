@@ -1,0 +1,26 @@
+{
+    "form": {
+        "type": "object",
+        "properties": {
+            "cluster_similarity": {
+                "type": "number",
+                "title": "Clustering Similarity Threshold",
+                "description": "Amino acid similarity used for clustering (ranges from 0.0 to 1.0)",
+                "default": 0.9
+            },
+            "cluster_coverage": {
+                "type": "number",
+                "title": "Clustering Coverage Threshold",
+                "description": "Alignment coverage used for clustering (ranges from 0.0 to 1.0)",
+                "default": 0.9
+            },
+            "min_gene_length": {
+                "type": "integer",
+                "title": "Minimum Gene Length",
+                "description": "Minimum amino acid length threshold used to filter genes",
+                "default": 50
+            }
+        }
+    },
+    "ui": {}
+}

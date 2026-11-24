@@ -1,0 +1,35 @@
+{
+    "commands": [
+        {
+            "command": "hot.Parquet",
+            "params": {
+                "cols": [
+                    {
+                        "col": "gene_id",
+                        "desc": "Unique gene identifier",
+                        "name": "Gene ID"
+                    },
+                    {
+                        "col": "combined_name",
+                        "desc": "Description of gene derived from input files",
+                        "name": "Name"
+                    }
+                ],
+                "desc": "Annotations of centroid sequences from deduplicated gene cluster",
+                "name": "Gene Annotations",
+                "read_csv": {
+                    "parse": {
+                        "delimiter": ","
+                    }
+                },
+                "source": "$data_directory/centroids.annot.csv.gz",
+                "target": "centroids.annot.parquet",
+                "url": ""
+            }
+        },
+        {
+            "command": "hot.Manifest",
+            "params": {}
+        }
+    ]
+}

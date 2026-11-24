@@ -1,0 +1,24 @@
+{
+  "form": {
+    "type": "object",
+    "required": ["input_wsp"],
+    "properties": {
+      "subset": {
+        "title": "(optional) Select Input Files",
+        "type": "string",
+        "pathType": "dataset",
+        "file": "**/*",
+        "multiple": true,
+        "description": "Default: all files will be analyzed"
+      },
+      "input_wsp": {
+        "type": "string",
+        "title": "FlowJo Workspace (.wsp)",
+        "file": "**/flowjo_wsp/**/flowjo.wsp",
+        "pathType": "references",
+        "description": "Select the FlowJo workspace uploaded as a References"
+      }
+    }
+  },
+  "ui": {}
+}
