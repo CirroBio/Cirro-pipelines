@@ -38,7 +38,7 @@ def fill_read_groups(samplesheet: pd.DataFrame) -> pd.DataFrame:
     """Fill blank read group fields with the sample name."""
 
     samplesheet = samplesheet.assign(**{
-        col: samplesheet[col].where(samplesheet[col] != "", samplesheet["sample_name"])
+        col: samplesheet[col].where(samplesheet[col] != "", samplesheet["sample"])
         for col in DEFAULT_TO_SAMPLE
     })
 
@@ -79,9 +79,10 @@ def build_inputs(samplesheet: pd.DataFrame, shared: dict) -> list:
 
     return [
         {
+            f"{WORKFLOW}.sample_name": row["sample"],
             **{
                 f"{WORKFLOW}.{kw}": row[kw]
-                for kw in ["sample_name", "readgroup_name", "library_name", "platform_unit", "fastq_1", "fastq_2"]
+                for kw in ["readgroup_name", "library_name", "platform_unit", "fastq_1", "fastq_2"]
             },
             **shared
         }

@@ -50,7 +50,7 @@ def build_inputs(samplesheet: pd.DataFrame, params: dict) -> list:
             ),
             **workflow_params
         }
-        for sample, bams in samplesheet.groupby("sample_name", sort=False)["flowcell_unmapped_bams"]
+        for sample, bams in samplesheet.groupby("sample", sort=False)["flowcell_unmapped_bams"]
     ]
 
 

@@ -22,7 +22,7 @@ def _load_preprocess():
 
 preprocess = _load_preprocess()
 
-HEADER = "sample_name,flowcell_unmapped_bams\r\n"
+HEADER = "sample,flowcell_unmapped_bams\r\n"
 WF = "WholeGenomeGermlineSingleSample"
 
 
@@ -30,7 +30,7 @@ class ReadSamplesheet(unittest.TestCase):
 
     def test_values_stay_text(self):
         samplesheet = preprocess.read_samplesheet(io.StringIO(HEADER + "01,s3://b/data/01.unmapped.bam\r\n"))
-        self.assertEqual(samplesheet["sample_name"].tolist(), ["01"])
+        self.assertEqual(samplesheet["sample"].tolist(), ["01"])
 
     def test_no_param_fails_clearly(self):
         for path in (None, ""):

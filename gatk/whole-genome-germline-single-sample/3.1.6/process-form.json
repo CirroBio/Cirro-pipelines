@@ -40,7 +40,7 @@
         "items": {
           "type": "object",
           "properties": {
-            "sample_name": {
+            "sample": {
               "type": "string",
               "title": "Sample",
               "pattern": "^\\S+$",
@@ -53,7 +53,7 @@
               "pattern": "\\.bam$"
             }
           },
-          "required": ["sample_name", "flowcell_unmapped_bams"]
+          "required": ["sample", "flowcell_unmapped_bams"]
         }
       }
     }

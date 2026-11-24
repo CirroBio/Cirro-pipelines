@@ -22,7 +22,7 @@ def _load_preprocess():
 
 preprocess = _load_preprocess()
 
-HEADER = "sample_name,readgroup_name,library_name,platform_unit,fastq_1,fastq_2\r\n"
+HEADER = "sample,readgroup_name,library_name,platform_unit,fastq_1,fastq_2\r\n"
 WF = "ConvertPairedFastQsToUnmappedBamWf"
 
 
@@ -34,7 +34,7 @@ class ReadSamplesheet(unittest.TestCase):
 
     def test_values_stay_text(self):
         samplesheet = _samplesheet("01,,,,s3://b/data/01_R1.fastq.gz,s3://b/data/01_R2.fastq.gz\r\n")
-        self.assertEqual(samplesheet["sample_name"].tolist(), ["01"])
+        self.assertEqual(samplesheet["sample"].tolist(), ["01"])
         self.assertEqual(samplesheet["readgroup_name"].tolist(), [""])
 
     def test_no_param_fails_clearly(self):

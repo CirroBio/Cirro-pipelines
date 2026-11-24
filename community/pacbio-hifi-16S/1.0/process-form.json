@@ -142,13 +142,13 @@
                 "items": {
                     "type": "object",
                     "properties": {
-                        "sample-id": {
+                        "sample": {
                             "type": "string",
                             "title": "Sample",
                             "pattern": "^[A-Za-z0-9._-]+$",
                             "errorMessage": "Sample names can only contain letters, numbers, periods, hyphens and underscores"
                         },
-                        "absolute-filepath": {
+                        "fastq_1": {
                             "type": "string",
                             "format": "file-path",
                             "title": "HiFi FASTQ",
@@ -156,7 +156,7 @@
                             "errorMessage": "Must be a FASTQ file (.fastq or .fq, optionally gzipped) with no spaces in its name"
                         }
                     },
-                    "required": ["sample-id", "absolute-filepath"]
+                    "required": ["sample", "fastq_1"]
                 }
             }
         },
@@ -169,7 +169,7 @@
                 "items": {
                     "type": "object",
                     "properties": {
-                        "sample_name": {
+                        "sample": {
                             "type": "string",
                             "title": "Sample",
                             "pattern": "^[A-Za-z0-9._-]+$",
@@ -186,7 +186,7 @@
                             "description": "Optional. Samples in different pools are denoised separately by DADA2"
                         }
                     },
-                    "required": ["sample_name", "condition"]
+                    "required": ["sample", "condition"]
                 }
             }
         }

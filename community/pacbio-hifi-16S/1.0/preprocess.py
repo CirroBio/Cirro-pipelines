@@ -2,18 +2,24 @@
 
 import pandas as pd
 
+# The form's column names, which auto-fill recognizes, mapped to the workflow's
+SAMPLE_COLUMNS = {"sample": "sample-id", "fastq_1": "absolute-filepath"}
+METADATA_COLUMNS = {"sample": "sample_name"}
 
-def read_table(path) -> pd.DataFrame:
-    """Read a tab-separated table filled out in the form, keeping every value as text.
+
+def read_table(path, columns: dict) -> pd.DataFrame:
+    """Read a tab-separated table filled out in the form, keeping every value as text,
+    with its columns renamed to the workflow's.
 
     An empty table reaches here either as no param at all or as an empty file.
     """
     if not path:
         return pd.DataFrame()
     try:
-        return pd.read_csv(path, sep="\t", dtype=str, keep_default_na=False)
+        table = pd.read_csv(path, sep="\t", dtype=str, keep_default_na=False)
     except pd.errors.EmptyDataError:
         return pd.DataFrame()
+    return table.rename(columns=columns)
 
 
 def check_samples(samples: pd.DataFrame):
@@ -55,9 +61,9 @@ if __name__ == "__main__":
 
     ds = PreprocessDataset.from_running()
 
-    samples = read_table(ds.params.get("input"))
+    samples = read_table(ds.params.get("input"), SAMPLE_COLUMNS)
     check_samples(samples)
-    metadata = complete_metadata(read_table(ds.params.get("metadata")), samples)
+    metadata = complete_metadata(read_table(ds.params.get("metadata"), METADATA_COLUMNS), samples)
 
     # An untouched metadata table has no param, so it is written beside the samples
     # table in the dataset's config/ folder

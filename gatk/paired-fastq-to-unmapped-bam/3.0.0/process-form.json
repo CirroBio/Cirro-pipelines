@@ -37,7 +37,7 @@
         "items": {
           "type": "object",
           "properties": {
-            "sample_name": {
+            "sample": {
               "type": "string",
               "title": "Sample",
               "pattern": "^\\S+$",
@@ -79,7 +79,7 @@
               "errorMessage": "Must be a read FASTQ (.fq, .fastq, .fq.gz or .fastq.gz) with no spaces in its name, not an I1/I2 index read"
             }
           },
-          "required": ["sample_name", "fastq_1", "fastq_2"]
+          "required": ["sample", "fastq_1", "fastq_2"]
         }
       }
     }

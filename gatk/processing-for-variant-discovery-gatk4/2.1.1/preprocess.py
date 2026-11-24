@@ -36,10 +36,10 @@ def read_samplesheet(path) -> pd.DataFrame:
 
 
 def group_samples(samplesheet: pd.DataFrame) -> list:
-    """The unmapped BAMs of each sample, as (sample_name, [BAM, ...]) in table order."""
+    """The unmapped BAMs of each sample, as (sample, [BAM, ...]) in table order."""
 
     return list(
-        samplesheet.groupby("sample_name", sort=False)["flowcell_unmapped_bams"].apply(list).items()
+        samplesheet.groupby("sample", sort=False)["flowcell_unmapped_bams"].apply(list).items()
     )
 
 
