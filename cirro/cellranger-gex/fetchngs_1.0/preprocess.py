@@ -30,9 +30,30 @@ def read_samplesheet(path) -> pd.DataFrame:
     return samplesheet
 
 
+def order_reads(samplesheet: pd.DataFrame, sizes: dict) -> tuple[pd.DataFrame, bool]:
+    """Swap the FASTQ columns when fastq_1 holds the larger files, and say whether it did.
+
+    SRA numbers a run's reads in upload order, so `_1` is not always the barcode read.
+    R2 (cDNA) is the longer read, so its files are larger. This compares the median size
+    of each column, following
+    https://kb.10xgenomics.com/hc/en-us/articles/115003802691-How-do-I-prepare-Sequence-Read-Archive-SRA-data-from-NCBI-for-Cell-Ranger-
+    """
+    median_1 = samplesheet["fastq_1"].map(sizes).median()
+    median_2 = samplesheet["fastq_2"].map(sizes).median()
+    if median_1 <= median_2:
+        return samplesheet, False
+    return samplesheet.rename(columns={"fastq_1": "fastq_2", "fastq_2": "fastq_1"})[samplesheet.columns], True
+
+
+def file_size(s3, uri: str) -> int:
+    bucket, key = uri[len("s3://"):].split("/", 1)
+    return s3.head_object(Bucket=bucket, Key=key)["ContentLength"]
+
+
 if __name__ == "__main__":
 
     # Imported here so that test_preprocess.py runs without the SDK
+    import boto3
     from cirro.helpers.preprocess_dataset import PreprocessDataset
 
     ds = PreprocessDataset.from_running()
@@ -42,8 +63,14 @@ if __name__ == "__main__":
     if resolved != transcriptome_dir:
         ds.add_param("transcriptome_dir", resolved, overwrite=True)
 
-    # Read only to fail clearly when the table is missing or empty
-    read_samplesheet(ds.params.get("samplesheet"))
+    samplesheet = read_samplesheet(ds.params.get("samplesheet"))
+
+    s3 = boto3.client("s3")
+    uris = pd.concat([samplesheet["fastq_1"], samplesheet["fastq_2"]]).unique()
+    samplesheet, swapped = order_reads(samplesheet, {uri: file_size(s3, uri) for uri in uris})
+    if swapped:
+        ds.logger.info("fastq_1 held the larger files, so it was swapped with fastq_2 to make R1 the barcode read")
+        samplesheet.to_csv(ds.params["samplesheet"], index=None)
 
     # Force params.json to be written: the HealthOmics pre-process Lambda fails the run
     # when the file is absent, and the SDK writes it only when a parameter changes.

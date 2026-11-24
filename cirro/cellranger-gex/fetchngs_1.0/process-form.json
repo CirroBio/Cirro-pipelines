@@ -86,7 +86,7 @@
             },
             "fastq_1": {
               "title": "FASTQ (R1)",
-              "description": "Barcode and UMI read, usually the smaller file of the pair. Check that the public download did not number them the other way round",
+              "description": "Barcode and UMI read, the smaller file of the pair. If the R1 files are larger than the R2 files overall, the run swaps the two columns",
               "type": "string",
               "format": "file-path",
               "pattern": "^(?![\\S\\s]*_I[12]_001\\.fastq\\.gz$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q\\.gz$",

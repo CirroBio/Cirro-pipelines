@@ -67,5 +67,34 @@ class ReadSamplesheet(unittest.TestCase):
             preprocess.read_samplesheet(io.StringIO(HEADER))
 
 
+class OrderReads(unittest.TestCase):
+
+    SAMPLESHEET = preprocess.read_samplesheet(io.StringIO(
+        HEADER
+        + "SRX1,s3://b/SRX1_SRR1_1.fastq.gz,s3://b/SRX1_SRR1_2.fastq.gz\r\n"
+        + "SRX1,s3://b/SRX1_SRR2_1.fastq.gz,s3://b/SRX1_SRR2_2.fastq.gz\r\n"
+    ))
+
+    def test_smaller_fastq_1_is_kept(self):
+        sizes = {
+            "s3://b/SRX1_SRR1_1.fastq.gz": 10, "s3://b/SRX1_SRR1_2.fastq.gz": 40,
+            "s3://b/SRX1_SRR2_1.fastq.gz": 12, "s3://b/SRX1_SRR2_2.fastq.gz": 45,
+        }
+        samplesheet, swapped = preprocess.order_reads(self.SAMPLESHEET, sizes)
+        self.assertFalse(swapped)
+        self.assertEqual(samplesheet["fastq_1"].tolist(), ["s3://b/SRX1_SRR1_1.fastq.gz", "s3://b/SRX1_SRR2_1.fastq.gz"])
+
+    def test_larger_fastq_1_is_swapped_with_columns_in_form_order(self):
+        sizes = {
+            "s3://b/SRX1_SRR1_1.fastq.gz": 40, "s3://b/SRX1_SRR1_2.fastq.gz": 10,
+            "s3://b/SRX1_SRR2_1.fastq.gz": 45, "s3://b/SRX1_SRR2_2.fastq.gz": 12,
+        }
+        samplesheet, swapped = preprocess.order_reads(self.SAMPLESHEET, sizes)
+        self.assertTrue(swapped)
+        self.assertEqual(list(samplesheet.columns), ["sample", "fastq_1", "fastq_2"])
+        self.assertEqual(samplesheet["fastq_1"].tolist(), ["s3://b/SRX1_SRR1_2.fastq.gz", "s3://b/SRX1_SRR2_2.fastq.gz"])
+        self.assertEqual(samplesheet["fastq_2"].tolist(), ["s3://b/SRX1_SRR1_1.fastq.gz", "s3://b/SRX1_SRR2_1.fastq.gz"])
+
+
 if __name__ == "__main__":
     unittest.main()

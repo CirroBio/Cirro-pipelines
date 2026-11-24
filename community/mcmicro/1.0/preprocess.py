@@ -1,15 +1,11 @@
 #!/usr/bin/env python3
 
-import re
 from typing import TYPE_CHECKING, List
 
 import pandas as pd
 
 if TYPE_CHECKING:
     from cirro.helpers.preprocess_dataset import PreprocessDataset
-
-# Markers on channels that carry no stain; their images are left out of the run
-BLANK_MARKERS = ["Blank", "Empty"]
 
 
 def read_markers(path) -> pd.DataFrame:
@@ -28,36 +24,34 @@ def read_markers(path) -> pd.DataFrame:
     return markers
 
 
-def image_cycle(file_name: str) -> int:
-    """The cycle number in an image's file name, such as 1 for cyc001_reg001.tif."""
-    match = re.match(r"cyc(\d+)_", file_name)
-    if match is None:
-        raise ValueError(
-            f"Could not read a cycle number from {file_name}: expected a name such as cyc001_reg001.tif"
-        )
-    return int(match.group(1))
-
-
 def marker_table(markers: pd.DataFrame) -> pd.DataFrame:
     """The images to stage and their markers.csv rows, in the order MCMICRO reads them.
 
     MCMICRO registers the images in raw/ sorted by file name and matches markers.csv to
-    the resulting channels by row, so the rows follow file name order. Every image is
-    copied into the one raw/ folder, so file names must be unique across the table.
+    the resulting channels by row, so the rows follow file name order, and the cycles
+    must not go down in that order. Every image is copied into the one raw/ folder, so
+    file names must be unique across the table.
     """
     file_names = markers["image"].str.rsplit("/", n=1).str[-1]
     duplicated = sorted(set(file_names[file_names.duplicated()]))
     if duplicated:
         raise ValueError(f"Image file names must be unique, but these repeat: {', '.join(duplicated)}")
 
+    # The form checks the column's type only as advice, so it may still hold any text
+    not_whole = markers.loc[~markers["cycle"].str.fullmatch(r"\d+"), "cycle"]
+    if not not_whole.empty:
+        raise ValueError(f"Cycles must be whole numbers, not: {', '.join(not_whole.unique())}")
+
     table = (
         markers
-        .assign(file_name=file_names, cycle=[image_cycle(name) for name in file_names])
+        .assign(file_name=file_names, cycle=markers["cycle"].astype(int))
         .sort_values("file_name")
     )
-    table = table[~table["marker_name"].isin(BLANK_MARKERS)]
-    if table.empty:
-        raise ValueError(f"Every image in the markers table is marked {' or '.join(BLANK_MARKERS)}")
+    if not table["cycle"].is_monotonic_increasing:
+        order = ", ".join(f"{row.file_name} ({row.cycle})" for row in table.itertuples())
+        raise ValueError(
+            f"MCMICRO reads the images in file name order, so their cycles must not go down in that order: {order}"
+        )
     return table.reindex(columns=["image", "cycle", "marker_name"]).reset_index(drop=True)
 
 
