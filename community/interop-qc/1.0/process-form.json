@@ -1,3 +1,16 @@
 {
-    "form": {}
+  "form": {
+    "type": "object",
+    "required": ["runDir"],
+    "properties": {
+      "runDir": {
+        "type": "string",
+        "title": "Sequencing Run",
+        "description": "Illumina run folder holding RunInfo.xml, RunParameters.xml and the InterOp/ folder",
+        "format": "directory-path",
+        "process": ["sequencing-run"]
+      }
+    }
+  },
+  "ui": {}
 }

@@ -2,7 +2,14 @@
   "ui": {},
   "form": {
     "type": "object",
+    "required": ["markers"],
     "properties": {
+      "markers": {
+        "type": "string",
+        "title": "Images and Markers",
+        "description": "One row per image file, with the marker it was stained for",
+        "schema": "markers"
+      },
       "image_type": {
         "type": "string",
         "title": "Image Type",
@@ -72,6 +79,35 @@
             "default": false,
             "description": "FlowSOM uses self-organizing maps to cluster cells based on marker expression"
           }
+        }
+      }
+    }
+  },
+  "structuredInputs": {
+    "markers": {
+      "fileFormat": "CSV",
+      "schema": {
+        "title": "Images and Markers",
+        "description": "One row per image. Images are ordered by file name, and their cycle is read from it (cyc001_reg001.tif is cycle 1). Rows whose marker is Blank or Empty are left out of the run.",
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "properties": {
+            "image": {
+              "title": "Image",
+              "type": "string",
+              "format": "file-path",
+              "pattern": "(^|\\/)cyc\\d+_[^\\/]*\\.tif$",
+              "errorMessage": "Must be a .tif image named for its cycle, such as cyc001_reg001.tif"
+            },
+            "marker_name": {
+              "title": "Marker",
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": ["image", "marker_name"]
         }
       }
     }

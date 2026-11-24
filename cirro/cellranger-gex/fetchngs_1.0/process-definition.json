@@ -18,6 +18,7 @@
     "script": "count.nf"
   },
   "allowMultipleSources": true,
+  "usesSampleSheet": false,
   "computeDefaults": [
     {
       "executor": "NEXTFLOW",
@@ -26,7 +27,7 @@
     }
   ],
   "paramMapJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json",
-  "formJson": "s3://<RESOURCES_BUCKET>/process/public/cirro/cellranger-gex/1.0/process-form.json",
+  "formJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-form.json",
   "webOptimizationJson": "s3://<RESOURCES_BUCKET>/process/public/cirro/cellranger-gex/1.0/process-output.json",
   "preProcessScript": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/preprocess.py",
   "fileMappingRules": [

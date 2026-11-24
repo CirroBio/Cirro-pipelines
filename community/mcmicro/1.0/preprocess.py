@@ -1,180 +1,81 @@
 #!/usr/bin/env python3
 
-from typing import List
-from cirro.helpers.preprocess_dataset import PreprocessDataset, read_json
-from cirro.models.s3_path import S3Path
-import boto3
+import re
+from typing import TYPE_CHECKING, List
+
 import pandas as pd
 
+if TYPE_CHECKING:
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
 
-def parse_img_files(ds: PreprocessDataset):
-    """Parse the list of image files available in the workflow."""
-
-    parent_manifest = read_json(
-        ds.params["parent_dataset"] + "/artifacts/manifest.json"
-    )
-    ds.logger.info("Parent dataset manifest:")
-    ds.logger.info(parent_manifest)
-
-    file_list = [
-        ds.params["parent_dataset"] + "/data/" + file["name"]
-        for file in parent_manifest["files"]
-    ]
-    ds.remove_param("parent_dataset")
-
-    ds.logger.info(f"Total number of input files: {len(file_list):,}")
-
-    # Make a list of the input files which should be copied
-    img_files = [
-        file_uri
-        for file_uri in file_list
-        if file_uri_is_image(file_uri)
-    ]
-
-    # Sort the list
-    img_files.sort()
-
-    # If there are no such files, raise an error
-    msg = "No .tif files found whose names start with cyc*"
-    assert len(img_files) > 0, msg
-
-    ds.logger.info(f"Found {len(img_files):,} image files to process")
-    for fn in img_files:
-        ds.logger.info(fn)
-    return img_files
+# Markers on channels that carry no stain; their images are left out of the run
+BLANK_MARKERS = ["Blank", "Empty"]
 
 
-def file_uri_is_image(file_uri: str) -> bool:
-    file_name = file_uri.split("/")[-1]
-    if not file_name.endswith(".tif"):
-        return False
-    elif not file_name.startswith('cyc'):
-        return False
-    else:
-        return True
+def read_markers(path) -> pd.DataFrame:
+    """Read the images and markers table filled out in the form, keeping every value as text."""
 
-
-def stage_inputs(ds: PreprocessDataset, img_files: List[str]):
-    """
-    Copy the .tif files from the source dataset to params.in/raw/.
-    This will mimic the intended behavior of the workflow, which will populate
-    the rest of the outputs in the same "input" folder
-    (even though we would consider it to be the output folder).
-    """
-
-    # Copy the files
-    s3 = boto3.resource('s3')
-    for file_uri in img_files:
-        ds.logger.info(f"Copying {file_uri} to {ds.params['in']}")
-        copy_file_s3(
-            s3,
-            file_uri,
-            ds.params['in'] + "/raw/"
-        )
-
-    ds.logger.info("Finished copying all files")
-
-
-def copy_file_s3(s3, source_file, dest_folder):
-    if not dest_folder.endswith("/"):
-        dest_folder = dest_folder + "/"
-    dest_file = dest_folder + source_file.split("/")[-1]
-
-    source = S3Path(source_file)
-    dest = S3Path(dest_file)
-
-    s3.meta.client.copy(
-        {
-            "Bucket": source.bucket,
-            "Key": source.key,
-        },
-        dest.bucket,
-        dest.key
-    )
-
-
-def stage_markers(ds: PreprocessDataset, img_files: List[str]):
-    """Set up the markers.csv file expected by the workflow."""
-
-    # Read the provided file
-    markers_uri = ds.params["channel_names"]
+    # The form field is marked required, but an empty table can still be submitted, in
+    # which case Cirro either omits the param or writes an empty file.
+    if not path:
+        raise ValueError("No markers table was provided: add a row for each image")
     try:
-        markers = pd.read_csv(
-            markers_uri,
-            header=None,
-            names=["marker_name"]
+        markers = pd.read_csv(path, dtype=str, keep_default_na=False)
+    except pd.errors.EmptyDataError:
+        markers = pd.DataFrame()
+    if markers.empty:
+        raise ValueError("The markers table is empty: add a row for each image")
+    return markers
+
+
+def image_cycle(file_name: str) -> int:
+    """The cycle number in an image's file name, such as 1 for cyc001_reg001.tif."""
+    match = re.match(r"cyc(\d+)_", file_name)
+    if match is None:
+        raise ValueError(
+            f"Could not read a cycle number from {file_name}: expected a name such as cyc001_reg001.tif"
         )
-    except Exception as e:
-        ds.logger.info(f"Could not read marker information from {markers_uri}")
-        ds.logger.info(str(e))
-        raise e
+    return int(match.group(1))
 
-    # The number of listed markers should match the number of images
-    msg = f"Number of markers ({markers.shape[0]:,}) != number of files ({len(img_files):,})"
-    assert len(img_files) == markers.shape[0], msg
 
-    # Parse the cycle number for each image
-    cycle_numbers = []
-    for fp in img_files:
-        fn = fp.split("/")[-1]
-        msg = f"Expected file names to start with cyc, not {fn}"
-        assert fn.startswith("cyc"), msg
+def marker_table(markers: pd.DataFrame) -> pd.DataFrame:
+    """The images to stage and their markers.csv rows, in the order MCMICRO reads them.
 
-        try:
-            cycle = int(fn[len("cyc"):].split("_")[0].lstrip("0"))
-        except Exception as e:
-            ds.logger.info(f"Could not parse cycle number for file: {fp}")
-            raise e
+    MCMICRO registers the images in raw/ sorted by file name and matches markers.csv to
+    the resulting channels by row, so the rows follow file name order. Every image is
+    copied into the one raw/ folder, so file names must be unique across the table.
+    """
+    file_names = markers["image"].str.rsplit("/", n=1).str[-1]
+    duplicated = sorted(set(file_names[file_names.duplicated()]))
+    if duplicated:
+        raise ValueError(f"Image file names must be unique, but these repeat: {', '.join(duplicated)}")
 
-        cycle_numbers.append(cycle)
-
-    ds.logger.info("Found cycles:")
-    ds.logger.info(cycle_numbers)
-
-    markers = markers.assign(
-        cycle=cycle_numbers,
-        uri=img_files
-    ).reindex(
-        columns=["cycle", "marker_name", "uri"]
-    )
-    ds.logger.info("Formated marker table")
-    ds.logger.info(markers.to_csv(index=None))
-
-    ds.logger.info("Removing Blanks")
-    markers = (
+    table = (
         markers
-        .query("marker_name != 'Blank'")
-        .query("marker_name != 'Empty'")
+        .assign(file_name=file_names, cycle=[image_cycle(name) for name in file_names])
+        .sort_values("file_name")
     )
-    ds.logger.info(markers.to_csv(index=None))
-
-    # Get the list of URIs which omit those blanks
-    img_files = markers['uri'].tolist()
-
-    # Save the marker table
-    markers_uri = f"{ds.params['in']}/markers.csv"
-    ds.logger.info(f"Saving to {markers_uri}")
-    try:
-        (
-            markers
-            .drop(columns=['uri'])
-            .to_csv(
-                markers_uri,
-                index=None
-            )
-        )
-    except Exception as e:
-        ds.logger.info("Error encountered while trying to save the marker table")
-        ds.logger.info(str(e))
-        raise e
-
-    # Delete the parameter used for the input file
-    ds.remove_param("channel_names")
-
-    return img_files
+    table = table[~table["marker_name"].isin(BLANK_MARKERS)]
+    if table.empty:
+        raise ValueError(f"Every image in the markers table is marked {' or '.join(BLANK_MARKERS)}")
+    return table.reindex(columns=["image", "cycle", "marker_name"]).reset_index(drop=True)
 
 
-def setup_params(ds: PreprocessDataset):
+def stage_images(images: List[str], raw_folder: str):
+    """Copy the images into raw/ of the MCMICRO project folder, which is also the output folder."""
+
+    # Imported here so that test_preprocess.py runs without the SDK or boto3
+    import boto3
+    from cirro.models.s3_path import S3Path
+
+    s3 = boto3.client("s3")
+    for image in images:
+        source = S3Path(image)
+        dest = S3Path(f"{raw_folder}/{image.rsplit('/', 1)[-1]}")
+        s3.copy({"Bucket": source.bucket, "Key": source.key}, dest.bucket, dest.key)
+
+
+def setup_params(ds: "PreprocessDataset"):
     """Set up the parameters used for execution."""
 
     # Set up the workflow object
@@ -211,7 +112,7 @@ def setup_params(ds: PreprocessDataset):
 
 
 def setup_param_list(
-    ds: PreprocessDataset,
+    ds: "PreprocessDataset",
     workflow: dict,
     list_key: str,
     list_items: List[str]
@@ -227,20 +128,21 @@ def setup_param_list(
 
 if __name__ == "__main__":
 
+    # Imported here so that test_preprocess.py runs without the SDK
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
+
     ds = PreprocessDataset.from_running()
 
-    # Parse the list of image files which are available
-    img_files = parse_img_files(ds)
+    markers = marker_table(read_markers(ds.params.get("markers")))
+    ds.remove_param("markers")
+    ds.logger.info(f"Staging {len(markers):,} images")
 
-    # Copy the markers file from the inputs
-    # This filters the list of image files to remove any Blanks
-    img_files = stage_markers(ds, img_files)
+    # MCMICRO reads markers.csv and raw/ from its project folder (--in) and writes its
+    # outputs beside them, so the project folder is the output folder
+    project_folder = ds.params["in"].rstrip("/")
+    stage_images(markers["image"].tolist(), f"{project_folder}/raw")
+    markers.drop(columns=["image"]).to_csv(f"{project_folder}/markers.csv", index=None)
 
-    # Copy the .tif files from the input to the $output/raw/ directory
-    stage_inputs(ds, img_files)
-
-    # Set up parameters
     setup_params(ds)
 
-    # log
     ds.logger.info(ds.params)

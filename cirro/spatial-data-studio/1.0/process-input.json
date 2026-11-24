@@ -1,5 +1,7 @@
 {
   "outdir": "$.dataset.dataPath",
+  "input": "$.dataset.s3|/config/input_map.json",
+  "input_folders": "$.dataset.params.input_output.input_folders[*]",
   "title": "$.dataset.params.input_output.title",
   "data_types": "$.dataset.params.discovery.data_types",
   "recurse": "$.dataset.params.discovery.recurse",

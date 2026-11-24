@@ -1,6 +1,5 @@
 {
-    "channel_names": "$.inputs[0].dataPath|/channelNames.txt",
-    "parent_dataset": "$.inputs[0].s3",
+    "markers": "$.structuredInputs.markers.path",
     "in": "$.dataset.dataPath",
     "image_type": "$.dataset.params.image_type",
     "unmicst": "$.dataset.params.segmentation.unmicst",

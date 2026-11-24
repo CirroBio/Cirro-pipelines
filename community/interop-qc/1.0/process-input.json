@@ -1,4 +1,4 @@
 {
-  "runDir": "$.inputs[0].dataPath",
+  "runDir": "$.dataset.params.runDir",
   "reportsDir": "$.dataset.dataPath"
 }

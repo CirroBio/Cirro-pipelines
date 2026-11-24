@@ -2,7 +2,20 @@
   "form": {
     "type": "object",
     "description": "Custom probe sequences will be combined with the human or mouse reference genome",
+    "required": [
+      "custom"
+    ],
     "properties": {
+      "custom": {
+        "title": "Custom Sequences",
+        "description": "Folder(s) of FASTA files, each sequence added to the reference as its own gene and probe. Every file in the folder is read",
+        "type": "string",
+        "format": "directory-path",
+        "multiple": true,
+        "process": [
+          "genome_fasta"
+        ]
+      },
       "genome_dir": {
         "title": "Reference Genome",
         "description": "Reference genome used in conjunction with custom probes",

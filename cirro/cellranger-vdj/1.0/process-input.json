@@ -1,4 +1,5 @@
 {
+  "fastq_dir": "$.dataset.params.fastq_dir",
   "vdj_dir": "$.dataset.params.vdj_dir",
   "cellranger_version": "$.dataset.params.cellranger_version",
   "output": "$.dataset.dataPath"

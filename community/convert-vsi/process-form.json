@@ -2,12 +2,19 @@
   "form": {
     "type": "object",
     "name": "Convert Image to OME-TIFF",
-    "required": ["image_format", "compression"],
+    "required": ["input_folder", "image_format", "compression"],
     "properties": {
+      "input_folder": {
+        "type": "string",
+        "title": "Images",
+        "description": "Dataset or folder holding the images to convert. Every file with the selected suffix inside it is converted, at any depth.",
+        "format": "directory-path",
+        "process": ["images"]
+      },
       "image_format": {
         "type": "string",
         "title": "Image Format",
-        "description": "File suffix of the images to convert. Every file with this suffix is converted, at any depth below the input dataset.",
+        "description": "File suffix of the images to convert. Every file with this suffix in the selected folder is converted.",
         "enum": [
           "czi",
           "dcm",

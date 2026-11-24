@@ -27,8 +27,9 @@ parameter defaults for those types as a starting point.
 
 ## Input
 
-Attach one or more datasets. Each becomes one root of the search, and its results are
-published under its dataset name, so several datasets land in a single organized output.
+Pick one or more datasets, or folders inside them. Each becomes one root of the search,
+and its results are published under its dataset name (followed by the folder's path when a
+subfolder is picked), so several datasets land in a single organized output.
 
 Each root is walked and every folder matching one of the formats above becomes a dataset
 (turn off **Recurse into subfolders** if each attached dataset is itself a single spatial

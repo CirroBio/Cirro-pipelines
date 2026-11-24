@@ -1,7 +1,19 @@
 {
   "form": {
     "type": "object",
+    "required": [
+      "fastq_dir"
+    ],
     "properties": {
+      "fastq_dir": {
+        "title": "FASTQ Folder",
+        "description": "Folder of 10X FASTQ files named <sample>_S<n>_L<lane>_R<1|2>_001.fastq.gz. Every sample with files at the top of the folder is analyzed",
+        "type": "string",
+        "format": "directory-path",
+        "process": [
+          "single-cell-10X"
+        ]
+      },
       "vdj_dir": {
         "title": "Genome",
         "description": "Reference genome used for alignment of V(D)J data",

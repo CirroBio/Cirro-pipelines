@@ -1,148 +1,50 @@
-#!/usr/bin/env python3
-
-from cirro.helpers.preprocess_dataset import PreprocessDataset, read_json
-from logging import Logger
-from typing import Union
 import pandas as pd
 
 
-def resolve_references(ds: PreprocessDataset, *params: str):
-    """Make reference params absolute against the references bucket.
+def absolute_reference(value, references_base: str):
+    """A reference param's value, made absolute against the references bucket.
 
     Form values name a path under that bucket rather than a full URI, so the
     configuration is not tied to one deployment. A value that is already absolute
-    is left alone, which keeps datasets created before that change re-runnable.
+    is returned as is, which keeps datasets created before that change re-runnable.
     """
-    for param in params:
-        value = ds.params.get(param)
-        if not isinstance(value, str) or not value or value.startswith("s3://"):
-            continue
-        ds.add_param(param, f"{ds.references_base}/{value}", overwrite=True)
+    if not isinstance(value, str) or not value or value.startswith("s3://"):
+        return value
+    return f"{references_base}/{value}"
 
 
-def read_input_dataset(data_path: str, logger: Logger) -> list[dict]:
+def read_samplesheet(path) -> pd.DataFrame:
+    """Read the samplesheet filled out in the form, keeping every value as text."""
 
-    # Get the list of files in the dataset
-    manifest_fp = data_path + "/web/manifest.json"
-    logger.info(f"Reading files from input dataset ({manifest_fp})")
-    manifest = read_json(manifest_fp)
-
-    # Add the full file path
-    for i in manifest['files']:
-        i['file'] = data_path + "/" + i['file']
-
-    return manifest
-
-
-def parse_fastq(r: dict, suffix=".fastq.gz") -> Union[dict, None]:
-    """
-    Check that the filename conforms to the expected structure.
-    e.g. SRX3815835_SRR6860803_1.fastq.gz
-    """
-    fn: str = r['file'].rsplit("/", 1)[-1]
-
-    if not fn.endswith(suffix):
-        return
-    elif len(fn[:-len(suffix)].split("_")) != 3:
-        return
-    else:
-        return dict(
-            zip(
-                ['sample', 'run', 'spot'],
-                fn[:-len(suffix)].split("_")
-            ),
-            **r
-        )
-
-
-def is_fastq(r: pd.Series) -> bool:
-    return parse_fastq(r) is not None
-
-
-def main():
-
-    # Instantiate the Cirro dataset object
-    ds = PreprocessDataset.from_running()
-
-    resolve_references(ds, "transcriptome_dir")
-
-    # Read the list of files from all input datasets
-    all_files = []
-    for dataset in ds.metadata['inputs']:
-        manifest = read_input_dataset(dataset['s3'], ds.logger)
-        all_files.extend(manifest['files'])
-
-    # Parse the files, filtering to FASTQ files and parsing
-    # the sample, run, and read index
-    files = pd.DataFrame([
-        parse_fastq(r)
-        for r in all_files
-        if is_fastq(r)
-    ])
-
-    # Assign the R1 and R2 based on the median filesize,
-    # and use that information to format a samplesheet
-    samplesheet = format_samplesheet(files, ds.logger)
-
-    # Write to the dataset's config/ folder (mapped in process-input.json)
-    samplesheet.to_csv(ds.params["samplesheet"], index=None)
-
-    # Log the parameters present
-    for k, v in ds.params.items():
-        ds.logger.info(f"{k}: {v}")
-
-    # Force params.json to be written: the HealthOmics pre-process Lambda fails the run
-    # when the file is absent, and the SDK writes it only when a parameter changes.
-    ds.keep_params(list(ds.params.keys()))
-
-
-def format_samplesheet(files: pd.DataFrame, logger: Logger) -> pd.DataFrame:
-    """
-    The approach for identifying the appropriate spots was derived from
-    https://kb.10xgenomics.com/hc/en-us/articles/115003802691-How-do-I-prepare-Sequence-Read-Archive-SRA-data-from-NCBI-for-Cell-Ranger-
-    """
-
-    # Get the median filesize for each of the spot
-    logger.info("Summarizing file size per spot")
-    logger.info(files.head().to_csv(index=None))
-    median_size = (
-        files
-        .groupby('spot')
-        .apply(lambda d: d['size'].median())
-        .sort_values(ascending=False)
-    )
-
-    msg = "Only 1 spot found -- cellranger requires paired-end reads"
-    assert median_size.shape[0] >= 2, msg
-
-    logger.info("Median file size - per spot")
-    logger.info(median_size)
-
-    logger.info("Pivoting to wide samplesheet")
-
-    # R2 is the longest read, and R1 is the second-longest
-    samplesheet = (
-        files
-        .pivot(
-            index=["sample", "run"],
-            columns="spot",
-            values="file"
-        )
-        .rename(
-            columns={
-                median_size.index.values[0]: "fastq_2",
-                median_size.index.values[1]: "fastq_1"
-            }
-        )
-        .reset_index()
-        .reindex(columns=["sample", "fastq_1", "fastq_2"])
-        .dropna()
-    )
-
-    assert samplesheet.shape[0] > 0, "No paired-end reads found"
-
+    # The form field is marked required, but an empty table can still be submitted, in
+    # which case Cirro either omits the param or writes an empty file. The workflow would
+    # then finish successfully without running Cell Ranger at all.
+    if not path:
+        raise ValueError("No samplesheet was provided: add at least one row of FASTQ files")
+    try:
+        samplesheet = pd.read_csv(path, dtype=str, keep_default_na=False)
+    except pd.errors.EmptyDataError:
+        samplesheet = pd.DataFrame()
+    if samplesheet.empty:
+        raise ValueError("The samplesheet is empty: add at least one row of FASTQ files")
     return samplesheet
 
 
 if __name__ == "__main__":
-    main()
+
+    # Imported here so that test_preprocess.py runs without the SDK
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
+
+    ds = PreprocessDataset.from_running()
+
+    transcriptome_dir = ds.params.get("transcriptome_dir")
+    resolved = absolute_reference(transcriptome_dir, ds.references_base)
+    if resolved != transcriptome_dir:
+        ds.add_param("transcriptome_dir", resolved, overwrite=True)
+
+    # Read only to fail clearly when the table is missing or empty
+    read_samplesheet(ds.params.get("samplesheet"))
+
+    # Force params.json to be written: the HealthOmics pre-process Lambda fails the run
+    # when the file is absent, and the SDK writes it only when a parameter changes.
+    ds.keep_params(list(ds.params.keys()))
