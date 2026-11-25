@@ -38,7 +38,8 @@ if __name__ == "__main__":
     ds = PreprocessDataset.from_running()
 
     ds.add_param("custom", custom_globs(ds.params.get("custom")), overwrite=True)
-    ds.add_param("probes", absolute_reference(ds.params["probes"], ds.references_base), overwrite=True)
+    if ds.params.get("probes"):
+        ds.add_param("probes", absolute_reference(ds.params["probes"], ds.references_base), overwrite=True)
 
     # genome_dir is mapped only so this script can see it
     genome_dir = absolute_reference(ds.params["genome_dir"], ds.references_base)
