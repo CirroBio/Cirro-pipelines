@@ -1,0 +1,8 @@
+{
+    "samplesheet": "$.structuredInputs.pipeline_samplesheet.path",
+    "genes": "$.dataset.params.inputs.genes",
+    "min_score_reads": "$.dataset.params.alignment.min_score_reads",
+    "min_identity": "$.dataset.params.alignment.min_identity",
+    "max_evalue": "$.dataset.params.alignment.max_evalue",
+    "output": "$.dataset.dataPath"
+}

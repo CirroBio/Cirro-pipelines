@@ -1,0 +1,55 @@
+{
+    "form": {
+        "type": "object",
+        "required": [
+            "ampliseq_results",
+            "metadata"
+        ],
+        "properties": {
+            "ampliseq_results": {
+                "title": "nf-core/ampliseq Results",
+                "description": "Output of an nf-core/ampliseq run, which provides the counts (qiime2/abundance_tables/feature-table.tsv) and taxonomy (qiime2/taxonomy/taxonomy.tsv)",
+                "type": "string",
+                "format": "directory-path",
+                "process": "process-nf-core-ampliseq-*"
+            },
+            "metadata": {
+                "title": "Sample Metadata",
+                "description": "CSV table with a 'sample' column naming each sample as in the counts table, and a column for each variable used in the formula or filter",
+                "type": "string",
+                "format": "file-path",
+                "pattern": "\\.csv$",
+                "errorMessage": "Must be an uncompressed CSV table (.csv)"
+            },
+            "formula": {
+                "default": "",
+                "description": "Metadata column(s) used for statistical analysis (e.g. \"colA + colB\")",
+                "title": "Formula",
+                "type": "string"
+            },
+            "filter": {
+                "title": "Filter Samples",
+                "description": "Optionally filter samples based on metadata (e.g. \"colA > 10\")",
+                "type": "string"
+            },
+            "method": {
+                "title": "Statistical Method",
+                "description": "Analysis tool used to compare the relative abundance between groups",
+                "type": "string",
+                "default": "corncob",
+                "enum": [
+                    "corncob",
+                    "radEmu",
+                    "mannwhitneyu"
+                ]
+            },
+            "fdr_cutoff": {
+                "default": 0.05,
+                "description": "FDR-adjusted p-value threshold used to annotate significant results",
+                "title": "FDR Cutoff",
+                "type": "number"
+            }
+        }
+    },
+    "ui": {}
+}

@@ -1,5 +1,5 @@
 {
-  "custom": "$.inputs[0].dataPath|/**",
+  "custom": "$.dataset.params.custom[*]",
   "genome_dir": "$.dataset.params.genome_dir",
   "probes": "$.dataset.params.probes",
   "output": "$.dataset.dataPath"

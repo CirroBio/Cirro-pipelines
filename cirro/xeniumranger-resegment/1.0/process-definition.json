@@ -1,0 +1,99 @@
+{
+    "id": "xeniumranger-resegment-1-0",
+    "childProcessIds": [
+      "xeniumranger-resegment-1-0",
+      "hutch-xenium-export-seurat-1"
+    ],
+    "dataType": "Spatial Transcriptomics (Xenium)",
+    "name": "Resegment Cells (Xenium Ranger)",
+    "desc": "Perform cell segmentation analysis with an updated set of parameters",
+    "executor": "NEXTFLOW",
+    "executionModes": ["STANDARD", "HEALTHOMICS"],
+    "category": "Spatial Transcriptomics",
+    "allowMultipleSources": true,
+    "usesSampleSheet": false,
+    "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-spatial-analysis/#resegment-cells-xenium-ranger",
+    "code": {
+        "repository": "GITHUBPUBLIC",
+        "script": "resegment.nf",
+        "uri": "CirroBio/nf-xenium-ranger",
+        "version": "main"
+    },
+    "computeDefaults": [
+      {
+        "executor": "NEXTFLOW",
+        "json": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-compute.config",
+        "name": "Default"
+      }
+    ],
+    "paramMapJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json",
+    "formJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-form.json",
+    "preProcessScript": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/preprocess.py",
+    "webOptimizationJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-output.json",
+    "fileMappingRules": [
+      {
+        "description": "Cell Feature Matrix (h5ad)",
+        "min": 1,
+        "isSample": false,
+        "fileNamePatterns": [
+          {
+            "exampleName": "cell_feature_matrix.h5",
+            "description": "Cell Feature Matrix",
+            "sampleMatchingPattern": "cell_feature_matrix.h5"
+          }
+        ]
+      },
+      {
+        "description": "Cells",
+        "min": 1,
+        "isSample": false,
+        "fileNamePatterns": [
+          {
+            "exampleName": "cells.zarr.zip",
+            "description": "Cells",
+            "sampleMatchingPattern": "cells.zarr.zip"
+  
+          }
+        ]
+      },
+      {
+        "description": "Analysis",
+        "min": 1,
+        "isSample": false,
+        "fileNamePatterns": [
+          {
+            "exampleName": "analysis.zarr.zip",
+            "description": "Analysis",
+            "sampleMatchingPattern": "analysis.zarr.zip"
+  
+          }
+        ]
+      },
+      {
+        "description": "Transcripts",
+        "min": 1,
+        "isSample": false,
+        "fileNamePatterns": [
+          {
+            "exampleName": "transcripts.zarr.zip",
+            "description": "Transcripts",
+            "sampleMatchingPattern": "transcripts.zarr.zip"
+  
+          }
+        ]
+      },
+      {
+        "description": "Morphology",
+        "min": 1,
+        "isSample": false,
+        "fileNamePatterns": [
+          {
+            "exampleName": "morphology.ome.tif",
+            "description": "Morphology",
+            "sampleMatchingPattern": "morphology.ome.tif"
+  
+          }
+        ]
+      }
+    ]
+}

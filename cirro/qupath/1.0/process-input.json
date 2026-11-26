@@ -1,7 +1,7 @@
 {
     "script": "$.dataset.params.script",
     "args": "$.dataset.params.args",
-    "input_folder": "$.inputs[0].dataPath",
+    "input_folder": "$.dataset.params.input_folder",
     "output_folder": "$.dataset.dataPath",
     "container": "public.ecr.aws/cirrobio/qupath:v|$.dataset.params.version"
 }

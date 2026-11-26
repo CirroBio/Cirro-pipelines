@@ -1,0 +1,10 @@
+{
+    "ampliseq_results": "$.dataset.params.ampliseq_results",
+    "metadata": "$.dataset.params.metadata",
+    "data_output": "$.dataset.dataPath",
+    "filter": "$.dataset.params.filter",
+    "fdr_cutoff": "$.dataset.params.fdr_cutoff",
+    "method": "$.dataset.params.method",
+    "formula": "$.dataset.params.formula",
+    "web_output": "$.dataset.s3|/web/"
+}

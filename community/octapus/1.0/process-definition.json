@@ -1,0 +1,28 @@
+{
+    "id": "hutch_octapus_1_0",
+    "childProcessIds": [],
+    "name": "OCTAPUS (Operon ConTextulization Across Prokaryotes to Uncover Synteny)",
+    "desc": "Identify those genomes which contain an operon of interest",
+    "executor": "NEXTFLOW",
+    "category": "Microbial Analysis",
+    "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-microbial-analysis/#operon-contextulization-across-prokaryotes-to-uncover-synteny-octapus",
+    "code": {
+        "repository": "GITHUBPUBLIC",
+        "script": "main.nf",
+        "uri": "FredHutch/octapus",
+        "version": "master"
+    },
+    "allowMultipleSources": true,
+    "usesSampleSheet": false,
+    "computeDefaults": [
+      {
+        "executor": "NEXTFLOW",
+        "json": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-compute.config",
+        "name": "Default"
+      }
+    ],
+    "paramMapJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json",
+    "formJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-form.json",
+    "webOptimizationJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-output.json",
+    "preProcessScript": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/preprocess.py"
+}

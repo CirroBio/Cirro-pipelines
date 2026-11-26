@@ -1,7 +1,23 @@
 {
   "form": {
     "type": "object",
+    "required": [
+      "input"
+    ],
     "properties": {
+      "input": {
+        "title": "Cell Ranger Count Outputs",
+        "description": "Folder holding the outputs of a Cell Ranger count run, one subfolder per sample. All samples in it are aggregated",
+        "type": "string",
+        "format": "directory-path",
+        "process": [
+          "process-hutch-cellranger-gex-1-0",
+          "process-hutch-cellranger-gex-1-1",
+          "process-hutch-cellranger-gex-fetchngs-1-0",
+          "process-hutch-cellranger-hashtagging-1-0",
+          "process-hutch-cellranger-hashtagging-1-1"
+        ]
+      },
       "aggr_name": {
         "title": "Aggregated Sample Name",
         "description": "Name assigned to the aggregated dataset using cellranger aggr",

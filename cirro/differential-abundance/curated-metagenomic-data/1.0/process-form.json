@@ -1,0 +1,47 @@
+{
+    "form": {
+        "type": "object",
+        "required": [
+            "input"
+        ],
+        "properties": {
+            "input": {
+                "title": "Input Data",
+                "description": "Relative abundance table from the curatedMetagenomicDataTerminal tool, which holds both the organism abundances and the sample metadata",
+                "type": "string",
+                "format": "file-path",
+                "pattern": "relative_abundance[^/]*$",
+                "errorMessage": "Must be a curatedMetagenomicData relative abundance table (<study>.relative_abundance)"
+            },
+            "formula": {
+                "default": "",
+                "description": "Metadata column(s) used for statistical analysis (e.g. \"colA + colB\")",
+                "title": "Formula",
+                "type": "string"
+            },
+            "filter": {
+                "title": "Filter Samples",
+                "description": "Optionally filter samples based on metadata (e.g. \"colA > 10\")",
+                "type": "string"
+            },
+            "method": {
+                "title": "Statistical Method",
+                "description": "Analysis tool used to compare the relative abundance between groups",
+                "type": "string",
+                "default": "corncob",
+                "enum": [
+                    "corncob",
+                    "radEmu",
+                    "mannwhitneyu"
+                ]
+            },
+            "fdr_cutoff": {
+                "default": 0.05,
+                "description": "FDR-adjusted p-value threshold used to annotate significant results",
+                "title": "FDR Cutoff",
+                "type": "number"
+            }
+        }
+    },
+    "ui": {}
+}

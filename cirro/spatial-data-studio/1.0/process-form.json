@@ -12,7 +12,24 @@
       "input_output": {
         "type": "object",
         "title": "Input and output",
+        "required": ["input_folders"],
         "properties": {
+          "input_folders": {
+            "type": "string",
+            "title": "Spatial data",
+            "description": "Datasets or folders to search for spatial data. The results for each are published under its dataset name, followed by the folder's path when a subfolder is picked.",
+            "format": "directory-path",
+            "multiple": true,
+            "process": [
+              "custom_dataset",
+              "xenium",
+              "cosmx",
+              "ingest_spaceranger",
+              "process-hutch-spaceranger-count-1-0",
+              "xeniumranger-resegment-1-0",
+              "process-hutch-mcmicro-1-0"
+            ]
+          },
           "title": {
             "type": "string",
             "title": "Title",

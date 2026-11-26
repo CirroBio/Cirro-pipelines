@@ -1,31 +1,57 @@
 #!/usr/bin/env python3
 
+from __future__ import annotations
+
 import json
-from cirro.helpers.preprocess_dataset import PreprocessDataset
-from cirro.models.s3_path import S3Path
+from typing import TYPE_CHECKING
+
+import pandas as pd
+
+# The SDK is imported in __main__, so test_preprocess.py runs without it
+if TYPE_CHECKING:
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
+
+WORKFLOW = "WholeGenomeGermlineSingleSample"
 
 
-def setup_inputs(ds: PreprocessDataset):
+def read_samplesheet(path) -> pd.DataFrame:
+    """Read the table of unmapped BAMs filled out in the form, keeping every value as text."""
 
-    # Make a combined set of inputs with each of the BAM files
-    all_inputs = [
+    # The form field is marked required, but an empty table can still be submitted,
+    # in which case Cirro either omits the param or writes an empty file
+    if not path:
+        raise ValueError("No samplesheet was provided: add at least one row with an unmapped BAM")
+    try:
+        samplesheet = pd.read_csv(path, dtype=str, keep_default_na=False)
+    except pd.errors.EmptyDataError:
+        samplesheet = pd.DataFrame()
+    if samplesheet.empty:
+        raise ValueError("The samplesheet is empty: add at least one row with an unmapped BAM")
+    return samplesheet
+
+
+def build_inputs(samplesheet: pd.DataFrame, params: dict) -> list:
+    """One set of workflow inputs per sample, with all of that sample's unmapped BAMs."""
+
+    workflow_params = {
+        kw: val
+        for kw, val in params.items()
+        if kw.startswith(WORKFLOW)
+    }
+
+    return [
         {
-            **single_input,
-            **{
-                kw: val
-                for kw, val in ds.params.items()
-                if kw.startswith("WholeGenomeGermlineSingleSample")
-            }
+            f"{WORKFLOW}.sample_and_unmapped_bams": dict(
+                sample_name=sample,
+                base_file_name=sample,
+                final_gvcf_base_name=sample,
+                unmapped_bam_suffix=".bam",
+                flowcell_unmapped_bams=bams.tolist()
+            ),
+            **workflow_params
         }
-        for single_input in yield_single_inputs(ds)
+        for sample, bams in samplesheet.groupby("sample", sort=False)["flowcell_unmapped_bams"]
     ]
-
-    # Write out the complete set of inputs
-    write_json("inputs.json", all_inputs)
-
-    # Write out each individual file pair
-    for i, input in enumerate(all_inputs):
-        write_json(f"inputs.{i}.json", input)
 
 
 def write_json(fp, obj, indent=4):
@@ -34,41 +60,9 @@ def write_json(fp, obj, indent=4):
         json.dump(obj, handle, indent=indent)
 
 
-def yield_single_inputs(ds: PreprocessDataset):
-
-    ds.logger.info("Input files:")
-    ds.logger.info(ds.files.to_csv(index=None))
-    assert ds.files.shape[0] > 0, "ERROR: no input files found"
-
-    # Each of the files in the input is a BAM file for a single sample
-    for sample, sample_files in ds.files.groupby("sample"):
-
-        ds.logger.info(f"Sample: {sample}")
-
-        # Get the BAM files for this sample
-        bam_list = sample_files["file"].tolist()
-        for bam_fp in bam_list:
-            ds.logger.info(f"BAM: {bam_fp}")
-
-            # Make sure that the file is BAM
-            msg = f"Expected BAM file input, not {bam_fp}"
-            assert bam_fp.endswith(".bam"), msg
-
-        # Set up the input struct
-        struct = dict(
-            sample_name=sample,
-            base_file_name=sample,
-            final_gvcf_base_name=sample,
-            unmapped_bam_suffix=".bam",
-            flowcell_unmapped_bams=bam_list
-        )
-
-        yield {
-            "WholeGenomeGermlineSingleSample.sample_and_unmapped_bams": struct
-        }
-
-
 def setup_options(ds: PreprocessDataset):
+
+    from cirro.models.s3_path import S3Path
 
     # Add default params
     ds.add_param("memory_retry_multiplier", 2.0)
@@ -86,7 +80,7 @@ def setup_options(ds: PreprocessDataset):
     options = {
         kw: val
         for kw, val in ds.params.items()
-        if not kw.startswith("WholeGenomeGermlineSingleSample")
+        if not kw.startswith(WORKFLOW)
     }
 
     # If running in DRAGEN mode - Functional Equivalence
@@ -192,7 +186,22 @@ def setup_reference(ds: PreprocessDataset) -> None:
 
 
 if __name__ == "__main__":
+
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
+
     ds = PreprocessDataset.from_running()
     setup_reference(ds)
-    setup_inputs(ds)
+
+    all_inputs = build_inputs(read_samplesheet(ds.params.get("samplesheet")), ds.params)
+
+    # The samplesheet is only read here, so keep it out of the Cromwell options
+    ds.remove_param("samplesheet")
+
+    # Write out the complete set of inputs
+    write_json("inputs.json", all_inputs)
+
+    # Write out each individual sample
+    for i, single_input in enumerate(all_inputs):
+        write_json(f"inputs.{i}.json", single_input)
+
     setup_options(ds)

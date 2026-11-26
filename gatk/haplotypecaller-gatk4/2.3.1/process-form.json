@@ -1,4 +1,42 @@
 {
-  "form": {},
-  "ui": {}
+  "form": {
+    "type": "object",
+    "required": ["samplesheet"],
+    "properties": {
+      "samplesheet": {
+        "type": "string",
+        "schema": "pipeline_samplesheet"
+      }
+    }
+  },
+  "ui": {},
+  "structuredInputs": {
+    "pipeline_samplesheet": {
+      "fileFormat": "CSV",
+      "schema": {
+        "title": "Input Alignments",
+        "description": "One row per sample, each a BAM or CRAM file and its index",
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "properties": {
+            "input_bam": {
+              "type": "string",
+              "format": "file-path",
+              "title": "BAM or CRAM",
+              "pattern": "\\.(bam|cram)$"
+            },
+            "input_bam_index": {
+              "type": "string",
+              "format": "file-path",
+              "title": "Index (BAI or CRAI)",
+              "pattern": "\\.(bai|crai)$"
+            }
+          },
+          "required": ["input_bam", "input_bam_index"]
+        }
+      }
+    }
+  }
 }

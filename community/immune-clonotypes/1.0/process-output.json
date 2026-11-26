@@ -1,0 +1,66 @@
+{
+  "commands": [
+    {
+      "command": "hot.Dsv",
+      "params": {
+        "url": "https://www.nature.com/articles/s41592-021-01142-2",
+        "source": "$data_directory/TRUST4_report.csv",
+        "sep": ",",
+        "header": true,
+        "name": "Clonotype Detection Report",
+        "desc": "Summary of the immune clonotypes detected from bulk RNA sequencing data",
+        "cols": [
+          {
+            "col": "sample",
+            "name": "Sample",
+            "desc": "Sample name"
+          },
+          {
+            "col": "count",
+            "name": "Read Number",
+            "desc": "Number of reads found for this clonotype"
+          },
+          {
+            "col": "frequency",
+            "name": "Frequency",
+            "desc": "Proportion of all CD3 reads from this sample which were assigned to this clonotype"
+          },
+          {
+            "col": "CDR3nt",
+            "name": "CDR3 nucleotide",
+            "desc": "Nucleotide sequence of CDR3 allele"
+          },
+          {
+            "col": "CDR3aa",
+            "name": "CDR3 amino acid",
+            "desc": "Amino acid sequence of CDR3 allele"
+          },
+          {
+            "col": "V",
+            "name": "V",
+            "desc": "V allele"
+          },
+          {
+            "col": "D",
+            "name": "D",
+            "desc": "D allele"
+          },
+          {
+            "col": "J",
+            "name": "J",
+            "desc": "J allele"
+          },
+          {
+            "col": "C",
+            "name": "C",
+            "desc": "C allele"
+          }
+        ]
+      }
+    },
+    {
+      "command": "hot.Manifest",
+      "params": {}
+    }
+  ]
+}

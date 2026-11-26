@@ -2,7 +2,12 @@
   "form": {
     "type": "object",
     "title": "Sample Information",
+    "required": ["samplesheet"],
     "properties": {
+      "samplesheet": {
+        "type": "string",
+        "schema": "pipeline_samplesheet"
+      },
       "run_date": {
         "type": "string",
         "title": "Run Date",
@@ -20,5 +25,63 @@
       }
     }
   },
-  "ui": {}
+  "ui": {},
+  "structuredInputs": {
+    "pipeline_samplesheet": {
+      "fileFormat": "CSV",
+      "schema": {
+        "title": "Read Groups",
+        "description": "One row per pair of FASTQ files. Each row becomes one unmapped BAM, named after its read group",
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "properties": {
+            "sample": {
+              "type": "string",
+              "title": "Sample",
+              "pattern": "^\\S+$",
+              "errorMessage": "Must not contain spaces"
+            },
+            "readgroup_name": {
+              "type": "string",
+              "title": "Read Group",
+              "description": "Leave blank to use the sample name. Give each lane of a sample its own read group",
+              "pattern": "^\\S*$",
+              "errorMessage": "Must not contain spaces"
+            },
+            "library_name": {
+              "type": "string",
+              "title": "Library",
+              "description": "Leave blank to use the sample name",
+              "pattern": "^\\S*$",
+              "errorMessage": "Must not contain spaces"
+            },
+            "platform_unit": {
+              "type": "string",
+              "title": "Platform Unit",
+              "description": "Leave blank to use the sample name",
+              "pattern": "^\\S*$",
+              "errorMessage": "Must not contain spaces"
+            },
+            "fastq_1": {
+              "type": "string",
+              "format": "file-path",
+              "title": "FASTQ (R1)",
+              "pattern": "^(?![\\S\\s]*_I[12]_001\\.f(ast)?q(\\.gz)?$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q(\\.gz)?$",
+              "errorMessage": "Must be a read FASTQ (.fq, .fastq, .fq.gz or .fastq.gz) with no spaces in its name, not an I1/I2 index read"
+            },
+            "fastq_2": {
+              "type": "string",
+              "format": "file-path",
+              "title": "FASTQ (R2)",
+              "pattern": "^(?![\\S\\s]*_I[12]_001\\.f(ast)?q(\\.gz)?$)([\\S\\s]*\\/)?[^\\s\\/]+\\.f(ast)?q(\\.gz)?$",
+              "errorMessage": "Must be a read FASTQ (.fq, .fastq, .fq.gz or .fastq.gz) with no spaces in its name, not an I1/I2 index read"
+            }
+          },
+          "required": ["sample", "fastq_1", "fastq_2"]
+        }
+      }
+    }
+  }
 }

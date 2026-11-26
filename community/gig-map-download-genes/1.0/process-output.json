@@ -1,0 +1,75 @@
+{
+    "commands": [
+        {
+            "command": "hot.Parquet",
+            "params": {
+                "cols": [
+                    {
+                        "col": "genome_id",
+                        "desc": "Unique identifier for genome record",
+                        "name": "Genome ID"
+                    },
+                    {
+                        "col": "Organism",
+                        "desc": "Identifier for organism assigned to genome record in NCBI",
+                        "name": "Organism"
+                    },
+                    {
+                        "col": "Strain",
+                        "desc": "Strain-level identifier for organism assigned by NCBI",
+                        "name": "Strain"
+                    },
+                    {
+                        "col": "BioSample",
+                        "desc": "Record identifier in the NCBI BioSample database",
+                        "name": "BioSample"
+                    },
+                    {
+                        "col": "BioProject",
+                        "desc": "Record identifier in the NCBI BioProject database",
+                        "name": "BioProject"
+                    },
+                    {
+                        "col": "Assembly",
+                        "desc": "Record identifier in the NCBI Assembly database",
+                        "name": "Assembly"
+                    },
+                    {
+                        "col": "Size_Mb",
+                        "desc": "Genome size in megabases",
+                        "name": "Size (MB)"
+                    },
+                    {
+                        "col": "GC_percent",
+                        "desc": "Proportion of genome containing G/C nucleotides",
+                        "name": "GC (%)"
+                    },
+                    {
+                        "col": "CDS",
+                        "desc": "Number of coding domain sequences",
+                        "name": "CDS"
+                    },
+                    {
+                        "col": "Formatted Name",
+                        "desc": "Formatted name of genome",
+                        "name": "Formatted Name"
+                    }
+                ],
+                "desc": "NCBI annotations available for the downloaded genomes",
+                "name": "Genome Annotations",
+                "read_csv": {
+                    "parse": {
+                        "delimiter": ","
+                    }
+                },
+                "source": "$data_directory/genes.annot.csv.gz",
+                "target": "genes.annot.parquet",
+                "url": ""
+            }
+        },
+        {
+            "command": "hot.Manifest",
+            "params": {}
+        }
+    ]
+}

@@ -1,0 +1,7 @@
+{
+  "gate_size_multiplier": "$.dataset.params.gate_size_multiplier",
+  "fcs_files": "$.structuredInputs.fcs_files.path",
+  "input_anndata": "$.dataset.params.input_anndata[*]",
+  "output_directory": "$.dataset.dataPath",
+  "container": "public.ecr.aws/cirrobio/flowjo-gating:2d9ddcc"
+}

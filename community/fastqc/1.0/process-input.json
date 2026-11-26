@@ -1,0 +1,4 @@
+{
+  "input": "$.dataset.params.input[*]",
+  "output": "$.dataset.dataPath"
+}

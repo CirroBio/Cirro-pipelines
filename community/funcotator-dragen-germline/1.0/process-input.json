@@ -1,0 +1,9 @@
+{
+    "samplesheet": "$.structuredInputs.pipeline_samplesheet.path",
+    "ref_version": "$.dataset.params.ref_version",
+    "reference_fasta": "$.referencesBucketUri|/igenomes/Homo_sapiens/UCSC/|$.dataset.params.ref_version|/Sequence/WholeGenomeFasta/genome.fa",
+    "data_sources": "$.referencesBucketUri|/funcotator/funcotator_dataSources.v1.7.20200521g/",
+    "output_file_format": "$.dataset.params.output_file_format",
+    "transcript_selection_mode": "$.dataset.params.transcript_selection_mode",
+    "outdir": "$.dataset.dataPath"
+}

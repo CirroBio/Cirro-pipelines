@@ -1,0 +1,28 @@
+{
+    "id": "hutch-gig-map-build-pangenome-custom-1-0",
+    "childProcessIds": [],
+    "dataType": "Pangenome (gig-map)",
+    "name": "Build Pangenome (gig-map/build_pangenome)",
+    "desc": "Deduplicate and cluster the gene content of a collection of genomes",
+    "executor": "NEXTFLOW",
+    "category": "Microbial Analysis",
+    "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-microbial-analysis#microbial-pangenome-gig-map",
+    "code": {
+        "repository": "GITHUBPUBLIC",
+        "script": "build_pangenome.nf",
+        "uri": "FredHutch/gig-map",
+        "version": "main"
+    },
+    "allowMultipleSources": true,
+    "usesSampleSheet": false,
+    "computeDefaults": [
+        {
+            "executor": "NEXTFLOW",
+            "json": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-compute.config",
+            "name": "Default"
+        }
+    ],
+    "paramMapJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json",
+    "formJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-form.json",
+    "webOptimizationJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-output.json"
+}

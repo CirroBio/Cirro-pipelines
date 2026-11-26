@@ -1,4 +1,6 @@
 {
+  "samplesheet": "$.structuredInputs.pipeline_samplesheet.path",
+
   "HaplotypeCallerGvcf_GATK4.ref_dict": "$.referencesBucketUri|/GATK/hg38/v0/Homo_sapiens_assembly38.dict",
   "HaplotypeCallerGvcf_GATK4.ref_fasta": "$.referencesBucketUri|/GATK/hg38/v0/Homo_sapiens_assembly38.fasta",
   "HaplotypeCallerGvcf_GATK4.ref_fasta_index": "$.referencesBucketUri|/GATK/hg38/v0/Homo_sapiens_assembly38.fasta.fai",

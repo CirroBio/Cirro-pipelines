@@ -1,0 +1,32 @@
+{
+  "id": "process-hutch-immune-flow-gating-1_0",
+  "childProcessIds": [],
+  "parentProcessIds": [
+    "fcs"
+  ],
+  "name": "Gate Immune Cell Subsets",
+  "desc": "Perform automated gating of immune cell subsets.",
+  "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
+  "category": "Flow Cytometry",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-flow-cytometry/#gate-immune-cell-subsets",
+  "code": {
+    "repository": "GITHUBPUBLIC",
+    "script": "main.nf",
+    "uri": "FredHutch/immune-flow-gating",
+    "version": "main"
+  },
+  "allowMultipleSources": true,
+  "usesSampleSheet": false,
+  "computeDefaults": [
+    {
+      "executor": "NEXTFLOW",
+      "json": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-compute.config",
+      "name": "Default"
+    }
+  ],
+  "paramMapJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json",
+  "formJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-form.json",
+  "webOptimizationJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-output.json",
+  "preProcessScript": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/preprocess.py"
+}

@@ -14,6 +14,8 @@
     "version": "main",
     "script": "spaceranger_mkref.nf"
   },
+  "usesSampleSheet": false,
+  "allowMultipleSources": true,
   "computeDefaults": [
     {
       "executor": "NEXTFLOW",

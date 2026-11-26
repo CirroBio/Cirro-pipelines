@@ -4,7 +4,7 @@ Converts whole-slide and microscopy images to pyramidal OME-TIFF using QuPath.
 
 ## Notes
 
-Every file under the input dataset carrying the selected suffix is converted, at any
+Every file under the selected dataset or folder carrying the selected suffix is converted, at any
 depth, so a dataset which keeps its slides in subfolders works as well as a flat one.
 
 Each image is converted in its own task. They run in parallel, stage only themselves

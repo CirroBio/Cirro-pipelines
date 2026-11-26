@@ -1,0 +1,30 @@
+{
+    "commands": [
+      {
+        "command": "hot.AnnDataZarr",
+        "params": {
+          "url": "https://www.10xgenomics.com/support/in-situ-gene-expression",
+          "source": "$data_directory/[sampleName]/experiment.xenium",
+          "target": "{sampleName}.zarr",
+          "name": "In Situ Gene Expression - {sampleName}",
+          "desc": "Summary of spatial distribution of gene expression",
+          "filetype": "h5-xenium"
+        }
+      },
+      {
+        "command": "hot.AnnDataZarr",
+        "params": {
+          "url": "https://www.10xgenomics.com/support/in-situ-gene-expression",
+          "source": "$data_directory/experiment.xenium",
+          "target": "xenium.zarr",
+          "name": "In Situ Gene Expression",
+          "desc": "Summary of spatial distribution of gene expression",
+          "filetype": "h5-xenium"
+        }
+      },
+      {
+        "command": "hot.Manifest",
+        "params": {}
+      }
+    ]
+  }

@@ -22,6 +22,8 @@
     "uri": "CirroBio/nf-qupath",
     "version": "main"
   },
+  "allowMultipleSources": true,
+  "usesSampleSheet": false,
   "computeDefaults": [
     {
       "executor": "NEXTFLOW",

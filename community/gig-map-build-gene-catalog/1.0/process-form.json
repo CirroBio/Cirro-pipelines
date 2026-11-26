@@ -1,0 +1,39 @@
+{
+    "form": {
+        "type": "object",
+        "required": [
+            "genes"
+        ],
+        "properties": {
+            "genes": {
+                "type": "string",
+                "format": "directory-path",
+                "title": "Genes",
+                "description": "Folder of amino acid FASTA files to deduplicate",
+                "process": [
+                    "microbial_genome_fastp",
+                    "hutch-gig-map-download-genes-1-0"
+                ]
+            },
+            "cluster_similarity": {
+                "type": "number",
+                "title": "Clustering Similarity Threshold",
+                "description": "Amino acid similarity used for clustering (ranges from 0.0 to 1.0)",
+                "default": 0.9
+            },
+            "cluster_coverage": {
+                "type": "number",
+                "title": "Clustering Coverage Threshold",
+                "description": "Alignment coverage used for clustering (ranges from 0.0 to 1.0)",
+                "default": 0.9
+            },
+            "min_gene_length": {
+                "type": "integer",
+                "title": "Minimum Gene Length",
+                "description": "Minimum amino acid length threshold used to filter genes",
+                "default": 50
+            }
+        }
+    },
+    "ui": {}
+}

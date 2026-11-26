@@ -1,0 +1,118 @@
+{
+    "form": {
+        "type": "object",
+        "required": [
+            "samplesheet"
+        ],
+        "properties": {
+            "samplesheet": {
+                "type": "string",
+                "schema": "pipeline_samplesheet"
+            },
+            "mcl_inflation": {
+                "default": 2,
+                "description": "Ranges from 2 (approximately species-level) to 10 (approximately strain-level)",
+                "title": "Gene Clustering Threshold (mcl_inflation)",
+                "type": "integer"
+            },
+            "minbit": {
+                "default": 0.5,
+                "description": "Threshold of sequence similarity used to group genes (ranges 0-1)",
+                "title": "Sequence Similarity Threshold (minbit)",
+                "type": "number"
+            },
+            "min_occurrence": {
+                "default": 1,
+                "description": "Filter out any genes which are found in fewer than this number of genomes",
+                "title": "Minimum Occurrence",
+                "type": "integer"
+            },
+            "min_alignment_fraction": {
+                "default": 0.0,
+                "description": "Any pairwise genome ANI scores below this threshold will be set to zero",
+                "title": "Minimum Alignment Fraction",
+                "type": "number"
+            },
+            "gene_enrichment": {
+                "default": false,
+                "description": "Instead of using functional groupings, enrichment scores can be calculated on a per-gene basis",
+                "title": "Calculate Gene-Level Enrichment",
+                "type": "boolean",
+                "value": false
+            },
+            "distance": {
+                "default": "euclidean",
+                "description": "Metric used to summarize genome similarity",
+                "title": "Distance Metric",
+                "type": "string",
+                "enum": [
+                    "euclidean",
+                    "braycurtis",
+                    "canberra",
+                    "chebyshev",
+                    "cityblock",
+                    "cosine",
+                    "correlation",
+                    "hamming",
+                    "jaccard",
+                    "sqeuclidean",
+                    "yule",
+                    "matching"
+                ]
+            },
+            "linkage": {
+                "default": "ward",
+                "description": "Method used to build tree of genomes",
+                "title": "Linkage Method",
+                "type": "string",
+                "enum": [
+                    "single",
+                    "complete",
+                    "average",
+                    "weighted",
+                    "centroid",
+                    "median",
+                    "ward"
+                ]
+            }
+        }
+    },
+    "ui": {},
+    "structuredInputs": {
+        "pipeline_samplesheet": {
+            "fileFormat": "CSV",
+            "schema": {
+                "title": "Genomes",
+                "description": "One row per genome. Fill in Category to compare genomes by it (at least two distinct values), or leave it blank in every row.",
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "genome": {
+                            "type": "string",
+                            "format": "file-path",
+                            "title": "Genome (FASTA)",
+                            "pattern": "\\.(fa|fna|fasta|fas|fsa)(\\.gz)?$",
+                            "errorMessage": "Must be a FASTA file (.fa, .fna, .fasta, .fas or .fsa, optionally gzipped)"
+                        },
+                        "name": {
+                            "type": "string",
+                            "title": "Name",
+                            "pattern": "^[A-Za-z_][A-Za-z0-9_]*$",
+                            "errorMessage": "Name can only contain letters, numbers and underscores, and cannot start with a number"
+                        },
+                        "category": {
+                            "type": "string",
+                            "title": "Category"
+                        }
+                    },
+                    "required": [
+                        "genome",
+                        "name"
+                    ]
+                }
+            }
+        }
+    }
+}

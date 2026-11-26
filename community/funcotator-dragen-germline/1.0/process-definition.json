@@ -1,0 +1,45 @@
+{
+    "id": "process-hutch-funcotator-dragen-germline-1-0",
+    "childProcessIds": [
+      "process-hutch-liftover-vcf-hg38-hg19-1-0"
+    ],
+    "dataType": "Genomic Variants - Annotated (Funcotator)",
+    "name": "Funcotator Variant Annotation (GATK) (DRAGEN Germline)",
+    "desc": "Functional annotation of genomic variants",
+    "executor": "NEXTFLOW",
+    "category": "DNA Sequencing",
+    "pipelineTypeOverride": "GATK",
+    "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-dna-sequencing/#funcotator-variant-annotation-gatk",
+    "code": {
+      "repository": "GITHUBPUBLIC",
+      "script": "main.nf",
+      "uri": "FredHutch/funcotator-nf",
+      "version": "main"
+    },
+    "usesSampleSheet": false,
+    "allowMultipleSources": true,
+    "computeDefaults": [
+      {
+        "executor": "NEXTFLOW",
+        "json": "s3://<RESOURCES_BUCKET>/process/public/community/funcotator/process-compute.config",
+        "name": "Default"
+      }
+    ],
+    "paramMapJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json",
+    "preProcessScript": "s3://<RESOURCES_BUCKET>/process/public/community/funcotator/preprocess.py",
+    "formJson": "s3://<RESOURCES_BUCKET>/process/public/community/funcotator/process-form.json",
+    "webOptimizationJson": "s3://<RESOURCES_BUCKET>/process/hutch/default-process-output.json",
+    "fileMappingRules": [
+      {
+        "description": "Annotated Variants (VCF or MAF)",
+        "min": 1,
+        "fileNamePatterns": [
+          {
+            "exampleName": "SampleName.funcotated.vcf.gz",
+            "description": "VCF",
+            "sampleMatchingPattern": ".*/(?P<sampleName>[\\S ]*).funcotated.(?P<fileType>\\S*).gz$"
+          }
+        ]
+      }
+    ]
+  }

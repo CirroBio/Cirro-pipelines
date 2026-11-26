@@ -1,0 +1,399 @@
+{
+  "ui": {},
+  "form": {
+    "type": "object",
+    "properties": {
+      "workflow": {
+        "type": "object",
+        "title": "Workflow Options",
+        "description": "Enable at least one analysis subworkflow. The run will fail if none is selected.",
+        "properties": {
+          "sv": {
+            "type": "boolean",
+            "title": "Structural variants (SV)",
+            "description": "Call structural variants with Sniffles2.",
+            "default": false
+          },
+          "snp": {
+            "type": "boolean",
+            "title": "Small variants (SNP)",
+            "description": "Call small variants with Clair3.",
+            "default": false
+          },
+          "cnv": {
+            "type": "boolean",
+            "title": "Copy number variants (CNV)",
+            "description": "Call copy number variants with Spectre (or QDNAseq, see CNV options).",
+            "default": false
+          },
+          "str": {
+            "type": "boolean",
+            "title": "STR expansions",
+            "description": "Genotype short tandem repeat expansions with Straglr. Requires an hg38 reference.",
+            "default": false
+          },
+          "mod": {
+            "type": "boolean",
+            "title": "Modified bases",
+            "description": "Aggregate modified-base calls to bedMethyl with modkit. Requires input BAM with MM/ML tags.",
+            "default": false
+          }
+        }
+      },
+      "input": {
+        "type": "object",
+        "title": "Main Options",
+        "required": [
+          "bam",
+          "ref"
+        ],
+        "properties": {
+          "bam": {
+            "type": "string",
+            "title": "Input BAM (single file)",
+            "description": "BAM or uBAM file for the sample. This pipeline analyzes one BAM per run; merge multi-BAM samples before ingest.",
+            "format": "file-path",
+            "pattern": "\\.u?bam$"
+          },
+          "ref": {
+            "type": "string",
+            "title": "Reference FASTA",
+            "description": "Reference genome FASTA. Annotation and CNV require hg19/hg38; STR requires hg38.",
+            "format": "file-path",
+            "pattern": "\\.(fa|fasta|fna)(\\.gz)?$"
+          },
+          "sample_name": {
+            "type": "string",
+            "title": "Sample name",
+            "description": "Sample name to be displayed in workflow outputs."
+          },
+          "bed": {
+            "type": "string",
+            "title": "Target regions BED",
+            "description": "Optional BED file of regions to process for variant calling. A fourth (name) column also produces per-region coverage metrics.",
+            "format": "file-path",
+            "pattern": "\\.bed$"
+          },
+          "coverage_bed": {
+            "type": "string",
+            "title": "Coverage-metrics BED",
+            "description": "Optional BED file of regions for coverage metrics only. Requires a fourth column (region name).",
+            "format": "file-path",
+            "pattern": "\\.bed$"
+          },
+          "phased": {
+            "type": "boolean",
+            "title": "Phasing",
+            "description": "Perform phasing and output haplotagged alignments.",
+            "default": false
+          },
+          "include_all_ctgs": {
+            "type": "boolean",
+            "title": "Include all contigs",
+            "description": "Call variants on all sequences in the reference; otherwise small and structural variants are only called on chr{1..22,X,Y,MT}.",
+            "default": false
+          },
+          "annotation": {
+            "type": "boolean",
+            "title": "SnpEff annotation",
+            "description": "Annotate variant calls with SnpEff/ClinVar (hg19/hg38 references only).",
+            "default": true
+          },
+          "igv": {
+            "type": "boolean",
+            "title": "IGV output",
+            "description": "Emit configuration for the EPI2ME IGV visualizer.",
+            "default": false
+          },
+          "partner": {
+            "type": "string",
+            "title": "Partner export",
+            "description": "Prepare outputs for tertiary analysis with a partner platform.",
+            "enum": [
+              "geneyx",
+              "fabric"
+            ]
+          }
+        }
+      },
+      "coverage_options": {
+        "type": "object",
+        "title": "Coverage Options",
+        "properties": {
+          "bam_min_coverage": {
+            "type": "number",
+            "title": "Minimum BAM coverage",
+            "description": "Minimum read coverage required to run analysis.",
+            "default": 20
+          },
+          "alignment_report_coverage_threshold": {
+            "type": "number",
+            "title": "Alignment report coverage threshold",
+            "description": "When a target regions BED is provided, BED regions with mean coverage below this threshold are tabulated in the alignment report.",
+            "default": 20
+          },
+          "depth_intervals": {
+            "type": "boolean",
+            "title": "Depth intervals bedGraph",
+            "description": "Output a bedGraph file with entries for each genomic interval featuring homogeneous depth.",
+            "default": false
+          },
+          "downsample_coverage": {
+            "type": "boolean",
+            "title": "Downsample coverage",
+            "description": "Downsample coverage along the genome before analysis.",
+            "default": false
+          }
+        },
+        "dependencies": {
+          "downsample_coverage": {
+            "oneOf": [
+              {
+                "properties": {
+                  "downsample_coverage": {
+                    "enum": [
+                      true
+                    ]
+                  },
+                  "downsample_coverage_target": {
+                    "type": "number",
+                    "title": "Downsample target coverage",
+                    "description": "Average coverage of reads to use for the analyses.",
+                    "default": 60
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "downsample_coverage": {
+                    "enum": [
+                      false
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "snp_options": {
+        "type": "object",
+        "title": "Small Variant Calling Options",
+        "description": "Only used when the SNP subworkflow is enabled.",
+        "properties": {
+          "override_basecaller_cfg": {
+            "type": "string",
+            "title": "Override basecaller configuration",
+            "description": "Basecall model used to select the small-variant calling model. Normally auto-detected from the BAM header; set only when the header lacks (or mixes) basecall-model annotations.",
+            "enum": [
+              "dna_r10.4.1_e8.2_400bps_fast@v4.2.0",
+              "dna_r10.4.1_e8.2_400bps_fast@v4.3.0",
+              "dna_r10.4.1_e8.2_400bps_fast@v5.0.0",
+              "dna_r10.4.1_e8.2_400bps_fast@v5.2.0",
+              "dna_r10.4.1_e8.2_400bps_hac@v4.3.0",
+              "dna_r10.4.1_e8.2_400bps_hac@v5.0.0",
+              "dna_r10.4.1_e8.2_400bps_hac@v5.2.0",
+              "dna_r10.4.1_e8.2_400bps_hac@v6.0.0",
+              "dna_r10.4.1_e8.2_400bps_sup@v4.3.0",
+              "dna_r10.4.1_e8.2_400bps_sup@v5.0.0",
+              "dna_r10.4.1_e8.2_400bps_sup@v5.2.0",
+              "dna_r10.4.1_e8.2_apk_sup@v5.0.0",
+              "custom",
+              "dna_r10.4.1_e8.2_260bps_hac@v4.0.0",
+              "dna_r10.4.1_e8.2_260bps_hac@v4.1.0",
+              "dna_r10.4.1_e8.2_260bps_sup@v4.0.0",
+              "dna_r10.4.1_e8.2_260bps_sup@v4.1.0",
+              "dna_r10.4.1_e8.2_400bps_hac",
+              "dna_r10.4.1_e8.2_400bps_hac@v3.5.1",
+              "dna_r10.4.1_e8.2_400bps_hac@v3.5.2",
+              "dna_r10.4.1_e8.2_400bps_hac@v4.0.0",
+              "dna_r10.4.1_e8.2_400bps_hac@v4.1.0",
+              "dna_r10.4.1_e8.2_400bps_hac@v4.2.0",
+              "dna_r10.4.1_e8.2_400bps_hac_prom",
+              "dna_r10.4.1_e8.2_400bps_sup@v3.5.1",
+              "dna_r10.4.1_e8.2_400bps_sup@v3.5.2",
+              "dna_r10.4.1_e8.2_400bps_sup@v4.0.0",
+              "dna_r10.4.1_e8.2_400bps_sup@v4.1.0",
+              "dna_r10.4.1_e8.2_400bps_sup@v4.2.0",
+              "dna_r9.4.1_450bps_hac",
+              "dna_r9.4.1_450bps_hac_prom",
+              "dna_r9.4.1_e8_hac@v3.3",
+              "dna_r9.4.1_e8_sup@v3.3",
+              "dna_r9.4.1_e8_sup@v3.6"
+            ]
+          },
+          "GVCF": {
+            "type": "boolean",
+            "title": "Output gVCF",
+            "description": "Output a gVCF in addition to the VCF outputs (experimental; SNP subworkflow only).",
+            "default": false
+          }
+        }
+      },
+      "sv_options": {
+        "type": "object",
+        "title": "Structural Variant Calling Options",
+        "description": "Only used when the SV subworkflow is enabled.",
+        "properties": {
+          "tr_bed": {
+            "type": "string",
+            "title": "Tandem repeat BED",
+            "description": "BED file of tandem repeat annotations for the reference genome, passed to Sniffles2 (SV subworkflow).",
+            "format": "file-path",
+            "pattern": "\\.bed$"
+          },
+          "sniffles_args": {
+            "type": "string",
+            "title": "Extra Sniffles2 arguments",
+            "description": "Additional command-line arguments passed to Sniffles2 (SV subworkflow)."
+          }
+        }
+      },
+      "cnv_options": {
+        "type": "object",
+        "title": "Copy Number Variant Calling Options",
+        "description": "Only used when the CNV subworkflow is enabled.",
+        "properties": {
+          "spectre_args": {
+            "type": "string",
+            "title": "Extra Spectre arguments",
+            "description": "Additional command-line arguments passed to Spectre (CNV subworkflow without QDNAseq)."
+          },
+          "use_qdnaseq": {
+            "type": "boolean",
+            "title": "Use QDNAseq",
+            "description": "Use QDNAseq instead of Spectre for CNV calling.",
+            "default": false
+          }
+        },
+        "dependencies": {
+          "use_qdnaseq": {
+            "oneOf": [
+              {
+                "properties": {
+                  "use_qdnaseq": {
+                    "enum": [
+                      true
+                    ]
+                  },
+                  "qdnaseq_bin_size": {
+                    "type": "integer",
+                    "title": "QDNAseq bin size (kbp)",
+                    "description": "Bin size for QDNAseq in kbp.",
+                    "enum": [
+                      1,
+                      5,
+                      10,
+                      15,
+                      30,
+                      50,
+                      100,
+                      500,
+                      1000
+                    ],
+                    "default": 500
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "use_qdnaseq": {
+                    "enum": [
+                      false
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "str_options": {
+        "type": "object",
+        "title": "STR Genotyping Options",
+        "description": "Only used when the STR subworkflow is enabled.",
+        "properties": {
+          "sex": {
+            "type": "string",
+            "title": "Sex",
+            "description": "Sex passed to Straglr-genotype (also read by Spectre). Inferred from the data when not provided.",
+            "enum": [
+              "XY",
+              "XX"
+            ]
+          }
+        }
+      },
+      "mod_options": {
+        "type": "object",
+        "title": "Modified Base Calling Options",
+        "description": "Only used when the modified-bases subworkflow is enabled.",
+        "properties": {
+          "force_strand": {
+            "type": "boolean",
+            "title": "Strand-aware modification calls",
+            "description": "Require modkit to call strand-aware modifications.",
+            "default": false
+          },
+          "modkit_args": {
+            "type": "string",
+            "title": "Extra modkit arguments",
+            "description": "Additional command-line options passed to modkit (modified-bases subworkflow)."
+          }
+        }
+      },
+      "advanced_options": {
+        "type": "object",
+        "title": "Advanced Options",
+        "properties": {
+          "output_xam_fmt": {
+            "type": "string",
+            "title": "Alignment output format",
+            "description": "File format of alignment files created by alignment and phasing.",
+            "enum": [
+              "bam",
+              "cram"
+            ],
+            "default": "cram"
+          }
+        }
+      },
+      "multiprocessing_options": {
+        "type": "object",
+        "title": "Multiprocessing Options",
+        "properties": {
+          "threads": {
+            "type": "integer",
+            "title": "Threads",
+            "description": "Max threads for more intense processes (limited by executor cpus).",
+            "default": 4
+          },
+          "ubam_map_threads": {
+            "type": "integer",
+            "title": "uBAM mapping threads",
+            "description": "Max threads for aligning reads from uBAM (limited by executor cpus).",
+            "default": 8
+          },
+          "ubam_sort_threads": {
+            "type": "integer",
+            "title": "uBAM sort threads",
+            "description": "Max threads for sorting and indexing aligned reads from uBAM.",
+            "default": 3
+          },
+          "ubam_bam2fq_threads": {
+            "type": "integer",
+            "title": "uBAM bam2fq threads",
+            "description": "Max threads for uncompressing uBAM and generating FASTQ for alignment.",
+            "default": 1
+          },
+          "modkit_threads": {
+            "type": "integer",
+            "title": "modkit threads",
+            "description": "Total threads used in modkit modified-base calling.",
+            "default": 4
+          }
+        }
+      }
+    }
+  }
+}

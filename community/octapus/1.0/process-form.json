@@ -1,0 +1,79 @@
+{
+    "form": {
+        "type": "object",
+        "required": [
+            "genome_table",
+            "operon"
+        ],
+        "properties": {
+            "genome_table": {
+                "type": "string",
+                "schema": "pipeline_samplesheet"
+            },
+            "operon": {
+                "default": "",
+                "description": "Collection of genes to search for across the genome collection",
+                "file": "**/genome_fasta/**/genome.fasta",
+                "pathType": "references",
+                "title": "Operon (Protein FASTA)",
+                "type": "string"
+            },
+            "min_identity": {
+                "default": 90,
+                "description": "Percent identity threshold used for alignment",
+                "title": "Minimum Identity",
+                "type": "integer"
+            },
+            "min_coverage": {
+                "default": 50,
+                "description": "Percent coverage threshold used for alignment",
+                "title": "Minimum Coverage",
+                "type": "integer"
+            },
+            "annotations": {
+                "title": "For each combination of genes found adjacently, annotate the genomic region of the operon (note: does not scale efficiently beyond ~50 genomes)",
+                "description": "Annotate Genome Windows",
+                "default": true,
+                "type": "boolean"
+            },
+            "annotation_window": {
+                "default": 10000,
+                "title": "Annotation Window Size",
+                "description": "The additional area on either side of the operon to annotate (in bp)",
+                "type": "integer"
+            }
+        }
+    },
+    "ui": {},
+    "structuredInputs": {
+        "pipeline_samplesheet": {
+            "fileFormat": "CSV",
+            "schema": {
+                "title": "Genomes",
+                "description": "One row per genome to search for the operon.",
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "organism": {
+                            "type": "string",
+                            "title": "Organism Name"
+                        },
+                        "uri": {
+                            "type": "string",
+                            "format": "file-path",
+                            "title": "Genome (FASTA)",
+                            "pattern": "\\.(fa|fna|fasta|fas)(\\.gz)?$",
+                            "errorMessage": "Must be a FASTA file (.fa, .fna, .fasta or .fas, optionally gzipped)"
+                        }
+                    },
+                    "required": [
+                        "organism",
+                        "uri"
+                    ]
+                }
+            }
+        }
+    }
+}

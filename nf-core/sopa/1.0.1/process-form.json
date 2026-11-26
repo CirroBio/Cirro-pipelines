@@ -50,8 +50,8 @@
                     "type": "string",
                     "title": "OME-TIFF images",
                     "description": "All-channel OME-TIFF images to analyze. Each image is analyzed as its own sample.",
-                    "pathType": "dataset",
-                    "file": "**/*.{tif,tiff}",
+                    "format": "file-path",
+                    "pattern": "\\.tiff?$",
                     "multiple": true
                   }
                 },
@@ -70,8 +70,8 @@
                     "type": "string",
                     "title": "PhenoCycler image",
                     "description": "All-channel PhenoCycler image to analyze.",
-                    "pathType": "dataset",
-                    "file": "**/*.{qptiff,tif,tiff}"
+                    "format": "file-path",
+                    "pattern": "\\.(qptiff|tiff?)$"
                   }
                 },
                 "required": [
@@ -89,8 +89,23 @@
                       "macsima",
                       "hyperion"
                     ]
+                  },
+                  "spatial_data": {
+                    "type": "string",
+                    "title": "Machine output",
+                    "description": "Datasets or folders of raw machine output to analyze. Each Xenium, MERSCOPE or CosMx output folder found inside is analyzed as its own sample; for the other technologies each selected folder is one sample.",
+                    "format": "directory-path",
+                    "process": [
+                      "xenium",
+                      "cosmx",
+                      "custom_dataset"
+                    ],
+                    "multiple": true
                   }
-                }
+                },
+                "required": [
+                  "spatial_data"
+                ]
               }
             ]
           }

@@ -1,0 +1,4 @@
+{
+    "genome_tables": "$.dataset.params.genome_tables[*]",
+    "output": "$.dataset.dataPath"
+}

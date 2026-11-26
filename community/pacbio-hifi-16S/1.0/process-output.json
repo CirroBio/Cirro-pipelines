@@ -1,0 +1,82 @@
+{
+    "commands": [
+        {
+            "command": "hot.Parquet",
+            "params": {
+                "cols": [
+                    {
+                        "col": "query_name",
+                        "desc": "Sample containing the detected organisms",
+                        "name": "Query Name"
+                    },
+                    {
+                        "col": "rank",
+                        "desc": "Taxonomic Rank",
+                        "name": "rank"
+                    },
+                    {
+                        "col": "fraction",
+                        "desc": "Proportion of the sample made up by the indicated organism",
+                        "name": "Fraction"
+                    },
+                    {
+                        "col": "lineage",
+                        "desc": "Taxonomic lineage of the detected organism",
+                        "name": "Lineage"
+                    },
+                    {
+                        "col": "query_md5",
+                        "desc": "Checksum of query file",
+                        "name": "Query MD5"
+                    },
+                    {
+                        "col": "query_filename",
+                        "desc": "Name of query file",
+                        "name": "Query Filename"
+                    },
+                    {
+                        "col": "f_weighted_at_rank",
+                        "desc": "Weighted fraction at the specified taxonomic rank",
+                        "name": "Weighted Fraction"
+                    },
+                    {
+                        "col": "bp_match_at_rank",
+                        "desc": "Basepairs matched at the specified taxonomic rank",
+                        "name": "Basepairs Matched"
+                    },
+                    {
+                        "col": "query_ani_at_rank",
+                        "desc": "Average Nucleotide Identity at the specified taxonomic rank",
+                        "name": "Query ANI"
+                    },
+                    {
+                        "col": "total_weighted_hashes",
+                        "desc": "Total number of hashes present in the query",
+                        "name": "Total Weighted Hashes"
+                    }
+                ],
+                "desc": "Summary of all organisms detected in a metagenomic sample",
+                "name": "Taxonomic Composition",
+                "read_csv": {
+                    "parse": {
+                        "delimiter": ","
+                    }
+                },
+                "source": "$data_directory/tax_metagenome/[sample].tax.metagenome.summarized.csv",
+                "target": "tax.metagenome.parquet",
+                "url": "https://sourmash.readthedocs.io/en/latest/command-line.html#sourmash-tax-metagenome-summarize-metagenome-content-from-gather-results"
+            },
+            "concat": [
+              {
+                "token": "sample",
+                "name": "Sample",
+                "desc": "Unique identifier or label for analyzed biological sample"
+              }
+            ]
+        },
+        {
+            "command": "hot.Manifest",
+            "params": {}
+        }
+    ]
+}

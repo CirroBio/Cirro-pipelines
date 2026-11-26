@@ -1,0 +1,4 @@
+{
+  "output_folder": "$.dataset.dataPath",
+  "sample_sheet": "$.structuredInputs.pipeline_samplesheet.path"
+}

@@ -1,0 +1,7 @@
+{
+  "paired_samplesheet": "$.structuredInputs.pipeline_samplesheet.path",
+  "reference": "$.dataset.params.reference",
+  "outdir": "$.dataset.dataPath",
+  "cpus": "16",
+  "memory_gb": "30"
+}

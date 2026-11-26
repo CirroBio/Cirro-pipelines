@@ -1,0 +1,10 @@
+{
+    "data_output": "$.dataset.dataPath",
+    "samplesheet": "$.structuredInputs.pipeline_samplesheet.path",
+    "metadata": "$.dataset.params.metadata",
+    "filter": "$.dataset.params.filter",
+    "fdr_cutoff": "$.dataset.params.fdr_cutoff",
+    "method": "$.dataset.params.method",
+    "formula": "$.dataset.params.formula",
+    "web_output": "$.dataset.s3|/web/"
+}

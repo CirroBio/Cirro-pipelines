@@ -1,0 +1,11 @@
+{
+    "genome_table": "$.structuredInputs.pipeline_samplesheet.path",
+    "genomes": "$.dataset.s3|/config/genomes.csv",
+    "annotation_window": "$.dataset.params.annotation_window",
+    "annotations": "$.dataset.params.annotations",
+    "min_coverage": "$.dataset.params.min_coverage",
+    "min_identity": "$.dataset.params.min_identity",
+    "operon": "$.dataset.params.operon",
+    "output_folder": "$.dataset.dataPath",
+    "output_prefix": "results"
+}

@@ -1,0 +1,5 @@
+{
+  "samplesheet": "$.structuredInputs.pipeline_samplesheet.path",
+  "nreads": "$.dataset.params.filtering.nreads",
+  "outdir": "$.dataset.dataPath"
+}

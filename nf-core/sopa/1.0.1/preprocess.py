@@ -4,12 +4,12 @@
 sopa's --input is a CSV with columns sample,data_path where data_path is the
 raw machine-output directory for one sample -- except for phenocycler and
 ome_tif, where data_path must be the all-channel image file itself, which the
-user picks in the form. Cirro selects a dataset rather than a samplesheet, so
-the CSV is written here from the selected dataset's data path.
+user picks in the form. The other technologies have the user pick the folders
+of machine output, and the CSV is written here from those picks.
 
-A dataset can hold several samples: a Xenium, MERSCOPE or CosMx run ingested
-whole has one output folder per region, found by the file its reader opens
-first, and the OME-TIFF picker accepts several images. Each becomes a row.
+A picked folder can hold several samples: a Xenium, MERSCOPE or CosMx run
+ingested whole has one output folder per region, found by the file its reader
+opens first, and the OME-TIFF picker accepts several images. Each becomes a row.
 
 sopa's samplesheet schema rejects whitespace in both columns, so sample names
 have it replaced, and a picked image whose path has a space is copied into the
@@ -83,15 +83,15 @@ def folder_sample_name(folder: str) -> str:
     return WHITESPACE.sub("_", sample)
 
 
-def picked_image_files(picked: str | list[str] | None) -> list[str]:
-    """The images picked in the form, as a list whichever picker sent them.
+def picked_paths(picked: str | list[str] | None) -> list[str]:
+    """The paths picked in the form, as a list whichever picker sent them.
 
-    The OME-TIFF picker allows several files and sends a list, while the PhenoCycler
-    picker allows one and sends its path as a plain string.
+    The OME-TIFF and folder pickers allow several picks and send a list, while the
+    PhenoCycler picker allows one and sends its path as a plain string.
     """
     if isinstance(picked, str):
         picked = [picked]
-    return [image_file.strip() for image_file in picked or [] if image_file.strip()]
+    return [path.strip() for path in picked or [] if path.strip()]
 
 
 def image_sample_name(image_file: str) -> str:
@@ -146,20 +146,18 @@ def set_image_aggregation(ds: PreprocessDataset):
 
 
 def build_samplesheet(
-    data_path: str,
     technology: str,
     image_files: list[str] | None = None,
-    output_folders: list[str] | None = None,
+    folders: list[str] | None = None,
 ) -> pd.DataFrame:
-    """Return the samplesheet for the selected dataset.
+    """Return the samplesheet for the picked images or folders.
 
-    data_path: the input dataset's data folder (no trailing slash required)
     technology: the sopa reader in use
     image_files: the images picked in the form, for the single-file technologies
-    output_folders: the output folders found in the dataset, for OUTPUT_MARKERS
+    folders: one folder per sample for the other technologies: the output folders
+        found in the picks for OUTPUT_MARKERS, otherwise the picked folders themselves
+        (a whole dataset picked in the folder picker ends in a slash)
     """
-    data_path = data_path.rstrip("/")
-
     if technology in SINGLE_FILE_TECHNOLOGIES:
         if not image_files:
             raise ValueError(
@@ -170,9 +168,13 @@ def build_samplesheet(
             for image_file in image_files
         ])
     else:
+        if not folders:
+            raise ValueError(
+                f"technology={technology} needs a folder of machine output to be selected in the form"
+            )
         samplesheet = pd.DataFrame([
-            dict(sample=folder_sample_name(folder), data_path=folder)
-            for folder in (output_folders if technology in OUTPUT_MARKERS else [data_path])
+            dict(sample=folder_sample_name(folder), data_path=folder.rstrip("/"))
+            for folder in folders
         ])
 
     spaced = samplesheet.loc[samplesheet["data_path"].str.contains(WHITESPACE)]
@@ -202,23 +204,21 @@ if __name__ == "__main__":
     if technology in IMAGE_ONLY_TECHNOLOGIES:
         set_image_aggregation(ds)
 
-    image_files = picked_image_files(ds.params.get("image_file"))
+    image_files = picked_paths(ds.params.get("image_file"))
     # The mapped samplesheet path sits in this dataset's config/ folder
     config_dir = ds.params["input"].rsplit("/", 1)[0]
     image_files = [
         stage_image(image_file, config_dir) if WHITESPACE.search(image_file) else image_file
         for image_file in image_files
     ]
-    output_folders = (
-        find_output_folders(ds.params["spatial_data"], technology)
-        if technology in OUTPUT_MARKERS else None
-    )
-    samplesheet = build_samplesheet(
-        ds.params["spatial_data"],
-        technology,
-        image_files,
-        output_folders,
-    )
+    folders = picked_paths(ds.params.get("spatial_data"))
+    if technology in OUTPUT_MARKERS:
+        folders = sorted({
+            output_folder
+            for folder in folders
+            for output_folder in find_output_folders(folder, technology)
+        })
+    samplesheet = build_samplesheet(technology, image_files, folders)
     ds.logger.info("samplesheet:")
     ds.logger.info(samplesheet.to_csv(index=None))
 

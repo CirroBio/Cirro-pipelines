@@ -1,0 +1,49 @@
+{
+  "form": {
+    "type": "object",
+    "name": "Annotate Microbial Genomes",
+    "required": [
+      "samplesheet"
+    ],
+    "properties": {
+      "samplesheet": {
+        "type": "string",
+        "schema": "pipeline_samplesheet"
+      }
+    }
+  },
+  "ui": {},
+  "structuredInputs": {
+    "pipeline_samplesheet": {
+      "fileFormat": "CSV",
+      "schema": {
+        "title": "Genomes",
+        "description": "One row per genome, each with a single FASTA file and a name of its own.",
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "title": "Name",
+              "pattern": "^\\S+$",
+              "errorMessage": "Name must be provided and cannot contain spaces"
+            },
+            "fasta": {
+              "type": "string",
+              "format": "file-path",
+              "title": "Genome (FASTA)",
+              "pattern": "\\.(fa|fna|fasta|fas)(\\.gz)?$",
+              "errorMessage": "Must be a FASTA file (.fa, .fna, .fasta or .fas, optionally gzipped)"
+            }
+          },
+          "required": [
+            "name",
+            "fasta"
+          ]
+        }
+      }
+    }
+  }
+}

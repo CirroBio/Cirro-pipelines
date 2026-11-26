@@ -1,0 +1,43 @@
+{
+  "id": "process-hutch-immune-clonotypes-1_0",
+  "childProcessIds": [],
+  "dataType": "Predicted Immune Clonotypes",
+  "name": "Predict Immune Clonotypes",
+  "desc": "Analysis of T-/B-cell clonotypes from bulk RNA sequencing data",
+  "executor": "NEXTFLOW",
+  "executionModes": ["STANDARD", "HEALTHOMICS"],
+  "category": "RNA Sequencing",
+  "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-rna-sequencing/#immune-clonotypes",
+  "code": {
+    "repository": "GITHUBPUBLIC",
+    "uri": "FredHutch/pw-bulk-rna-immune-clonotypes",
+    "version": "main",
+    "script": "main.nf"
+  },
+  "allowMultipleSources": true,
+  "usesSampleSheet": false,
+  "computeDefaults": [
+    {
+      "executor": "NEXTFLOW",
+      "json": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-compute.config",
+      "name": "Default"
+    }
+  ],
+  "paramMapJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json",
+  "formJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-form.json",
+  "webOptimizationJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-output.json",
+  "preProcessScript": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/preprocess.py",
+  "fileMappingRules": [
+    {
+      "description": "Clonotype Analysis Results",
+      "min": 1,
+      "fileNamePatterns": [
+        {
+          "exampleName": "sampleName/TRUST4_report.tsv",
+          "description": "TSV Report",
+          "sampleMatchingPattern": "(?P<sampleName>[\\S ]*)/TRUST4_report\\.tsv"
+        }
+      ]
+    }
+  ]
+}

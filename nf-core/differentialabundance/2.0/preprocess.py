@@ -1,10 +1,9 @@
-from typing import Optional
+from typing import TYPE_CHECKING, Callable, Optional, Tuple
 
-import boto3
 import pandas as pd
-from cirro.helpers.preprocess_dataset import PreprocessDataset
-from cirro.models.s3_path import S3Path
-import json
+
+if TYPE_CHECKING:
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
 
 # The genome selection nf-core/rnaseq 3 stores for each of its aligners
 RNASEQ_GENOME_SELECTIONS = {
@@ -27,79 +26,95 @@ RNASEQ_MATRIX_PREFIXES = [
 ]
 
 
-def make_samplesheet(ds: PreprocessDataset):
-    samplesheet = ds.samplesheet
-    # Drop rows where sample column containing 'samtools'
-    samplesheet = samplesheet[~samplesheet["sample"].str.contains("samtools")]
+def read_contrasts(path) -> pd.DataFrame:
+    """Read the contrasts filled out in the form, keeping every value as text."""
 
-    variable = ds.params["variable"]
-    if variable not in samplesheet:
-        raise ValueError(f"Column {variable} not found in samplesheet")
+    # The form field is marked required, but an empty table can still be submitted,
+    # in which case Cirro either omits the param or writes an empty file
+    if not path:
+        raise ValueError("No contrasts were provided: add a row for each comparison")
+    try:
+        contrasts = pd.read_csv(path, dtype=str, keep_default_na=False)
+    except pd.errors.EmptyDataError:
+        contrasts = pd.DataFrame()
+    if contrasts.empty:
+        raise ValueError("The contrasts table is empty: add a row for each comparison")
+    return contrasts
 
-    # Write to the dataset's config/ folder (mapped in process-input.json)
-    samplesheet.to_csv(ds.params["input"], index=None)
-    ds.logger.info(samplesheet.to_csv(index=None))
+
+def read_sample_metadata(path: str) -> pd.DataFrame:
+    return pd.read_csv(path, sep="\t" if path.endswith(".tsv") else ",", dtype=str, keep_default_na=False)
 
 
-def make_contrasts(ds: PreprocessDataset):
-    # Generate the contrasts.csv
-    variable = ds.params["variable"]
-    reference = ds.params["reference"]
-    target = ds.params["target"]
-    ds.remove_param("reference")
-    ds.remove_param("target")
-    ds.remove_param("variable")
+def check_contrasts(contrasts: pd.DataFrame, sample_metadata: pd.DataFrame):
+    """Every contrast must name columns and values of the sample metadata.
 
-    contrasts = pd.DataFrame([dict(
-        id=f"{reference}_vs_{target}",
-        variable=variable,
-        reference=reference,
-        target=target
-    )])
+    The sample metadata is a free-form table picked in the form, so the contrasts
+    table's schema cannot check its rows against it.
+    """
 
-    # Write to the dataset's config/ folder (mapped in process-input.json)
-    contrasts.to_csv(ds.params["contrasts"], index=None)
-    ds.logger.info(contrasts.to_csv(index=None))
+    repeated = contrasts.loc[contrasts["id"].duplicated(), "id"].unique()
+    if len(repeated) > 0:
+        raise ValueError(f"Each contrast needs its own ID, but these are repeated: {', '.join(repeated)}")
+
+    problems = []
+    for contrast in contrasts.itertuples():
+        if contrast.variable not in sample_metadata.columns:
+            problems.append(f"{contrast.id}: no column {contrast.variable} in the sample metadata")
+            continue
+        values = set(sample_metadata[contrast.variable])
+        for value in (contrast.reference, contrast.target):
+            if value not in values:
+                problems.append(f"{contrast.id}: no sample has {contrast.variable} = {value}")
+        for column in filter(None, contrast.blocking.split(";")):
+            if column not in sample_metadata.columns:
+                problems.append(f"{contrast.id}: no blocking column {column} in the sample metadata")
+    if problems:
+        raise ValueError("The contrasts do not match the sample metadata: " + "; ".join(problems))
+
+
+def find_matrices(rnaseq_results: str, exists: Callable[[str], bool]) -> Tuple[str, Optional[str]]:
+    """
+    The gene count matrix and, when published, the gene length matrix in the picked
+    nf-core/rnaseq output. Which ones it has depends on the aligner and pseudo-aligner
+    nf-core/rnaseq ran with.
+    """
+
+    # A whole dataset picked in the folder picker arrives as its data/ folder with a
+    # trailing slash
+    data_dir = rnaseq_results.rstrip("/")
+
+    for prefix in RNASEQ_MATRIX_PREFIXES:
+        matrix = f"{data_dir}/{prefix}.merged.gene_counts.tsv"
+        if exists(matrix):
+            lengths = f"{data_dir}/{prefix}.merged.gene_lengths.tsv"
+            return matrix, lengths if exists(lengths) else None
+
+    expected = ", ".join(f"{prefix}.merged.gene_counts.tsv" for prefix in RNASEQ_MATRIX_PREFIXES)
+    raise ValueError(
+        f"No gene count matrix found in {data_dir}/ (looked for {expected}). "
+        "Pick the output of an nf-core/rnaseq run that quantified gene expression."
+    )
 
 
 def s3_object_exists(s3, uri: str) -> bool:
+    from cirro.models.s3_path import S3Path
+
     path = S3Path(uri)
     listing = s3.list_objects_v2(Bucket=path.bucket, Prefix=path.key, MaxKeys=1)
     return any(obj["Key"] == path.key for obj in listing.get("Contents", []))
 
 
-def set_matrices(ds: PreprocessDataset):
+def find_rnaseq_dataset(inputs: list, rnaseq_results: str) -> dict:
+    """The input dataset the nf-core/rnaseq output was picked from.
+
+    The run's inputs are every dataset the form's picks point into, so the sample
+    metadata may come from another one.
     """
-    Point the pipeline at whichever gene matrices the input dataset contains,
-    which depends on the aligner and pseudo-aligner nf-core/rnaseq ran with.
-    """
-
-    # process-input.json maps the matrix to data/salmon/salmon.merged.gene_counts.tsv
-    # of the input dataset; strip the last two parts to get its data/ folder
-    data_dir = ds.params["matrix"].rsplit("/", 2)[0]
-
-    s3 = boto3.client("s3")
-    for prefix in RNASEQ_MATRIX_PREFIXES:
-        matrix = f"{data_dir}/{prefix}.merged.gene_counts.tsv"
-        if not s3_object_exists(s3, matrix):
-            continue
-
-        ds.logger.info(f"Using count matrix {matrix}")
-        ds.add_param("matrix", matrix, overwrite=True)
-
-        lengths = f"{data_dir}/{prefix}.merged.gene_lengths.tsv"
-        if s3_object_exists(s3, lengths):
-            ds.add_param("feature_length_matrix", lengths, overwrite=True)
-        else:
-            ds.logger.warning(f"No gene lengths found at {lengths} - running without length normalization")
-            ds.remove_param("feature_length_matrix")
-        return
-
-    expected = ", ".join(f"{prefix}.merged.gene_counts.tsv" for prefix in RNASEQ_MATRIX_PREFIXES)
-    raise ValueError(
-        f"No gene count matrix found in {data_dir}/ of the input dataset (looked for {expected}). "
-        "The input must be an nf-core/rnaseq run that quantified gene expression."
-    )
+    for dataset in inputs:
+        if rnaseq_results.startswith(dataset["s3"].rstrip("/") + "/"):
+            return dataset
+    raise ValueError(f"None of the run's input datasets holds {rnaseq_results}")
 
 
 def find_igenomes_genome(input_params: dict) -> Optional[str]:
@@ -126,14 +141,27 @@ def find_igenomes_genome(input_params: dict) -> Optional[str]:
     return input_params.get("igenomes", {}).get("genome")
 
 
-def set_genome(ds: PreprocessDataset):
+def set_matrices(ds: "PreprocessDataset"):
+    import boto3
+
+    s3 = boto3.client("s3")
+    matrix, lengths = find_matrices(ds.params["rnaseq_results"], lambda uri: s3_object_exists(s3, uri))
+    ds.logger.info(f"Using count matrix {matrix}")
+    ds.add_param("matrix", matrix)
+    if lengths is None:
+        ds.logger.warning(f"No gene lengths found beside {matrix} - running without length normalization")
+    else:
+        ds.add_param("feature_length_matrix", lengths)
+
+
+def set_genome(ds: "PreprocessDataset"):
     """
     Use the genome parameter which was selected for the input dataset.
     """
 
     # Get the metadata set up for this dataset, which
-    # includes the params of the input dataset
-    input_dataset = ds.metadata["inputs"][0]
+    # includes the params of the input datasets
+    input_dataset = find_rnaseq_dataset(ds.metadata["inputs"], ds.params["rnaseq_results"])
 
     genome = find_igenomes_genome(input_dataset.get("params") or {})
 
@@ -152,8 +180,15 @@ def set_genome(ds: PreprocessDataset):
 
 
 if __name__ == "__main__":
+
+    # Imported here so that test_preprocess.py runs without the SDK
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
+
     ds = PreprocessDataset.from_running()
-    make_samplesheet(ds)
-    make_contrasts(ds)
+
+    check_contrasts(read_contrasts(ds.params.get("contrasts")), read_sample_metadata(ds.params["input"]))
     set_matrices(ds)
     set_genome(ds)
+
+    # Consumed above; not a parameter the workflow declares
+    ds.remove_param("rnaseq_results")

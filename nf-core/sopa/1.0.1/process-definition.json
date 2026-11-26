@@ -21,7 +21,7 @@
     "version": "1.0.1",
     "executorVersion": "26.04.0"
   },
-  "allowMultipleSources": false,
+  "allowMultipleSources": true,
   "usesSampleSheet": false,
   "computeDefaults": [
     {

@@ -1,0 +1,13 @@
+{
+    "sample_sheet": "$.structuredInputs.pipeline_samplesheet.path",
+    "distance": "$.dataset.params.distance",
+    "gene_enrichment": "$.dataset.params.gene_enrichment",
+    "linkage": "$.dataset.params.linkage",
+    "mcl_inflation": "$.dataset.params.mcl_inflation",
+    "min_alignment_fraction": "$.dataset.params.min_alignment_fraction",
+    "min_occurrence": "$.dataset.params.min_occurrence",
+    "minbit": "$.dataset.params.minbit",
+    "output_folder": "$.dataset.dataPath",
+    "output_name": "$.dataset.name",
+    "cogs_tar": "$.referencesBucketUri|/anvio/COG_database/2022-06-22-NCBI-COGS.tar"
+}

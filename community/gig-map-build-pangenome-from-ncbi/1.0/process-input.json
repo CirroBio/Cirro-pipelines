@@ -1,0 +1,18 @@
+{
+    "genome_tables": "$.dataset.params.genome_tables[*]",
+    "cluster_similarity": "$.dataset.params.gene_catalog.cluster_similarity",
+    "cluster_coverage": "$.dataset.params.gene_catalog.cluster_coverage",
+    "min_gene_length": "$.dataset.params.gene_catalog.min_gene_length",
+    "min_coverage": "$.dataset.params.alignment.min_coverage",
+    "min_identity": "$.dataset.params.alignment.min_identity",
+    "max_overlap": "$.dataset.params.alignment.max_overlap",
+    "max_evalue": "$.dataset.params.alignment.max_evalue",
+    "query_gencode": "$.dataset.params.alignment.query_gencode",
+    "aligner": "$.dataset.params.alignment.aligner",
+    "max_dist_genes": "$.dataset.params.clustering.max_dist_genes",
+    "max_dist_genomes": "$.dataset.params.clustering.max_dist_genomes",
+    "min_bin_size": "$.dataset.params.clustering.min_bin_size",
+    "min_genomes_per_gene": "$.dataset.params.clustering.min_genomes_per_gene",
+    "ftp_threads": 1,
+    "output": "$.dataset.dataPath"
+}

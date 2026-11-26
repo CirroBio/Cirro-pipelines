@@ -15,6 +15,7 @@
     "script": "vdj.nf"
   },
   "allowMultipleSources": true,
+  "usesSampleSheet": false,
   "computeDefaults": [
     {
       "executor": "NEXTFLOW",

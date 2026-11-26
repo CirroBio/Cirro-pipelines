@@ -1,0 +1,56 @@
+{
+    "form": {
+        "type": "object",
+        "required": [
+            "input",
+            "metadata"
+        ],
+        "properties": {
+            "input": {
+                "title": "Input Data",
+                "description": "CSV table of abundances with one row per sample and one column per feature, with the sample names in the first column",
+                "type": "string",
+                "format": "file-path",
+                "pattern": "\\.csv$",
+                "errorMessage": "Must be an uncompressed CSV table (.csv)"
+            },
+            "metadata": {
+                "title": "Sample Metadata",
+                "description": "CSV table with the sample names of the abundance table in its first column, and a column for each variable used in the formula or filter (such as the samplesheet.csv of the abundance table dataset)",
+                "type": "string",
+                "format": "file-path",
+                "pattern": "\\.csv$",
+                "errorMessage": "Must be an uncompressed CSV table (.csv)"
+            },
+            "formula": {
+                "default": "",
+                "description": "Metadata column(s) used for statistical analysis (e.g. \"colA + colB\")",
+                "title": "Formula",
+                "type": "string"
+            },
+            "filter": {
+                "title": "Filter Samples",
+                "description": "Optionally filter samples based on metadata (e.g. \"colA > 10\")",
+                "type": "string"
+            },
+            "method": {
+                "title": "Statistical Method",
+                "description": "Analysis tool used to compare the relative abundance between groups",
+                "type": "string",
+                "default": "corncob",
+                "enum": [
+                    "corncob",
+                    "radEmu",
+                    "mannwhitneyu"
+                ]
+            },
+            "fdr_cutoff": {
+                "default": 0.05,
+                "description": "FDR-adjusted p-value threshold used to annotate significant results",
+                "title": "FDR Cutoff",
+                "type": "number"
+            }
+        }
+    },
+    "ui": {}
+}

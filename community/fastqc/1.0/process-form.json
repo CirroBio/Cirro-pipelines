@@ -1,0 +1,16 @@
+{
+  "form": {
+    "type": "object",
+    "required": ["input"],
+    "properties": {
+      "input": {
+        "title": "Input Folders",
+        "description": "Datasets or folders to assess. Every FASTQ (.fastq, .fq, optionally gzipped) and BAM file inside them, at any depth, is included",
+        "type": "string",
+        "format": "directory-path",
+        "multiple": true
+      }
+    }
+  },
+  "ui": {}
+}

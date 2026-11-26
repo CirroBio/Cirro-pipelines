@@ -1,33 +1,50 @@
 #!/usr/bin/env python3
 
-from cirro.helpers.preprocess_dataset import PreprocessDataset
 
-
-def resolve_references(ds: PreprocessDataset, *params: str):
-    """Make reference params absolute against the references bucket.
+def absolute_reference(value: str, references_base: str) -> str:
+    """A reference param's value, made absolute against the references bucket.
 
     Form values name a path under that bucket rather than a full URI, so the
     configuration is not tied to one deployment. A value that is already absolute
-    is left alone, which keeps datasets created before that change re-runnable.
+    is returned as is, which keeps datasets created before that change re-runnable.
     """
-    for param in params:
-        value = ds.params.get(param)
-        if not isinstance(value, str) or not value or value.startswith("s3://"):
-            continue
-        ds.add_param(param, f"{ds.references_base}/{value}", overwrite=True)
+    if value.startswith("s3://"):
+        return value
+    return f"{references_base}/{value}"
+
+
+def genome_files(genome_dir: str) -> dict:
+    """The FASTA and GTF inside a Cell Ranger reference folder, which the workflow reads."""
+    genome_dir = genome_dir.rstrip("/")
+    return {"fasta": f"{genome_dir}/fasta/genome.fa", "genes": f"{genome_dir}/genes/genes.gtf"}
+
+
+def custom_globs(folders) -> str:
+    """A glob for every file in each picked folder, comma-separated as the workflow reads `custom`.
+
+    A whole dataset picked in the folder picker arrives as its data/ folder with a
+    trailing slash, which is dropped so the glob has no `//`.
+    """
+    if not folders:
+        raise ValueError("No folder of custom sequences was selected")
+    return ",".join(f"{folder.rstrip('/')}/**" for folder in folders.split(","))
 
 
 if __name__ == "__main__":
 
+    # Imported here so that test_preprocess.py runs without the SDK
+    from cirro.helpers.preprocess_dataset import PreprocessDataset
+
     ds = PreprocessDataset.from_running()
 
-    resolve_references(ds, "genome_dir", "probes")
+    ds.add_param("custom", custom_globs(ds.params.get("custom")), overwrite=True)
+    if ds.params.get("probes"):
+        ds.add_param("probes", absolute_reference(ds.params["probes"], ds.references_base), overwrite=True)
 
-    # The workflow reads fasta and genes, not the directory, so they are built here
-    # from the resolved value. genome_dir is mapped only so this script can see it.
-    genome_dir = ds.params["genome_dir"]
-    ds.add_param("fasta", f"{genome_dir}/fasta/genome.fa", overwrite=True)
-    ds.add_param("genes", f"{genome_dir}/genes/genes.gtf", overwrite=True)
+    # genome_dir is mapped only so this script can see it
+    genome_dir = absolute_reference(ds.params["genome_dir"], ds.references_base)
+    for param, value in genome_files(genome_dir).items():
+        ds.add_param(param, value, overwrite=True)
     ds.remove_param("genome_dir")
 
     ds.logger.info(ds.params)

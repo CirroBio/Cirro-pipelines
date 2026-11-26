@@ -16,6 +16,8 @@
     "uri": "labsyspharm/mcmicro",
     "version": "049baed"
   },
+  "allowMultipleSources": true,
+  "usesSampleSheet": false,
   "computeDefaults": [
     {
       "executor": "NEXTFLOW",

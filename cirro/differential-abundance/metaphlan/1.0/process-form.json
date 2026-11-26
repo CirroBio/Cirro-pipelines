@@ -1,0 +1,85 @@
+{
+    "form": {
+        "type": "object",
+        "required": [
+            "samplesheet",
+            "metadata"
+        ],
+        "properties": {
+            "samplesheet": {
+                "type": "string",
+                "schema": "pipeline_samplesheet"
+            },
+            "metadata": {
+                "title": "Sample Metadata",
+                "description": "CSV table with a 'sample' column naming each sample as in the samplesheet, and a column for each variable used in the formula or filter",
+                "type": "string",
+                "format": "file-path",
+                "pattern": "\\.csv$",
+                "errorMessage": "Must be an uncompressed CSV table (.csv)"
+            },
+            "formula": {
+                "default": "",
+                "description": "Metadata column(s) used for statistical analysis (e.g. \"colA + colB\")",
+                "title": "Formula",
+                "type": "string"
+            },
+            "filter": {
+                "title": "Filter Samples",
+                "description": "Optionally filter samples based on metadata (e.g. \"colA > 10\")",
+                "type": "string"
+            },
+            "method": {
+                "title": "Statistical Method",
+                "description": "Analysis tool used to compare the relative abundance between groups",
+                "type": "string",
+                "default": "corncob",
+                "enum": [
+                    "corncob",
+                    "radEmu",
+                    "mannwhitneyu"
+                ]
+            },
+            "fdr_cutoff": {
+                "default": 0.05,
+                "description": "FDR-adjusted p-value threshold used to annotate significant results",
+                "title": "FDR Cutoff",
+                "type": "number"
+            }
+        }
+    },
+    "ui": {},
+    "structuredInputs": {
+        "pipeline_samplesheet": {
+            "fileFormat": "CSV",
+            "schema": {
+                "title": "Samplesheet",
+                "description": "One row per sample, with its MetaPhlAn profile. Each sample also needs a row in the Sample Metadata table.",
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "sample": {
+                            "type": "string",
+                            "title": "Sample",
+                            "pattern": "^\\S+$",
+                            "errorMessage": "Sample names cannot contain spaces"
+                        },
+                        "file": {
+                            "type": "string",
+                            "format": "file-path",
+                            "title": "MetaPhlAn profile",
+                            "pattern": "\\.metaphlan$",
+                            "errorMessage": "Must be a MetaPhlAn profile (.metaphlan)"
+                        }
+                    },
+                    "required": [
+                        "sample",
+                        "file"
+                    ]
+                }
+            }
+        }
+    }
+}

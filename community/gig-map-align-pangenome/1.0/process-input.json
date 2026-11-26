@@ -1,0 +1,13 @@
+{
+    "metadata": "$.dataset.params.association.metadata",
+    "samplesheet": "$.structuredInputs.pipeline_samplesheet.path",
+    "pangenome": "$.dataset.params.inputs.pangenome",
+    "min_score_reads": "$.dataset.params.alignment.min_score_reads",
+    "min_identity": "$.dataset.params.alignment.min_identity",
+    "max_evalue": "$.dataset.params.alignment.max_evalue",
+    "min_n_reads": "$.dataset.params.filtering.min_n_reads",
+    "min_n_genes": "$.dataset.params.filtering.min_n_genes",
+    "famli_sd_mean_cutoff": "$.dataset.params.filtering.famli_sd_mean_cutoff",
+    "formula": "$.dataset.params.association.category",
+    "output": "$.dataset.dataPath"
+}

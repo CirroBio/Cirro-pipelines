@@ -1,0 +1,12 @@
+{
+    "genomes": "$.dataset.params.inputs.genomes",
+    "genes": "$.dataset.params.inputs.genes",
+    "min_coverage": "$.dataset.params.alignment.min_coverage",
+    "min_identity": "$.dataset.params.alignment.min_identity",
+    "max_overlap": "$.dataset.params.alignment.max_overlap",
+    "max_evalue": "$.dataset.params.alignment.max_evalue",
+    "query_gencode": "$.dataset.params.alignment.query_gencode",
+    "aligner": "$.dataset.params.alignment.aligner",
+    "output": "$.dataset.dataPath",
+    "collect_results": "false"
+}

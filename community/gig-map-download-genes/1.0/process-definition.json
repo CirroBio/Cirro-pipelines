@@ -1,0 +1,47 @@
+{
+    "id": "hutch-gig-map-download-genes-1-0",
+    "childProcessIds": [
+      "process-hutch-eggnog-mapper-2-1-7",
+      "hutch-gig-map-build-gene-catalog-1-0"
+    ],
+    "dataType": "Gene Sequences (FASTA)",
+    "name": "Download Genes",
+    "desc": "Fetch the amino acid sequences for all genes contained in a set of NCBI genomes (FASTA)",
+    "executor": "NEXTFLOW",
+    "category": "Microbial Analysis",
+    "documentationUrl": "https://<DOCS_SITE>/pipelines/catalog-microbial-analysis/#download-genomes",
+    "code": {
+        "repository": "GITHUBPUBLIC",
+        "script": "download_genes.nf",
+        "uri": "FredHutch/gig-map",
+        "version": "main"
+    },
+    "allowMultipleSources": true,
+    "usesSampleSheet": false,
+    "computeDefaults": [
+        {
+            "executor": "NEXTFLOW",
+            "json": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-compute.config",
+            "name": "Default"
+        }
+    ],
+    "preProcessScript": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/preprocess.py",
+    "paramMapJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-input.json",
+    "formJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-form.json",
+    "webOptimizationJson": "s3://<RESOURCES_BUCKET>/<PROCESS_DIRECTORY>/process-output.json",
+    "fileMappingRules": [
+      {
+        "description": "Protein Sequences (FASTA)",
+        "min": 1,
+        "fileNamePatterns": [
+          {
+            "exampleName": "genomeName_protein.faa.gz",
+            "description": "FASTA",
+            "sampleMatchingPattern": "(?P<sampleName>[\\S ]*)_protein\\.faa\\.gz"
+      
+          }
+        ]
+      }
+    ]
+  
+}

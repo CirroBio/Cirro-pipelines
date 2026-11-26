@@ -1,9 +1,23 @@
 {
   "form": {
     "required": [
+      "input_folder",
       "script"
     ],
     "properties": {
+      "input_folder": {
+        "type": "string",
+        "title": "Images",
+        "description": "Dataset or folder holding the images, staged for the script as the folder inputs/",
+        "format": "directory-path",
+        "process": [
+          "images",
+          "codex_raw",
+          "codex_processed",
+          "process-hutch-mcmicro-1-0",
+          "process-convert-vsi-1-0"
+        ]
+      },
       "script": {
         "type": "string",
         "title": "QuPath Script",

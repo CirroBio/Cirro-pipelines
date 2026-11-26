@@ -1,0 +1,82 @@
+{
+  "ui": {},
+  "form": {
+    "title": "Funcotator (GATK)",
+    "description": "Functional annotation of genomic variants",
+    "type": "object",
+    "required": ["samplesheet"],
+    "properties": {
+      "samplesheet": {
+        "type": "string",
+        "schema": "pipeline_samplesheet"
+      },
+      "ref_version": {
+        "title": "Reference Genome Version",
+        "type": "string",
+        "default": "hg38",
+        "enum": ["hg38", "hg19"],
+        "enumNames": [
+          "Homo sapiens (GRCh38)",
+          "Homo sapiens (GRCh37)"
+        ]
+      },
+      "data_sources": {
+        "title": "Variant Type",
+        "type": "string",
+        "default": "funcotator/funcotator_dataSources.v1.7.20200521g/",
+        "enum": [
+          "funcotator/funcotator_dataSources.v1.7.20200521g/",
+          "funcotator/funcotator_dataSources.v1.7.20200521s/"
+        ],
+        "enumNames": [
+          "Germline",
+          "Somatic"
+        ]
+      },
+      "output_file_format": {
+        "title": "Output File Format",
+        "type": "string",
+        "default": "VCF",
+        "enum": ["VCF", "MAF"]
+      },
+      "transcript_selection_mode": {
+        "title": "Transcript Selection Mode",
+        "type": "string",
+        "default": "CANONICAL",
+        "enum": [
+          "BEST_EFFECT", "CANONICAL", "ALL"
+        ]
+      }
+    }
+  },
+  "structuredInputs": {
+    "pipeline_samplesheet": {
+      "fileFormat": "CSV",
+      "schema": {
+        "title": "Samplesheet",
+        "description": "One row per VCF file. The sample name is used to name the annotated output.",
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "properties": {
+            "sample": {
+              "type": "string",
+              "title": "Sample",
+              "pattern": "^[^\\s\\/]+$",
+              "errorMessage": "Sample name must be provided and cannot contain spaces or slashes"
+            },
+            "vcf": {
+              "type": "string",
+              "format": "file-path",
+              "title": "VCF",
+              "pattern": "^([\\S\\s]*\\/)?[^\\s\\/]+\\.vcf\\.gz$",
+              "errorMessage": "Must be a gzipped VCF (.vcf.gz) with no spaces in its name"
+            }
+          },
+          "required": ["sample", "vcf"]
+        }
+      }
+    }
+  }
+}

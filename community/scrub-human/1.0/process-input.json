@@ -1,0 +1,7 @@
+{
+  "samplesheet": "$.structuredInputs.pipeline_samplesheet.path",
+  "input_filelist": "$.dataset.s3|/config/input_filelist.csv",
+  "output_folder": "$.dataset.dataPath",
+  "cpus": "4",
+  "mem_gbs": "7"
+}
